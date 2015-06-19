@@ -1,3 +1,4 @@
-Server  server.com/
-Server  server2.com:8080/relay/
-Server  server3.com!
+Server  http://server.com/
+Server  http://server2.com:8080/relay/
+Server  http://server3.com/
+Server  http://localhost/relay
