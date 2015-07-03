@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="css/socket.css" type="text/css" />
+    </head>
+    <body>
+        <form onsubmit="onSubmitForm(event)">
+            <pre id="client-output"></pre>
+            <input id="client-message" onkeydown="onSubmitForm(event)" style="width: 80%" />
+            <input type="submit" value="Send" style="width: 15%" />
+        </form>
+
+        <!-- Script to utilise the WebSocket -->
+        <script type="text/javascript">
+            var socketWorker = new Worker('js/socket-worker.js');
+            socketWorker.addEventListener('message', function(e) {
+                if(typeof e === 'string') e = {data:e};
+
+                var args = e.data.split(/\s+/);
+                switch(args[0].toLowerCase()) {
+                    case 'message':
+                        var messages = document.getElementById("client-output");
+                        messages.innerHTML += e.data + "\n";
+                        break;
+                    default:
+                        throw new Error("Unknown Command: " + args[0]);
+                }
+            });
+
+            function onSubmitForm(e) {
+                var inputMessage = document.getElementById('client-message');
+                switch(e.type) {
+                    case 'keydown':
+                        if(e.keyCode === 13) {
+                            e.preventDefault();
+                            socketWorker.postMessage(inputMessage.value);
+                            inputMessage.value = '';
+                        }
+                        break;
+
+                    case 'submit':
+                        e.preventDefault();
+                        socketWorker.postMessage(inputMessage.value);
+                        inputMessage.value = '';
+                        break;
+
+                    default:
+                        throw new Error("Unknown event: " + e.type);
+                }
+                return false;
+            }
+
+            socketWorker.postMessage('join test');
+
+        </script>
+       
+    </body>
+</html>
