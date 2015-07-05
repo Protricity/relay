@@ -1,0 +1,57 @@
+.client-container {
+    /* min-height: 50vw; */
+
+    white-space: nowrap;
+}
+
+.channel-list {
+    min-height: 32vw;
+    min-width: 10vw;
+    /* font-size: 2vw; */
+}
+.channel-container {
+    display: inline-block;
+    overflow: auto;
+    min-width: 73vw;
+    position: relative;
+}
+.channel-output {
+    max-height: 30vw;
+    max-width: 72vw;
+}
+
+.channel-message {
+    min-width: 67vw;
+
+}
+.channel-submit {
+    right: 0;
+
+    position: absolute;
+}
+
+.channel-log {
+    font-family: monospace;
+    
+    /* font-size: 2vw; */
+    white-space: nowrap;
+}
+
+.channel-log .user {
+    /* margin-right: 1vw; */
+    text-decoration: none;
+    color: darkblue;
+    max-width: 10em;
+    display: inline-block;
+    overflow: hidden;
+
+}
+.channel-log .user:hover {
+    text-decoration: underline;
+    cursor: pointer;
+    max-width: inherit;
+}
+
+.channel-log .message {
+    white-space: normal;
+}

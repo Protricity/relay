@@ -21,6 +21,12 @@ onmessage = function (e) {
 
 var activeSockets = [];
 
+
+function onSocketMessage(e) {
+    console.log("SOCKET ", e.data);
+    self.postMessage(e.data);
+}
+
 function getSocket(socketURL) {
     for(var j=0; j<activeSockets.length; j++) {
         var activeSocket = activeSockets[j];
@@ -34,7 +40,10 @@ function getSocket(socketURL) {
             return;
         newSocket.removeEventListener('open', onOpen);
         newSocket.send("IDENTIFY " + publicKey);
+        //newSocket.send("JOIN test");
+        //newSocket.send("MSG test test message");
     }
+    newSocket.addEventListener('message', onSocketMessage);
     newSocket.addEventListener('open', onOpen);
     activeSockets.push(newSocket);
     return newSocket;
@@ -66,4 +75,21 @@ function selectFastestSocket(onSelected, socketList) {
         socket = sockets[i];
         socket.addEventListener('open', onOpen);
     }
+}
+
+
+function selectFastestSocketAndSend(commandString) {
+    var args = commandString.split(/\s+/);
+    if(args.length <= 1 || !args[1])
+        throw new Error("Invalid path");
+
+    var path = args[1].toLowerCase();
+    var socketList = defaultSocketList;
+    if(typeof socketListByPath[path.toLowerCase()] === 'object')
+        socketList = socketListByPath[path.toLowerCase()];
+
+    selectFastestSocket(function(selectedSocket) {
+        console.log("SOCKET " + selectedSocket.url + ": " + commandString);
+        selectedSocket.send(commandString);
+    }, socketList);
 }

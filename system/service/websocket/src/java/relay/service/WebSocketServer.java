@@ -39,6 +39,7 @@ public class WebSocketServer {
     }
     
     /**
+     * @param session
      * @OnOpen allows us to intercept the creation of a new session.
      * The session class allows us to send data to the user.
      * In the method onOpen, we'll let the user know that the handshake was 
@@ -49,7 +50,7 @@ public class WebSocketServer {
         System.out.println(session.getId() + " has opened a connection"); 
         try {
             
-            session.getBasicRemote().sendText("Connection Established");
+            session.getBasicRemote().sendText("INFO Connection Established");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -64,21 +65,16 @@ public class WebSocketServer {
         System.out.println("Message from " + session.getId() + ": " + message);
 //        session.getBasicRemote().sendText("ECHO " + message);
         
-        String[] args = message.split("\\s+", 2);
+//        String[] args = message.split("\\s+", 2);
         for(int i=0; i<callbacks.size(); i++) {
             try {
                 ISocketCommand command = callbacks.get(i);
-                if(command instanceof ISocketCommand.ISocketCommandMatch) {
-                    ISocketCommand.ISocketCommandMatch matchCommand = (ISocketCommand.ISocketCommandMatch) command;
-                    if(!matchCommand.match(message, session))
-                        continue;
-                } else {
-                    if(!args[0].equalsIgnoreCase(command.getCommandName()))
-                        continue;
-                }
-                command.executeCommand(message, session);
+                if(!command.executeCommand(message, session))
+                    continue;
+                
             } catch (Exception ex) {
-                    session.getBasicRemote().sendText(ex.getMessage());
+                 session.getBasicRemote().sendText("ERROR " + ex.getMessage());
+                ex.printStackTrace();
             }
         }
     }

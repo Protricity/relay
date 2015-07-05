@@ -18,8 +18,9 @@ public interface ISocketCommand {
      * @param data 
      * @param session 
      * @return  
+     * @throws java.lang.Exception  
      */
-    boolean executeCommand(String data, Session session);
+    boolean executeCommand(String data, Session session) throws Exception;
     
 }
 

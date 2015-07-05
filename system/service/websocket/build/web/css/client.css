@@ -1,0 +1,37 @@
+.client-container {
+    /* min-height: 50vw; */
+
+    white-space: nowrap;
+}
+
+.channel-list {
+    min-height: 32vw;
+    min-width: 10vw;
+    /* font-size: 2vw; */
+}
+.channel-container {
+    display: inline-block;
+    overflow: auto;
+    min-width: 73vw;
+    position: relative;
+}
+.channel-output {
+    max-height: 30vw;
+}
+
+.channel-message {
+    min-width: 67vw;
+
+}
+.channel-submit {
+    right: 0;
+
+    position: absolute;
+}
+
+.channel-log {
+    font-family: monospace;
+    
+    /* font-size: 2vw; */
+    white-space: nowrap;
+}
