@@ -6,13 +6,13 @@
 
 .channel-list {
     min-height: 32vw;
-    min-width: 10vw;
+    width: 20%;
     /* font-size: 2vw; */
 }
 .channel-container {
     display: inline-block;
     overflow: auto;
-    min-width: 73vw;
+    min-width: 80%;
     position: relative;
 }
 .channel-output {
@@ -21,7 +21,7 @@
 }
 
 .channel-message {
-    min-width: 67vw;
+    min-width: 90%;
 
 }
 .channel-submit {
@@ -42,7 +42,7 @@
     text-decoration: none;
     color: darkblue;
     max-width: 10em;
-    display: inline-block;
+    display: inline-flex;
     overflow: hidden;
 
 }

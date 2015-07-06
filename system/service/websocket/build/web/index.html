@@ -14,8 +14,13 @@ and open the template in the editor.
     <body>
         <form onsubmit="onSubmitForm(event)">
             <div class="client-container">
-                <select class="channel-list" name="channel-list" size="10" onselect="changeChannel(event)">
-                    <optgroup class="channel-list-group" label="Channel List">
+                <select class="channel-list" name="channel-list" size="5" onchange="changeChannel(this.value)">
+                    <optgroup class="channel-list-group" label="Feeds">
+                        <option id="channel:/feeds/all" value="/feeds/all">All Feeds</option>
+                        <option id="channel:/feeds/my" value="/feeds/my">My Feed</option>
+                        <option id="channel:/feeds/friends" value="/feeds/friends">My Friends' Feed</option>
+                    </optgroup>
+                    <optgroup class="channel-list-group" label="Active Channels">
                     </optgroup>
                 </select>
                 <div class="channel-container">
@@ -38,7 +43,7 @@ and open the template in the editor.
                         var user = args.shift();
                         var path = args.shift();
                         var content = args.join(' ');
-                        var formatted = '<span class="user">' + user + '</span>: <span class="message">' + content + '</span>';
+                        var formatted = '<div class="channel-log"><span class="user">' + user + '</span>: <span class="message">' + content + '</span></div>';
                         if(typeof channelLog[path] === 'undefined')
                             channelLog[path] = formatted;
                         else
@@ -54,18 +59,20 @@ and open the template in the editor.
                                 listGroup[lgi].appendChild(channelOption);
                         }
 
-                        var divMessages = document.getElementsByClassName("channel-output");
-                        for(var i=0; i<divMessages.length; i++) {
-                            var divLog = document.createElement('div');
-                            divLog.setAttribute('class', 'channel-log');
-                            divLog.innerHTML = formatted;
-                            divMessages[i].appendChild(divLog);
+                        if(path === currentChannel) {
+                            var divMessages = document.getElementsByClassName("channel-output");
+                            for (var i = 0; i < divMessages.length; i++) {
+                                divMessages[i].innerHTML += formatted;
+                            }
                         }
                         break;
+
                     case 'error':
                         console.error(e.data);
                         break;
+
                     default:
+                    case 'info':
                         console.info(e.data);
                         break;
                 }
@@ -107,8 +114,15 @@ and open the template in the editor.
                 return false;
             }
 
-            function changeChannel(e) {
+            function changeChannel(newChannel) {
+                currentChannel = newChannel;
+                var divMessages = document.getElementsByClassName("channel-output");
 
+                if(typeof channelLog[newChannel] === 'undefined')
+                    channelLog[newChannel] = "";
+
+                for (var i = 0; i < divMessages.length; i++)
+                    divMessages[i].innerHTML = channelLog[newChannel];
             }
 
         </script>

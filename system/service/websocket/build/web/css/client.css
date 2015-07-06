@@ -17,6 +17,7 @@
 }
 .channel-output {
     max-height: 30vw;
+    max-width: 72vw;
 }
 
 .channel-message {
@@ -34,4 +35,23 @@
     
     /* font-size: 2vw; */
     white-space: nowrap;
+}
+
+.channel-log .user {
+    /* margin-right: 1vw; */
+    text-decoration: none;
+    color: darkblue;
+    max-width: 10em;
+    display: inline-flex;
+    overflow: hidden;
+
+}
+.channel-log .user:hover {
+    text-decoration: underline;
+    cursor: pointer;
+    max-width: inherit;
+}
+
+.channel-log .message {
+    white-space: normal;
 }

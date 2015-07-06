@@ -23,7 +23,7 @@ var activeSockets = [];
 
 
 function onSocketMessage(e) {
-    console.log("SOCKET ", e.data);
+    console.log("SOCKET IN: ", e.data);
     self.postMessage(e.data);
 }
 
@@ -40,18 +40,23 @@ function getSocket(socketURL) {
             return;
         newSocket.removeEventListener('open', onOpen);
         newSocket.send("IDENTIFY " + publicKey);
-        //newSocket.send("JOIN test");
+//         newSocket.send("JOIN *");
         //newSocket.send("MSG test test message");
+    }
+    function onClose(e) {
+        console.log("SOCKET CLOSED: ", e.currentTarget, e.reason, e);
+        newSocket.removeEventListener('close', onClose);
     }
     newSocket.addEventListener('message', onSocketMessage);
     newSocket.addEventListener('open', onOpen);
+    newSocket.addEventListener('close', onClose);
     activeSockets.push(newSocket);
     return newSocket;
 }
 
 function selectFastestSocket(onSelected, socketList) {
     if(typeof socketList === 'undefined')
-        socketList = socketList.slice();
+        socketList = defaultSocketList.slice();
 
     var i, socket;
     var sockets = [];
@@ -89,7 +94,7 @@ function selectFastestSocketAndSend(commandString) {
         socketList = socketListByPath[path.toLowerCase()];
 
     selectFastestSocket(function(selectedSocket) {
-        console.log("SOCKET " + selectedSocket.url + ": " + commandString);
+        console.log("SOCKET OUT (" + selectedSocket.url + "): " + commandString);
         selectedSocket.send(commandString);
     }, socketList);
 }

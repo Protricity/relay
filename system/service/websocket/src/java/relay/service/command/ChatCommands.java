@@ -25,8 +25,20 @@ import org.bouncycastle.openpgp.jcajce.JcaPGPPublicKeyRingCollection;
  */
 public class ChatCommands implements ISocketCommand {
     
-    private static ArrayList<Channel> mChannels = new ArrayList<Channel>();
     private static HashMap<Session, PGPPublicKey> mIDKeys = new HashMap<>();
+    private static char[] mAllowedModes = {'o'};
+    private static HashMap<String, ArrayList<Session>> mSubscriptions = new HashMap<>(); 
+    private static HashMap<String, String> mChannelModes = new HashMap<>(); 
+    
+    public String getSessionChatID(Session session) {
+        if(mIDKeys.containsKey(session))
+            return mIDKeys
+                    .get(session)
+                    .getUserIDs()
+                    .next()
+                    .toString();
+        return session.getId();
+    }
     
     @Override
     public boolean executeCommand(String data, Session session) throws Exception {
@@ -58,43 +70,6 @@ public class ChatCommands implements ISocketCommand {
 //        session.getBasicRemote().sendText("ECHO " + message);
     }
     
-    
-    public Channel getChannel(String path) {
-        for(Channel channel: mChannels) 
-            if(channel.path.equalsIgnoreCase(path))
-                return channel;
-        
-        Channel newChannel = new Channel(path);
-        mChannels.add(newChannel);
-        return newChannel;
-    }
-    
-    public void joinChannel(Session session, String path) {
-        Channel channel = getChannel(path);
-        if(channel.join(session))
-            sendText(session, "INFO joined " + path);
-        else 
-            sendText(session, "ERROR failed to join " + path);
-    }
-    
-    public void leaveChannel(Session session, String path) {
-        Channel channel = getChannel(path);
-        if(channel.leave(session))
-            sendText(session, "INFO joined " + path);
-        else 
-            sendText(session, "ERROR failed to leave " + path);
-    }
-    
-    public void messageChannel(Session session, String path, String message) throws IOException {
-        Channel channel = getChannel(path);
-        channel.message(session, message);
-    }
-
-    public boolean hasUser(Session session, String path) {
-        Channel channel = getChannel(path);
-        return channel.has(session);
-    }
-    
     public void identifyUser(Session session, String data) throws PGPException, IOException {
         int sPos = data.indexOf("-----BEGIN PGP PUBLIC KEY BLOCK-----");
         int fPos = data.indexOf("-----END PGP PUBLIC KEY BLOCK-----");
@@ -122,93 +97,112 @@ public class ChatCommands implements ISocketCommand {
         sendText(session, "INFO User Identified: " + byteArrayToHex(key.getFingerprint()));
     }
     
-    
-    public class Channel
-    {
-        public String path;
-        public ArrayList<Session> mUsers = new ArrayList<>();
-        public String mModes = "";
-        public char[] mAllowedModes = {'o'};
 
-        public Channel(String path) {
-            this.path = path;
-        }
-
-        public boolean setMode(String newMode) throws IllegalArgumentException {
-            boolean negative = newMode.charAt(0) == '-';
-            char modeValue = newMode.charAt(newMode.length()-1);
-            if(!Arrays.asList(mAllowedModes).contains(modeValue))
-                throw new IllegalArgumentException("Unknown mode: " + newMode);
-            for(int i=0; i<mModes.length(); i++) {
-                char oldModeValue = mModes.charAt(i);
-                if(modeValue == oldModeValue) {
-                    if(negative) {
-                        mModes = mModes.replace(String.valueOf(modeValue), "");
-                        return true;
-                    } else {
-                        mModes += modeValue;
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-        
-        public boolean join(Session userSession) {
-            for(Session session : mUsers) {
-                if(session == userSession) {
-                    return false;
-                }
-            }
-            
-            mUsers.add(userSession);
-            return true;
-        }
-
-        public boolean leave(Session userSession) {
-            for(Session session : mUsers) {
-                if(session == userSession) {
-                    mUsers.remove(session);
+    public boolean setChannelMode(String channel, String newMode) throws IllegalArgumentException {
+        String oldMode = mChannelModes.containsKey(channel) ? mChannelModes.get(channel) : "";
+        boolean negative = newMode.charAt(0) == '-';
+        char modeValue = newMode.charAt(newMode.length()-1);
+        if(!Arrays.asList(mAllowedModes).contains(modeValue))
+            throw new IllegalArgumentException("Unknown mode: " + newMode);
+        for(int i=0; i<oldMode.length(); i++) {
+            char oldModeValue = oldMode.charAt(i);
+            if(modeValue == oldModeValue) {
+                if(negative) {
+                    oldMode = oldMode.replace(String.valueOf(modeValue), "");
+                    mChannelModes.put(channel, oldMode);
+                    return true;
+                } else {
+                    oldMode += modeValue;
+                    mChannelModes.put(channel, oldMode);
                     return true;
                 }
             }
-            
-            return false;
+        }
+        return false;
+    }
+
+    public boolean joinChannel(Session userSession, String channel) {
+        ArrayList<Session> channelUsers = getChannelUsers(channel);
+        for(Session session : channelUsers) {
+            if(session == userSession) {
+                return false;
+            }
         }
 
-        public boolean has(Session userSession) {
-            for(Session session : mUsers) {
-                if(session == userSession) {
-                    return true;
-                }
+        channelUsers.add(userSession);
+
+        for(Session session : channelUsers) 
+            if(session.isOpen()) 
+                sendText(session, "JOIN " + getSessionChatID(userSession) + " " + channel);
+
+        return true;
+    }
+
+    public boolean leaveChannel(Session userSession, String channel) {
+        ArrayList<Session> channelUsers = getChannelUsers(channel);
+        for(Session session : channelUsers) {
+            if(session == userSession) {
+                channelUsers.remove(session);
+                return true;
+            }
+        }
+
+        for(Session session : channelUsers) 
+            if(session.isOpen()) 
+                sendText(session, "LEAVE " + getSessionChatID(userSession) + " " + channel);
+
+        return false;
+    }
+
+    public boolean hasSubscription(Session userSession, String channel) {
+        ArrayList<Session> channelUsers = getChannelUsers(channel);
+        for(Session session : channelUsers) {
+            if(session == userSession) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    public void messageChannel(Session userSession, String channel, String message) {
+        if(!hasSubscription(userSession, channel))
+            joinChannel(userSession, channel);
+
+        for(Session session : getChannelUsers(channel))
+            if(session.isOpen()) 
+               sendText(session, "MESSAGE " + getSessionChatID(userSession) + " " + channel + " " + message);
+        
+        String[] parts = channel.replaceAll("\\/$|^\\/", "").split("\\/");
+        String wildCardPath = "*";
+        String curPath = "/";
+        for(int i=0; i<=parts.length; i++) {
+            if(mSubscriptions.containsKey(wildCardPath)) {
+                for(Session session : getChannelUsers(wildCardPath))
+                    if(session.isOpen()) 
+                       sendText(session, "MESSAGE " + getSessionChatID(userSession) + " " + wildCardPath + " " + message);
             }
             
-            return false;
-        }
-
-        public void message(Session userSession, String message) throws IOException {
-            this.message(userSession, message, new ArrayList<>());
-        }
-        
-        public void message(Session userSession, String message, ArrayList<Session> skipUsers) {
-            if(!this.has(userSession))
-                this.join(userSession);
-
-            for(Session session : mUsers) {
-                if(
-                        !session.isOpen() 
-                        || skipUsers.contains(session)) 
-                    continue;
-                sendText(session, "MESSAGE " + userSession.getId() + " " + this.path + " " + message);
+            if(i<parts.length) {
+                curPath = curPath + parts[i] + "/";
+                wildCardPath = curPath + "*";
             }
         }
     }
-    
+
+    public ArrayList<Session> getChannelUsers(String channel) {
+        if(mSubscriptions.containsKey(channel))
+            return mSubscriptions.get(channel);
+        ArrayList<Session> channelUsers = new ArrayList<Session>();
+        mSubscriptions.put(channel, channelUsers);
+        return channelUsers;
+    }
     
         
     private void sendText(Session session, String text) {
         try {
-            System.out.println(session.getId() + " SENDING " + text); 
+            System.out.println(getSessionChatID(session) + " SENDING " + text); 
             session.getBasicRemote().sendText(text);
         } catch (IOException ex) {
             ex.printStackTrace();
