@@ -2,6 +2,7 @@
     /* min-height: 50vw; */
 
     white-space: nowrap;
+    /* background-color: #EEEEEE; */
 }
 
 .channel-list {
@@ -12,8 +13,11 @@
 .channel-container {
     display: inline-block;
     overflow: auto;
-    min-width: 80%;
+    width: 80%;
+    min-height: 32vw;
     position: relative;
+    background-color: #EEEEEE;
+    /* float: right; */
 }
 .channel-output {
     max-height: 30vw;
@@ -21,13 +25,16 @@
 }
 
 .channel-message {
-    min-width: 90%;
+    width: 90%;
 
+    positioN: absolute;
+    bottom: 0;
 }
 .channel-submit {
-    right: 0;
-
     position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 4em;
 }
 
 .channel-log {
