@@ -1,3 +1,4 @@
+
 var defaultSocketList = [
        'ws://relay.co.il:8080/relay-server/socket'
     //'ws://localhost:8080/relay-server/socket'

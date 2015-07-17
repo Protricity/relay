@@ -1,131 +1,15 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html>
     <head>
         <title>TODO supply a title</title>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="css/client.css" type="text/css" />
+        <script src="js/socket.js"></script>
+        <script>socket.postMessage("JOIN /welcome");</script>
     </head>
     <body>
-        <form onsubmit="onSubmitForm(event)">
-            <div class="client-container">
-                <select class="channel-list" name="channel-list" size="5" onchange="changeChannel(this.value)">
-                    <optgroup class="channel-list-group" label="Feeds">
-                        <option id="channel:/feeds/all" value="/feeds/all">All Feeds</option>
-                        <option id="channel:/feeds/my" value="/feeds/my">My Feed</option>
-                        <option id="channel:/feeds/friends" value="/feeds/friends">My Friends' Feed</option>
-                    </optgroup>
-                    <optgroup class="channel-list-group" label="Active Channels">
-                    </optgroup>
-                </select>
-                <div class="channel-container">
-                    <div class="channel-output"></div>
-                    <input placeholder="Send a message to the channel" class="channel-message" onkeydown="onSubmitForm(event)" />
-                    <input class="channel-submit" type="submit" value="Send" />
-                </div>
-            </div>
-        </form>
-
-        <script type="text/javascript">
-            var socketWorker = new Worker('js/socket-worker.js');
-            var channelLog = {};
-            var currentChannel = '/empty';
-            socketWorker.addEventListener('message', function(e) {
-                var args = e.data.split(/\s+/);
-                switch(args[0].toLowerCase()) {
-                    case 'message':
-                        args.shift();
-                        var user = args.shift();
-                        var path = args.shift();
-                        var content = args.join(' ');
-                        var formatted = '<div class="channel-log"><span class="user">' + user + '</span>: <span class="message">' + content + '</span></div>';
-                        if(typeof channelLog[path] === 'undefined')
-                            channelLog[path] = formatted;
-                        else
-                            channelLog[path] += formatted;
-
-                        var channelOption = document.getElementById('channel:' + path);
-                        if(!channelOption) {
-                            channelOption = document.createElement('option');
-                            channelOption.innerHTML = path;
-                            channelOption.setAttribute('id', 'channel:' + path);
-                            var listGroup = document.getElementsByClassName('channel-list-group');
-                            for(var lgi=0; lgi<listGroup.length; lgi++)
-                                listGroup[lgi].appendChild(channelOption);
-                        }
-
-                        if(path === currentChannel) {
-                            var divMessages = document.getElementsByClassName("channel-output");
-                            for (var i = 0; i < divMessages.length; i++) {
-                                divMessages[i].innerHTML += formatted;
-                            }
-                        }
-                        break;
-
-                    case 'error':
-                        console.error(e.data);
-                        break;
-
-                    default:
-                    case 'info':
-                        console.info(e.data);
-                        break;
-                }
-            }, true);
-
-            function sendCommand() {
-                var inputMessage = document.getElementsByClassName('channel-message');
-                for(var i=0; i<inputMessage.length; i++) {
-                    var message = inputMessage[i].value;
-                    if(!message)
-                        continue;
-                    if(message[0] === '/')
-                        message = message.substr(1);
-                    else
-                        message = "MESSAGE " + currentChannel + " " + message;
-                    socketWorker.postMessage(message);
-                    inputMessage[i].value = '';
-                    inputMessage[i].focus();
-                }
-            }
-
-            function onSubmitForm(e) {
-                switch(e.type) {
-                    case 'keydown':
-                        if(e.keyCode === 13) {
-                            e.preventDefault();
-                            sendCommand();
-                        }
-                        break;
-
-                    case 'submit':
-                        e.preventDefault();
-                        sendCommand();
-                        break;
-
-                    default:
-                        throw new Error("Unknown event: " + e.type);
-                }
-                return false;
-            }
-
-            function changeChannel(newChannel) {
-                currentChannel = newChannel;
-                var divMessages = document.getElementsByClassName("channel-output");
-
-                if(typeof channelLog[newChannel] === 'undefined')
-                    channelLog[newChannel] = "";
-
-                for (var i = 0; i < divMessages.length; i++)
-                    divMessages[i].innerHTML = channelLog[newChannel];
-            }
-
-        </script>
-
+        <div class="socket-channel-list"></div>
+        <div class="socket-channel-container"></div>
     </body>
 </html>

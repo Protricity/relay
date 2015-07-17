@@ -83,7 +83,7 @@ function selectFastestSocket(onSelected, socketList) {
 }
 
 
-function selectFastestSocketAndSend(commandString) {
+function sendWithFastestSocket(commandString) {
     var args = commandString.split(/\s+/);
     if(args.length <= 1 || !args[1])
         throw new Error("Invalid path");

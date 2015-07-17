@@ -1,64 +1,80 @@
-.client-container {
-    /* min-height: 50vw; */
-
-    white-space: nowrap;
-    /* background-color: #EEEEEE; */
-}
-
-.channel-list {
-    min-height: 32vw;
-    width: 20%;
-    /* font-size: 2vw; */
-}
-.channel-container {
-    display: inline-block;
-    overflow: auto;
-    width: 80%;
-    min-height: 32vw;
-    position: relative;
-    background-color: #EEEEEE;
+.socket-channel-container {
+    /* width: 85%; */
+    font-family: monospace;
+    color: grey;
     /* float: right; */
 }
-.channel-output {
-    max-height: 30vw;
-    max-width: 72vw;
+.socket-channel-content {
+    overflow: auto;
+    max-height: 20vw;
+}
+/*.socket-channel-output {*/
+    /*background-color: #EEEEEE;*/
+    /*position: relative;*/
+    /*padding-bottom: 1.9em;*/
+    /*overflow: auto;*/
+    /*min-height: 10em;*/
+/*}*/
+
+.socket-channel-list {
+    font-family: monospace;    color: grey;
+    
+    float: left;
+    min-width: 13em;
 }
 
-.channel-message {
-    width: 90%;
+.socket-channel-list-entry {
+    cursor: pointer;
+    text-decoration: underline;
+    color: blue;
+}
 
+.socket-form {
     positioN: absolute;
     bottom: 0;
-}
-.channel-submit {
-    position: absolute;
     right: 0;
-    bottom: 0;
-    width: 4em;
+    width: 100%;
 }
 
-.channel-log {
+.socket-input-post {
+    width: 100%;
     font-family: monospace;
-    
-    /* font-size: 2vw; */
-    white-space: nowrap;
 }
 
-.channel-log .user {
-    /* margin-right: 1vw; */
+.socket-form-submit {
+    width: 10%;
+}
+
+
+.socket-channel .user {
     text-decoration: none;
     color: darkblue;
     max-width: 10em;
     display: inline-flex;
     overflow: hidden;
-
 }
-.channel-log .user:hover {
+
+
+.socket-channel .user:hover {
     text-decoration: underline;
     cursor: pointer;
     max-width: inherit;
 }
 
-.channel-log .message {
+
+.socket-channel .message {
     white-space: normal;
+    color: black;
+}
+
+
+.socket-channel .action {
+    color: darkred;
+    
+    font-style: italic;
+}
+
+.socket-channel .path {
+    color: darkgreen;
+    font-weight: bold;
 }

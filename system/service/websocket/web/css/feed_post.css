@@ -1,0 +1,13 @@
+form[name=feed_post] {
+    width: 100%;
+}
+
+form[name=feed_post] textarea[name=feed_content] {
+    width: 99%;
+    height: 5em;
+}
+
+
+form[name=feed_post] input[name=feed_submit] {
+    float: right;
+}
