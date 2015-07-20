@@ -1,6 +1,7 @@
 .socket-channel-container {
     font-family: monospace;
     color: grey;
+    padding: 1em 0 10em 0;
 }
 
 .socket-channel-content {
@@ -9,7 +10,15 @@
 }
 
 .socket-channel {
-    
+/*     animation: fadein 0.5s;
+    -moz-animation: fadein 0.5s; /* Firefox */
+    -webkit-animation: fadein 0.5s; /* Safari and Chrome */
+    -o-animation: fadein 0.5s; /* Opera */
+
+    -moz-transition: opacity 0.4s ease-in-out;
+    -o-transition: opacity 0.4s ease-in-out;
+    -webkit-transition: opacity 0.4s ease-in-out;
+    transition: opacity 0.4s ease-in-out;
 }
 
 .socket-channel:hover {
@@ -81,4 +90,42 @@ ul.socket-channel-list li,
 .socket-channel .path {
     /* color: darkgreen; */
     /* font-weight: bold; */
+}
+
+
+/* Animation */
+
+
+
+@keyframes fadein {
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-moz-keyframes fadein { /* Firefox */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-webkit-keyframes fadein { /* Safari and Chrome */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-o-keyframes fadein { /* Opera */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity: 1;
+    }
 }

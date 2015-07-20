@@ -202,12 +202,13 @@
             case 'click':
                 if(e.target.nodeName.toLowerCase() === 'a') {
                     var path = e.target.getAttribute('href');
-                    socketWorker.postMessage("JOIN " + path);
 
                     // Focus on channel
                     var channelInput = document.querySelectorAll(escapeCSS('.channel:' + path) + ' .' + CLASS_INPUT_POST);
                     if(channelInput.length > 0)
                         channelInput[0].focus();
+                    else
+                        socketWorker.postMessage("JOIN " + path);
 
                     e.preventDefault();
                     return;
