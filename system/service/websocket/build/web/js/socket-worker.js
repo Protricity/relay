@@ -2,6 +2,8 @@
  * Created by ari on 6/19/2015.
  */
 
+var SOCKET_RECONNECT_INTERVAL = 5000;
+
 importScripts('defaults.js');
 
 
@@ -28,24 +30,34 @@ function onSocketMessage(e) {
 }
 
 function getSocket(socketURL) {
-    for(var j=0; j<activeSockets.length; j++) {
-        var activeSocket = activeSockets[j];
-        if (activeSocket.url === socketURL) {
-            return activeSocket;
-        }
-    }
+    for(var j=0; j<activeSockets.length; j++)
+        if (activeSockets[j].url === socketURL)
+            return activeSockets[j];
+
     var newSocket = new WebSocket(socketURL);
     function onOpen(e) {
         if(newSocket.readyState != WebSocket.OPEN)
             return;
         newSocket.removeEventListener('open', onOpen);
+        self.postMessage("SOCKET OPEN " + socketURL);
+
         newSocket.send("IDENTIFY " + publicKey);
 //         newSocket.send("JOIN *");
         //newSocket.send("MSG test test message");
     }
     function onClose(e) {
         console.log("SOCKET CLOSED: ", e.currentTarget, e.reason, e);
+        self.postMessage("SOCKET CLOSED " + socketURL);
+
         newSocket.removeEventListener('close', onClose);
+        for(var j=0; j<activeSockets.length; j++)
+            if (activeSockets[j].url === socketURL) 
+                activeSockets.splice(j, 1);
+
+        setTimeout(function() {
+            console.info("Reconnecting to: " + socketURL);
+            getSocket(socketURL);
+        }, SOCKET_RECONNECT_INTERVAL);
     }
     newSocket.addEventListener('message', onSocketMessage);
     newSocket.addEventListener('open', onOpen);

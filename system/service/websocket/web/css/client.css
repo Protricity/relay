@@ -1,32 +1,45 @@
 .socket-channel-container {
-    /* width: 85%; */
     font-family: monospace;
     color: grey;
-    /* float: right; */
+    padding: 1em 0 10em 0;
 }
+
 .socket-channel-content {
     overflow: auto;
     max-height: 20vw;
 }
-/*.socket-channel-output {*/
-    /*background-color: #EEEEEE;*/
-    /*position: relative;*/
-    /*padding-bottom: 1.9em;*/
-    /*overflow: auto;*/
-    /*min-height: 10em;*/
-/*}*/
+
+.socket-channel {
+/*     animation: fadein 0.5s;
+    -moz-animation: fadein 0.5s; /* Firefox */
+    -webkit-animation: fadein 0.5s; /* Safari and Chrome */
+    -o-animation: fadein 0.5s; /* Opera */
+     */
+    -moz-transition: opacity 0.4s ease-in-out;
+    -o-transition: opacity 0.4s ease-in-out;
+    -webkit-transition: opacity 0.4s ease-in-out;
+    transition: opacity 0.4s ease-in-out;
+}
+
+.socket-channel:hover {
+
+    cursor: pointer;
+    border-color: red;
+}
 
 .socket-channel-list {
     font-family: monospace;    color: grey;
     
     float: left;
     min-width: 13em;
+    list-style-type: none;
 }
 
+ul.socket-channel-list li,
 .socket-channel-list-entry {
     cursor: pointer;
     text-decoration: underline;
-    color: blue;
+    /* color: blue; */
 }
 
 .socket-form {
@@ -69,12 +82,50 @@
 
 
 .socket-channel .action {
-    color: darkred;
+    color: green;
     
     font-style: italic;
 }
 
 .socket-channel .path {
-    color: darkgreen;
-    font-weight: bold;
+    /* color: darkgreen; */
+    /* font-weight: bold; */
+}
+
+
+/* Animation */
+
+
+
+@keyframes fadein {
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-moz-keyframes fadein { /* Firefox */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-webkit-keyframes fadein { /* Safari and Chrome */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+@-o-keyframes fadein { /* Opera */
+    from {
+        opacity:0;
+    }
+    to {
+        opacity: 1;
+    }
 }

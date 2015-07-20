@@ -1,32 +1,36 @@
 .socket-channel-container {
-    /* width: 85%; */
     font-family: monospace;
     color: grey;
-    /* float: right; */
 }
+
 .socket-channel-content {
     overflow: auto;
     max-height: 20vw;
 }
-/*.socket-channel-output {*/
-    /*background-color: #EEEEEE;*/
-    /*position: relative;*/
-    /*padding-bottom: 1.9em;*/
-    /*overflow: auto;*/
-    /*min-height: 10em;*/
-/*}*/
+
+.socket-channel {
+    
+}
+
+.socket-channel:hover {
+
+    cursor: pointer;
+    border-color: red;
+}
 
 .socket-channel-list {
     font-family: monospace;    color: grey;
     
     float: left;
     min-width: 13em;
+    list-style-type: none;
 }
 
+ul.socket-channel-list li,
 .socket-channel-list-entry {
     cursor: pointer;
     text-decoration: underline;
-    color: blue;
+    /* color: blue; */
 }
 
 .socket-form {
@@ -69,12 +73,12 @@
 
 
 .socket-channel .action {
-    color: darkred;
+    color: green;
     
     font-style: italic;
 }
 
 .socket-channel .path {
-    color: darkgreen;
-    font-weight: bold;
+    /* color: darkgreen; */
+    /* font-weight: bold; */
 }

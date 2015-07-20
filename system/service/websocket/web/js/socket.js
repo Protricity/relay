@@ -13,8 +13,9 @@
     var CLASS_INPUT_POST = 'socket-input-post';
 
     var CHANNEL_CONTENT_DEFAULT =
+        "<legend>Channel: {$channel}</legend>" +
         "<fieldset class='" + CLASS_CHANNEL_CONTENT + "'>Joining {$channel}...</fieldset>" +
-        "<input class='" + CLASS_INPUT_POST + "' data-channel='{$channel}' placeholder='Send a message to {$channel}' />";
+        "<input class='" + CLASS_INPUT_POST + "' data-channel='{$channel}' placeholder='Send a message to {$channel}. [hit enter]' />";
 
     var socketWorker = new Worker('js/socket-worker.js');
     socketWorker.addEventListener('message', function(e) { receiveMessage(e.data); }, true);
@@ -25,8 +26,12 @@
     document.addEventListener('submit', onInputEvent);
     document.addEventListener('keydown', onInputEvent);
 
-    var activeChannels = [];
-
+    document.addEventListener('click', onMouseEvent);
+    document.addEventListener('mousemove', onMouseEvent);
+    document.addEventListener('mousedown', onMouseEvent);
+    document.addEventListener('dragstart', onMouseEvent);
+    document.addEventListener('dragover', onMouseEvent);
+    document.addEventListener('drop', onMouseEvent);
 
     function receiveMessage(message) {
 
@@ -46,10 +51,10 @@
 
                 switch(command) {
                     case 'leave':
-                        logToChannel(chPath, ' has <span class="action">left</span> <span class="path">' + chPath + '</span>');
+                        logToChannel(chPath, ' has <span class="action">left</span> <a href="' + chPath + '" class="path">' + chPath + '</a>');
                         break;
                     case 'join':
-                        logToChannel(chPath, ' has <span class="action">joined</span> <span class="path">' + chPath + '</span>');
+                        logToChannel(chPath, ' has <span class="action">joined</span> <a href="' + chPath + '" class="path">' + chPath + '</a>');
                         break;
                     case 'msg':
                     case 'message':
@@ -73,6 +78,65 @@
             case 'log':
                 console[command](message);
                 break;
+        }
+    }
+
+
+    function refreshChannels() {
+        var channelLists = document.getElementsByClassName(CLASS_CHANNEL_LIST);
+        var channelElements = document.getElementsByClassName(CLASS_CHANNEL);
+        var j, path, selectContent='';
+        for(var i=0; i<channelLists.length; i++) {
+            var channelList = channelLists[i];
+            switch(channelList.nodeName.toLowerCase()) {
+                case 'select':
+                    for(j=0; j<channelElements.length; j++) {
+                        path = channelElements[j].getAttribute('data-channel');
+                        selectContent += '<option><a href="' + path + '">' + path + '</a></option>';
+                    }
+                    channelList.innerHTML = selectContent;
+                    break;
+
+                case 'ul':
+                    for(j=0; j<channelElements.length; j++) {
+                        path = channelElements[j].getAttribute('data-channel');
+                        selectContent += '<li><a href="' + path + '">' + path + '</a></li>';
+                    }
+                    channelList.innerHTML = selectContent;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    function logToChannel(path, content) {
+        content = content
+            .replace(/{\$channel}/gi, path);
+        var channelContainers = document.getElementsByClassName(CLASS_CHANNEL_CONTAINER);
+        for(var i=0; i<channelContainers.length; i++) {
+            var channelContainer = channelContainers[i];
+            var channelOutputs = channelContainer.getElementsByClassName('channel:' + path);
+            if(channelOutputs.length === 0) {
+                var newChannel = document.createElement('fieldset');
+                newChannel.setAttribute('class', CLASS_CHANNEL + ' channel:' + path);
+                newChannel.setAttribute('data-channel', path);
+                newChannel.setAttribute('draggable', 'true');
+
+                newChannel.innerHTML = CHANNEL_CONTENT_DEFAULT
+                    .replace(/{\$channel}/gi, path);
+
+                channelContainer.appendChild(newChannel);
+
+                refreshChannels();
+            }
+            var contentTarget = channelOutputs[0].getElementsByClassName(CLASS_CHANNEL_CONTENT);
+            if(contentTarget.length === 0)
+                contentTarget = channelOutputs;
+            contentTarget[0].innerHTML += content;
+
+            contentTarget[0].scrollTop = contentTarget[0].scrollHeight;
         }
     }
 
@@ -109,53 +173,57 @@
         input.value = '';
     }
 
-    function refreshChannels() {
-        var channelLists = document.getElementsByClassName(CLASS_CHANNEL_LIST);
-        for(var i=0; i<channelLists.length; i++) {
-            var channelList = channelLists[i];
-            switch(channelList.nodeName.toLowerCase()) {
-                case 'select':
-                    var selectContent = '';
-                    for(var j=0; j<activeChannels.length; j++)
-                        selectContent += '<option class="' + CLASS_CHANNEL_LIST_ENTRY + '">' + activeChannels[j] + '</option>';
-                    channelList.innerHTML = selectContent;
-                    break;
-                default:
-                    var listContent = '<ul>';
-                    for(var k=0; k<activeChannels.length; k++)
-                        listContent += '<li class="' + CLASS_CHANNEL_LIST_ENTRY + '">' + activeChannels[k] + '</li>';
-                    listContent += '</ul>';
-                    channelList.innerHTML = listContent;
-                    break;
-            }
+    var lastDragElement = null;
+    function onMouseEvent(e) {
+        switch(e.type) {
+            case 'dragstart':
+                if(e.target.classList.contains(CLASS_CHANNEL)) {
+                    lastDragElement = e.target;
+                    e.dataTransfer.dropEffect = 'move';
+                    return;
+                }
+
+            case 'dragover':
+                if(e.target.classList.contains(CLASS_CHANNEL_CONTAINER)) {
+                    e.preventDefault();
+                    return;
+                }
+                break;
+
+            case 'drop':
+                if(lastDragElement && e.target.classList.contains(CLASS_CHANNEL_CONTAINER)) {
+                    e.preventDefault();
+                    e.target.appendChild(lastDragElement);
+                    refreshChannels();
+                    return;
+                }
+                break;
+
+            case 'click':
+                if(e.target.nodeName.toLowerCase() === 'a') {
+                    var path = e.target.getAttribute('href');
+                    socketWorker.postMessage("JOIN " + path);
+
+                    // Focus on channel
+                    var channelInput = document.querySelectorAll(escapeCSS('.channel:' + path) + ' .' + CLASS_INPUT_POST);
+                    if(channelInput.length > 0)
+                        channelInput[0].focus();
+
+                    e.preventDefault();
+                    return;
+                }
+                break;
+
+            default:
+                break;
         }
     }
 
-    function logToChannel(path, content) {
-        content = content
-            .replace(/{\$channel}/gi, path);
-        var channelContainers = document.getElementsByClassName(CLASS_CHANNEL_CONTAINER);
-        for(var i=0; i<channelContainers.length; i++) {
-            var channelContainer = channelContainers[i];
-            var channelOutputs = channelContainer.getElementsByClassName('channel:' + path);
-            if(channelOutputs.length === 0) {
-                var newChannel = document.createElement('fieldset');
-                newChannel.setAttribute('class', CLASS_CHANNEL + ' channel:' + path);
-                channelContainer.appendChild(newChannel);
-                newChannel.innerHTML = "<legend>Channel: " + path + "</legend>";
-                newChannel.innerHTML += CHANNEL_CONTENT_DEFAULT
-                    .replace(/{\$channel}/gi, path);
-                if(activeChannels.indexOf(path) === -1)
-                    activeChannels.push(path);
-                refreshChannels();
-            }
-            var contentTarget = channelOutputs[0].getElementsByClassName(CLASS_CHANNEL_CONTENT);
-            if(contentTarget.length === 0)
-                contentTarget = channelOutputs;
-            contentTarget[0].innerHTML += content;
-
-            contentTarget[0].scrollTop = contentTarget[0].scrollHeight;
-        }
+    function escapeCSS(name) {
+        return name
+            .replace('/', '\\/')
+            .replace(':', '\\:')
+            .replace('#', '\\#');
     }
 
 })();

@@ -122,6 +122,8 @@ public class ChatCommands implements ISocketCommand {
     }
 
     public boolean joinChannel(Session userSession, String channel) {
+        channel = fixPath(channel);
+        
         ArrayList<Session> channelUsers = getChannelUsers(channel);
         for(Session session : channelUsers) {
             if(session == userSession) {
@@ -139,6 +141,8 @@ public class ChatCommands implements ISocketCommand {
     }
 
     public boolean leaveChannel(Session userSession, String channel) {
+        channel = fixPath(channel);
+        
         ArrayList<Session> channelUsers = getChannelUsers(channel);
         for(Session session : channelUsers) {
             if(session == userSession) {
@@ -167,6 +171,8 @@ public class ChatCommands implements ISocketCommand {
 
 
     public void messageChannel(Session userSession, String channel, String message) {
+        channel = fixPath(channel);
+        
         if(!hasSubscription(userSession, channel))
             joinChannel(userSession, channel);
 
@@ -214,5 +220,11 @@ public class ChatCommands implements ISocketCommand {
         for(byte b: a)
            sb.append(String.format("%02x", b & 0xff));
         return sb.toString();
+    }
+    
+    private String fixPath(String path) {
+        if(!path.contains("/") && !path.contains(".") && path.charAt(0) != '#')
+            path = '#' + path;
+        return path;
     }
 }
