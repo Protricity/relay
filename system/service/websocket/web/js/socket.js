@@ -4,13 +4,13 @@
 
 (function() {
 
-    var CLASS_CHANNEL = 'socket-channel';
-    var CLASS_CHANNEL_CONTENT = 'socket-channel-content';
-    var CLASS_CHANNEL_CONTAINER = 'socket-channel-container';
-    var CLASS_CHANNEL_LIST = 'socket-channel-list';
-    var CLASS_CHANNEL_LIST_ENTRY = 'socket-channel-list-entry';
+    var CLASS_CHANNEL = 'channel';
+    var CLASS_CHANNEL_CONTENT = 'channel-content';
+    var CLASS_CHANNEL_CONTAINER = 'channel-container';
+    var CLASS_CHANNEL_LIST = 'channel-list';
+    var CLASS_CHANNEL_LIST_ENTRY = 'channel-list-entry';
 
-    var CLASS_INPUT_POST = 'socket-input-post';
+    var CLASS_INPUT_POST = 'input-post';
 
     var CHANNEL_CONTENT_DEFAULT =
         "<legend>Channel: {$channel}</legend>" +
@@ -23,8 +23,8 @@
     if(typeof window.socket === 'undefined')
         window.socket = socketWorker;
 
-    document.addEventListener('submit', onInputEvent);
-    document.addEventListener('keydown', onInputEvent);
+    document.addEventListener('submit', onSubmitEvent);
+//     document.addEventListener('keydown', onInputEvent);
 
     document.addEventListener('click', onMouseEvent);
     document.addEventListener('mousemove', onMouseEvent);
@@ -33,37 +33,47 @@
     document.addEventListener('dragover', onMouseEvent);
     document.addEventListener('drop', onMouseEvent);
 
-    function receiveMessage(message) {
+    window.addEventListener('hashchange', onHashChange);
 
+    function receiveMessage(message) {
+        var user, channelPath;
         var args = message.split(/\s+/);
         var command = args[0].toLowerCase();
         switch(command) {
+            case 'log':
+            case 'replacelog':
+            case 'rlog':
+                args.shift();
+                channelPath = fixChannelPath(args.shift());
+                logToChannel(channelPath, args.join(' '), command[0] === 'r', command[0] === 'r');
+                break;
+
             case 'leave':
             case 'join':
             case 'msg':
             case 'message':
                 args.shift();
-                var chUser = args.shift();
-                var chPath = args.shift();
+                user = args.shift();
+                channelPath = fixChannelPath(args.shift());
                 //joinChannel(jPath);
-                logToChannel(chPath, '<div class="channel-log">');
-                logToChannel(chPath, '<span class="user">' + chUser + '</span>');
+                logToChannel(channelPath, '<div class="channel-log">');
+                logToChannel(channelPath, '<span class="user">' + user + '</span>');
 
                 switch(command) {
                     case 'leave':
-                        logToChannel(chPath, ' has <span class="action">left</span> <a href="' + chPath + '" class="path">' + chPath + '</a>');
+                        logToChannel(channelPath, ' has <span class="action">left</span> <a href="#JOIN ' + channelPath + '" class="path">' + channelPath + '</a>');
                         break;
                     case 'join':
-                        logToChannel(chPath, ' has <span class="action">joined</span> <a href="' + chPath + '" class="path">' + chPath + '</a>');
+                        logToChannel(channelPath, ' has <span class="action">joined</span> <a href="#JOIN ' + channelPath + '" class="path">' + channelPath + '</a>');
                         break;
                     case 'msg':
                     case 'message':
                         var chContent = args.join(' ');
-                        logToChannel(chPath, ': <span class="message">' + chContent + '</span>');
+                        logToChannel(channelPath, ': <span class="message">' + chContent + '</span>');
                         break;
                     default:
                 }
-                logToChannel(chPath, '</div>');
+                logToChannel(channelPath, '</div>');
 
                 break;
 
@@ -71,11 +81,14 @@
                 console.error("Unhandled command: " + message);
                 break;
 
+            case 'socket':
+                console.info('SOCKET ' + message);
+                break;
+
             case 'error':
             case 'warn':
             case 'info':
             case 'assert':
-            case 'log':
                 console[command](message);
                 break;
         }
@@ -92,7 +105,7 @@
                 case 'select':
                     for(j=0; j<channelElements.length; j++) {
                         path = channelElements[j].getAttribute('data-channel');
-                        selectContent += '<option><a href="' + path + '">' + path + '</a></option>';
+                        selectContent += '<option><a href="#JOIN ' + path + '">' + path + '</a></option>';
                     }
                     channelList.innerHTML = selectContent;
                     break;
@@ -100,7 +113,7 @@
                 case 'ul':
                     for(j=0; j<channelElements.length; j++) {
                         path = channelElements[j].getAttribute('data-channel');
-                        selectContent += '<li><a href="' + path + '">' + path + '</a></li>';
+                        selectContent += '<li><a href="#JOIN ' + path + '">' + path + '</a></li>';
                     }
                     channelList.innerHTML = selectContent;
                     break;
@@ -111,7 +124,7 @@
         }
     }
 
-    function logToChannel(path, content) {
+    function logToChannel(path, content, replace, focus) {
         content = content
             .replace(/{\$channel}/gi, path);
         var channelContainers = document.getElementsByClassName(CLASS_CHANNEL_CONTAINER);
@@ -124,53 +137,72 @@
                 newChannel.setAttribute('data-channel', path);
                 newChannel.setAttribute('draggable', 'true');
 
-                newChannel.innerHTML = CHANNEL_CONTENT_DEFAULT
-                    .replace(/{\$channel}/gi, path);
+                //newChannel.innerHTML = CHANNEL_CONTENT_DEFAULT
+                //    .replace(/{\$channel}/gi, path);
 
-                channelContainer.appendChild(newChannel);
+                if(channelContainer.firstChild)
+                   channelContainer.insertBefore(newChannel, channelContainer.firstChild);
+                else
+                    channelContainer.appendChild(newChannel);
+
+                var channelInput = channelContainer.querySelectorAll(escapeCSS('.channel:' + path) + ' .' + CLASS_INPUT_POST);
+                if(channelInput.length > 0)
+                    channelInput[0].focus();
 
                 refreshChannels();
             }
             var contentTarget = channelOutputs[0].getElementsByClassName(CLASS_CHANNEL_CONTENT);
             if(contentTarget.length === 0)
                 contentTarget = channelOutputs;
-            contentTarget[0].innerHTML += content;
 
-            contentTarget[0].scrollTop = contentTarget[0].scrollHeight;
+            if(replace) {
+                contentTarget[0].innerHTML = content;
+
+            } else {
+                contentTarget[0].innerHTML += content;
+                contentTarget[0].scrollTop = contentTarget[0].scrollHeight;
+
+            }
+
+
+            if(focus) {
+                var channelInput = channelContainer.querySelectorAll(escapeCSS('.channel:' + path) + ' .' + CLASS_INPUT_POST);
+                if(channelInput.length > 0)
+                    channelInput[0].focus();
+            }
         }
+
     }
 
-    function onInputEvent(e) {
-        var input = e.target;
-        if(!input.classList.contains(CLASS_INPUT_POST))
+    function onSubmitEvent(e) {
+        if(e.target.nodeName.toLowerCase() !== 'form')
+            return;
+        var formElm = e.target;
+        var action = formElm.getAttribute('action');
+        if(action.length === 0 || action[0] !== '#')
             return;
 
+        var commandString = '';
+        var inputs = formElm.querySelectorAll('input[type=text], textarea, select');
+        for(var ii=0; ii<inputs.length; ii++) 
+            commandString += (commandString ? ' ' : '') + (inputs[ii].value || '_');
 
-        switch(e.type) {
-            case 'keydown':
-                if(e.keyCode != 13)
-                    return;
-                break;
 
-            default:
-                throw new Error("Unknown event: " + e.type);
-        }
-
-        var commandString = input.value;
         if(!commandString) {
             console.warn('No command content received');
             return;
         }
 
-        var path = input.getAttribute('data-channel');
-        if(commandString[0] === '/')
+        if(commandString[0] === '/') { 
             commandString = commandString.substr(1);
-        else if (path)
-            commandString = "MESSAGE " + path + " " + commandString;
+        } else {
+            commandString = action.substr(1) + ' ' + commandString;
+        }
 
-        socketWorker.postMessage(commandString);
         e.preventDefault();
-        input.value = '';
+        for(var ii=0; ii<inputs.length; ii++) 
+            inputs[ii].value = '';
+        socketWorker.postMessage(commandString);
     }
 
     var lastDragElement = null;
@@ -199,25 +231,34 @@
                 }
                 break;
 
-            case 'click':
-                if(e.target.nodeName.toLowerCase() === 'a') {
-                    var path = e.target.getAttribute('href');
-
-                    // Focus on channel
-                    var channelInput = document.querySelectorAll(escapeCSS('.channel:' + path) + ' .' + CLASS_INPUT_POST);
-                    if(channelInput.length > 0)
-                        channelInput[0].focus();
-                    else
-                        socketWorker.postMessage("JOIN " + path);
-
-                    e.preventDefault();
-                    return;
-                }
-                break;
+            //case 'click':
+            //    if(e.target.nodeName.toLowerCase() === 'a') {
+            //        var path = e.target.getAttribute('href');
+            //
+            //        // Focus on channel
+            //        var channelInput = document.querySelectorAll(escapeCSS('.channel:' + path) + ' .' + CLASS_INPUT_POST);
+            //        if(channelInput.length > 0)
+            //            channelInput[0].focus();
+            //        else
+            //            socketWorker.postMessage("JOIN " + path);
+            //
+            //        e.preventDefault();
+            //        return;
+            //    }
+            //    break;
 
             default:
                 break;
         }
+    }
+
+    function onHashChange(e) {
+        var hashCommand = document.location.hash.replace(/^#/, '');
+        if(!hashCommand)
+            return false;
+        socketWorker.postMessage(hashCommand);
+        document.location.hash = '';
+//         document.location.href = document.location.origin + document.location.pathname;
     }
 
     function escapeCSS(name) {
@@ -225,6 +266,14 @@
             .replace('/', '\\/')
             .replace(':', '\\:')
             .replace('#', '\\#');
+    }
+
+    function fixChannelPath(path) {
+        if(!/#?[./a-z_-]+/i.test(path))
+            throw new Error("Invalid Path: " + path);
+        if(path.indexOf("/") === -1 && path.indexOf(".") === -1 && path.charAt(0) != '#')
+            path = '#' + path;
+        return path;
     }
 
 })();

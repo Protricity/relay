@@ -110,3 +110,8 @@ function sendWithFastestSocket(commandString) {
         selectedSocket.send(commandString);
     }, socketList);
 }
+
+
+function routeResponseToClient(commandResponse) {
+    self.postMessage(commandResponse);
+}

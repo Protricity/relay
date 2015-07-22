@@ -1,18 +1,21 @@
-.socket-channel-container {
+.channel-container {
     font-family: monospace;
     color: grey;
     padding: 1em 0 10em 0;
 }
 
-.socket-channel-content {
+.channel-content {
     overflow: auto;
     max-height: 20vw;
 }
 
-.socket-channel {
+.channel {
 /*     animation: fadein 0.5s;
     -moz-animation: fadein 0.5s; /* Firefox */
     -webkit-animation: fadein 0.5s; /* Safari and Chrome */
+    /* max-width: 40em; */
+    min-width: 35em;
+    display: inline-block;
     -o-animation: fadein 0.5s; /* Opera */
 
     -moz-transition: opacity 0.4s ease-in-out;
@@ -21,73 +24,65 @@
     transition: opacity 0.4s ease-in-out;
 }
 
-.socket-channel:hover {
+.channel:hover {
 
     cursor: pointer;
     border-color: red;
 }
 
-.socket-channel-list {
+.channel-list {
     font-family: monospace;    color: grey;
-    
+
     float: left;
     min-width: 13em;
     list-style-type: none;
 }
 
-ul.socket-channel-list li,
-.socket-channel-list-entry {
+ul.channel-list li,
+.channel-list-entry {
     cursor: pointer;
     text-decoration: underline;
     /* color: blue; */
 }
 
-.socket-form {
-    positioN: absolute;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-}
-
-.socket-input-post {
+.input-post {
     width: 100%;
     font-family: monospace;
 }
 
-.socket-form-submit {
-    width: 10%;
+.input-submit {
+    float: right;
 }
 
-
-.socket-channel .user {
+.channel .user {
     text-decoration: none;
     color: darkblue;
-    max-width: 10em;
+    max-width: 12em;
     display: inline-flex;
     overflow: hidden;
 }
 
 
-.socket-channel .user:hover {
+.channel .user:hover {
     text-decoration: underline;
     cursor: pointer;
     max-width: inherit;
 }
 
 
-.socket-channel .message {
+.channel .message {
     white-space: normal;
     color: black;
 }
 
 
-.socket-channel .action {
+.channel .action {
     color: green;
-    
+
     font-style: italic;
 }
 
-.socket-channel .path {
+.channel .path {
     /* color: darkgreen; */
     /* font-weight: bold; */
 }
