@@ -135,7 +135,7 @@ public class ChatCommands implements ISocketCommand {
 
         for(Session session : channelUsers) 
             if(session.isOpen()) 
-                sendText(session, "JOIN " + getSessionChatID(userSession) + " " + channel);
+                sendText(session, "JOIN " + channel + " " + getSessionChatID(userSession));
 
         return true;
     }
@@ -153,7 +153,7 @@ public class ChatCommands implements ISocketCommand {
 
         for(Session session : channelUsers) 
             if(session.isOpen()) 
-                sendText(session, "LEAVE " + getSessionChatID(userSession) + " " + channel);
+                sendText(session, "LEAVE " + channel + " " + getSessionChatID(userSession));
 
         return false;
     }
@@ -178,7 +178,7 @@ public class ChatCommands implements ISocketCommand {
 
         for(Session session : getChannelUsers(channel))
             if(session.isOpen()) 
-               sendText(session, "MESSAGE " + getSessionChatID(userSession) + " " + channel + " " + message);
+               sendText(session, "MESSAGE " + channel + " " + getSessionChatID(userSession) + " " + message);
         
         String[] parts = channel.replaceAll("\\/$|^\\/", "").split("\\/");
         String wildCardPath = "*";
@@ -187,7 +187,7 @@ public class ChatCommands implements ISocketCommand {
             if(mSubscriptions.containsKey(wildCardPath)) {
                 for(Session session : getChannelUsers(wildCardPath))
                     if(session.isOpen()) 
-                       sendText(session, "MESSAGE " + getSessionChatID(userSession) + " " + wildCardPath + " " + message);
+                       sendText(session, "MESSAGE " + wildCardPath + " " + getSessionChatID(userSession) + " " + message);
             }
             
             if(i<parts.length) {

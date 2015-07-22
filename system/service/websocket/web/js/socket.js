@@ -52,8 +52,8 @@
             case 'msg':
             case 'message':
                 args.shift();
-                user = args.shift();
                 channelPath = fixChannelPath(args.shift());
+                user = args.shift();
                 //joinChannel(jPath);
                 logToChannel(channelPath, '<div class="channel-log">');
                 logToChannel(channelPath, '<span class="user">' + user + '</span>');

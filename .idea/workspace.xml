@@ -2,25 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f1a3609b-05f2-4e93-b5c1-0f477f2ec236" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/post/post.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/post/post.js" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\system\service\websocket\build\web\js\commands\join.command.js" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\system\service\websocket\build\web\js\commands\message.command.js" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\system\service\websocket\web\css\feed_post.css" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\system\service\websocket\web\js\commands\message.command.js" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\system\service\websocket\web\js\commands\msg.command.js" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\system\service\websocket\web\js\commands\post.command.js" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/build/web/css/client.css" afterPath="$PROJECT_DIR$/system/service/websocket/build/web/css/client.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/css/client.css" afterPath="$PROJECT_DIR$/system/service/websocket/web/css/client.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/build/web/index.html" afterPath="$PROJECT_DIR$/system/service/websocket/build/web/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/index.html" afterPath="$PROJECT_DIR$/system/service/websocket/web/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/relay.iml" afterPath="$PROJECT_DIR$/.idea/relay.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/src/java/relay/service/command/ChatCommands.java" afterPath="$PROJECT_DIR$/system/service/websocket/src/java/relay/service/command/ChatCommands.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/build/web/js/defaults.js" afterPath="$PROJECT_DIR$/system/service/websocket/build/web/js/defaults.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/cmd/post/post.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/post/post.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/build/web/js/socket-worker.js" afterPath="$PROJECT_DIR$/system/service/websocket/build/web/js/socket-worker.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/js/socket-worker.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/js/socket-worker.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/js/socket.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/js/socket.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\system\service\websocket\web\js\commands\join.command.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat.js" />
     </list>
     <ignored path="relay.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -52,12 +40,14 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="post.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="post.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/post/post.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.17527676" vertical-offset="449" max-vertical-offset="1207">
-              <caret line="32" column="43" selection-start-line="32" selection-start-column="43" selection-end-line="32" selection-end-column="43" />
-              <folding />
+            <state vertical-scroll-proportion="-14.24" vertical-offset="324" max-vertical-offset="1054">
+              <caret line="40" column="16" selection-start-line="40" selection-start-column="16" selection-end-line="40" selection-end-column="16" />
+              <folding>
+                <marker date="1437599581603" expanded="true" signature="679:838" placeholder="/** ...*/" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -75,8 +65,8 @@
       <file leaf-file-name="socket.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/system/service/websocket/web/js/socket.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1902" max-vertical-offset="4471">
-              <caret line="134" column="71" selection-start-line="134" selection-start-column="71" selection-end-line="134" selection-end-column="71" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="576" max-vertical-offset="4471">
+              <caret line="45" column="27" selection-start-line="45" selection-start-column="16" selection-end-line="45" selection-end-column="27" />
               <folding />
             </state>
           </provider>
@@ -85,18 +75,18 @@
       <file leaf-file-name="socket-worker.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/system/service/websocket/web/js/socket-worker.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1881" max-vertical-offset="2465">
-              <caret line="136" column="22" selection-start-line="136" selection-start-column="22" selection-end-line="136" selection-end-column="22" />
+            <state vertical-scroll-proportion="-11.08" vertical-offset="1321" max-vertical-offset="2720">
+              <caret line="94" column="9" selection-start-line="94" selection-start-column="9" selection-end-line="94" selection-end-column="9" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="chat.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="chat.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-14.28" vertical-offset="204" max-vertical-offset="1207">
-              <caret line="33" column="73" selection-start-line="33" selection-start-column="73" selection-end-line="33" selection-end-column="73" />
+            <state vertical-scroll-proportion="0.5925481" vertical-offset="119" max-vertical-offset="1071">
+              <caret line="36" column="5" selection-start-line="36" selection-start-column="5" selection-end-line="36" selection-end-column="5" />
               <folding />
             </state>
           </provider>
@@ -187,10 +177,10 @@
         <option value="$PROJECT_DIR$/system/service/websocket/web/js/defaults.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/post/post.css" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat.css" />
-        <option value="$PROJECT_DIR$/system/service/websocket/web/js/socket-worker.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/js/socket.js" />
-        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/post/post.js" />
+        <option value="$PROJECT_DIR$/system/service/websocket/web/js/socket-worker.js" />
+        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat.js" />
       </list>
     </option>
   </component>
@@ -376,6 +366,70 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="web" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cmd" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="relay" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="relay" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="system" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="service" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="websocket" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="web" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cmd" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="chat" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="relay" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="relay" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="system" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="service" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="websocket" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="libs" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -453,7 +507,7 @@
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32842582" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32842582" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33919063" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -838,34 +892,36 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/js/socket-worker.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1881" max-vertical-offset="2465">
-          <caret line="136" column="22" selection-start-line="136" selection-start-column="22" selection-end-line="136" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/system/service/websocket/web/js/socket.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1902" max-vertical-offset="4471">
-          <caret line="134" column="71" selection-start-line="134" selection-start-column="71" selection-end-line="134" selection-end-column="71" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-14.28" vertical-offset="204" max-vertical-offset="1207">
-          <caret line="33" column="73" selection-start-line="33" selection-start-column="73" selection-end-line="33" selection-end-column="73" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="576" max-vertical-offset="4471">
+          <caret line="45" column="27" selection-start-line="45" selection-start-column="16" selection-end-line="45" selection-end-column="27" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/post/post.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.17527676" vertical-offset="449" max-vertical-offset="1207">
-          <caret line="32" column="43" selection-start-line="32" selection-start-column="43" selection-end-line="32" selection-end-column="43" />
+        <state vertical-scroll-proportion="-14.24" vertical-offset="324" max-vertical-offset="1054">
+          <caret line="40" column="16" selection-start-line="40" selection-start-column="16" selection-end-line="40" selection-end-column="16" />
+          <folding>
+            <marker date="1437599581603" expanded="true" signature="679:838" placeholder="/** ...*/" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/js/socket-worker.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.08" vertical-offset="1321" max-vertical-offset="2720">
+          <caret line="94" column="9" selection-start-line="94" selection-start-column="9" selection-end-line="94" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5925481" vertical-offset="119" max-vertical-offset="1071">
+          <caret line="36" column="5" selection-start-line="36" selection-start-column="5" selection-end-line="36" selection-end-column="5" />
           <folding />
         </state>
       </provider>

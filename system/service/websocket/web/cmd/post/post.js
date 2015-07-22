@@ -6,8 +6,6 @@
     var CLASS_CHANNEL = 'channel';
     var CLASS_CHANNEL_CONTENT = 'channel-content';
 
-    var CHANNEL_PREFIX = 'post:';
-
     var CHANNEL_TEMPLATE =
         "<legend>Post to your feed</legend>" +
         "<form name='post-form' action='#POST $channel $content'>" +
@@ -30,7 +28,7 @@
         var args = commandString.split(/\s+/);
         args.shift();
 
-        var channelPath = CHANNEL_PREFIX + (args.length > 0 && args[0] ? fixChannelPath(args.shift()) : '~');
+        var channelPath = (args.length > 0 && args[0] ? fixChannelPath(args.shift()) : '~');
 
         var content = args.join(' ');
         if(!content) {
@@ -41,20 +39,13 @@
             );
 
         } else {
-            sendWithFastestSocket("POST " + channelPath + ' ' + content);
+            sendWithFastestSocket(commandString); // "POST " + channelPath + ' ' + content);
 
         }
 
     };
 
-    self.postResponse = function (commandResponse) {
-        //var args = commandResponse.split(/\s+/);
-        //args.shift();
-        //var user = args.shift();
-        //var channelPath = fixChannelPath(args.shift());
-        routeResponseToClient(commandResponse);
-    };
-
+    self.postResponse = routeResponseToClient;
 
     function fixChannelPath(path) {
         if(!/#?[~:./a-z_-]+/i.test(path))

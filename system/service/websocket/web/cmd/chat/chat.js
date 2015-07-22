@@ -5,11 +5,7 @@
 
     var activeChannels = [];
 
-    var CLASS_CHANNEL = 'channel';
     var CLASS_CHANNEL_CONTENT = 'channel-content';
-    var CLASS_INPUT_SUBMIT = 'input-submit';
-
-    var CHANNEL_PREFIX = 'chat:';
 
     var CHANNEL_TEMPLATE =
         "<link rel='stylesheet' href='cmd/chat/chat.css' type='text/css'>" +
@@ -21,32 +17,33 @@
         "</form>";
 
 
-    self.joinCommand = function (commandString) {
-        var args = commandString.split(/\s+/);
-        args.shift();
-        var channelPath = CHANNEL_PREFIX + fixChannelPath(args.shift());
-        if(activeChannels.indexOf(channelPath) === -1) {
-            routeResponseToClient("LOG " + channelPath + ' ' + CHANNEL_TEMPLATE
-                .replace(/{\$channel}/gi, channelPath));
-            activeChannels.push(channelPath);
-            console.info("New active channel: " + channelPath);
-        }
-        sendWithFastestSocket("JOIN " + channelPath + " " + args.join(' '));
+    self.msgCommand =
+    self.messageCommand =
+    self.joinCommand = function(commandString) {
+        checkCommandAndSend(commandString);
+        sendWithFastestSocket(commandString);
     };
-
-    self.joinResponse = function (commandResponse) {
-        var args = commandResponse.split(/\s+/);
-        args.shift();
-        var user = args.shift();
-        var channelPath = CHANNEL_PREFIX + fixChannelPath(args.shift());
-        if(activeChannels.indexOf(channelPath) === -1) {
-            routeResponseToClient("LOG " + channelPath + ' ' + CHANNEL_TEMPLATE
-                .replace(/{\$channel}/gi, channelPath));
-            activeChannels.push(channelPath);
-            console.info("New active channel: " + channelPath);
-        }
+    self.msgResponse =
+    self.messageResponse =
+    self.joinResponse = function(commandResponse) {
+        checkCommandAndSend(commandResponse);
         routeResponseToClient(commandResponse);
     };
+
+    function checkCommandAndSend(commandString) {
+        var args = commandString.split(/\s+/, 2);
+        var channelPath = fixChannelPath(args[1]);
+        checkChannel(channelPath);
+    }
+
+    function checkChannel(channelPath) {
+        if(activeChannels.indexOf(channelPath) === -1) {
+            routeResponseToClient("LOG " + channelPath + ' ' + CHANNEL_TEMPLATE
+                .replace(/{\$channel}/gi, channelPath));
+            activeChannels.push(channelPath);
+            console.info("New active channel: " + channelPath);
+        }
+    }
 
     function fixChannelPath(path) {
         if(!/#?[~:./a-z_-]+/i.test(path))
@@ -58,8 +55,3 @@
 })();
 
 
-
-var messageCommand = sendWithFastestSocket;
-var messageResponse = routeResponseToClient;
-var msgCommand = sendWithFastestSocket;
-var msgResponse = routeResponseToClient;

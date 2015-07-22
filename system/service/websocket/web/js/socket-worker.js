@@ -17,7 +17,7 @@ var activeSockets = [];
 
 function onSocketMessage(e) {
     console.log("SOCKET IN: ", e.data);
-    self.postMessage(e.data);
+    executeResponse(e.data);
 }
 
 function getSocket(socketURL) {
@@ -107,14 +107,29 @@ function routeResponseToClient(commandResponse) {
     self.postMessage(commandResponse);
 }
 
-function executeCommand(commandString) {
-    var args = commandString.split(/\s+/);
+function executeCommand(commandString, e) {
+    var args = commandString.split(/\s+/, 1);
     var cmd = args[0].toLowerCase();
     var functionName = cmd+'Command';
     if(typeof self[functionName] !== 'function')
         throw new Error("Command failed to load: " + cmd);
-    return self[functionName](commandString);
+    return self[functionName](commandString, e);
 }
+
+
+function executeResponse(commandResponse, e) {
+    var args = commandResponse.split(/\s+/, 1);
+    var cmd = args[0].toLowerCase();
+    var functionName = cmd+'Response';
+    if(typeof self[functionName] !== 'function')
+        throw new Error("Command Response failed to load: " + cmd);
+    return self[functionName](commandResponse, e);
+}
+
+// Socket Commands
+
+self.infoCommand = sendWithFastestSocket;
+self.infoResponse = routeResponseToClient;
 
 // Chat Commands
 
