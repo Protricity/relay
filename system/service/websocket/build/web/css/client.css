@@ -45,15 +45,6 @@ ul.channel-list li,
     /* color: blue; */
 }
 
-.input-post {
-    width: 100%;
-    font-family: monospace;
-}
-
-.input-submit {
-    float: right;
-}
-
 .channel .user {
     text-decoration: none;
     color: darkblue;
@@ -86,6 +77,38 @@ ul.channel-list li,
     /* color: darkgreen; */
     /* font-weight: bold; */
 }
+
+
+
+form[name=chat-form] input[name=content] {
+    width: 85%;
+    font-family: monospace;
+}
+
+form[name=chat-form] input[type=submit] {
+    float: right;
+}
+
+
+
+form[name=post-form] textarea[name=content] {
+    width: 100%;
+    min-height: 5em;
+    font-family: monospace;
+    display: block;
+}
+
+form[name=post-form] input[name=channel] {
+    width: 42%;
+    font-family: monospace;
+}
+
+form[name=post-form] input[type=submit] {
+    float: right;
+}
+
+
+
 
 
 /* Animation */

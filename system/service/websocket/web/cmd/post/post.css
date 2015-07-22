@@ -1,0 +1,18 @@
+
+
+form[name=post-form] textarea[name=content] {
+    width: 100%;
+    min-height: 5em;
+    font-family: monospace;
+    display: block;
+}
+
+form[name=post-form] input[name=channel] {
+    width: 42%;
+    font-family: monospace;
+}
+
+form[name=post-form] input[type=submit] {
+    float: right;
+}
+

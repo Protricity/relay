@@ -10,12 +10,11 @@
     var CLASS_CHANNEL_LIST = 'channel-list';
     var CLASS_CHANNEL_LIST_ENTRY = 'channel-list-entry';
 
-    var CLASS_INPUT_POST = 'input-post';
 
     var CHANNEL_CONTENT_DEFAULT =
         "<legend>Channel: {$channel}</legend>" +
         "<fieldset class='" + CLASS_CHANNEL_CONTENT + "'>Joining {$channel}...</fieldset>" +
-        "<input class='" + CLASS_INPUT_POST + "' data-channel='{$channel}' placeholder='Send a message to {$channel}. [hit enter]' />";
+        "<input class='focus reset' data-channel='{$channel}' placeholder='Send a message to {$channel}. [hit enter]' />";
 
     var socketWorker = new Worker('js/socket-worker.js');
     socketWorker.addEventListener('message', function(e) { receiveMessage(e.data); }, true);
@@ -124,17 +123,17 @@
         }
     }
 
-    function logToChannel(path, content, replace, focus) {
+    function logToChannel(channelPath, content, replace, focus) {
         content = content
-            .replace(/{\$channel}/gi, path);
+            .replace(/{\$channel}/gi, channelPath);
         var channelContainers = document.getElementsByClassName(CLASS_CHANNEL_CONTAINER);
         for(var i=0; i<channelContainers.length; i++) {
             var channelContainer = channelContainers[i];
-            var channelOutputs = channelContainer.getElementsByClassName('channel:' + path);
+            var channelOutputs = channelContainer.getElementsByClassName(channelPath);
             if(channelOutputs.length === 0) {
                 var newChannel = document.createElement('fieldset');
-                newChannel.setAttribute('class', CLASS_CHANNEL + ' channel:' + path);
-                newChannel.setAttribute('data-channel', path);
+                newChannel.setAttribute('class', CLASS_CHANNEL + ' ' + channelPath);
+                newChannel.setAttribute('data-channel', channelPath);
                 newChannel.setAttribute('draggable', 'true');
 
                 //newChannel.innerHTML = CHANNEL_CONTENT_DEFAULT
@@ -145,9 +144,7 @@
                 else
                     channelContainer.appendChild(newChannel);
 
-                var channelInput = channelContainer.querySelectorAll(escapeCSS('.channel:' + path) + ' .' + CLASS_INPUT_POST);
-                if(channelInput.length > 0)
-                    channelInput[0].focus();
+                focus = true;
 
                 refreshChannels();
             }
@@ -164,9 +161,8 @@
 
             }
 
-
             if(focus) {
-                var channelInput = channelContainer.querySelectorAll(escapeCSS('.channel:' + path) + ' .' + CLASS_INPUT_POST);
+                var channelInput = channelContainer.querySelectorAll(escapeCSS('.' + channelPath) + ' .focus');
                 if(channelInput.length > 0)
                     channelInput[0].focus();
             }
@@ -182,27 +178,29 @@
         if(action.length === 0 || action[0] !== '#')
             return;
 
-        var commandString = '';
-        var inputs = formElm.querySelectorAll('input[type=text], textarea, select');
+        var commandString = action.substr(1);
+//         if(commandString[0] === '/') { 
+//             commandString = commandString.substr(1);
+//         } else {
+//             commandString = action.substr(1) + ' ' + commandString;
+//         }
+        
+        var inputs = formElm.querySelectorAll('*[name]');
         for(var ii=0; ii<inputs.length; ii++) 
-            commandString += (commandString ? ' ' : '') + (inputs[ii].value || '_');
-
+            commandString = commandString
+                .replace('$' + inputs[ii].getAttribute('name'), inputs[ii].value);
 
         if(!commandString) {
             console.warn('No command content received');
             return;
         }
 
-        if(commandString[0] === '/') { 
-            commandString = commandString.substr(1);
-        } else {
-            commandString = action.substr(1) + ' ' + commandString;
-        }
-
         e.preventDefault();
-        for(var ii=0; ii<inputs.length; ii++) 
-            inputs[ii].value = '';
         socketWorker.postMessage(commandString);
+
+        inputs = formElm.getElementsByClassName('reset');
+        for(ii=0; ii<inputs.length; ii++)
+            inputs[ii].value = '';
     }
 
     var lastDragElement = null;
@@ -214,6 +212,7 @@
                     e.dataTransfer.dropEffect = 'move';
                     return;
                 }
+                break;
 
             case 'dragover':
                 if(e.target.classList.contains(CLASS_CHANNEL_CONTAINER)) {
@@ -231,22 +230,6 @@
                 }
                 break;
 
-            //case 'click':
-            //    if(e.target.nodeName.toLowerCase() === 'a') {
-            //        var path = e.target.getAttribute('href');
-            //
-            //        // Focus on channel
-            //        var channelInput = document.querySelectorAll(escapeCSS('.channel:' + path) + ' .' + CLASS_INPUT_POST);
-            //        if(channelInput.length > 0)
-            //            channelInput[0].focus();
-            //        else
-            //            socketWorker.postMessage("JOIN " + path);
-            //
-            //        e.preventDefault();
-            //        return;
-            //    }
-            //    break;
-
             default:
                 break;
         }
@@ -263,16 +246,12 @@
 
     function escapeCSS(name) {
         return name
-            .replace('/', '\\/')
-            .replace(':', '\\:')
-            .replace('#', '\\#');
+            .replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]^`{|}~]/g, '\\$&');
     }
 
     function fixChannelPath(path) {
-        if(!/#?[./a-z_-]+/i.test(path))
+        if(!/#?[~:./a-z_-]+/i.test(path))
             throw new Error("Invalid Path: " + path);
-        if(path.indexOf("/") === -1 && path.indexOf(".") === -1 && path.charAt(0) != '#')
-            path = '#' + path;
         return path;
     }
 

@@ -9,16 +9,7 @@ importScripts('defaults.js');
 
 
 onmessage = function (e) {
-    var args = e.data.split(/\s+/);
-    var cmd = args[0].toLowerCase();
-    var functionName = cmd+'Command';
-    if(typeof self[functionName] !== 'function') {
-        console.log("Loading Command: " + cmd);
-        importScripts('commands/' + cmd + '.command.js');
-        if(typeof self[functionName] !== 'function')
-            throw new Error("Command failed to load: " + cmd);
-    }
-    self[functionName](e.data);
+    executeCommand(e.data);
 };
 
 var activeSockets = [];
@@ -115,3 +106,34 @@ function sendWithFastestSocket(commandString) {
 function routeResponseToClient(commandResponse) {
     self.postMessage(commandResponse);
 }
+
+function executeCommand(commandString) {
+    var args = commandString.split(/\s+/);
+    var cmd = args[0].toLowerCase();
+    var functionName = cmd+'Command';
+    if(typeof self[functionName] !== 'function')
+        throw new Error("Command failed to load: " + cmd);
+    return self[functionName](commandString);
+}
+
+// Chat Commands
+
+self.joinCommand =
+self.leaveCommand =
+self.messageCommand =
+self.msgCommand =
+function(commandString) {
+    importScripts('../cmd/chat/chat.js');
+    executeCommand(commandString);
+};
+
+
+
+
+// Post Commands
+
+self.postCommand =
+function(commandString) {
+    importScripts('../cmd/post/post.js');
+    executeCommand(commandString);
+};
