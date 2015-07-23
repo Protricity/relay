@@ -16,25 +16,59 @@
         "<input type='submit' value='Send' />" +
         "</form>";
 
+    var ROW_TEMPLATE
 
     self.msgCommand =
     self.messageCommand =
-    self.joinCommand = function(commandString) {
-        checkCommandAndSend(commandString);
-        sendWithFastestSocket(commandString);
-    };
-    self.msgResponse =
-    self.messageResponse =
-    self.joinResponse = function(commandResponse) {
-        checkCommandAndSend(commandResponse);
-        routeResponseToClient(commandResponse);
-    };
-
-    function checkCommandAndSend(commandString) {
+    self.joinCommand =
+    self.leaveCommand = function(commandString) {
         var args = commandString.split(/\s+/, 2);
         var channelPath = fixChannelPath(args[1]);
         checkChannel(channelPath);
-    }
+        sendWithFastestSocket(commandString);
+    };
+
+    self.msgResponse =
+    self.messageResponse = function(commandResponse) {
+        var args = commandResponse.split(/\s+/);
+        args.shift();
+        var channelPath = fixChannelPath(args.shift());
+        var user = args.shift();
+        var content = args.join(' ');
+        checkChannel(channelPath);
+        routeResponseToClient('LOG ' + channelPath +
+        ' <div class="channel-log">' +
+        '<span class="user">' + user + '</span>: ' +
+        '<span class="message">' + content + '</span>' +
+        '</div>');
+    };
+
+    self.joinResponse = function(commandResponse) {
+        var args = commandResponse.split(/\s+/, 3);
+        var channelPath = fixChannelPath(args[1]);
+        var user = args[2];
+        checkChannel(channelPath);
+        routeResponseToClient('LOG ' + channelPath +
+        ' <div class="channel-log">' +
+        '<span class="user">' + user + '</span>' +
+        ' has <span class="action">joined</span>' +
+        ' <a href="#JOIN ' + channelPath + '" class="path">' + channelPath + '</a>' +
+        '</div>');
+    };
+
+    self.leaveResponse = function(commandResponse) {
+        var args = commandResponse.split(/\s+/, 2);
+        var channelPath = fixChannelPath(args[1]);
+        var user = args[2];
+        checkChannel(channelPath);
+        routeResponseToClient('LOG ' + channelPath +
+        ' <div class="channel-log">' +
+        '<span class="user">' + user + '</span>' +
+        ' has <span class="action">left</span>' +
+        ' <a href="#JOIN ' + channelPath + '" class="path">' + channelPath + '</a>' +
+        '</div>');
+    };
+
 
     function checkChannel(channelPath) {
         if(activeChannels.indexOf(channelPath) === -1) {

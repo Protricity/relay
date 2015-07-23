@@ -35,7 +35,6 @@
     window.addEventListener('hashchange', onHashChange);
 
     function receiveMessage(message) {
-        var user, channelPath;
         var args = message.split(/\s+/);
         var command = args[0].toLowerCase();
         switch(command) {
@@ -43,37 +42,8 @@
             case 'replacelog':
             case 'rlog':
                 args.shift();
-                channelPath = fixChannelPath(args.shift());
+                var channelPath = fixChannelPath(args.shift());
                 logToChannel(channelPath, args.join(' '), command[0] === 'r', command[0] === 'r');
-                break;
-
-            case 'leave':
-            case 'join':
-            case 'msg':
-            case 'message':
-                args.shift();
-                channelPath = fixChannelPath(args.shift());
-                user = args.shift();
-                //joinChannel(jPath);
-                logToChannel(channelPath, '<div class="channel-log">');
-                logToChannel(channelPath, '<span class="user">' + user + '</span>');
-
-                switch(command) {
-                    case 'leave':
-                        logToChannel(channelPath, ' has <span class="action">left</span> <a href="#JOIN ' + channelPath + '" class="path">' + channelPath + '</a>');
-                        break;
-                    case 'join':
-                        logToChannel(channelPath, ' has <span class="action">joined</span> <a href="#JOIN ' + channelPath + '" class="path">' + channelPath + '</a>');
-                        break;
-                    case 'msg':
-                    case 'message':
-                        var chContent = args.join(' ');
-                        logToChannel(channelPath, ': <span class="message">' + chContent + '</span>');
-                        break;
-                    default:
-                }
-                logToChannel(channelPath, '</div>');
-
                 break;
 
             default:

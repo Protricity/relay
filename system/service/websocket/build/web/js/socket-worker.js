@@ -126,6 +126,11 @@ function executeResponse(commandResponse, e) {
     return self[functionName](commandResponse, e);
 }
 
+// Socket Commands
+
+self.infoCommand = sendWithFastestSocket;
+self.infoResponse = routeResponseToClient;
+
 // Chat Commands
 
 self.joinCommand =
