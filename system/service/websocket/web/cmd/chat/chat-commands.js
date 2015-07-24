@@ -3,20 +3,33 @@
  */
 (function() {
 
-    var activeChannels = [];
+    var PATH_PREFIX = 'chat:';
 
     var CLASS_CHANNEL_CONTENT = 'channel-content';
 
     var CHANNEL_TEMPLATE =
+        "<script src='cmd/chat/chat-form.js'></script>" +
         "<link rel='stylesheet' href='cmd/chat/chat.css' type='text/css'>" +
         "<legend>Channel: {$channel}</legend>" +
-        "<form name='chat-form' action='#MESSAGE {$channel} $content'>" +
+        "<form name='chat-form' action='#' onsubmit='return submitChatForm(event);'>" +
         "<fieldset class='" + CLASS_CHANNEL_CONTENT + "'>Joining {$channel}...</fieldset>" +
-        "<input name='content' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' />" +
+        "<input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' />" +
         "<input type='submit' value='Send' />" +
+        "<input type='hidden' value='{$channel}' name='channel' />" +
         "</form>";
 
-    var ROW_TEMPLATE
+    var MESSAGE_TEMPLATE = '<div class="channel-log">' +
+        '<span class="user">{$user}</span>: ' +
+        '<span class="message">{$content}</span>' +
+        '</div>';
+
+    var ACTION_TEMPLATE = '<div class="channel-log">' +
+        '<span class="user">{$user}</span>' +
+        ' has <span class="action">{$action}</span>' +
+        ' <a href="#JOIN {$channel}" class="path">{$channel}</a>' +
+        '</div>';
+
+    var activeChannels = [];
 
     self.msgCommand =
     self.messageCommand =
@@ -36,11 +49,11 @@
         var user = args.shift();
         var content = args.join(' ');
         checkChannel(channelPath);
-        routeResponseToClient('LOG ' + channelPath +
-        ' <div class="channel-log">' +
-        '<span class="user">' + user + '</span>: ' +
-        '<span class="message">' + content + '</span>' +
-        '</div>');
+        routeResponseToClient('LOG ' + PATH_PREFIX + channelPath + ' ' + MESSAGE_TEMPLATE
+            .replace(/{\$channel}/gi, channelPath)
+            .replace(/{\$user}/gi, user)
+            .replace(/{\$content}/gi, content)
+        );
     };
 
     self.joinResponse = function(commandResponse) {
@@ -48,12 +61,11 @@
         var channelPath = fixChannelPath(args[1]);
         var user = args[2];
         checkChannel(channelPath);
-        routeResponseToClient('LOG ' + channelPath +
-        ' <div class="channel-log">' +
-        '<span class="user">' + user + '</span>' +
-        ' has <span class="action">joined</span>' +
-        ' <a href="#JOIN ' + channelPath + '" class="path">' + channelPath + '</a>' +
-        '</div>');
+        routeResponseToClient('LOG ' + PATH_PREFIX + channelPath +  ' ' + ACTION_TEMPLATE
+            .replace(/{\$action}/gi, 'joined')
+            .replace(/{\$channel}/gi, channelPath)
+            .replace(/{\$user}/gi, user)
+        );
     };
 
     self.leaveResponse = function(commandResponse) {
@@ -61,18 +73,17 @@
         var channelPath = fixChannelPath(args[1]);
         var user = args[2];
         checkChannel(channelPath);
-        routeResponseToClient('LOG ' + channelPath +
-        ' <div class="channel-log">' +
-        '<span class="user">' + user + '</span>' +
-        ' has <span class="action">left</span>' +
-        ' <a href="#JOIN ' + channelPath + '" class="path">' + channelPath + '</a>' +
-        '</div>');
+        routeResponseToClient('LOG ' + PATH_PREFIX + channelPath +  ' ' + ACTION_TEMPLATE
+            .replace(/{\$action}/gi, 'left')
+            .replace(/{\$channel}/gi, channelPath)
+            .replace(/{\$user}/gi, user)
+        );
     };
 
 
     function checkChannel(channelPath) {
         if(activeChannels.indexOf(channelPath) === -1) {
-            routeResponseToClient("LOG " + channelPath + ' ' + CHANNEL_TEMPLATE
+            routeResponseToClient("LOG " + PATH_PREFIX + channelPath + ' ' + CHANNEL_TEMPLATE
                 .replace(/{\$channel}/gi, channelPath));
             activeChannels.push(channelPath);
             console.info("New active channel: " + channelPath);

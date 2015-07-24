@@ -6,15 +6,23 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="css/client.css" type="text/css" />
         <script src="js/socket.js"></script>
-        <script>socket.postMessage("JOIN /welcome");</script>
-        <script>socket.postMessage("POST");</script>
+        <script>
+            function send(commandString) {
+                var socketEvent = new CustomEvent('socket', {
+                    detail: commandString,
+                    cancelable: true
+                });
+                document.dispatchEvent(socketEvent);
+            }
+        </script>
     </head>
     <body>
         <ul class="command-list">
-            <li><a href="#post">Post to feed</a></li>
+            <li><a href="javascript:send('JOIN /home');">JOIN /home</a></li>
+            <li><a href="javascript:send('POST');">POST to feed</a></li>
         </ul>
-        <ul class="channel-list">
-        </ul>
+        <!--<ul class="channel-list">-->
+        <!--</ul>-->
         <div class="channel-container">
 
         </div>

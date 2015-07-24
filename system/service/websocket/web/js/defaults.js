@@ -63,3 +63,32 @@ var privateKey = "-----BEGIN PGP PRIVATE KEY BLOCK-----\n"
     +"HA==\n"
     +"=wSGd\n"
     +"-----END PGP PRIVATE KEY BLOCK-----";
+
+
+
+// Socket Commands
+
+self.infoCommand = sendWithFastestSocket;
+self.infoResponse = routeResponseToClient;
+
+// Chat Commands
+
+self.joinCommand =
+self.leaveCommand =
+self.messageCommand =
+self.msgCommand =
+function(commandString) {
+    importScripts('../cmd/chat/chat-commands.js');
+    executeCommand(commandString);
+};
+
+
+
+
+// Post Commands
+
+self.postCommand =
+function(commandString) {
+    importScripts('../cmd/post/post-commands.js');
+    executeCommand(commandString);
+};

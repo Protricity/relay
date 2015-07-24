@@ -125,30 +125,3 @@ function executeResponse(commandResponse, e) {
         throw new Error("Command Response failed to load: " + cmd);
     return self[functionName](commandResponse, e);
 }
-
-// Socket Commands
-
-self.infoCommand = sendWithFastestSocket;
-self.infoResponse = routeResponseToClient;
-
-// Chat Commands
-
-self.joinCommand =
-self.leaveCommand =
-self.messageCommand =
-self.msgCommand =
-function(commandString) {
-    importScripts('../cmd/chat/chat.js');
-    executeCommand(commandString);
-};
-
-
-
-
-// Post Commands
-
-self.postCommand =
-function(commandString) {
-    importScripts('../cmd/post/post.js');
-    executeCommand(commandString);
-};
