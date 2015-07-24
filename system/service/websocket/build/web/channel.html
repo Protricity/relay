@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Channel: {$channel}</title>
+    <link rel="stylesheet" href="css/channel.css" type="text/css" />
+    <script>
+        window.onload = function(e) {
+            var channel = window.location.href.split('?')[1];
+            if(channel) {
+                document.body.outerHTML = document.body.outerHTML.replace(/{\$channel}/gi, channel);
+                document.head.outerHTML = document.head.outerHTML.replace(/{\$channel}/gi, channel);
+            }
+        };
+    </script>
+</head>
+<body>
+    <fieldset class="channel channel:{$channel}" data-channel="{$channel}" draggable="true">
+        <legend>Channel: {$channel}</legend>
+        <fieldset class="channel-content">
+            Joining {$channel}...<div class="channel-log"></div>
+            <span class="user">guest@relay.co.il</span> has <span class="action">joined</span> <a href="{$channel}" class="path">{$channel}</a>
+        </fieldset>
+        <input class="socket-input-post" data-channel="{$channel}" placeholder="Send a message to {$channel}. [hit enter]"></fieldset>
+</body>
+</html>

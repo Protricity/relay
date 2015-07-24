@@ -1,0 +1,11 @@
+
+
+
+form[name=chat-form] input[name=content] {
+    width: 85%;
+    font-family: monospace;
+}
+
+form[name=chat-form] input[type=submit] {
+    float: right;
+}
