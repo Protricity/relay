@@ -2,6 +2,8 @@
  * Created by ari on 7/2/2015.
  */
 
+
+
 function submitPostForm(e) {
     e.preventDefault();
     var formElm = e.target;
@@ -16,7 +18,7 @@ function submitPostForm(e) {
     if(channelElm.length === 0 || !channelElm[0].value)
         throw new Error("No channel field found");
 
-    var commandString = "POST " + channelElm[0].value + " " + (+new Date.now() / 1000 | 0) + ' ' + contentElm[0].value;
+    var commandString = "POST " + channelElm[0].value + ' ' + contentElm[0].value;
 
     // encrypted
 
@@ -29,3 +31,14 @@ function submitPostForm(e) {
     //if(e.isDefaultPrevented())
     //    messageElm.value = '';
 }
+
+
+(function() {
+    var SCRIPT_PATH = 'cmd/pgp/pgp-form.js';
+    var head = document.getElementsByTagName('head')[0];
+    if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+        var newScript = document.createElement('script');
+        newScript.setAttribute('src', SCRIPT_PATH);
+        head.appendChild(newScript);
+    }
+})();

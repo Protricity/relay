@@ -44,24 +44,8 @@ public class PostCommands implements ISocketCommand {
     public boolean executeCommand(String data, Session session) throws Exception {
         String[] args = data.split("\\s+", 2);
         switch(args[0].toLowerCase()) {
-            case "join":
+            case "post":
                 joinChannel(session, args[1]);
-                return true;
-                
-            case "leave":
-                leaveChannel(session, args[1]);
-                return true;
-                
-            case "msg":
-            case "message":
-                String[] msgArgs = args[1].split("\\s+", 2);
-                if(msgArgs.length == 1) 
-                    throw new Exception("Missing path");
-                messageChannel(session, msgArgs[0], msgArgs[1]);
-                return true;
-                
-            case "identify":
-                identifyUser(session, data);
                 return true;
                 
             default:

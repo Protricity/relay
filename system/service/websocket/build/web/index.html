@@ -8,16 +8,19 @@
         <script src="js/socket.js"></script>
         <script>
             function send(commandString) {
-                var socketEvent = new CustomEvent('socket', {
+                var socketEvent = new CustomEvent('command', {
                     detail: commandString,
                     cancelable: true
                 });
                 document.dispatchEvent(socketEvent);
+                return socketEvent.defaultPrevented;
             }
+            send('keygen');
         </script>
     </head>
     <body>
         <ul class="command-list">
+            <li><a href="javascript:send('KEYGEN');">Keygen</a></li>
             <li><a href="javascript:send('JOIN /home');">JOIN /home</a></li>
             <li><a href="javascript:send('POST');">POST to feed</a></li>
         </ul>

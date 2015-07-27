@@ -17,14 +17,37 @@ function submitChatForm(e) {
         throw new Error("No channel field found");
 
     var commandString = "MESSAGE " + channelElm[0].value + " " + messageElm[0].value;
-    if(messageElm[0].value[0] === '/')
+    if(messageElm[0].value[0] === '/') {
         commandString = messageElm[0].value.substr(1);
+        var commandEvent = new CustomEvent('command', {
+            detail: commandString,
+            cancelable:true,
+            bubbles:true
+        });
+        formElm.dispatchEvent(commandEvent);
+        if(commandEvent.defaultPrevented)
+            messageElm[0].value = '';
+        return false;
+    }
 
     var socketEvent = new CustomEvent('socket', {
         detail: commandString,
-        cancelable:true
+        cancelable:true,
+        bubbles:true
     });
     formElm.dispatchEvent(socketEvent);
-    if(socketEvent.isDefaultPrevented())
-        messageElm.value = '';
+    if(socketEvent.defaultPrevented)
+        messageElm[0].value = '';
+        return false;
 }
+
+
+(function() {
+    var SCRIPT_PATH = 'cmd/pgp/pgp-form.js';
+    var head = document.getElementsByTagName('head')[0];
+    if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+        var newScript = document.createElement('script');
+        newScript.setAttribute('src', SCRIPT_PATH);
+        head.appendChild(newScript);
+    }
+})();

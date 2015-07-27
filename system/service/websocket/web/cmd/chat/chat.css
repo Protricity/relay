@@ -1,7 +1,7 @@
 
 
 
-form[name=chat-form] input[name=content] {
+form[name=chat-form] input[name=message] {
     width: 85%;
     font-family: monospace;
 }

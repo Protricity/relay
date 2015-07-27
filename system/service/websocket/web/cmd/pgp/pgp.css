@@ -1,0 +1,18 @@
+
+
+
+form[name=pgp-register-form] textarea[name=private_key] {
+    font-family: monospace;
+}
+
+form[name=pgp-register-form] input[name=submit_register] {
+}
+
+
+
+form[name=pgp-keygen-form] input[name=user_id] {
+}
+form[name=pgp-keygen-form] input[name=passphrase] {
+}
+form[name=pgp-keygen-form] select[name=bits] {
+}

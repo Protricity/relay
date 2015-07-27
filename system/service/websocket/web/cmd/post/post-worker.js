@@ -23,6 +23,8 @@
                 "<option disabled='disabled'>Friend's Feed...</option>" +
             "</select>" +
             "<input type='text' name='channel' value='{$channel}' disabled='disabled' />" +
+            "<input type='password' name='passphrase' style='display:none' placeholder='Enter your PGP Passphrase'/>" +
+
             "<input type='submit' value='Post' />" +
         "</form>";
 

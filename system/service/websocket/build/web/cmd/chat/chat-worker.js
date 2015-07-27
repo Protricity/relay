@@ -8,6 +8,7 @@
     var CLASS_CHANNEL_CONTENT = 'channel-content';
 
     var CHANNEL_TEMPLATE =
+        "<script src='cmd/pgp/pgp-events.js'></script>" +
         "<script src='cmd/chat/chat-form.js'></script>" +
         "<link rel='stylesheet' href='cmd/chat/chat.css' type='text/css'>" +
         "<legend>Channel: {$channel}</legend>" +

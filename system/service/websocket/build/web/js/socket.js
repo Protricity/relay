@@ -14,24 +14,51 @@
 
     var socketWorker = new Worker('js/socket-worker.js');
     socketWorker.addEventListener('message', function(e) {
-        receiveMessage(e.data);
+        receiveMessage(e.data || e.detail);
     }, true);
 
-    document.addEventListener('socket', onSocketEvent);
+    document.addEventListener('socket', function(e) {
+        var commandString = e.detail || e.data;
+        socketWorker.postMessage(commandString);
+        e.preventDefault();
+    });
+    document.addEventListener('message', function(e) {
+        receiveMessage(e.data || e.detail);
+    });
+
+    document.addEventListener('command', function(e) {
+        var commandString = e.detail || e.data;
+        socketWorker.postMessage(commandString);
+        e.preventDefault();
+    });
+
+    window.addEventListener('hashchange', onHashChange);
 
     function receiveMessage(message) {
-        var args = message.split(/\s+/);
-        var command = args[0].toLowerCase();
-        switch(command) {
+        var args = /^(\w+)\s+([\s\S]*)$/mi.exec(message);
+        var commandString = args[1].toLowerCase();
+        switch(commandString) {
             case 'log':
             case 'replacelog':
             case 'rlog':
-                args.shift();
-                var channelPath = (args.shift());
-                logToChannel(channelPath, args.join(' '), command[0] === 'r', command[0] === 'r');
+                args = /^([^\s]+)\s+([\s\S]*)$/mi.exec(args[2]);
+                var channelPath = args[1];
+                logToChannel(channelPath, args[2], commandString[0] === 'r', commandString[0] === 'r');
                 break;
 
             default:
+
+                //var commandEvent = new CustomEvent('command', {
+                //    detail: commandString,
+                //    cancelable:true,
+                //    bubbles:true
+                //});
+                //document.dispatchEvent(commandEvent);
+                //if(commandEvent.defaultPrevented)
+                //    return true;
+                //messageElm[0].value = ';
+                //return false;
+
                 console.error("Unhandled command: " + message);
                 break;
 
@@ -43,7 +70,7 @@
             case 'warn':
             case 'info':
             case 'assert':
-                console[command](message);
+                console[commandString](message);
                 break;
         }
     }
@@ -52,14 +79,14 @@
         content = content
             .replace(/{\$channel}/gi, channelPath);
 
-        var match = /<script([^>]*)>(.*)<\/script>/gi.exec(content);
-        if(match) {
+        var match;
+        while(match = /<script([^>]*)><\/script>/gi.exec(content)) {
             var scriptContent = match[0];
             content = content.replace(scriptContent, '');
             var match2 = /\s*src=['"]([^'"]*)['"]/gi.exec(match[1]);
             if(match2) {
                 var hrefValue = match2[1];
-                if(document.querySelectorAll('script[href=' + escapeCSS(hrefValue) + ']').length === 0) {
+                if(document.querySelectorAll('script[src=' + hrefValue.replace(/[/.:~]/g, '\\$&') + ']').length === 0) {
                     var newScript = document.createElement('script');
                     newScript.setAttribute('src', hrefValue);
                     document.getElementsByTagName('head')[0].appendChild(newScript);
@@ -68,6 +95,8 @@
                 console.error("Invalid Script: " + scriptContent);
             }
         }
+
+
 
         var channelContainers = document.getElementsByClassName(CLASS_CHANNEL_CONTAINER);
         for(var i=0; i<channelContainers.length; i++) {
@@ -105,32 +134,22 @@
 
                 if(contentTarget.length > 0) {
                     contentTarget[0].innerHTML += content;
+                    contentTarget[0].scrollTop = contentTarget[0].scrollHeight;
+
                 } else {
                     channelOutputs[0].innerHTML += content;
+                    channelOutputs[0].scrollTop = channelOutputs[0].scrollHeight;
                 }
-                contentTarget[0].scrollTop = contentTarget[0].scrollHeight;
             }
 
             if(focus) {
-                var channelInput = channelContainer.querySelectorAll(escapeCSS('.' + channelPath) + ' .focus');
+                var channelInput = channelContainer.querySelectorAll('.' + channelPath.replace(/[/.:~]/g, '\\$&') + ' .focus');
                 if(channelInput.length > 0)
                     channelInput[0].focus();
             }
         }
 
     }
-
-    function onSocketEvent(e) {
-        var commandString = e.detail || e.data;
-        socketWorker.postMessage(commandString);
-        e.preventDefault();
-    }
-
-    function escapeCSS(name) {
-        return name
-            .replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]^`{|}~]/g, '\\$&');
-    }
-
 
 
     //function refreshChannels() {
@@ -163,4 +182,21 @@
     //}
 
 
+    function onHashChange(e) {
+        var hashCommand = document.location.hash.replace(/^#/, '');
+        if(!hashCommand)
+            return false;
+
+        var commandEvent = new CustomEvent('command', {
+            detail: hashCommand,
+            cancelable:true,
+            bubbles:true
+        });
+        document.dispatchEvent(commandEvent);
+        if(!commandEvent.isDefaultPrevented())
+            socketWorker.postMessage(hashCommand);
+
+        document.location.hash = '';
+//         document.location.href = document.location.origin + document.location.pathname;
+    }
 })();

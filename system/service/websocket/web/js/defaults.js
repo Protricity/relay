@@ -78,17 +78,28 @@ self.leaveCommand =
 self.messageCommand =
 self.msgCommand =
 function(commandString) {
-    importScripts('../cmd/chat/chat-commands.js');
+    importScripts('../cmd/chat/chat-worker.js');
     executeCommand(commandString);
 };
-
-
 
 
 // Post Commands
 
 self.postCommand =
+    function(commandString) {
+        importScripts('../cmd/post/post-worker.js');
+        executeCommand(commandString);
+    };
+
+
+
+// PGP Commands
+
+self.keygenCommand =
+self.encryptCommand =
+self.registerCommand =
 function(commandString) {
-    importScripts('../cmd/post/post-commands.js');
+    importScripts('../cmd/pgp/pgp-worker.js');
     executeCommand(commandString);
 };
+
