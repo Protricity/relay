@@ -10,18 +10,15 @@
 }
 
 .channel {
-
-      overflow: auto;
-      
-
-      max-height: 30vw;
-
-/*     animation: fadein 0.5s;
-    -moz-animation: fadein 0.5s; /* Firefox */
+     animation: fadein 0.5s;
+    -moz-animation: fadein 0.5s;
     -webkit-animation: fadein 0.5s; /* Safari and Chrome */
-    max-width: 40em;
-    min-width: 35em;
-    display: inline-block;
+    
+
+      min-width: 35em;
+    
+
+      display: inline-block;
     -o-animation: fadein 0.5s; /* Opera */
 
     -moz-transition: opacity 0.4s ease-in-out;
@@ -31,7 +28,6 @@
 }
 
 .channel:hover {
-
 /*     cursor: pointer; */
     border-color: red;
 }
@@ -81,8 +77,16 @@ ul.channel-list li,
 
 .channel .status-box {
     color: darkblue;
-    margin: 1em;
+    margin: 0.5em;
 
+    padding: 0.5em;
+    background-color: lightgrey;
+    max-width: 34em;
+    
+    animation: fadein 0.5s;
+    -moz-animation: fadein 0.5s;
+    -webkit-animation: fadein 0.5s; /* Safari and Chrome */
+    
 }
 
 .channel .path {
@@ -116,7 +120,6 @@ form[name=post-form] input[name=channel] {
 }
 
 form[name=post-form] input[type=submit] {
-    float: right;
 }
 
 

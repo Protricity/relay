@@ -16,7 +16,7 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-import relay.service.command.ChatCommands;
+import relay.service.command.ChannelCommands;
  
 /** 
  * @ServerEndpoint gives the relative name for the end point
@@ -28,13 +28,15 @@ import relay.service.command.ChatCommands;
 @ServerEndpoint("/socket") 
 public class WebSocketServer {
     
-    private ArrayList<ISocketCommand> callbacks = new ArrayList<>();
+    private final ArrayList<ISocketCommand> callbacks = new ArrayList<>();
     
     public WebSocketServer() {
-        addCommand(new ChatCommands());
+        addCommand(new ChannelCommands());
+//        addCommand(new PostCommands());
+
     }
     
-    public void addCommand(ISocketCommand command) {
+    public final void addCommand(ISocketCommand command) {
         callbacks.add(command);
     }
     

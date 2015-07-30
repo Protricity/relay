@@ -13,6 +13,5 @@ form[name=post-form] input[name=channel] {
 }
 
 form[name=post-form] input[type=submit] {
-    float: right;
 }
 

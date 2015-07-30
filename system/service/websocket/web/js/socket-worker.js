@@ -32,7 +32,7 @@ function getSocket(socketURL) {
         newSocket.removeEventListener('open', onOpen);
         self.postMessage("SOCKET OPEN " + socketURL);
 
-        newSocket.send("IDENTIFY " + publicKey);
+        //newSocket.send("IDENTIFY " + publicKey);
 //         newSocket.send("JOIN *");
         //newSocket.send("MSG test test message");
     }
@@ -93,8 +93,15 @@ function sendWithFastestSocket(commandString) {
 
     var path = args[1].toLowerCase();
     var socketList = defaultSocketList;
-    if(typeof socketListByPath[path.toLowerCase()] === 'object')
-        socketList = socketListByPath[path.toLowerCase()];
+    for(var i=0; i<socketListByPath.length; i++) {
+        var test = socketListByPath[i][0];
+        if((typeof test === 'object')
+            ? test.test(path)
+            : path.substr(0, test.length).toLowerCase() === test.toLowerCase()) {
+            socketList = socketListByPath[i][1];
+            break;
+        }
+    }
 
     selectFastestSocket(function(selectedSocket) {
         console.log("SOCKET OUT (" + selectedSocket.url + "): " + commandString);

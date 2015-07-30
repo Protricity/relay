@@ -16,13 +16,16 @@
                 return socketEvent.defaultPrevented;
             }
             send('keygen');
+            send('post');
+            send('manage');
         </script>
     </head>
     <body>
         <ul class="command-list">
-            <li><a href="javascript:send('KEYGEN');">Keygen</a></li>
             <li><a href="javascript:send('JOIN /home');">JOIN /home</a></li>
             <li><a href="javascript:send('POST');">POST to feed</a></li>
+            <li><a href="javascript:send('KEYGEN');">KEYGEN a new Identity</a></li>
+            <li><a href="javascript:send('MANAGE');">MANAGE Identities</a></li>
         </ul>
         <!--<ul class="channel-list">-->
         <!--</ul>-->

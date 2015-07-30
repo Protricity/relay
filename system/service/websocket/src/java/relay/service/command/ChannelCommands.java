@@ -5,38 +5,22 @@
  */
 package relay.service.command;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Set;
 import javax.websocket.Session;
-import org.bouncycastle.openpgp.PGPException;
-import org.bouncycastle.openpgp.PGPPublicKey;
-import org.bouncycastle.openpgp.PGPPublicKeyRing;
-import org.bouncycastle.openpgp.PGPUtil;
-import org.bouncycastle.openpgp.jcajce.JcaPGPPublicKeyRingCollection;
 
 /**
  *
  * @author ari
  */
-public class ChatCommands implements ISocketCommand {
+public class ChannelCommands implements ISocketCommand {
     
-    private static HashMap<Session, PGPPublicKey> mIDKeys = new HashMap<>();
-    private static char[] mAllowedModes = {'o'};
-    private static HashMap<String, ArrayList<Session>> mSubscriptions = new HashMap<>(); 
-    private static HashMap<String, String> mChannelModes = new HashMap<>(); 
+    private static final HashMap<String, ArrayList<Session>> mSubscriptions = new HashMap<>(); 
+
     
     public String getSessionChatID(Session session) {
-        if(mIDKeys.containsKey(session))
-            return mIDKeys
-                    .get(session)
-                    .getUserIDs()
-                    .next()
-                    .toString();
         return session.getId();
     }
     
@@ -60,9 +44,13 @@ public class ChatCommands implements ISocketCommand {
                 messageChannel(session, msgArgs[0], msgArgs[1]);
                 return true;
                 
-            case "identify":
-                identifyUser(session, data);
+            case "priv":
+                String[] privArgs = args[1].split("\\s+", 2);
+                if(privArgs.length == 1) 
+                    throw new Exception("Missing user");
+                messageUser(session, privArgs[0], privArgs[1]);
                 return true;
+                
                 
             default:
                 return false;
@@ -70,57 +58,6 @@ public class ChatCommands implements ISocketCommand {
 //        session.getBasicRemote().sendText("ECHO " + message);
     }
     
-    public void identifyUser(Session session, String data) throws PGPException, IOException {
-        int sPos = data.indexOf("-----BEGIN PGP PUBLIC KEY BLOCK-----");
-        int fPos = data.indexOf("-----END PGP PUBLIC KEY BLOCK-----");
-        if(sPos == -1)
-            throw new PGPException("No BEGIN PGP PUBLIC KEY BLOCK found");
-        if(fPos == -1)
-            throw new PGPException("No END PGP PUBLIC KEY BLOCK found");
-        fPos += "-----END PGP PUBLIC KEY BLOCK-----".length();
-        String publicKeyString = data.substring(sPos, fPos);
-        InputStream in=new ByteArrayInputStream(publicKeyString.getBytes());
-        in = PGPUtil.getDecoderStream(in);
-        JcaPGPPublicKeyRingCollection pgpPub = new JcaPGPPublicKeyRingCollection(in);
-        in.close();
-
-        Iterator<PGPPublicKeyRing> rIt = pgpPub.getKeyRings();
-        PGPPublicKeyRing kRing = rIt.next();
-        Iterator<PGPPublicKey> kIt = kRing.getPublicKeys();
-        PGPPublicKey key = kIt.next();
-        
-        if(mIDKeys.containsKey(session))
-            throw new PGPException("Already identified to server");
-        
-        mIDKeys.put(session, key);
-        
-        sendText(session, "INFO User Identified: " + byteArrayToHex(key.getFingerprint()));
-    }
-    
-
-    public boolean setChannelMode(String channel, String newMode) throws IllegalArgumentException {
-        String oldMode = mChannelModes.containsKey(channel) ? mChannelModes.get(channel) : "";
-        boolean negative = newMode.charAt(0) == '-';
-        char modeValue = newMode.charAt(newMode.length()-1);
-        if(!Arrays.asList(mAllowedModes).contains(modeValue))
-            throw new IllegalArgumentException("Unknown mode: " + newMode);
-        for(int i=0; i<oldMode.length(); i++) {
-            char oldModeValue = oldMode.charAt(i);
-            if(modeValue == oldModeValue) {
-                if(negative) {
-                    oldMode = oldMode.replace(String.valueOf(modeValue), "");
-                    mChannelModes.put(channel, oldMode);
-                    return true;
-                } else {
-                    oldMode += modeValue;
-                    mChannelModes.put(channel, oldMode);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public boolean joinChannel(Session userSession, String channel) {
         channel = fixPath(channel);
         
@@ -169,6 +106,16 @@ public class ChatCommands implements ISocketCommand {
         return false;
     }
 
+    public void messageUser(Session userSession, String userTarget, String message) {
+        for(Session session: userSession.getOpenSessions()) {
+            if(userTarget.compareToIgnoreCase(session.getId()) == 0) {
+               sendText(session, "PRIV " + getSessionChatID(userSession) + " " + message);
+               return;
+            }
+        }
+        
+        sendText(userSession, "ERROR could not find user " + getSessionChatID(userSession));
+    }
 
     public void messageChannel(Session userSession, String channel, String message) {
         channel = fixPath(channel);
@@ -200,7 +147,7 @@ public class ChatCommands implements ISocketCommand {
     public ArrayList<Session> getChannelUsers(String channel) {
         if(mSubscriptions.containsKey(channel))
             return mSubscriptions.get(channel);
-        ArrayList<Session> channelUsers = new ArrayList<Session>();
+        ArrayList<Session> channelUsers = new ArrayList<>();
         mSubscriptions.put(channel, channelUsers);
         return channelUsers;
     }
