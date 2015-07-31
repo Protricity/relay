@@ -91,6 +91,7 @@
                 ? 'PGP key pair requires a passphrase'
                 : 'Invalid PGP passphrase (' + passphraseAttempts + ' private keys attempted)';
             setStatus(formElm, "<span class='error'>" + errMSG + "</span>");
+            passphraseElm.focus();
             throw new Error(errMSG);
         }
 

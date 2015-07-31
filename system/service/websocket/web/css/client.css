@@ -75,6 +75,11 @@ ul.channel-list li,
     font-style: italic;
 }
 
+.channel .error {
+    color: red;
+    font-style: italic;
+}
+
 .channel .status-box {
     color: darkblue;
     margin: 0.5em;

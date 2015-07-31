@@ -16,11 +16,11 @@
                 "<textarea onfocus='focusPostForm(event)' class='focus' name='content' required='required' placeholder='Anything you like'>{$content}</textarea>" +
             "</label>" +
             "<br/><label>Post with (PGP Identity):<br/>" +
-                "<select name='pgp-id'  onfocus='focusPostForm(event)' onselect='focusPostForm(event)' oninput='focusPostForm(event)'>" +
+                "<select name='pgp-id' required='required' onfocus='focusPostForm(event)' onselect='focusPostForm(event)' oninput='focusPostForm(event)'>" +
                     "<optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>" +
                     "</optgroup>" +
                     "<optgroup disabled='disabled' label='Other options'>" +
-                        "<option>Manage PGP Identities...</option>" +
+                        "<option value=''>Manage PGP Identities...</option>" +
                     "</optgroup>" +
                     "</select>" +
             "</label>" +

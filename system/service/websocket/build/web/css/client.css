@@ -75,6 +75,10 @@ ul.channel-list li,
     font-style: italic;
 }
 
+.channel .error {
+    color: red;
+}
+
 .channel .status-box {
     color: darkblue;
     margin: 0.5em;
@@ -82,7 +86,7 @@ ul.channel-list li,
     padding: 0.5em;
     background-color: lightgrey;
     max-width: 34em;
-    
+
     animation: fadein 0.5s;
     -moz-animation: fadein 0.5s;
     -webkit-animation: fadein 0.5s; /* Safari and Chrome */

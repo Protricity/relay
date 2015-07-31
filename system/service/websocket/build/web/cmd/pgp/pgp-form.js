@@ -76,12 +76,16 @@
         var local = new openpgp.Keyring.localstore();
         var keys = local.loadPrivate();
         for(var ki=0; ki<keys.length; ki++) {
-            if (keys[ki].getKeyIds()[0].toHex() === privateKeyID)
+            if (keys[ki].getKeyIds()[0].toHex() === privateKeyID) {
+                setStatus(formElm, "<div class='error'>Private key already exists</div>");
                 throw new Error("Private key already exists");
+
+            }
             if (keys[ki].getUserIds()[0] === privateUserID) {
                 if(!confirm("User ID already exists: " + privateUserID
                     + "\nWould you like to continue registering the duplicate?"
                     + "\n(OK=register, Cancel=abort)")) {
+                    setStatus(formElm, "<div class='error'>Aborted due to duplicate user id value</div>");
                     throw new Error("Aborted due to duplicate user id value");
                 }
             }
@@ -136,7 +140,7 @@
             pgpHTML += '<label><strong>User ID:&nbsp;&nbsp;&nbsp;</strong> ' + userID + '</label><br/>';
             pgpHTML += '<label><strong>Passphrase:</strong> ' + (key.primaryKey.isDecrypted ? 'No' : 'Yes') + '</label><br/>';
             pgpHTML += '<label><strong>Actions:&nbsp;&nbsp;&nbsp;</strong> ';
-            pgpHTML += '<select name="actions" oninput="if(this.value) window[this.value](event, \'' + keyID + '\'); ">';
+            pgpHTML += '<select name="actions" onselect="window[this.value](event, \'' + keyID + '\'); " oninput="window[this.value](event, \'' + keyID + '\'); ">';
             pgpHTML += '<option value="" selected="selected">Select action</option>';
             pgpHTML += '<option value="changePGPManageFormKeyPassphrase"' + (!key.primaryKey.isDecrypted ? ' disabled="disabled"' : '') + '>Change Password</option>';
             pgpHTML += '<option value="changePGPManageFormKeyPassphrase"' + (key.primaryKey.isDecrypted ? ' disabled="disabled"' : '') + '>Add Password</option>';
