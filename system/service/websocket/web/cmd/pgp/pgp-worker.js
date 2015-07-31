@@ -50,7 +50,7 @@
             "<input type='password' name='passphrase' />" +
 
             "<br/><br/>Generate:<br/> " +
-            "<input type='submit' value='Generate' />" +
+            "<input type='submit' value='Generate'  name='submit-generate' />" +
             " or <a href='#REGISTER'>Load your own PGP private key</a>" +
         "</form>";
 
@@ -64,7 +64,7 @@
         "<textarea name='private_key' required='required' placeholder='" + EXAMPLE_PUBLIC_KEY + "' rows='12' cols='68'>{$private_key}</textarea>" +
         "</label>" +
         "<br/><br/>Register:<br/>" +
-        "<input type='submit' name='submit_register' value='Register'/>" +
+        "<input type='submit' name='submit-register' value='Register'/>" +
         " or <a href='#KEYGEN'>Generate a new PGP Key pair</a>" +
         "</form>";
 

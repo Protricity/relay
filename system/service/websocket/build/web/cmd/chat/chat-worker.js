@@ -8,14 +8,13 @@
     var CLASS_CHANNEL_CONTENT = 'channel-content';
 
     var CHANNEL_TEMPLATE =
-        "<script src='cmd/pgp/pgp-events.js'></script>" +
         "<script src='cmd/chat/chat-form.js'></script>" +
         "<link rel='stylesheet' href='cmd/chat/chat.css' type='text/css'>" +
         "<legend>Channel: {$channel}</legend>" +
         "<form name='chat-form' action='#' onsubmit='return submitChatForm(event);'>" +
         "<fieldset class='" + CLASS_CHANNEL_CONTENT + "'>Joining {$channel}...</fieldset>" +
         "<input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' />" +
-        "<input type='submit' value='Send' />" +
+        "<input type='submit' value='Send' name='submit-send-chat' />" +
         "<input type='hidden' value='{$channel}' name='channel' />" +
         "</form>";
 

@@ -37,7 +37,7 @@
             "</label>" +
 
             "<br/><br/><label>Submit your post:<br/>" +
-                "<input type='submit' value='Post' />" +
+                "<input type='submit' value='Post' name='submit-post-form' />" +
             "</label>" +
         "</form>" +
         "<fieldset class='preview-container' style='display: none'>" +

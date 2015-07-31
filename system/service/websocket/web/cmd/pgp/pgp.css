@@ -38,6 +38,7 @@ form[name=pgp-manage-form] select[name=actions] {
     font-family: monospace;
 }
 
-form[name=pgp-manage-form] .load-pgp-btn {
-    padding: 1em;
+form[name=pgp-manage-form] .load-pgp-btn,
+form[name=pgp-keygen-form] input[type=submit] {
+    padding: 0.5em 1em;
 }

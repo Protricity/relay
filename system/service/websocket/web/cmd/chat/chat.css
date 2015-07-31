@@ -1,5 +1,10 @@
 
 
+form[name=chat-form] {
+    max-width: 37em;
+    font-family: monospace;
+}
+
 
 form[name=chat-form] input[name=message] {
     width: 85%;
@@ -9,3 +14,4 @@ form[name=chat-form] input[name=message] {
 form[name=chat-form] input[type=submit] {
     float: right;
 }
+

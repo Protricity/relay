@@ -108,9 +108,9 @@
                 newChannel.setAttribute('data-channel', channelPath);
                 newChannel.setAttribute('draggable', 'true');
 
-                if(channelContainer.firstChild)
-                   channelContainer.insertBefore(newChannel, channelContainer.firstChild);
-                else
+//                 if(channelContainer.firstChild)
+//                    channelContainer.insertBefore(newChannel, channelContainer.firstChild);
+//                 else
                     channelContainer.appendChild(newChannel);
             }
             var contentTarget = channelOutputs[0].getElementsByClassName(CLASS_CHANNEL_CONTENT);
@@ -143,9 +143,9 @@
             }
 
             if(focus) {
-                var channelInput = channelContainer.querySelectorAll('.' + channelPath.replace(/[/.:~]/g, '\\$&') + ' .focus');
-                if(channelInput.length > 0)
-                    channelInput[0].focus();
+                var channelInput = channelContainer.querySelector('textarea, input');
+                if(channelInput)
+                    channelInput.focus();
             }
         }
 
@@ -193,7 +193,7 @@
             bubbles:true
         });
         document.dispatchEvent(commandEvent);
-        if(!commandEvent.isDefaultPrevented())
+        if(!commandEvent.defaultPrevented)
             socketWorker.postMessage(hashCommand);
 
         document.location.hash = '';

@@ -14,7 +14,7 @@
         "<form name='chat-form' action='#' onsubmit='return submitChatForm(event);'>" +
         "<fieldset class='" + CLASS_CHANNEL_CONTENT + "'>Joining {$channel}...</fieldset>" +
         "<input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' />" +
-        "<input type='submit' value='Send' />" +
+        "<input type='submit' value='Send' name='submit-send-chat' />" +
         "<input type='hidden' value='{$channel}' name='channel' />" +
         "</form>";
 
