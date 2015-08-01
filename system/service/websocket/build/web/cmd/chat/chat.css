@@ -15,3 +15,21 @@ form[name=chat-form] input[type=submit] {
     float: right;
 }
 
+form[name=chat-form] .pgp-message {
+    white-space: pre;
+
+    width: 1em;
+    height: 1em;
+
+    border: 2px solid;
+    overflow: hidden;
+    background-color: #EEA;
+    color: #111;
+}
+
+form[name=chat-form] .pgp-message:hover {
+/*     max-height: 8em; */
+    width: 35em;
+    height: 21em;
+}
+

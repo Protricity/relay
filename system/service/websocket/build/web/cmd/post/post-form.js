@@ -54,7 +54,7 @@
         var formElm = doFocus(e);
 
         var contentElm = formElm.querySelectorAll('*[name=content], input[type=text], textarea');
-        if(contentElm.length === 0 || !contentElm[0].value)
+        if(contentElm.length === 0)
             throw new Error("No content field found");
 
         var channelElm = formElm.querySelectorAll('*[name=channel]');
@@ -102,20 +102,20 @@
 
         var postChannel = fixHomePath(channelElm[0].value, selectedKeyID);
 
-        var postContent = contentElm[0].value;
+        var postContent = contentElm[0].value.trim();
+        if(!postContent.length)
+            throw new Error ("Empty post content");
+
+        postContent = "<div class='feed-post'>" + postContent + "</div>";
 
         //var commandString = "MESSAGE " + postChannel + ' !post ' + postContent;
 
         setStatus(formElm, "Encrypting Post...");
         openpgp.encryptMessage(selectedKey, postContent)
             .then(function(encryptedString) {
-
-                 //var pgpMessage = openpgp.message.readArmored(encryptedString);
-                //var pgpData = openpgp.armor.decode(encryptedString);
-                //console.log("Encrypted post: " + encryptedString);
-
-                var commandString = "MESSAGE " + postChannel + ' ' + encryptedString;
                 console.log("Encrypted post: " + encryptedString);
+
+                var commandString = "MESSAGE " + postChannel + ' ' + "<div class='pgp-message'>" + encryptedString + "</div>";
                 setStatus(formElm, "Posting...");
 
                 // encrypted
@@ -132,6 +132,7 @@
 
 
     };
+
 
     function fixHomePath(channelPath, keyID) {
         channelPath = fixChannelPath(channelPath);

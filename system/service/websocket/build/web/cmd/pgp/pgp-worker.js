@@ -59,13 +59,13 @@
         "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
         "<legend>Register a new PGP Key Pair</legend>" +
         "<form name='pgp-register-form' action='#' onsubmit='return submitPGPRegisterForm(event);'>" +
-        "<div class='status-box' style='display: none'></div>" +
-        "<label>Paste or <a href='#KEYGEN'>generate</a> a PGP Private key and <br/>enter it into the box below to register:<br/>" +
-        "<textarea name='private_key' required='required' placeholder='" + EXAMPLE_PUBLIC_KEY + "' rows='12' cols='68'>{$private_key}</textarea>" +
-        "</label>" +
-        "<br/><br/>Register:<br/>" +
-        "<input type='submit' name='submit-register' value='Register'/>" +
-        " or <a href='#KEYGEN'>Generate a new PGP Key pair</a>" +
+            "<div class='status-box' style='display: none'></div>" +
+            "<label>Paste or <a href='#KEYGEN'>generate</a> a PGP Private key and <br/>enter it into the box below to register:<br/>" +
+            "<textarea onchange='changePGPRegisterForm(event);' name='private_key' required='required' placeholder='" + EXAMPLE_PUBLIC_KEY + "' rows='12' cols='68'>{$private_key}</textarea>" +
+            "</label>" +
+            "<br/><br/>Register:<br/>" +
+            "<input type='submit' name='submit-register' value='Register'/>" +
+            " or <a href='#KEYGEN'>Generate a new PGP Key pair</a>" +
         "</form>";
 
     var MANAGE_TEMPLATE =
@@ -73,8 +73,8 @@
         "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
         "<legend>Manage PGP Identities</legend>" +
         "<form name='pgp-manage-form' action='#' onsubmit='return submitPGPManageForm(event);'>" +
-        "<div class='status-box' style='display: none'></div>" +
-        "<div class='pgp-id-box'><button class='load-pgp-btn' onclick='focusPGPManageForm(event)'>Click to load PGP Identities</button></div>" +
+            "<div class='status-box' style='display: none'></div>" +
+            "<div class='pgp-id-box'><button class='load-pgp-btn' onclick='focusPGPManageForm(event)'>Click to load PGP Identities</button></div>" +
         "</form>";
 
 

@@ -43,11 +43,10 @@
 
     self.msgResponse =
     self.messageResponse = function(commandResponse) {
-        var args = commandResponse.split(/\s+/);
-        args.shift();
-        var channelPath = fixChannelPath(args.shift());
-        var user = args.shift();
-        var content = args.join(' ');
+        var match = /^(msg|message)\s+([^\s]+)\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandResponse);
+        var channelPath = fixChannelPath(match[2]);
+        var user = match[3];
+        var content = fixPGPMessage(match[4]);
         checkChannel(channelPath);
         routeResponseToClient('LOG ' + PATH_PREFIX + channelPath + ' ' + MESSAGE_TEMPLATE
             .replace(/{\$channel}/gi, channelPath)
@@ -81,7 +80,24 @@
     };
 
 
+    function fixPGPMessage(htmlContent) {
+        if(htmlContent.indexOf("<div class='pgp-message'>") >= 0)
+            return htmlContent;
+
+        var reg = /-----BEGIN PGP MESSAGE-----[\s\S]+-----END PGP MESSAGE-----/img;
+        var match;
+        while(match = reg.exec(htmlContent)) {
+            var fixedMessage = "<div class='pgp-message'>" + match[0].trim() + "</div>";
+            //if(htmlContent.indexOf("<div class='pgp-message'>") === -1)
+            htmlContent = htmlContent.replace(match[0], fixedMessage);
+        }
+        return htmlContent;
+    }
+
     function checkChannel(channelPath) {
+        if(!/[\w_/!@#$%^&*-]+/.test(channelPath))
+            throw new Error("Invalid Channel: " + channelPath);
+        
         if(activeChannels.indexOf(channelPath) === -1) {
             routeResponseToClient("LOG " + PATH_PREFIX + channelPath + ' ' + CHANNEL_TEMPLATE
                 .replace(/{\$channel}/gi, channelPath));

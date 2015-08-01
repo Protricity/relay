@@ -19,7 +19,8 @@
     
 
       display: inline-block;
-    -o-animation: fadein 0.5s; /* Opera */
+    vertical-align: middle;
+     -o-animation: fadein 0.5s; /* Opera */
 
     -moz-transition: opacity 0.4s ease-in-out;
     -o-transition: opacity 0.4s ease-in-out;

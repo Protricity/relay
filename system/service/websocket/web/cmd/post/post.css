@@ -1,7 +1,9 @@
 
+form[name=post-form] label {
+}
+
 
 form[name=post-form] textarea[name=content] {
-    width: 100%;
     min-height: 5em;
     font-family: monospace;
     display: block;
@@ -14,4 +16,5 @@ form[name=post-form] input[name=channel] {
 
 form[name=post-form] input[type=submit] {
     padding: 0.5em 1em;
+    margin: 0.5em;
 }

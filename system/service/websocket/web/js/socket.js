@@ -47,18 +47,6 @@
                 break;
 
             default:
-
-                //var commandEvent = new CustomEvent('command', {
-                //    detail: commandString,
-                //    cancelable:true,
-                //    bubbles:true
-                //});
-                //document.dispatchEvent(commandEvent);
-                //if(commandEvent.defaultPrevented)
-                //    return true;
-                //messageElm[0].value = ';
-                //return false;
-
                 console.error("Unhandled command: " + message);
                 break;
 
@@ -96,8 +84,6 @@
             }
         }
 
-
-
         var channelContainers = document.getElementsByClassName(CLASS_CHANNEL_CONTAINER);
         for(var i=0; i<channelContainers.length; i++) {
             var channelContainer = channelContainers[i];
@@ -106,14 +92,16 @@
                 var newChannel = document.createElement('fieldset');
                 newChannel.setAttribute('class', CLASS_CHANNEL + ' ' + channelPath);
                 newChannel.setAttribute('data-channel', channelPath);
-                newChannel.setAttribute('draggable', 'true');
+                //newChannel.setAttribute('draggable', 'true');
 
 //                 if(channelContainer.firstChild)
 //                    channelContainer.insertBefore(newChannel, channelContainer.firstChild);
 //                 else
                     channelContainer.appendChild(newChannel);
             }
-            var contentTarget = channelOutputs[0].getElementsByClassName(CLASS_CHANNEL_CONTENT);
+
+            var channelOutput = channelOutputs[0];
+            var contentTarget = channelOutput.getElementsByClassName(CLASS_CHANNEL_CONTENT);
 
             if(replace) {
                 var oldContent = null;
@@ -121,7 +109,7 @@
                     oldContent = contentTarget[0];
                     oldContent.parentNode.removeChild(oldContent);
                 }
-                channelOutputs[0].innerHTML = content;
+                channelOutput.innerHTML = content;
 
                 if(contentTarget.length > 0 && oldContent !== contentTarget[0]) {
                     var newTarget = contentTarget[0];
@@ -137,8 +125,8 @@
                     contentTarget[0].scrollTop = contentTarget[0].scrollHeight;
 
                 } else {
-                    channelOutputs[0].innerHTML += content;
-                    channelOutputs[0].scrollTop = channelOutputs[0].scrollHeight;
+                    channelOutput.innerHTML += content;
+                    channelOutput.scrollTop = channelOutput.scrollHeight;
                 }
             }
 
@@ -147,6 +135,10 @@
                 if(channelInput)
                     channelInput.focus();
             }
+
+            var contentEvent = new CustomEvent('log');
+            channelOutput.dispatchEvent(contentEvent);
+
         }
 
     }
