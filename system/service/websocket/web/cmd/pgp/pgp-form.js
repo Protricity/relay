@@ -12,37 +12,73 @@
 
     document.addEventListener('log', function(e) {
         var htmlContainer = e.target;
-        var pgpMessages = document.getElementsByClassName('pgp-message');
+        var pgpMessages = htmlContainer.getElementsByClassName('pgp-message');
         if(pgpMessages.length === 0)
             return;
 
-        var privateKeys = (new openpgp.Keyring.localstore()).loadPrivate();
-
-        //for(var j=0; j<privateKeys.length; j++) {
-        //    var privateKey = privateKeys[j];
-        //    if(!privateKeys.isDecrypted ) {
-        //        passphrase
-        //    }
-        //}
-
-        for(var i=pgpMessages.length; i>=0; i--) {
-            var pgpMessage = pgpMessages[i];
-            var encryptedMessage = pgpMessage.innerHTML;
-
-            console.log("Attempting to decrypt: ", pgpMessage);
-            openpgp.decryptMessage(privateKeys, encryptedMessage)
-                .then(function(decryptedMessage) {
-                    //var decryptedPGPMessageElm;
-                    //console.log("Decryption Success: ", decryptedPGPMessageElm);
-
-
-                }).catch(function(error) {
-
-                    throw new Error(error);
-                });
+        for(var i=pgpMessages.length-1; i>=0; i--) {
+            var pgpMessageContainer = pgpMessages[i];
+            decryptPGPMessageContainer(pgpMessageContainer);
         }
 
     });
+
+    function decryptPGPMessageContainer(pgpMessageContainer) {
+        if(!pgpMessageContainer.classList.contains('pgp-message'))
+            throw new Error("Invalid pgp message container: " + pgpMessageContainer.outerHTML);
+
+        var encryptedMessage = pgpMessageContainer.innerHTML;
+        var encryptedData = openpgp.message.readArmored(encryptedMessage);
+        if(!encryptedData || encryptedMessage.indexOf("-----BEGIN PGP MESSAGE-----") === -1) {
+            pgpMessageContainer.setAttribute('class', 'pgp-message-error');
+            throw new Error("No PGP message block found: " + pgpMessageContainer.outerHTML);
+        }
+
+        if(pgpMessageContainer.classList.contains('pgp-message-decryption-attempted'))
+            return;
+
+        pgpMessageContainer.classList.add('pgp-message-decryption-attempted');
+
+        var encryptionIDs = encryptedData.getEncryptionKeyIds();
+        for(var i=0; i<encryptionIDs.length; i++) 
+            encryptionIDs[i] = encryptionIDs[i].toHex();
+
+
+        var LocalStore = new openpgp.Keyring.localstore();
+        var privateKeys = LocalStore.loadPrivate();
+        var publicKeys = LocalStore.loadPublic();
+        var allKeys = privateKeys.concat(publicKeys);
+
+        for(var j=0; j<allKeys.length; j++) {
+            var key = allKeys[j];
+            var keyIDs = key.getKeyIds();
+            for(var k=0; k<keyIDs.length; k++) {
+                var keyID = keyIDs[k].toHex();
+                if(encryptionIDs.indexOf(keyID) !== -1) {
+
+                    // TODO: decrypt key
+
+                    console.log("Attempting to decrypt with: " + keyID, pgpMessageContainer);
+
+                    openpgp.decryptMessage(key, encryptedData)
+                        .then(function(decryptedMessage) {
+                            var decryptedMessageContainer = document.createElement('span');
+                            decryptedMessageContainer.setAttribute('class', 'pgp-message-decrypted-content');
+                            pgpMessageContainer.parentNode.insertBefore(decryptedMessageContainer, pgpMessageContainer);
+
+                        }, function(error) {
+                            console.log("Could not decrypt", arguments);
+
+                        }).catch(function(error) {
+                            throw new Error(error);
+
+                        });
+                }
+            }
+
+
+        }
+    }
 
     window.submitPGPKeyGenForm = function(e) {
         e.preventDefault();
@@ -266,23 +302,6 @@
             .replace(/{\$user_id}/gi, '')
             .replace(/{\$private_key}/gi, '')
         );
-        //
-        //openpgp.generateKeyPair({
-        //    keyType:1,
-        //    numBits:1024,
-        //    userId:userID,
-        //    passphrase:passphrase
-        //
-        //}).then(function(NewKey) {
-        //
-        //    var local = new openpgp.Keyring.localstore();
-        //    var keys = local.loadPrivate();
-        //    keys.push(NewKey.key);
-        //    local.storePrivate(keys);
-        //    var newKeyID = NewKey.key.getKeyIds()[0];
-        //    selectedPublicKeyID = newKeyID;
-        //
-        //});
     }
 
     function encryptCommand(e, contentString) {

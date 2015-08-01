@@ -4,7 +4,76 @@
 
 
 (function() {
-    
+    var MAX_BLOCK_SIZE = 25000;
+    var PREFIX_FEED_POSTS_BY_KEY = 'feed-posts-by-key';
+
+
+    document.addEventListener('log', function(e) {
+        var htmlContainer = e.target;
+        if(htmlContainer.getElementsByClassName('feed-post').length > 0) // TODO: ugly/inefficient
+            updateUserFeedCache();
+    });
+
+
+    function updateUserFeedCache() {
+
+        var LocalStore = new openpgp.Keyring.localstore();
+        var privateKeys = LocalStore.loadPrivate();
+        var privateKeyIDs = [];
+        for(var i=0; i<privateKeys.length; i++) {
+            var privateKey = privateKeys[i];
+            privateKeyIDs.push(privateKey.getKeyIds()[0].toHex());
+        }
+        privateKeys = null;
+
+        for(i=0; i<privateKeyIDs.length; i++) {
+            var privateKeyID = privateKeyIDs[i];
+
+            var userPosts = document.getElementsByClassName(PREFIX_FEED_POSTS_BY_KEY + ':' + privateKeyID);
+
+            for(var j=0; j<userPosts.length; j++) {
+                var userPost = userPosts[j];
+                if(userPost.classList.contains('feed-post-cached'))
+                    continue;
+
+                var encryptedContent = userPost.innerHTML;
+
+                var pgpMessage = openpgp.message.readArmored(encryptedContent);
+                var encIDs = pgpMessage.getEncryptionKeyIds();
+                if(encIDs.indexOf(privateKeyID) === -1)
+                    throw new Error("pk mismatch [" + encIDs.join(', ') + "] != " + privateKeyID);
+
+                var pgpMessageData = openpgp.armor.decode(encryptedContent).data;
+
+                var ui = 0;
+                var postData;
+                var foundPost = false;
+                while(postData = localStorage.getItem(PREFIX_FEED_POSTS_BY_KEY + ':' + privateKeyID + (++ui).toString())) {
+                    if(!foundPost && postData.indexOf(pgpMessageData) === -1) {
+                        foundPost = true;
+                    }
+                }
+
+                if(!foundPost) {
+                    var feedKey = PREFIX_FEED_POSTS_BY_KEY + ':' + privateKeyID + (ui);
+                    console.log("Caching new user post to local storage block " + feedKey);
+                    postData = localStorage.getItem(feedKey);
+                    if(postData.length > MAX_BLOCK_SIZE) {
+                        feedKey = PREFIX_FEED_POSTS_BY_KEY + ':' + privateKeyID + (ui + 1);
+                        postData = localStorage.getItem(feedKey);
+                        if(postData.length > MAX_BLOCK_SIZE)
+                            throw new Error("Shouldn't happen");
+                    }
+                    postData += (postData.length === 0 ? '' : "\n") + pgpMessageData;
+                    localStorage.setItem(feedKey, postData);
+                }
+
+                userPost.classList.add('feed-post-cached');
+            }
+        }
+
+    }
+
     var selectedKeyID = null;
     function doFocus(e) {
         var formElm = e.target.form ? e.target.form : e.target;
@@ -72,7 +141,6 @@
         }
 
         var decryptedKeys = [];
-        var passphraseRequired = false;
         var passphraseAttempts = 0;
         for(var ki=0; ki<keys.length; ki++) {
             var key = keys[ki];
@@ -113,10 +181,9 @@
         setStatus(formElm, "Encrypting Post...");
         openpgp.encryptMessage(selectedKey, postContent)
             .then(function(encryptedString) {
-                console.log("Encrypted post: " + encryptedString);
 
-                var commandString = "MESSAGE " + postChannel + ' ' + "<div class='pgp-message'>" + encryptedString + "</div>";
-                setStatus(formElm, "Posting...");
+                var commandString = "MESSAGE " + postChannel + ' ' + "<div class='pgp-message " + PREFIX_FEED_POSTS_BY_KEY + ":" + selectedKeyID + "'>" + encryptedString + "</div>";
+                setStatus(formElm, "Posting to feed...");
 
                 // encrypted
 
@@ -128,6 +195,10 @@
                 formElm.dispatchEvent(socketEvent);
                 //if(e.isDefaultPrevented())
                 //    messageElm.value = '';
+
+            }).catch(function(error) {
+                throw new Error(error);
+
             });
 
 

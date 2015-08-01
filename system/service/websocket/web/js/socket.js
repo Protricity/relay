@@ -136,7 +136,10 @@
                     channelInput.focus();
             }
 
-            var contentEvent = new CustomEvent('log');
+            var contentEvent = new CustomEvent('log', {
+                bubbles: true,
+                detail: content
+            });
             channelOutput.dispatchEvent(contentEvent);
 
         }
