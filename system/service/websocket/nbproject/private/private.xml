@@ -5,7 +5,7 @@
         <group>
             <file>file:/D:/Dev/Server/WWW/relay/system/service/websocket/src/java/relay/service/command/ChatCommands.java</file>
             <file>file:/D:/Dev/Server/WWW/relay/system/service/websocket/src/java/relay/service/command/PostCommands.java</file>
-            <file>file:/D:/Dev/Server/WWW/relay/system/service/websocket/web/js/socket.js</file>
+            <file>file:/D:/Dev/Server/WWW/relay/system/service/websocket/web/js/socket-client.js</file>
             <file>file:/D:/Dev/Server/WWW/relay/system/service/websocket/src/java/relay/service/WebSocketServer.java</file>
         </group>
     </open-files>

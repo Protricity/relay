@@ -19,7 +19,7 @@ self.leaveCommand =
 self.messageCommand =
 self.msgCommand =
 function(commandString) {
-    importScripts('../cmd/chat/chat-worker.js');
+    importScripts('chat/chat-worker.js');
     executeCommand(commandString);
 };
 
@@ -28,8 +28,9 @@ function(commandString) {
 
 self.spostCommand =
 self.postCommand =
+self.feedCommand =
 function(commandString) {
-    importScripts('../cmd/post/post-worker.js');
+    importScripts('post/post-worker.js');
     executeCommand(commandString);
 };
 
@@ -42,7 +43,7 @@ self.encryptCommand =
 self.registerCommand =
 self.manageCommand =
 function(commandString) {
-    importScripts('../cmd/pgp/pgp-worker.js');
+    importScripts('pgp/pgp-worker.js');
     executeCommand(commandString);
 };
 

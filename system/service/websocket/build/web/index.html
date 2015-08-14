@@ -5,7 +5,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="css/client.css" type="text/css" />
-        <script src="js/socket.js"></script>
+        <script src="cmd/socket-client.js"></script>
         <script>
             function send(commandString) {
                 var socketEvent = new CustomEvent('command', {
@@ -18,6 +18,7 @@
             send('keygen');
             send('post');
             send('manage');
+            send('feed');
         </script>
     </head>
     <body>
@@ -26,6 +27,8 @@
             <li><a href="javascript:send('POST');">POST to feed</a></li>
             <li><a href="javascript:send('KEYGEN');">KEYGEN a new Identity</a></li>
             <li><a href="javascript:send('MANAGE');">MANAGE Identities</a></li>
+            <li><a href="javascript:send('FEED /home');">All User FEEDs</a></li>
+            <li><a href="javascript:send('FEED ~');">My FEED</a></li>
         </ul>
         <!--<ul class="channel-list">-->
         <!--</ul>-->

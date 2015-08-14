@@ -4,71 +4,112 @@
 
 
 (function() {
-    var MAX_BLOCK_SIZE = 25000;
+    var MAX_BLOCK_SIZE = 5000;
+    var CLASS_FEED_POST = 'feed-post';
+    var CLASS_FEED_POST_CACHED = 'feed-post-cached';
+    var CLASS_FEED_POST_DECRYPTED_CONTENT = 'feed-post-decrypted-content';
+    var CLASS_PGP_MESSAGE = 'pgp-message';
     var PREFIX_FEED_POSTS_BY_KEY = 'feed-posts-by-key';
+    var PREFIX_REPLIES_POSTS_BY_KEY = 'feed-replies-by-key';
 
 
     document.addEventListener('log', function(e) {
         var htmlContainer = e.target;
-        if(htmlContainer.getElementsByClassName('feed-post').length > 0) // TODO: ugly/inefficient
-            updateUserFeedCache();
+//         if(htmlContainer.getElementsByClassName(CLASS_FEED_POST).length > 0) // TODO: ugly/inefficient
+            updateUserFeedCache(htmlContainer);
     });
 
+    function addPostToLocalStorage(pgpMessageContent, feedKeyID) {
+        var pgpMessageData = openpgp.armor.decode(pgpMessageContent).data;
 
-    function updateUserFeedCache() {
+        var ui = 0;
+        var postData, feedKey;
+        while(postData = localStorage.getItem(
+            PREFIX_FEED_POSTS_BY_KEY + ':' + feedKeyID + (ui>0 ? ':' + ui : ''))) {
+            if(postData.indexOf(pgpMessageData) >= 0)
+                return false;
+            ui++;
+        }
+
+        console.log("Caching new user post to local storage block " + feedKey);
+
+        postData = localStorage.getItem(PREFIX_FEED_POSTS_BY_KEY + ':' + feedKeyID) || '';
+
+        if(postData.length + pgpMessageContent.length > MAX_BLOCK_SIZE) {
+            var lastPostData = postData;
+            ui = 1;
+            while(true) {
+                feedKey = PREFIX_FEED_POSTS_BY_KEY + ':' + feedKeyID + (ui>0 ? ':' + ui++ : '');
+                postData = localStorage.getItem(feedKey);
+                localStorage.setItem(feedKey, lastPostData); // Switch out data
+                if(!postData)
+                    break; // Nothing to pass up, so just ... ya know.... break!
+                lastPostData = postData;
+            }
+            postData = '';
+        }
+        postData = pgpMessageData + (postData.length === 0 ? '' : "\n" + postData);
+        localStorage.setItem(PREFIX_FEED_POSTS_BY_KEY + ':' + feedKeyID, postData);
+
+    }
+
+    function updateUserFeedCache(containerElm) {
+        if(!containerElm)
+            containerElm = document;
 
         var LocalStore = new openpgp.Keyring.localstore();
         var privateKeys = LocalStore.loadPrivate();
-        var privateKeyIDs = [];
-        for(var i=0; i<privateKeys.length; i++) {
-            var privateKey = privateKeys[i];
-            privateKeyIDs.push(privateKey.getKeyIds()[0].toHex());
-        }
-        privateKeys = null;
+        var publicKeys = LocalStore.loadPublic();
+        var allKeys = privateKeys.concat(publicKeys);
 
-        for(i=0; i<privateKeyIDs.length; i++) {
-            var privateKeyID = privateKeyIDs[i];
+        for(var i=0; i<allKeys.length; i++) {
+            var pgpKey = allKeys[i];
+            var pgpKeyIDs = pgpKey.getKeyIds();
+            var feedKeyID = pgpKey.primaryKey.getKeyId().toHex();
 
-            var userPosts = document.getElementsByClassName(PREFIX_FEED_POSTS_BY_KEY + ':' + privateKeyID);
+            var userPosts = containerElm.getElementsByClassName(PREFIX_FEED_POSTS_BY_KEY + ':' + feedKeyID);
 
             for(var j=0; j<userPosts.length; j++) {
-                var userPost = userPosts[j];
-                if(userPost.classList.contains('feed-post-cached'))
-                    continue;
+                var userPostElm = userPosts[j];
+                if(!userPostElm.classList.contains(CLASS_FEED_POST_CACHED)) {
+                    var pgpMessageContent = userPostElm.getElementsByClassName(CLASS_PGP_MESSAGE)[0].innerHTML;
+                    var pgpMessage = openpgp.message.readArmored(pgpMessageContent);
 
-                var encryptedContent = userPost.innerHTML;
+                    var encryptionIDs = pgpMessage.getEncryptionKeyIds();
 
-                var pgpMessage = openpgp.message.readArmored(encryptedContent);
-                var encIDs = pgpMessage.getEncryptionKeyIds();
-                if(encIDs.indexOf(privateKeyID) === -1)
-                    throw new Error("pk mismatch [" + encIDs.join(', ') + "] != " + privateKeyID);
+                    if(!hasMatchingIDs(pgpKeyIDs, encryptionIDs))
+                        throw new Error("pk mismatch " + encryptionIDs.join(', ') + " ! IN " + pgpKeyIDs.join(', '));
 
-                var pgpMessageData = openpgp.armor.decode(encryptedContent).data;
-
-                var ui = 0;
-                var postData;
-                var foundPost = false;
-                while(postData = localStorage.getItem(PREFIX_FEED_POSTS_BY_KEY + ':' + privateKeyID + (++ui).toString())) {
-                    if(!foundPost && postData.indexOf(pgpMessageData) === -1) {
-                        foundPost = true;
-                    }
+                    addPostToLocalStorage(pgpMessageContent, feedKeyID);
+                    userPostElm.classList.add(CLASS_FEED_POST_CACHED);
                 }
 
-                if(!foundPost) {
-                    var feedKey = PREFIX_FEED_POSTS_BY_KEY + ':' + privateKeyID + (ui);
-                    console.log("Caching new user post to local storage block " + feedKey);
-                    postData = localStorage.getItem(feedKey);
-                    if(postData.length > MAX_BLOCK_SIZE) {
-                        feedKey = PREFIX_FEED_POSTS_BY_KEY + ':' + privateKeyID + (ui + 1);
-                        postData = localStorage.getItem(feedKey);
-                        if(postData.length > MAX_BLOCK_SIZE)
-                            throw new Error("Shouldn't happen");
-                    }
-                    postData += (postData.length === 0 ? '' : "\n") + pgpMessageData;
-                    localStorage.setItem(feedKey, postData);
-                }
 
-                userPost.classList.add('feed-post-cached');
+                if(userPostElm.getElementsByClassName(CLASS_FEED_POST_DECRYPTED_CONTENT).length === 0) {
+                    var decryptedContentContainer = document.createElement('span');
+                    decryptedContentContainer.setAttribute('class', CLASS_FEED_POST_DECRYPTED_CONTENT);
+                    decryptedContentContainer.innerHTML = '<span class="action">decrypting...</span>';
+                    userPostElm.appendChild(decryptedContentContainer);
+
+                    function decrypt(privateKey, pgpMessage, decryptedContentContainer) {
+
+                        openpgp.decryptMessage(privateKey, pgpMessage)
+                            .then(function(decryptedMessage) {
+                                decryptedContentContainer.innerHTML = decryptedMessage;
+
+                            }, function(error) {
+                                decryptedContentContainer.innerHTML += '<span class="error">' + error + '</span>';
+                                console.log("Could not decrypt", error, privateKey, pgpMessage, decryptedContentContainer);
+
+                            }).catch(function(error) {
+                                decryptedContentContainer.innerHTML += '<span class="error">' + error + '</span>';
+                                throw new Error(error);
+
+                            });
+                    }
+                    console.log("Attempting to decrypt with: " + feedKeyID, userPostElm);
+                    decrypt(pgpKey, pgpMessage, decryptedContentContainer);
+                }
             }
         }
 
@@ -174,7 +215,7 @@
         if(!postContent.length)
             throw new Error ("Empty post content");
 
-        postContent = "<div class='feed-post'>" + postContent + "</div>";
+        postContent = "<div class='" + CLASS_FEED_POST + "' data-channel='" + postChannel + "'>" + postContent + "</div>";
 
         //var commandString = "MESSAGE " + postChannel + ' !post ' + postContent;
 
@@ -182,7 +223,13 @@
         openpgp.encryptMessage(selectedKey, postContent)
             .then(function(encryptedString) {
 
-                var commandString = "MESSAGE " + postChannel + ' ' + "<div class='pgp-message " + PREFIX_FEED_POSTS_BY_KEY + ":" + selectedKeyID + "'>" + encryptedString + "</div>";
+                addPostToLocalStorage(encryptedString, selectedKeyID);
+
+
+                var commandString = "MESSAGE " + postChannel + ' ' +
+                    "<div class='" + PREFIX_FEED_POSTS_BY_KEY + ":" + selectedKeyID + "'>" +
+                        "<div class='pgp-message'>" + encryptedString + "</div>" +
+                    "</div>";
                 setStatus(formElm, "Posting to feed...");
 
                 // encrypted
@@ -196,6 +243,8 @@
                 //if(e.isDefaultPrevented())
                 //    messageElm.value = '';
 
+                //updateUserFeedCache();
+
             }).catch(function(error) {
                 throw new Error(error);
 
@@ -203,6 +252,18 @@
 
 
     };
+
+
+    function hasMatchingIDs(keyIDs1, keyIDs2) {
+        for(var i=0; i<keyIDs1.length; i++) {
+            for(var j=0; j<keyIDs2.length; j++) {
+                if(keyIDs1[i].toHex() === keyIDs2[j].toHex()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
 
     function fixHomePath(channelPath, keyID) {

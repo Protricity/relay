@@ -5,8 +5,8 @@
 }
 
 .channel-content {
-    overflow: auto;
-    max-height: 20vw;
+    /* overflow: auto; too broad*/
+    /* max-height: 20vw; */
 }
 
 .channel {
@@ -15,7 +15,8 @@
     -webkit-animation: fadein 0.5s; /* Safari and Chrome */
     
 
-      min-width: 35em;
+      
+     min-width: 36em;
     
 
       display: inline-block;
@@ -50,18 +51,9 @@ ul.channel-list li,
 }
 
 .channel .user {
-    text-decoration: none;
     color: darkblue;
-    max-width: 12em;
-    display: inline-flex;
-    overflow: hidden;
-}
-
-
-.channel .user:hover {
-    text-decoration: underline;
-    cursor: pointer;
-    max-width: inherit;
+                                
+    text-overflow: ellipsis;
 }
 
 
@@ -94,6 +86,10 @@ ul.channel-list li,
     -moz-animation: fadein 0.5s;
     -webkit-animation: fadein 0.5s; /* Safari and Chrome */
     
+}
+
+.channel .status-box:empty {
+    display: none;
 }
 
 .channel .path {

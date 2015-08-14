@@ -5,8 +5,8 @@
 }
 
 .channel-content {
-    overflow: auto;
-    max-height: 20vw;
+    /* overflow: auto; too broad*/
+    /* max-height: 20vw; */
 }
 
 .channel {
@@ -15,11 +15,13 @@
     -webkit-animation: fadein 0.5s; /* Safari and Chrome */
     
 
-      min-width: 35em;
+      
+     min-width: 36em;
     
 
       display: inline-block;
-    vertical-align: middle;
+    
+     vertical-align: top;
      -o-animation: fadein 0.5s; /* Opera */
 
     -moz-transition: opacity 0.4s ease-in-out;
@@ -49,18 +51,11 @@ ul.channel-list li,
 }
 
 .channel .user {
-    text-decoration: none;
     color: darkblue;
-    max-width: 12em;
-    display: inline-flex;
-    overflow: hidden;
-}
-
-
-.channel .user:hover {
-    text-decoration: underline;
-    cursor: pointer;
-    max-width: inherit;
+        
+    /* overflow: hidden; */
+    /* max-width: 6em; */
+    display: inline-block;      width:180px;      white-space: nowrap;      overflow:hidden !important;      text-overflow: ellipsis;
 }
 
 
@@ -93,6 +88,10 @@ ul.channel-list li,
     -moz-animation: fadein 0.5s;
     -webkit-animation: fadein 0.5s; /* Safari and Chrome */
     
+}
+
+.channel .status-box:empty {
+    display: none;
 }
 
 .channel .path {

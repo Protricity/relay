@@ -12,7 +12,7 @@
     var CLASS_CHANNEL_LIST = 'channel-list';
     var CLASS_CHANNEL_LIST_ENTRY = 'channel-list-entry';
 
-    var socketWorker = new Worker('js/socket-worker.js');
+    var socketWorker = new Worker('cmd/socket-worker.js');
     socketWorker.addEventListener('message', function(e) {
         receiveMessage(e.data || e.detail);
     }, true);
@@ -36,6 +36,9 @@
 
     function receiveMessage(message) {
         var args = /^(\w+)\s+([\s\S]*)$/mi.exec(message);
+        if(!args)
+            throw new Error("Invalid Command: " + message);
+            
         var commandString = args[1].toLowerCase();
         switch(commandString) {
             case 'log':
@@ -111,7 +114,7 @@
                 }
                 channelOutput.innerHTML = content;
 
-                if(contentTarget.length > 0 && oldContent !== contentTarget[0]) {
+                if(oldContent && contentTarget.length > 0 && oldContent !== contentTarget[0]) {
                     var newTarget = contentTarget[0];
                     console.info("Preserving content: ", oldContent, newTarget);
                     newTarget.parentNode.insertBefore(oldContent, newTarget);
@@ -132,8 +135,11 @@
 
             if(focus) {
                 var channelInput = channelContainer.querySelector('textarea, input');
-                if(channelInput)
-                    channelInput.focus();
+                if(channelInput) (function(channelInput) {
+                        setTimeout(function () {
+                            channelInput.focus();
+                        }, 500);
+                    })(channelInput);
             }
 
             var contentEvent = new CustomEvent('log', {

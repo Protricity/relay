@@ -5,77 +5,7 @@
 
     var PATH_PREFIX = 'pgp:';
 
-
-    //document.addEventListener('command', onCommandEvent);
-
     var selectedPublicKeyID = null;
-
-    document.addEventListener('log', function(e) {
-        var htmlContainer = e.target;
-        var pgpMessages = htmlContainer.getElementsByClassName('pgp-message');
-        if(pgpMessages.length === 0)
-            return;
-
-        for(var i=pgpMessages.length-1; i>=0; i--) {
-            var pgpMessageContainer = pgpMessages[i];
-            decryptPGPMessageContainer(pgpMessageContainer);
-        }
-
-    });
-
-    function decryptPGPMessageContainer(pgpMessageContainer) {
-        if(!pgpMessageContainer.classList.contains('pgp-message'))
-            throw new Error("Invalid pgp message container: " + pgpMessageContainer.outerHTML);
-
-        var encryptedMessage = pgpMessageContainer.innerHTML;
-        var encryptedData = openpgp.message.readArmored(encryptedMessage);
-        if(!encryptedData.data || encryptedMessage.indexOf("-----BEGIN PGP MESSAGE-----") === -1) {
-            pgpMessageContainer.setAttribute('class', 'pgp-message-error');
-            throw new Error("No PGP message block found: " + pgpMessageContainer.outerHTML);
-        }
-
-        if(pgpMessageContainer.classList.contains('pgp-message-decryption-attempted'))
-            return;
-
-        pgpMessageContainer.classList.add('pgp-message-decryption-attempted');
-
-        var encryptionIDs = encryptedData.getEncryptionKeyIds();
-
-        var LocalStore = new openpgp.Keyring.localstore();
-        var privateKeys = LocalStore.loadPrivate();
-        var publicKeys = LocalStore.loadPublic();
-        var allKeys = privateKeys.concat(publicKeys);
-
-        for(var j=0; j<allKeys.length; j++) {
-            var key = allKeys[j];
-            var keyIDs = key.getKeyIds();
-            for(var k=0; k<keyIDs.length; k++) {
-                var keyID = keyIDs[k];
-                if(encryptionIDs.indexOf(keyID) !== -1) {
-
-                    // TODO: decrypt key
-
-                    console.log("Attempting to decrypt with: " + keyID, pgpMessageContainer);
-
-                    openpgp.decryptMessage(key, encryptedData)
-                        .then(function(decryptedMessage) {
-                            var decryptedMessageContainer = document.createElement('span');
-                            decryptedMessageContainer.setAttribute('class', 'pgp-message-decrypted-content');
-                            pgpMessageContainer.parentNode.insertBefore(decryptedMessageContainer, pgpMessageContainer);
-
-                        }, function(error) {
-                            console.log("Could not decrypt", arguments);
-
-                        }).catch(function(error) {
-                            throw new Error(error);
-
-                        });
-                }
-            }
-
-
-        }
-    }
 
     window.submitPGPKeyGenForm = function(e) {
         e.preventDefault();
@@ -89,40 +19,54 @@
         var bits = formElm.querySelector('*[name=bits]').value;
         var userID = formElm.querySelector('*[name=user_id]').value;
         var passphrase = formElm.querySelector('*[name=passphrase]').value;
+        var send_as_socket_command = parseInt(formElm.querySelector('*[name=send_as_socket_command]').value);
 
         formElm.querySelector('*[type=submit]').setAttribute('disabled', 'disabled');
 
-        setStatus(formElm, "Generating new PGP Key...");
-
-        openpgp.generateKeyPair({
-            keyType:1,
-            numBits:bits,
-            userId:userID,
-            passphrase:passphrase
-
-        }).then(function(NewKey) {
-            var newKeyID = NewKey.key.getKeyIds()[0].toHex();
-            console.log("New PGP Key Generated: " + newKeyID);
+        if(0 && send_as_socket_command) {
+            setStatus(formElm, "Generating new PGP Key via socket command...");
+            var commandString = 'KEYGEN --bits ' + bits;
+            if(passphrase)
+                commandString += ' --passphrase ' + passphrase;
+            commandString += ' --user ' + userID;
 
             var messageEvent = new CustomEvent('socket', {
-                detail: "REGISTER " + NewKey.privateKeyArmored,
-                cancelable:true,
-                bubbles:true
+                detail: commandString,
             });
             document.dispatchEvent(messageEvent);
 
-            setTimeout(function(e) {
-                var formElm = document.querySelector('form[name=pgp-register-form]');
-                var privateKeyElm = formElm.querySelector('textarea[name=private_key]');
-                privateKeyElm.value = NewKey.privateKeyArmored;
+        } else {
+            setStatus(formElm, "Generating new PGP Key via client...");
 
-                setStatus(formElm, "New PGP Key Generated: " + newKeyID + ".<br/>You may now <span class='action'>register</span> your new private key");
-            }, 100);
 
-        }).catch(function(error) {
 
-            throw new Error(error);
-        });
+            openpgp.generateKeyPair({
+                keyType:1,
+                numBits:bits,
+                userId:userID,
+                passphrase:passphrase
+
+            }).then(function(NewKey) {
+                var newKeyID = NewKey.key.getKeyIds()[0].toHex();
+                console.log("New PGP Key Generated: " + newKeyID);
+
+                var messageEvent = new CustomEvent('socket', {
+                    detail: "REGISTER --show-form " + NewKey.privateKeyArmored,
+                    cancelable:true
+                });
+                document.dispatchEvent(messageEvent);
+
+                //setTimeout(function(e) {
+                //    var formElm = document.querySelector('form[name=pgp-register-form]');
+                //    var privateKeyElm = formElm.querySelector('textarea[name=private_key]');
+                //    privateKeyElm.value = NewKey.privateKeyArmored;
+                //
+                //    setStatus(formElm, "New PGP Key Generated: " + newKeyID + ".<br/>You may now <span class='action'>register</span> your new private key");
+                //}, 100);
+
+            });
+        }
+
     };
 
     function focusPGPRegisterForm(e) {
@@ -157,47 +101,55 @@
             throw new Error("PGP PRIVATE KEY BLOCK not found");
 
         var privateKey = window.openpgp.key.readArmored(privateKeyValue).keys[0];
-        var privateKeyID = privateKey.getKeyIds()[0].toHex();
-        var privateUserID = privateKey.getUserIds()[0];
-
-        var local = new openpgp.Keyring.localstore();
-        var keys = local.loadPrivate();
-        for(var ki=0; ki<keys.length; ki++) {
-            if (keys[ki].getKeyIds()[0].toHex() === privateKeyID) {
-                setStatus(formElm, "<div class='error'>Private key already exists</div>");
-                throw new Error("Private key already exists");
-
-            }
-            if (keys[ki].getUserIds()[0] === privateUserID) {
-                if(!confirm("User ID already exists: " + privateUserID
-                    + "\nWould you like to continue registering the duplicate?"
-                    + "\n(OK=register, Cancel=abort)")) {
-                    setStatus(formElm, "<div class='error'>Aborted due to duplicate user id value</div>");
-                    throw new Error("Aborted due to duplicate user id value");
-                }
-            }
-        }
-
-        keys.push(privateKey);
-        local.storePrivate(keys);
-
-        privateKeyElm.value = '';
-        formElm = focusPGPRegisterForm(e);
+        //var privateKeyID = privateKey.getKeyIds()[0].toHex();
+        //var privateUserID = privateKey.getUserIds()[0];
 
         var messageEvent = new CustomEvent('socket', {
-            detail: "MANAGE " + privateKeyID,
-            cancelable:true,
-            bubbles:true
+            detail: "REGISTER " + privateKey.armor(),
+            cancelable:true
         });
         document.dispatchEvent(messageEvent);
 
-        setTimeout(function () {
-            var formElms = document.querySelectorAll('form[name=pgp-manage-form]');
-            for(var fi=0; fi<formElms.length; fi++)
-                window.focusPGPManageForm(e, formElms[fi]);
-        }, 100);
-
-        setStatus(formElm, "New PGP Key Registered: " + privateKeyID);
+        //
+        //
+        //var local = new openpgp.Keyring.localstore();
+        //var keys = local.loadPrivate();
+        //for(var ki=0; ki<keys.length; ki++) {
+        //    if (keys[ki].getKeyIds()[0].toHex() === privateKeyID) {
+        //        setStatus(formElm, "<div class='error'>Private key already exists</div>");
+        //        throw new Error("Private key already exists");
+        //
+        //    }
+        //    if (keys[ki].getUserIds()[0] === privateUserID) {
+        //        if(!confirm("User ID already exists: " + privateUserID
+        //            + "\nWould you like to continue registering the duplicate?"
+        //            + "\n(OK=register, Cancel=abort)")) {
+        //            setStatus(formElm, "<div class='error'>Aborted due to duplicate user id value</div>");
+        //            throw new Error("Aborted due to duplicate user id value");
+        //        }
+        //    }
+        //}
+        //
+        //keys.push(privateKey);
+        //local.storePrivate(keys);
+        //
+        //privateKeyElm.value = '';
+        //formElm = focusPGPRegisterForm(e);
+        //
+        //var messageEvent = new CustomEvent('socket', {
+        //    detail: "MANAGE " + privateKeyID,
+        //    cancelable:true,
+        //    bubbles:true
+        //});
+        //document.dispatchEvent(messageEvent);
+        //
+        //setTimeout(function () {
+        //    var formElms = document.querySelectorAll('form[name=pgp-manage-form]');
+        //    for(var fi=0; fi<formElms.length; fi++)
+        //        window.focusPGPManageForm(e, formElms[fi]);
+        //}, 100);
+        //
+        //setStatus(formElm, "New PGP Key Registered: " + privateKeyID);
     };
 
     var loadedForms = [];

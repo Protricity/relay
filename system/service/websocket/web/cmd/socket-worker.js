@@ -4,7 +4,7 @@
 
 var SOCKET_RECONNECT_INTERVAL = 5000;
 
-importScripts('defaults.js');
+importScripts('socket-defaults.js');
 
 
 
