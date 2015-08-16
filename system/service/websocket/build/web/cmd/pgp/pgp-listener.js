@@ -11,10 +11,7 @@
 
         for(var i=decryptionRequiredElms.length-1; i>=0; i--) {
             var decryptionRequiredElm = decryptionRequiredElms[i];
-            var htmlEncodedPGPContent = decryptionRequiredElm.innerHTML;
-            var htmlDecodedPGPContent = htmlEncodedPGPContent.replace(/&#\d+;/gm,function(s) {
-                return String.fromCharCode(s.match(/\d+/gm)[0]);
-            });
+            var htmlDecodedPGPContent = decodeURIComponent(decryptionRequiredElm.innerHTML);
 
             var pgpMessage = openpgp.message.readArmored(htmlDecodedPGPContent);
 
@@ -38,40 +35,69 @@
 
 
         for(i=verificationRequiredElms.length-1; i>=0; i--) {
-            var verificationRequiredElm = verificationRequiredElms[i];
-            var htmlEncodedSignedPGPContent = verificationRequiredElm.getAttribute('data-encrypted-content') || verificationRequiredElm.innerHTML;
-            var htmlDecodedSignedPGPContent = htmlEncodedSignedPGPContent.replace(/&#\d+;/gm,function(s) {
-                return String.fromCharCode(s.match(/\d+/gm)[0]);
-            });
+            (function(verificationRequiredElm) {
+                var htmlDecodedSignedPGPContent = decodeURIComponent(verificationRequiredElm.innerHTML);
 
-            var pgpSignedMessage = openpgp.cleartext.readArmored(htmlDecodedSignedPGPContent);
-            (function(pgpSignedMessage) {
-                var signIDs = pgpSignedMessage.getSigningKeyIds();
-                var signFP = signIDs[0].toHex().toUpperCase();
+                var pgpSignedMessage = openpgp.cleartext.readArmored(htmlDecodedSignedPGPContent);
+                (function(pgpSignedMessage) {
+                    var signIDs = pgpSignedMessage.getSigningKeyIds();
+                    var signFP = signIDs[0].toHex().toUpperCase();
 
-                self.PGPDB.getPublicKeyData(signFP, function (err, pkData) {
+                    self.PGPDB.getPublicKeyData(signFP, function (err, pkData) {
 
-                    var publicKey = openpgp.key.readArmored(pkData.block_public);
-                    var feedKeyID = publicKey.keys[0].primaryKey.getKeyId().toHex();
+                        var publicKey = openpgp.key.readArmored(pkData.block_public);
+                        var feedKeyID = publicKey.keys[0].primaryKey.getKeyId().toHex();
 
-    //                 openpgp._worker_init = false;
-                    openpgp.verifyClearSignedMessage(publicKey.keys, pgpSignedMessage)
-                        .then(function(verifiedContent) {
-                            for(var i=0; i<verifiedContent.signatures.length; i++)
-                                if(!verifiedContent.signatures[i].valid)
-                                    throw new Error("Invalid Signature [" + feedKeyID + "]: " + verifiedContent.signatures[0].keyid.toHex().toUpperCase());
-                            console.log("VERIFIED", verifiedContent.text, verifiedContent);
-                        }).catch(function(err) {
-                            console.log(err);
-                        });
-                });
-            })(pgpSignedMessage);
+                        //                 openpgp._worker_init = false;
+                        openpgp.verifyClearSignedMessage(publicKey.keys, pgpSignedMessage)
+                            .then(function(verifiedContent) {
+                                var verifiedText = verifiedContent.text;
+                                for(var i=0; i<verifiedContent.signatures.length; i++)
+                                    if(!verifiedContent.signatures[i].valid)
+                                        throw new Error("Invalid Signature [" + feedKeyID + "]: " + verifiedContent.signatures[0].keyid.toHex().toUpperCase());
+
+                                verificationRequiredElm.classList.remove('verification-required');
+                                verificationRequiredElm.classList.add('verified');
+                                var decryptedContentElm = document.createElement('span');
+                                decryptedContentElm.classList.add('pgp-verified-content');
+                                decryptedContentElm.innerHTML = protectHTMLContent(verifiedText);
+                                verificationRequiredElm.parentNode.insertBefore(decryptedContentElm, verificationRequiredElm);
+
+                                console.log("VERIFIED", verificationRequiredElm, decryptedContentElm, verifiedContent.text, verifiedContent);
+                            }).catch(function(err) {
+                                console.log(err);
+                            });
+                    });
+                })(pgpSignedMessage);
+
+            })(verificationRequiredElms[i]);
 
         }
 
 
 
     });
+
+    function protectHTMLContent(htmlContent) {
+        var tagsToReplace = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;'
+        };
+
+        htmlContent = htmlContent.replace(/[&<>]/g, function(tag) {
+            return tagsToReplace[tag] || tag;
+        });
+
+        htmlContent = htmlContent.replace(/&lt;(a|p|span|div)(?:\s+(class|data-channel|data-timestamp)=[^=&]+\s*)*&gt;/g, function(tag) {
+            tag = tag.replace('&lt;', '<');
+            return tag;
+        });
+
+        htmlContent = htmlContent.replace(/&lt;\//i, '</');
+        htmlContent = htmlContent.replace(/&gt;/ig, '>');
+        return htmlContent;
+    }
 
 })();
 
