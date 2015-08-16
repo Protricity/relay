@@ -89,20 +89,22 @@
         reg = /-----BEGIN PGP MESSAGE-----[\s\S]+-----END PGP MESSAGE-----/img;
         while(match = reg.exec(htmlContent)) {
 
-            encodedContent = match[0].trim().replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
-                return '&#'+i.charCodeAt(0)+';';
-            });
-            htmlContent = htmlContent.replace(match[0], "<div class='pgp-message decryption-required'>" +
+//             encodedContent = match[0].trim().replace(/./gim, function(i) {
+//                 return '&#'+i.charCodeAt(0)+';';
+//             });
+            encodedContent = encodeURIComponent(match[0].trim());
+            htmlContent = htmlContent.replace(match[0], "<div class='pgp-message decryption-required' >" +
                 encodedContent +
             "</div>");
         }
 
         reg = /-----BEGIN PGP SIGNED MESSAGE-----[\s\S]+-----BEGIN PGP SIGNATURE-----[\s\S]+-----END PGP SIGNATURE-----/img;
         while(match = reg.exec(htmlContent)) {
-            encodedContent = match[0].trim().replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
-                return '&#'+i.charCodeAt(0)+';';
-            });
+//             encodedContent = match[0].trim().replace(/./gim, function(i) {
+//                 return '&#'+i.charCodeAt(0)+';';
+//             });
 
+            encodedContent = encodeURIComponent(match[0].trim());
             htmlContent = htmlContent.replace(match[0],
                 "<div class='pgp-signed-message verification-required'>" +
                     encodedContent +

@@ -322,7 +322,7 @@
 })();
 
 
-
+// For Public/Private Key Database access
 (function() {
     var SCRIPT_PATH = 'cmd/pgp/pgp-db.js';
     var head = document.getElementsByTagName('head')[0];
@@ -336,6 +336,7 @@
 
 
 
+// For Feed Database access
 (function() {
     var SCRIPT_PATH = 'cmd/post/post-db.js';
     var head = document.getElementsByTagName('head')[0];
@@ -346,3 +347,14 @@
     }
 })();
 
+
+// For PGP Decryption of feed posts
+(function() {
+    var SCRIPT_PATH = 'cmd/pgp/pgp-listener.js';
+    var head = document.getElementsByTagName('head')[0];
+    if (head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+        var newScript = document.createElement('script');
+        newScript.setAttribute('src', SCRIPT_PATH);
+        head.appendChild(newScript);
+    }
+})();

@@ -7,15 +7,6 @@
 
     var selectedPublicKeyID = null;
 
-    var decryptionRequiredElms = document.getElementsByClassName('decryption-required');
-    var verificationRequiredElms = document.getElementsByClassName('verification-required');
-    document.addEventListener('log', function(e) {
-        var htmlContainer = e.target;
-        console.log("Needs decryption: ", htmlContainer, verificationRequiredElms);
-//         if(htmlContainer.getElementsByClassName(CLASS_FEED_POST).length > 0) // TODO: ugly/inefficient
-//            updateUserFeedCache(htmlContainer);
-    });
-
 
     window.submitPGPKeyGenForm = function(e) {
         e.preventDefault();
@@ -156,36 +147,8 @@
 
     };
 
-    function keyGenCommand(e, keyGenString) {
-        var userID = keyGenString;
-        //var passphrase = prompt("Optionally add a passphrase to secure your new identity keys. You will be asked for this whenever your private key is used");
-        //sendResponse("LOG ~ New Keypair Generated: " + newKeyID);
-
-        e.preventDefault();
-        sendResponse("LOG pgp:keygen " + KEYGEN_TEMPLATE
-            .replace(/{\$user_id}/gi, '')
-            .replace(/{\$private_key}/gi, '')
-        );
-    }
 
 
-    function sendResponse(responseString) {
-
-        var messageEvent = new CustomEvent('message', {
-            detail: responseString,
-            cancelable:true,
-            bubbles:true
-        });
-        document.dispatchEvent(messageEvent);
-        //if(messageEvent.defaultPrevented)
-        //    messageElm[0].value = '';
-        return false;
-    }
-
-    function nl2br (str, is_xhtml) {
-        var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
-        return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
-    }
 
     function setStatus(formElm, statusText) {
         var statusElm = formElm.querySelector('.status-box');
@@ -243,3 +206,5 @@
         }, 500);
     }
 })();
+
+

@@ -61,7 +61,6 @@
         self.PGPDB.getPublicKeyData(fp, function (err, pkData) {
 
             var publicKey = openpgp.key.readArmored(pkData.block_public);
-//                 privateKey.decrypt('passphrase');
 
 //                 openpgp._worker_init = false;
             openpgp.verifyClearSignedMessage(publicKey.keys, pgpSignedMessage)
@@ -70,76 +69,6 @@
             });
         });
 
-
-        //getPGPDB(function(db, PGPDB) {
-        //
-        //    PGPDB.getPGPKeyIDs(pgpMessageContent, function(sids, ids) {
-        //        console.log("IDS: ", sids);
-        //
-        //        for(var i=0; i<sids.length; i++) {
-        //            var fp = sids[i].toUpperCase();
-        //
-        //            (function (fp) {
-        //                self.PGPDB.getPrivateKey(fp, function (err, privateKey, pkData, alice) {
-        //                    if(err)
-        //                        throw new Error(err);
-        //
-        //                    var kbpgp = getKBPGP();
-        //                    kbpgp.KeyManager.import_from_armored_pgp({
-        //                        armored: pkData.block_public
-        //                    }, function(err, alice2) {
-        //                        if (err)
-        //                            throw new Error(err);
-        //
-        //                        var publicKey = alice.find_crypt_pgp_key();
-        //                        var publicKeyFingerprint = publicKey.get_fingerprint().toString('hex').toUpperCase();
-        //
-        //
-        //
-        //
-        //
-        //                        var ring = new kbpgp.keyring.KeyRing;
-        //                        var kms = [alice, alice2];
-        //                        for (var i in kms) {
-        //                            ring.add_key_manager(kms[i]);
-        //                        }
-        //                        kbpgp.unbox({keyfetch: ring, armored: pgpMessageContent}, function(err, literals) {
-        //                            if (err != null) {
-        //                                return console.log("Problem: " + err);
-        //                            } else {
-        //                                console.log("decrypted message");
-        //                                console.log(literals[0].toString());
-        //                                var ds = km = null;
-        //                                ds = literals[0].get_data_signer();
-        //                                if (ds) { km = ds.get_key_manager(); }
-        //                                if (km) {
-        //                                    console.log("Signed by PGP fingerprint");
-        //                                    console.log(km.get_pgp_fingerprint().toString('hex'));
-        //                                }
-        //                            }
-        //                        });
-        //
-        //
-        //
-        //
-        //                    });
-        //                });
-        //            })(fp);
-        //        }
-        //    });
-        //
-        //    //var kbpgp = getKBPGP();
-        //    //kbpgp.unbox({
-        //    //    armored: pgpMessageContent,
-        //    //    keyfetch: PGPDB.fetchPublicKey
-        //    //
-        //    //}, function(err, literals) {
-        //    //    if(err)
-        //    //        throw new Error(err);
-        //    //    callback(err, literals[0]);
-        //    //
-        //    //});
-        //});
     };
 
     self.FeedDB.addPostToDB = function(pgpSignedPost, verifiedText, callback) {
