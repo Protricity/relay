@@ -84,13 +84,32 @@
         if(htmlContent.indexOf("<div class='pgp-message'>") >= 0)
             return htmlContent;
 
-        var reg = /-----BEGIN PGP MESSAGE-----[\s\S]+-----END PGP MESSAGE-----/img;
-        var match;
+        var reg, match, encodedContent;
+
+        reg = /-----BEGIN PGP MESSAGE-----[\s\S]+-----END PGP MESSAGE-----/img;
         while(match = reg.exec(htmlContent)) {
-            var fixedMessage = "<div class='pgp-message'>" + match[0].trim() + "</div>";
-            //if(htmlContent.indexOf("<div class='pgp-message'>") === -1)
-            htmlContent = htmlContent.replace(match[0], fixedMessage);
+
+            encodedContent = match[0].trim().replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+                return '&#'+i.charCodeAt(0)+';';
+            });
+            htmlContent = htmlContent.replace(match[0], "<div class='pgp-message decryption-required'>" +
+                encodedContent +
+            "</div>");
         }
+
+        reg = /-----BEGIN PGP SIGNED MESSAGE-----[\s\S]+-----BEGIN PGP SIGNATURE-----[\s\S]+-----END PGP SIGNATURE-----/img;
+        while(match = reg.exec(htmlContent)) {
+            encodedContent = match[0].trim().replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+                return '&#'+i.charCodeAt(0)+';';
+            });
+
+            htmlContent = htmlContent.replace(match[0],
+                "<div class='pgp-signed-message verification-required'>" +
+                    encodedContent +
+                "</div>");
+        }
+
+
         return htmlContent;
     }
 

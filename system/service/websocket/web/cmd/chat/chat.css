@@ -1,4 +1,14 @@
 
+.pgp-signed-message {
+    white-space: pre;
+    font-style: italic;
+}
+.pgp-signed-message.verification-required {
+    color: red;
+}
+.pgp-signed-message.verified {
+    color: inherit;
+}
 
 form[name=chat-form] {
     max-width: 37em;

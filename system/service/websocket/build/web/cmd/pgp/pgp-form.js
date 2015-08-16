@@ -7,6 +7,16 @@
 
     var selectedPublicKeyID = null;
 
+    var decryptionRequiredElms = document.getElementsByClassName('decryption-required');
+    var verificationRequiredElms = document.getElementsByClassName('verification-required');
+    document.addEventListener('log', function(e) {
+        var htmlContainer = e.target;
+        console.log("Needs decryption: ", htmlContainer, verificationRequiredElms);
+//         if(htmlContainer.getElementsByClassName(CLASS_FEED_POST).length > 0) // TODO: ugly/inefficient
+//            updateUserFeedCache(htmlContainer);
+    });
+
+
     window.submitPGPKeyGenForm = function(e) {
         e.preventDefault();
         var formElm = e.target.form ? e.target.form : e.target;
@@ -31,7 +41,7 @@
             commandString += ' --user ' + userID;
 
             var messageEvent = new CustomEvent('socket', {
-                detail: commandString,
+                detail: commandString
             });
             document.dispatchEvent(messageEvent);
 
@@ -110,124 +120,29 @@
         });
         document.dispatchEvent(messageEvent);
 
-        //
-        //
-        //var local = new openpgp.Keyring.localstore();
-        //var keys = local.loadPrivate();
-        //for(var ki=0; ki<keys.length; ki++) {
-        //    if (keys[ki].getKeyIds()[0].toHex() === privateKeyID) {
-        //        setStatus(formElm, "<div class='error'>Private key already exists</div>");
-        //        throw new Error("Private key already exists");
-        //
-        //    }
-        //    if (keys[ki].getUserIds()[0] === privateUserID) {
-        //        if(!confirm("User ID already exists: " + privateUserID
-        //            + "\nWould you like to continue registering the duplicate?"
-        //            + "\n(OK=register, Cancel=abort)")) {
-        //            setStatus(formElm, "<div class='error'>Aborted due to duplicate user id value</div>");
-        //            throw new Error("Aborted due to duplicate user id value");
-        //        }
-        //    }
-        //}
-        //
-        //keys.push(privateKey);
-        //local.storePrivate(keys);
-        //
-        //privateKeyElm.value = '';
-        //formElm = focusPGPRegisterForm(e);
-        //
-        //var messageEvent = new CustomEvent('socket', {
-        //    detail: "MANAGE " + privateKeyID,
-        //    cancelable:true,
-        //    bubbles:true
-        //});
-        //document.dispatchEvent(messageEvent);
-        //
-        //setTimeout(function () {
-        //    var formElms = document.querySelectorAll('form[name=pgp-manage-form]');
-        //    for(var fi=0; fi<formElms.length; fi++)
-        //        window.focusPGPManageForm(e, formElms[fi]);
-        //}, 100);
-        //
-        //setStatus(formElm, "New PGP Key Registered: " + privateKeyID);
     };
 
-    var loadedForms = [];
+
+
     window.focusPGPManageForm = function(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
         if(formElm.nodeName.toLowerCase() !== 'form')
             throw new Error("Not a Form: " + formElm.nodeName);
         if(formElm.getAttribute('name') !== 'pgp-manage-form')
             throw new Error("Wrong Form name: " + formElm.getAttribute('name'));
-
-        var pgpDivs = formElm.getElementsByClassName('pgp-id-box');
-        if(pgpDivs.length === 0 || loadedForms.indexOf(formElm) >= 0)
-            return formElm;
-
-        // Remove current boxes
-        while(pgpDivs.length>0)
-            pgpDivs[0].parentNode.removeChild(pgpDivs[0]);
-
-        var local = new openpgp.Keyring.localstore();
-        var keys = local.loadPrivate();
-
-        for(var ki=0; ki<keys.length; ki++) {
-            var key = keys[ki];
-            var keyID = key.getKeyIds()[0].toHex();
-            var userID = key.getUserIds().join('; ');
-
-            var pgpHTML = '<fieldset class="pgp-id-box pgp-id-box:' + keyID + '">';
-            pgpHTML += '<legend>PGP Private Key</legend>';
-            pgpHTML += '<label><strong>Key ID:&nbsp;&nbsp;&nbsp;&nbsp;</strong> ' + keyID + '</label><br/>';
-            pgpHTML += '<label><strong>User ID:&nbsp;&nbsp;&nbsp;</strong> ' + userID + '</label><br/>';
-            pgpHTML += '<label><strong>Passphrase:</strong> ' + (key.primaryKey.isDecrypted ? 'No' : 'Yes') + '</label><br/>';
-            pgpHTML += '<label><strong>Actions:&nbsp;&nbsp;&nbsp;</strong> ';
-            pgpHTML += '<select name="actions" onselect="window[this.value](event, \'' + keyID + '\'); " oninput="window[this.value](event, \'' + keyID + '\'); ">';
-            pgpHTML += '<option value="" selected="selected">Select action</option>';
-            pgpHTML += '<option value="changePGPManageFormKeyPassphrase"' + (!key.primaryKey.isDecrypted ? ' disabled="disabled"' : '') + '>Change Password</option>';
-            pgpHTML += '<option value="changePGPManageFormKeyPassphrase"' + (key.primaryKey.isDecrypted ? ' disabled="disabled"' : '') + '>Add Password</option>';
-
-            pgpHTML += '<option value="" disabled="disabled">Sign/Encrypt Text</option>';
-            pgpHTML += '<option value="deletePGPManageFormKey">Delete Key</option>';
-            pgpHTML += '</select>';
-            pgpHTML += '</label><br/>';
-            pgpHTML += '</fieldset>';
-            formElm.innerHTML += pgpHTML;
-        }
-
-        setStatus(formElm, "Found " + keys.length + " PGP Private Keys");
-
-        loadedForms.push(formElm);
         return formElm;
     };
 
     window.deletePGPManageFormKey = function(e, deleteKeyID) {
         var formElm = window.focusPGPManageForm(e);
 
-        var local = new openpgp.Keyring.localstore();
-        var keys = local.loadPrivate();
 
-        for(var ki=0; ki<keys.length; ki++) {
-            var key = keys[ki];
-            var keyID = key.getKeyIds()[0].toHex();
-            var userID = key.getUserIds().join('; ');
-            if(deleteKeyID !== keyID)
-                continue;
+        var messageEvent = new CustomEvent('socket', {
+            detail: "UNREGISTER " + deleteKeyID,
+            cancelable:true
+        });
+        document.dispatchEvent(messageEvent);
 
-            if(!confirm("Are you sure you want to delete this key?\n[" + userID + ']'))
-                return false;
-
-            keys.splice(ki, 1);
-            local.storePrivate(keys);
-
-            var pgpDivs = formElm.getElementsByClassName('pgp-id-box:' + keyID);
-            while(pgpDivs.length>0)
-                pgpDivs[0].parentNode.removeChild(pgpDivs[0]);
-            setStatus(formElm, "PGP Key deleted: " + keyID);
-            return true;
-        }
-
-        throw new Error("Could not find key id: " + deleteKeyID);
     };
 
     window.changePGPManageFormKeyPassphrase = function(e, keyID) {
@@ -253,23 +168,6 @@
         );
     }
 
-    function encryptCommand(e, contentString) {
-
-
-        var keys = (new openpgp.Keyring.localstore()).loadPrivate();
-        var privateKey = null;
-        for(var ki=0; ki<keys.length; ki++) {
-
-        }
-
-        if(!privateKey)
-            throw new Error("No private key found");
-
-        var encryptedContent = openpgp.encryptMessage(privateKey, contentString);
-
-        e.preventDefault();
-        sendResponse("LOG ~ " + encryptedContent);
-    }
 
     function sendResponse(responseString) {
 
@@ -301,6 +199,22 @@
         statusElm.innerHTML = statusText;
         console.log(statusText);
     }
+
+
+    // IE Fix
+    if(typeof CustomEvent === 'undefined')
+        (function () {
+            function CustomEvent ( event, params ) {
+                params = params || { bubbles: false, cancelable: false, detail: undefined };
+                var evt = document.createEvent( 'CustomEvent' );
+                evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+                return evt;
+            }
+
+            CustomEvent.prototype = window.Event.prototype;
+
+            window.CustomEvent = CustomEvent;
+        })();
 })();
 
 

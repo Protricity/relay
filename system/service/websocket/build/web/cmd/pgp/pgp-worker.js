@@ -3,10 +3,6 @@
  */
 (function() {
 
-    var DB_NAME_PGP = 'pgp2';
-    var DB_TABLE_PUBLIC_KEYS = 'public-keys';
-    var DB_TABLE_PRIVATE_KEYS = 'private-keys';
-
 
     var PATH_PREFIX = 'pgp:';
     var PATH_MAIN = PATH_PREFIX + 'main';
@@ -95,15 +91,15 @@
     var MANAGE_TEMPLATE_ENTRY =
         "<script src='cmd/pgp/pgp-form.js'></script>" +
         "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
-        "<fieldset class='pgp-id-box pgp-id-box:{$fp_private}'>" +
+        "<fieldset class='pgp-id-box pgp-id-box:{$id_private}'>" +
             "<legend class='user'>{$user_id}</legend>" +
-            "<label><strong>ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='fingerprint'>{$fp_private_short}</span></label><br/>" +
-            "<label><strong>Sub ID:&nbsp;&nbsp;&nbsp;&nbsp;</strong> {$fp_public_short}</label><br/>" +
+            "<label><strong>ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='fingerprint'>{$id_private}</span></label><br/>" +
+            "<label><strong>Sub ID:&nbsp;&nbsp;&nbsp;&nbsp;</strong> {$id_public}</label><br/>" +
             "<label><strong>User ID:&nbsp;&nbsp;&nbsp;</strong> <span class='user'>{$user_id}</span></label><br/>" +
             "<label><strong>Email:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='email'>{$user_email}</span></label><br/>" +
             "<label><strong>Passphrase:</strong> {$passphrase_required}</label><br/>" +
             "<label><strong>Actions:&nbsp;&nbsp;&nbsp;</strong> " +
-                "<select name='actions' onselect='window[this.value](event, \"{$fp_private}\"); ' oninput='window[this.value](event, \"{$fp_private}\"); '>" +
+                "<select name='actions' onselect='window[this.value](event, \"{$id_private}\"); ' oninput='window[this.value](event, \"{$id_private}\"); '>" +
                     "<option selected='selected'>Select action</option>" +
                     "<option value='changePGPManageFormKeyPassphrase'>Change Password</option>" +
                     //"<option value='changePGPManageFormKeyPassphrase'>Add Password</option>" +
@@ -218,17 +214,17 @@
      * @param commandString REGISTER
      */
     self.registerCommand = function (commandString) {
-        var private_key_content = '';
+        var privateKeyBlock = '';
         var match = /^register\s*([\s\S]*)$/im.exec(commandString);
         if(match && match[1])
-            private_key_content = match[1].replace(/(\r\n|\r|\n)/g, '\r\n');
+            privateKeyBlock = match[1].replace(/(\r\n|\r|\n)/g, '\r\n');
 
         var showForm = false;
-        if(!private_key_content) {
+        if(!privateKeyBlock) {
             showForm = true;
 
         } else {
-            private_key_content = private_key_content.replace(/--show-form\s*/i, function (match, contents, offset, s) {
+            privateKeyBlock = privateKeyBlock.replace(/--show-form\s*/i, function (match, contents, offset, s) {
                 showForm = true; return '';
             });
         }
@@ -236,108 +232,25 @@
         if(showForm) {
             //routeResponseToClient("RLOG " + PATH_MARKER + " " + KEYGEN_CLOSED_TEMPLATE);
             routeResponseToClient("RLOG " + PATH_MAIN + " " + REGISTER_TEMPLATE
-                    .replace(/{\$private_key}/gi, private_key_content)
+                    .replace(/{\$private_key}/gi, privateKeyBlock)
                     .replace(/{\$[^}]+}/gi, '')
             );
             return;
         }
 
+        getPGPDB(function(db, PGPDB) {
+            PGPDB.addPrivateKeyBlock(privateKeyBlock, function(err, data) {
+                if(err) {
+                    routeResponseToClient("RLOG " + PATH_MAIN + " " + REGISTER_TEMPLATE
+                            .replace(/{\$status_content}/gi, err)
+                            .replace(/{\$private_key}/gi, privateKeyBlock)
+                            .replace(/{\$[^}]+}/gi, '')
+                    );
+                } else {
+                    self.manageCommand("MANAGE");
 
-        if(private_key_content.indexOf("-----BEGIN PGP PRIVATE KEY BLOCK-----") === -1)
-            throw new Error("PGP PRIVATE KEY BLOCK not found");
-
-        var kbpgp = getKBPGP();
-
-        var alice_passphrase = 'uw';
-
-        kbpgp.KeyManager.import_from_armored_pgp({
-            armored: private_key_content
-        }, function(err, alice) {
-            if(err)
-                throw new Error(err);
-
-
-            var privateKey = alice.find_crypt_pgp_key();
-            var privateKeyFingerprint = privateKey.get_fingerprint().toString('hex').toUpperCase();
-
-            var publicKey = alice.find_signing_pgp_key();
-            var publicKeyFingerprint = publicKey.get_fingerprint().toString('hex').toUpperCase();
-            
-            var userID = alice.userids[0];
-            //var userName = userID.get_username();
-            var userIDString = "" + userID.get_username()
-                + (userID.get_comment() ? ' ' + userID.get_comment() : '')
-                + (userID.get_email() ? " <" + userID.get_email() + ">" : '');
-
-
-            alice.armored_pgp_private = null;
-            alice.sign({}, function(err) {
-                alice.armored_pgp_public = null;
-                alice.export_pgp_public({}, function(err, public_key_content) {
-                    console.log("public key: ", public_key_content);
-
-                    onDB(function(db) {
-
-                        var transaction = db.transaction([DB_TABLE_PRIVATE_KEYS], "readwrite");
-                        var privateKeyStore = transaction.objectStore(DB_TABLE_PRIVATE_KEYS);
-
-                        var insertData = {
-                            'fp_private': privateKeyFingerprint,
-                            'fp_public': publicKeyFingerprint,
-                            'user_id': userIDString,
-                            'block_private': private_key_content,
-                            'block_public': public_key_content,
-                            'passphrase_required': alice.is_pgp_locked() ? 1 : 0
-                        };
-                        if(userID.get_username())
-                            insertData['user_name'] = userID.get_username();
-                        if(userID.get_email())
-                            insertData['user_email'] = userID.get_email();
-                        if(userID.get_comment())
-                            insertData['user_comment'] = userID.get_comment();
-
-                        var insertRequest = privateKeyStore.add(insertData);
-                        insertRequest.onsuccess = function(event) {
-                            console.log("Added private key block to database: " + privateKeyFingerprint, insertRequest);
-
-                            self.manageCommand("MANAGE");
-
-                            //routeResponseToClient("RLOG " + PATH_MARKER + " " + REGISTER_TEMPLATE_COMPLETE
-                            //        .replace(/{\$status_content}/gi, status_content)
-                            //        .replace(/{\$[^}]+}/gi, '')
-                            //);
-
-                        };
-                        insertRequest.onerror = function(event) {
-                            var err = event.currentTarget.error;
-                            console.error("Error adding public key database: " + err.message, event);
-
-
-                            var status_content = "Error adding public key database: " + err.message;
-                            routeResponseToClient("RLOG " + PATH_MAIN + " " + REGISTER_TEMPLATE
-                                    .replace(/{\$status_content}/gi, status_content)
-                                    .replace(/{\$private_key}/gi, private_key_content)
-                                    .replace(/{\$[^}]+}/gi, '')
-                            );
-                        };
-
-
-                    });
-                });
+                }
             });
-            //if (alice.is_pgp_locked()) {
-            //    alice.unlock_pgp({
-            //        passphrase: alice_passphrase
-            //    }, function(err) {
-            //        if(err)
-            //            throw new Error(err);
-            //        console.log("Loaded private key with passphrase");
-            //    });
-            //
-            //} else {
-            //
-            //    console.log("Loaded private key w/o passphrase");
-            //}
         });
 
     };
@@ -346,61 +259,71 @@
         throw new Error("keygen response is not implemented");
     };
 
+
+
+    /**
+     * @param commandString UNREGISTER [PGP Private Key Fingerprint]
+     */
+    self.unregisterCommand = function (commandString) {
+        var match = /^unregister\s+(.*)$/im.exec(commandString);
+        var privateKeyFingerprint = match[1].trim();
+        var privateKeyID = privateKeyFingerprint.substr(privateKeyFingerprint.length - 16);
+
+        getPGPDB(function (db, PGPDB) {
+            var transaction = db.transaction([DB_TABLE_PRIVATE_KEYS], "readwrite");
+            var privateKeyStore = transaction.objectStore(DB_TABLE_PRIVATE_KEYS);
+
+            var insertRequest = privateKeyStore.delete(privateKeyID);
+            insertRequest.onsuccess = function(event) {
+                var status_content = "Deleted private key block from database: " + privateKeyID;
+                console.log(status_content);
+                self.manageCommand("MANAGE", status_content);
+
+            };
+            insertRequest.onerror = function(event) {
+                var err = event.currentTarget.error;
+                var status_content = "Error adding private key (" + privateKeyID + ") database: " + err.message;
+                console.error(status_content, event);
+                self.manageCommand("MANAGE", status_content);
+
+            };
+        });
+    };
+
+    self.unregisterResponse = function(e) {
+        throw new Error("keygen response is not implemented");
+    };
+
+
     /**
      * @param commandString
+     * @param status_content
      */
-    self.manageCommand = function (commandString) {
+    self.manageCommand = function (commandString, status_content) {
         //var match = /^manage$/im.exec(commandString);
-
-        var status_content = '';
 
         routeResponseToClient("RLOG " + PATH_MAIN + " " + MANAGE_TEMPLATE
                 .replace(/{\$status_content}/gi, status_content || '')
                 .replace(/{\$[^}]+}/gi, '')
         );
 
-
-        onDB(function(db) {
-
-            var transaction = db.transaction([DB_TABLE_PRIVATE_KEYS], "readwrite");
-            var privateKeyStore = transaction.objectStore(DB_TABLE_PRIVATE_KEYS);
-            //var index = privateKeyStore.index('myindex');
-
-            var req = privateKeyStore.openCursor();
-            req.onsuccess = function(evt) {
-                var cursor = evt.target.result;
-
-                // If the cursor is pointing at something, ask for the data
-                if (cursor) {
-
-                    var req = privateKeyStore.get(cursor.key);
-                    req.onsuccess = function (evt) {
-                        var data = evt.target.result;
-
-                        routeResponseToClient("LOG " + PATH_MAIN + " " + MANAGE_TEMPLATE_ENTRY
-                                .replace(/{\$fp_private}/gi, data.fp_private)
-                                .replace(/{\$fp_public}/gi, data.fp_public)
-                                .replace(/{\$fp_private_short}/gi, data.fp_private.substr(data.fp_private.length - 8))
-                                .replace(/{\$fp_public_short}/gi, data.fp_public.substr(data.fp_public.length - 8))
-                                .replace(/{\$block_private}/gi, data.block_private)
-                                .replace(/{\$block_public}/gi, data.block_public)
-                                .replace(/{\$user_id}/gi, data.user_id.replace(/</, '&lt;'))
-                                .replace(/{\$user_name}/gi, data.user_name || '')
-                                .replace(/{\$user_email}/gi, data.user_email || '')
-                                .replace(/{\$user_comment}/gi, data.user_comment || '')
-                                .replace(/{\$passphrase_required}/gi, data.passphrase_required ? "Yes" : "No")
-                                .replace(/{\$[^}]+}/gi, '')
-                        );
-                    };
-
-                    // Move on to the next object in store
-                    cursor.continue();
-
-
-                } else {
-
-                }
-            };
+        getPGPDB(function(db, PGPDB) {
+            PGPDB.queryPrivateKeys(function(data) {
+                routeResponseToClient("LOG " + PATH_MAIN + " " + MANAGE_TEMPLATE_ENTRY
+                        .replace(/{\$id_private}/gi, data.id_private)
+                        .replace(/{\$id_public}/gi, data.id_public)
+                        .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
+                        .replace(/{\$id_public_short}/gi, data.id_public.substr(data.id_public.length - 8))
+                        .replace(/{\$block_private}/gi, data.block_private)
+                        .replace(/{\$block_public}/gi, data.block_public)
+                        .replace(/{\$user_id}/gi, data.user_id.replace(/</, '&lt;'))
+                        .replace(/{\$user_name}/gi, data.user_name || '')
+                        .replace(/{\$user_email}/gi, data.user_email || '')
+                        .replace(/{\$user_comment}/gi, data.user_comment || '')
+                        .replace(/{\$passphrase_required}/gi, data.passphrase_required ? "Yes" : "No")
+                        .replace(/{\$[^}]+}/gi, '')
+                );
+            });
         });
 
     };
@@ -421,51 +344,17 @@
         importScripts('pgp/lib/kbpgp/kbpgp.js');
         console.log("Loaded: ", self.kbpgp);
         return self.kbpgp;
-
-//      importScripts('pgp/lib/openpgpjs/openpgp.js');
     }
+
 
 
     // Database
 
-    //console.log("IndexedDB: ", indexedDB, IDBKeyRange, IDBTransaction);
+    function getPGPDB(callback) {
+        if(typeof self.PGPDB !== 'function')
+            importScripts('pgp/pgp-db.js');
 
-    var onDBCallbacks = [];
-    var openRequest = indexedDB.open(DB_NAME_PGP);
-    openRequest.onerror = function(e) {
-        console.log("Database error: " + e.target.errorCode);
-    };
-
-    openRequest.onsuccess = function(e) {
-        //console.log('DB Opened: ', openRequest.result);
-        for(var i=0; i<onDBCallbacks.length; i++)
-            onDBCallbacks[i](openRequest.result);
-        onDBCallbacks = [];
-    };
-    //openRequest.onblocked =
-
-
-    openRequest.onupgradeneeded = function (e) {
-        var upgradeDB = e.currentTarget.result;
-        console.log('Upgrading DB: ', upgradeDB);
-
-        if(!upgradeDB.objectStoreNames.contains(DB_TABLE_PRIVATE_KEYS)) {
-            var postStore = upgradeDB.createObjectStore(DB_TABLE_PRIVATE_KEYS, { keyPath: "fp_private" });
-            postStore.createIndex("fp_public", "fp_public", { unique: true });
-            //postStore.createIndex("id", "id", { unique: false });
-            //postStore.createIndex("fp", "fp", { unique: true });
-            //postStore.createIndex("key", "key", { unique: false });
-        }
-
-    };
-
-    function onDB(dbReadyCallback) {
-        if(openRequest.readyState === "done") {
-            dbReadyCallback(openRequest.result);
-            return true;
-        }
-        onDBCallbacks.push(dbReadyCallback);
-        return false;
+        self.PGPDB(callback);
     }
 
 })();

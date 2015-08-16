@@ -114,12 +114,12 @@
                 }
                 channelOutput.innerHTML = content;
 
-                if(oldContent && contentTarget.length > 0 && oldContent !== contentTarget[0]) {
-                    var newTarget = contentTarget[0];
-                    console.info("Preserving content: ", oldContent, newTarget);
-                    newTarget.parentNode.insertBefore(oldContent, newTarget);
-                    newTarget.parentNode.removeChild(newTarget);
-                }
+//                 if(oldContent && contentTarget.length > 0 && oldContent !== contentTarget[0]) {
+//                     var newTarget = contentTarget[0];
+//                     console.info("Preserving content: ", oldContent, newTarget);
+//                     newTarget.parentNode.insertBefore(oldContent, newTarget);
+//                     newTarget.parentNode.removeChild(newTarget);
+//                 }
 
             } else {
 

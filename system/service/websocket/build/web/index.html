@@ -15,10 +15,10 @@
                 document.dispatchEvent(socketEvent);
                 return socketEvent.defaultPrevented;
             }
-            send('keygen');
             send('post');
-            send('manage');
             send('feed');
+            send('keygen');
+//            send('manage');
         </script>
     </head>
     <body>

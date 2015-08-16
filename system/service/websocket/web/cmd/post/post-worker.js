@@ -6,10 +6,6 @@
     var PATH_PREFIX_POST = 'post:';
     var PATH_PREFIX_FEED = 'feed:';
 
-    var DB_NAME = 'feed';
-    var DB_TABLE_POSTS = 'posts';
-    var DB_TABLE_PUBLIC_KEY_BLOCKS = 'public-key-blocks';
-
     var db = null;
 
     var FEED_TEMPLATE =
@@ -42,6 +38,10 @@
                 "</select>" +
             "<br/><br/></label>" +
 
+            "<label class='label-passphrase' style='display: none'>PGP Passphrase (if required):<br/>" +
+            "<input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>" +
+            "<br/><br/></label>" +
+
             "<label class='label-channel'>Post to:<br/>" +
                 "<select name='channel'>" +
                     "<option value='~'>My Feed</option>" +
@@ -57,10 +57,6 @@
                     "<option disabled='disabled'>Friends of Friends</option>" +
                     "<option disabled='disabled'>Specific Recipients</option>" +
                 "</select>" +
-            "<br/><br/></label>" +
-
-            "<label class='label-passphrase' style='display: none'>PGP Passphrase (if required):<br/>" +
-                "<input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>" +
             "<br/><br/></label>" +
 
             "<label class='label-post-form'>Submit your post:<br/>" +
@@ -82,8 +78,11 @@
         var content = match[1];
 
         if(content) {
-            addPostToDB(content);
             sendWithFastestSocket(commandString);
+            //
+            //getFeedDB(function (db, FeedDB) {
+            //    FeedDB.addPostToDB(content);
+            //});
 
         } else {
             var channelPath = '~';
@@ -124,153 +123,6 @@
         return path;
     }
 
-    // Database
-
-    //console.log("IndexedDB: ", indexedDB, IDBKeyRange, IDBTransaction);
-
-    var openRequest = indexedDB.open(DB_NAME);
-    openRequest.onerror = function(e) {
-        console.log("Database error: " + e.target.errorCode);
-    };
-
-    openRequest.onsuccess = function(e) {
-        console.log('DB Opened: ', openRequest.result);
-        db = openRequest.result;
-    };
-    //openRequest.onblocked =
-
-
-    openRequest.onupgradeneeded = function (e) {
-        var upgradeDB = e.currentTarget.result;
-        console.log('Upgrading DB: ', upgradeDB);
-
-        if(!upgradeDB.objectStoreNames.contains(DB_TABLE_POSTS)) {
-            var postStore = upgradeDB.createObjectStore(DB_TABLE_POSTS, { autoIncrement: true });
-            postStore.createIndex("author", "author", { unique: false });
-            postStore.createIndex("timestamp", "timestamp", { unique: false });
-            postStore.createIndex("content", "content", { unique: true });
-        }
-        if(!upgradeDB.objectStoreNames.contains(DB_TABLE_PUBLIC_KEY_BLOCKS)) {
-            var publicKeyStore = upgradeDB.createObjectStore(DB_TABLE_PUBLIC_KEY_BLOCKS, { keyPath: "id" });
-            publicKeyStore.createIndex("id", "id", { unique: true });
-            publicKeyStore.createIndex("content", "content", { unique: true });
-        }
-
-    };
-
-    function addPublicKeyBlock(publicKeyBlock) {
-
-        if(publicKeyBlock.indexOf("-----BEGIN PGP PUBLIC KEY BLOCK-----") === -1)
-            throw new Error("PGP PUBLIC KEY BLOCK not found");
-
-        var publicKey = window.openpgp.key.readArmored(publicKeyBlock).keys[0];
-        var publicKeyID = publicKey.getKeyIds()[0].toHex();
-
-        var transaction = db.transaction([DB_TABLE_PUBLIC_KEY_BLOCKS], "readwrite");
-        var publicKeyStore = transaction.objectStore(DB_TABLE_PUBLIC_KEY_BLOCKS);
-
-        var insertData = {
-            'id': publicKeyID,
-            'content': publicKeyBlock
-        };
-
-        var insertRequest = publicKeyStore.add(insertData);
-        insertRequest.onsuccess = function(event) {
-            console.log("Added public key block to database: ", insertData);
-        };
-        insertRequest.onerror = function(event) {
-            console.log("Error adding public key block: ", insertData, arguments);
-        };
-    }
-
-    function loadPublicKeyBlockFromDB(encryptionKeyID, callback) {
-        var transaction = db.transaction([DB_TABLE_PUBLIC_KEY_BLOCKS], "readonly");
-        var objectStore = transaction.objectStore(DB_TABLE_PUBLIC_KEY_BLOCKS);
-
-        var indexID = objectStore.index('id');
-        var cursor = indexID.openCursor(IDBKeyRange.only(encryptionKeyID));
-        cursor.onsuccess = function(event) {
-            var result = event.target.result;
-            if(!result)
-                throw new Error("Public key block not found: " + encryptionKeyID);
-
-            var pgpData = result.value;
-            callback(pgpData.content);
-            console.log("Loaded PGP Public Key Block: ", pgpData);
-        };
-    }
-
-    function decryptPost(pgpMessageContent, callback) {
-        var pgpMessage = openpgp.message.readArmored(pgpMessageContent);
-
-        var encryptionKeyID = pgpMessage.getEncryptionKeyIds()[0];
-
-        loadPublicKeyBlockFromDB(encryptionKeyID, function(publicKeyBlock) {
-
-            var publicKey = window.openpgp.key.readArmored(publicKeyBlock).keys[0];
-
-            openpgp.decryptMessage(publicKey, pgpMessage)
-                .then(function(decryptedMessage) {
-                    callback(decryptedMessage);
-
-                }, function(error) {
-                    throw new Error(error);
-
-                });
-        });
-
-
-    }
-
-    function addPostToDB(pgpMessageContent) {
-        var pgpMessage = openpgp.message.readArmored(pgpMessageContent);
-
-        var encryptionIDs = pgpMessage.getEncryptionKeyIds();
-
-
-        var transaction = db.transaction([DB_TABLE_POSTS], "readwrite");
-        var objectStore = transaction.objectStore(DB_TABLE_POSTS);
-
-        var postData = {
-            'author': encryptionIDs[0],
-            'content': pgpMessageContent
-            //'timestamp': Math.floor(Date.now() / 1000)
-        };
-
-        var insertRequest = objectStore.add(postData);
-        insertRequest.onsuccess = function(event) {
-            console.log("Added post to database: ", postData);
-        };
-        insertRequest.onerror = function(event) {
-            console.log("Error adding post: ", postData, arguments);
-        };
-    }
-
-    // TODO: composite query?
-    function querySubscribedPosts(callback, authorKeyIDs, startTime, endTime) {
-        var transaction = db.transaction([DB_TABLE_POSTS], "readwrite");
-        var objectStore = transaction.objectStore(DB_TABLE_POSTS);
-
-        var indexTimestamp = objectStore.index('timestamp');
-        var keyRangeValue = endTime > 0
-            ? IDBKeyRange.bound(startTime, endTime)
-            : IDBKeyRange.lowerBound(startTime, true);
-
-        var cursor = indexTimestamp.openCursor(keyRangeValue);
-        cursor.onsuccess = function(e) {
-            var cursor = e.target.result;
-            if (cursor)
-            {
-                var postEntry = cursor.value;
-                if(authorKeyIDs === null
-                    || authorKeyIDs.indexOf(postEntry.author) >= 0) {
-                    callback(postEntry);
-                }
-                cursor.continue();
-            }
-        };
-        //return cursor;
-    }
 
     function getKBPGP() {
         if(typeof self.kbpgp !== 'undefined')
@@ -278,10 +130,22 @@
         importScripts('pgp/lib/kbpgp/kbpgp.js');
         console.log("Loaded: ", self.kbpgp);
         return self.kbpgp;
-
-//      importScripts('pgp/lib/openpgpjs/openpgp.js');
     }
 
-    //var range = IDBKeyRange.bound("BA", "BA" + '\uffff');
+    // Database
+
+    function getPGPDB(callback) {
+        if(typeof self.PGPDB !== 'function')
+            importScripts('pgp/pgp-db.js');
+
+        self.PGPDB(callback);
+    }
+
+    function getFeedDB(callback) {
+        if(typeof self.FeedDB !== 'function')
+            importScripts('post/post-db.js');
+
+        self.FeedDB(callback);
+    }
 
 })();

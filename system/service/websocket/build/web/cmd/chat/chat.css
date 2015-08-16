@@ -1,4 +1,7 @@
 
+.pgp-signed-message .verification-required {
+    white-space: pre;
+}
 
 form[name=chat-form] {
     max-width: 37em;
