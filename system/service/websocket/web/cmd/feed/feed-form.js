@@ -338,7 +338,7 @@
 
 // For Feed Database access
 (function() {
-    var SCRIPT_PATH = 'cmd/post/post-db.js';
+    var SCRIPT_PATH = 'cmd/feed/feed-db.js';
     var head = document.getElementsByTagName('head')[0];
     if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
         var newScript = document.createElement('script');
@@ -351,6 +351,18 @@
 // For PGP Decryption of feed posts
 (function() {
     var SCRIPT_PATH = 'cmd/pgp/pgp-listener.js';
+    var head = document.getElementsByTagName('head')[0];
+    if (head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+        var newScript = document.createElement('script');
+        newScript.setAttribute('src', SCRIPT_PATH);
+        head.appendChild(newScript);
+    }
+})();
+
+
+// For PGP Decryption in chat rooms
+(function() {
+    var SCRIPT_PATH = 'cmd/feed/feed-listener.js';
     var head = document.getElementsByTagName('head')[0];
     if (head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
         var newScript = document.createElement('script');

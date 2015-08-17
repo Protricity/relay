@@ -9,8 +9,8 @@
     var db = null;
 
     var FEED_TEMPLATE =
-        "<script src='cmd/post/post-form.js'></script>" +
-        "<link rel='stylesheet' href='cmd/post/post.css' type='text/css'>" +
+        "<script src='cmd/feed/feed-form.js'></script>" +
+        "<link rel='stylesheet' href='cmd/feed/feed.css' type='text/css'>" +
         "<legend>{$title}</legend>" +
         "<div class='feed-container'>" +
         "<button oninput='loadNextFeedPage(\"{$channel}\", 0{$page})'>Load more feed...</button>";
@@ -19,8 +19,8 @@
 
 
     var FEED_POST_FORM_TEMPLATE =
-        "<script src='cmd/post/post-form.js'></script>" +
-        "<link rel='stylesheet' href='cmd/post/post.css' type='text/css'>" +
+        "<script src='cmd/feed/feed-form.js'></script>" +
+        "<link rel='stylesheet' href='cmd/feed/feed.css' type='text/css'>" +
         "<legend>Post to your feed</legend>" +
 
         "<form name='post-form' action='#' onsubmit='return submitPostForm(event);'>" +
@@ -143,7 +143,7 @@
 
     function getFeedDB(callback) {
         if(typeof self.FeedDB !== 'function')
-            importScripts('post/post-db.js');
+            importScripts('feed/feed-db.js');
 
         self.FeedDB(callback);
     }

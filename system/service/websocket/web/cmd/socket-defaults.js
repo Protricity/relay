@@ -30,7 +30,7 @@ self.spostCommand =
 self.postCommand =
 self.feedCommand =
 function(commandString) {
-    importScripts('post/post-worker.js');
+    importScripts('feed/feed-worker.js');
     executeCommand(commandString);
 };
 

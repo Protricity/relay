@@ -37,11 +37,15 @@
         for(i=verificationRequiredElms.length-1; i>=0; i--) {
             (function(verificationRequiredElm) {
                 var htmlDecodedSignedPGPContent = decodeURIComponent(verificationRequiredElm.innerHTML);
-
                 var pgpSignedMessage = openpgp.cleartext.readArmored(htmlDecodedSignedPGPContent);
+                verificationRequiredElm.classList.remove('verification-required');
+                verificationRequiredElm.classList.add('verification-pending');
+
                 (function(pgpSignedMessage) {
                     var signIDs = pgpSignedMessage.getSigningKeyIds();
                     var signFP = signIDs[0].toHex().toUpperCase();
+
+
 
                     self.PGPDB.getPublicKeyData(signFP, function (err, pkData) {
 
@@ -56,14 +60,24 @@
                                     if(!verifiedContent.signatures[i].valid)
                                         throw new Error("Invalid Signature [" + feedKeyID + "]: " + verifiedContent.signatures[0].keyid.toHex().toUpperCase());
 
-                                verificationRequiredElm.classList.remove('verification-required');
                                 verificationRequiredElm.classList.add('verified');
+                                verificationRequiredElm.classList.remove('verification-pending');
+
                                 var decryptedContentElm = document.createElement('span');
                                 decryptedContentElm.classList.add('pgp-verified-content');
+
                                 decryptedContentElm.innerHTML = protectHTMLContent(verifiedText);
                                 verificationRequiredElm.parentNode.insertBefore(decryptedContentElm, verificationRequiredElm);
 
                                 console.log("VERIFIED", verificationRequiredElm, decryptedContentElm, verifiedContent.text, verifiedContent);
+
+
+                                var contentEvent = new CustomEvent('pgp:verified', {
+                                    bubbles: true
+                                });
+                                decryptedContentElm.dispatchEvent(contentEvent);
+
+
                             }).catch(function(err) {
                                 console.log(err);
                             });

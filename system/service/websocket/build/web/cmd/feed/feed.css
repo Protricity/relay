@@ -18,3 +18,11 @@ form[name=post-form] input[type=submit] {
     padding: 0.5em 1em;
     margin: 0.5em;
 }
+
+
+
+.feed-container button {
+    padding: 0.5em 1em;
+    margin: 0.5em;
+    animation: fadein 2s;
+}
