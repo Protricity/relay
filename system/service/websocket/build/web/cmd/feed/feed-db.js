@@ -146,7 +146,7 @@
                     if (cursor)
                     {
                         var feedData = cursor.value;
-                        console.log("Found Feed Data: ", feedData, [feedChannelPrefix, startTime, endTime]);
+//                         console.log("Found Feed Data: ", feedData, [feedChannelPrefix, startTime, endTime]);
                         callback(feedData);
                         cursor.continue();
                     } else {

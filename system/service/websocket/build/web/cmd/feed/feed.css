@@ -26,8 +26,14 @@ form[name=post-form] input[type=submit] {
 
 
 
-.feed-container button {
-    padding: 0.5em 1em;
-    margin: 0.5em;
+.feed-container button.command-like,
+.feed-container button.command-comment,
+.feed-container button.command-share {
+    padding: 0.2em 0.5em;
+    margin: 0.1em;
     animation: fadein 2s;
+}
+
+.feed-container .feed-post {
+    max-width: 36em;
 }

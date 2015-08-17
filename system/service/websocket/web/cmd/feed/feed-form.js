@@ -180,10 +180,12 @@
             var publicKeyID = privateKeyData.id_public;
             publicKeyID = publicKeyID.substr(publicKeyID.length - 8);
 
-            var postChannel = fixHomePath(channelElm.value, publicKeyID);
+            var postChannel = channelElm.value;
+            var fixedPostChannel = fixHomePath(postChannel, publicKeyID);
             var homeChannel = fixHomePath('~', publicKeyID);
+            var timestamp = Date.now();
 
-            postContent = "<div class='" + CLASS_FEED_POST + "' data-channel='" + postChannel + "' data-timestamp='" + Date.now() + "'>" + postContent + "</div>";
+            postContent = "<div class='" + CLASS_FEED_POST + "' data-channel='" + fixedPostChannel + "' data-timestamp='" + timestamp + "'>" + postContent + "</div>";
 
             //var commandString = "MESSAGE " + postChannel + ' !post ' + postContent;
 
@@ -192,23 +194,34 @@
                 .then(function(encryptedString) {
 
                     setStatus(formElm, "Adding post to database...");
-                    self.FeedDB.verifyAndAddPostToDB(encryptedString);
+                    self.FeedDB.verifyAndAddPostToDB(encryptedString, function() {
+                        setStatus(formElm, "Posting to feed [" + homeChannel + "] ...");
 
-                    setStatus(formElm, "Posting to feed [" + homeChannel + "] ...");
+                        var commandString = "MESSAGE " + homeChannel + " " + encryptedString;
 
-                    var commandString = "MESSAGE " + homeChannel + " " + encryptedString;
+                        var socketEvent = new CustomEvent('socket', {
+                            detail: commandString,
+                            cancelable:true,
+                            bubbles:true
+                        });
+                        formElm.dispatchEvent(socketEvent);
 
-                    var socketEvent = new CustomEvent('socket', {
-                        detail: commandString,
-                        cancelable:true,
-                        bubbles:true
+                        if(!socketEvent.defaultPrevented)
+                            throw new Error("Socket event for new post was not handled");
+
+                        setStatus(formElm, "Feed Post Successful");
+                        postContentElm.value = '';
+
+                        commandString = "FEED " + postChannel;
+                        socketEvent = new CustomEvent('socket', {
+                            detail: commandString,
+                            cancelable:true,
+                            bubbles:true
+                        });
+                        formElm.dispatchEvent(socketEvent);
+                        if(!socketEvent.defaultPrevented)
+                            throw new Error("Socket event for feed command was not handled");
                     });
-                    formElm.dispatchEvent(socketEvent);
-
-                    if(!socketEvent.defaultPrevented)
-                        throw new Error("Socket event for new post was not handled");
-
-                    postContentElm.value = '';
                 });
         });
 

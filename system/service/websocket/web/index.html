@@ -15,8 +15,8 @@
                 document.dispatchEvent(socketEvent);
                 return socketEvent.defaultPrevented;
             }
-            send('post');
             send('feed');
+            send('post');
             send('keygen');
 //            send('manage');
         </script>

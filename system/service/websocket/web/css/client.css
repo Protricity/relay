@@ -1,7 +1,16 @@
 .channel-container {
     font-family: monospace;
-    color: grey;
+    color: #333;
     padding: 1em 0 10em 0;
+}
+
+.channel-container label {
+    color: inherit;
+}
+
+.channel-container legend {
+    font-weight: bold;
+    color: #111;
 }
 
 .channel-content {

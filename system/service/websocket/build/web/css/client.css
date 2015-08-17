@@ -1,7 +1,16 @@
 .channel-container {
     font-family: monospace;
-    color: grey;
+    color: #555;
     padding: 1em 0 10em 0;
+}
+
+.channel-container label {
+    color: inherit;
+}
+
+.channel-container legend {
+    font-weight: bold;
+    color: #111;
 }
 
 .channel-content {
@@ -52,10 +61,8 @@ ul.channel-list li,
 
 .channel .user {
     color: darkblue;
-        
-    /* overflow: hidden; */
-    /* max-width: 6em; */
-    display: inline-block;      width:180px;      white-space: nowrap;      overflow:hidden !important;      text-overflow: ellipsis;
+                                
+    text-overflow: ellipsis;
 }
 
 

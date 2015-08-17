@@ -19,7 +19,8 @@
 
 
     var FEED_TEMPLATE_ENTRY =
-        "<div class='feed-post-container'>" +
+        "<fieldset class='feed-post-container'>" +
+            "<legend>Feed Post</legend>" +
             "<div class='feed-post-author'>" +
                 //"<img src='generic' alt='' />" +
                 "<a href='{$user_home}' class='user'>{$user_id}</a>" +
@@ -31,7 +32,7 @@
                 "<button class='command-comment'>Comment</button>" +
                 "<button class='command-share'>Share</button>" +
             "</div>" +
-        "</div>";
+        "</fieldset>";
 
     var FEED_POST_FORM_TEMPLATE =
         "<script src='cmd/feed/feed-form.js'></script>" +
@@ -153,7 +154,7 @@
                             fixedChannelPrefix,
                             [feedStartTime, feedEndTime],
                             function(data) {
-                                console.log("FEED POST: ", data);
+//                                 console.log("FEED POST: ", data);
                                 routeResponseToClient("LOG " + logChannelPath + " " + FEED_TEMPLATE_ENTRY
                                         .replace(/{\$user_id}/gi, userID)
                                         .replace(/{\$key_id}/gi, data.key_id)
