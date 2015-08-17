@@ -24,7 +24,7 @@
             "<div class='feed-post-author'>" +
                 //"<img src='generic' alt='' />" +
                 "<a href='{$user_home}' class='user'>{$user_id}</a>" +
-                "<div class='timestamp_posted'>{$timestamp_posted}</div>" +
+                "<div class='timestamp_formatted'>{$timestamp_formatted}</div>" +
             "</div>" +
             "{$content_verified}" +
             "<div class='feed-post-commands'>" +
@@ -155,12 +155,13 @@
                             [feedStartTime, feedEndTime],
                             function(data) {
 //                                 console.log("FEED POST: ", data);
-                                routeResponseToClient("LOG " + logChannelPath + " " + FEED_TEMPLATE_ENTRY
+                                routeResponseToClient("PLOG " + logChannelPath + " " + FEED_TEMPLATE_ENTRY
                                         .replace(/{\$user_id}/gi, userID)
                                         .replace(/{\$key_id}/gi, data.key_id)
                                         .replace(/{\$short_key_id}/gi, data.key_id.substr(data.key_id.length - 8))
                                         .replace(/{\$channel}/gi, data.channel)
                                         .replace(/{\$timestamp}/gi, data.timestamp)
+                                        .replace(/{\$timestamp_formatted}/gi, timeSince(data.timestamp) + ' ago')
                                         .replace(/{\$content}/gi, data.content)
                                         .replace(/{\$content_verified}/gi, data.content_verified)
                                         .replace(/{\$[^}]+}/gi, '')
@@ -178,6 +179,35 @@
 
 
     self.feedResponse = routeResponseToClient;
+
+
+    function timeSince(date) {
+
+        var seconds = Math.floor((new Date() - date) / 1000);
+
+        var interval = Math.floor(seconds / 31536000);
+
+        if (interval > 1) {
+            return interval + " years";
+        }
+        interval = Math.floor(seconds / 2592000);
+        if (interval > 1) {
+            return interval + " months";
+        }
+        interval = Math.floor(seconds / 86400);
+        if (interval > 1) {
+            return interval + " days";
+        }
+        interval = Math.floor(seconds / 3600);
+        if (interval > 1) {
+            return interval + " hours";
+        }
+        interval = Math.floor(seconds / 60);
+        if (interval > 1) {
+            return interval + " minutes";
+        }
+        return Math.floor(seconds) + " seconds";
+    }
 
     function fixChannelPath(path) {
         if(!/[#~:./a-z_-]+/i.test(path))

@@ -37,3 +37,8 @@ form[name=post-form] input[type=submit] {
 .feed-container .feed-post-container {
     max-width: 48em;
 }
+
+.feed-container .timestamp_formatted {
+    color: lightgray;
+    
+}

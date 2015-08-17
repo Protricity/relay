@@ -44,9 +44,10 @@
             case 'log':
             case 'replacelog':
             case 'rlog':
+            case 'plog':
                 args = /^([^\s]+)\s+([\s\S]*)$/mi.exec(args[2]);
                 var channelPath = args[1];
-                logToChannel(channelPath, args[2], commandString[0] === 'r', commandString[0] === 'r');
+                logToChannel(channelPath, args[2], commandString[0] === 'r', commandString[0] === 'r', commandString[0] === 'p');
                 break;
 
             default:
@@ -66,7 +67,7 @@
         }
     }
 
-    function logToChannel(channelPath, content, replace, focus) {
+    function logToChannel(channelPath, content, replace, focus, prepend) {
         content = content
             .replace(/{\$channel}/gi, channelPath);
 
@@ -104,12 +105,12 @@
             }
 
             var channelOutput = channelOutputs[0];
-            var contentTarget = channelOutput.getElementsByClassName(CLASS_CHANNEL_CONTENT);
-
+            var contentTargets = channelOutput.getElementsByClassName(CLASS_CHANNEL_CONTENT);
+            var contentTarget = contentTargets.length > 0 ? contentTargets[0] : channelOutput;
             if(replace) {
                 var oldContent = null;
-                if(contentTarget.length > 0) {
-                    oldContent = contentTarget[0];
+                if(contentTargets.length > 0) {
+                    oldContent = contentTargets[0];
                     oldContent.parentNode.removeChild(oldContent);
                 }
                 channelOutput.innerHTML = content;
@@ -123,13 +124,13 @@
 
             } else {
 
-                if(contentTarget.length > 0) {
-                    contentTarget[0].innerHTML += content;
-                    contentTarget[0].scrollTop = contentTarget[0].scrollHeight;
+                if(prepend) {
+                    contentTarget.innerHTML = content + contentTarget.innerHTML;
+                    contentTarget.scrollTop = 0;
 
                 } else {
-                    channelOutput.innerHTML += content;
-                    channelOutput.scrollTop = channelOutput.scrollHeight;
+                    contentTarget.innerHTML += content;
+                    contentTarget.scrollTop = channelOutput.scrollHeight;
                 }
             }
 

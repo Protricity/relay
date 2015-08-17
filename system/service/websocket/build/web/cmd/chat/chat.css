@@ -1,6 +1,15 @@
 
-.pgp-signed-message .verification-required {
+.pgp-signed-message {
     white-space: pre;
+    font-style: italic;
+}
+.pgp-signed-message.verification-required {
+    color: red;
+    display: block;
+}
+.pgp-signed-message.verified {
+    color: inherit;
+    display: none;
 }
 
 form[name=chat-form] {

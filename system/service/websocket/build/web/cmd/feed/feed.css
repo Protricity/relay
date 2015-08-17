@@ -34,6 +34,11 @@ form[name=post-form] input[type=submit] {
     animation: fadein 2s;
 }
 
-.feed-container .feed-post {
-    max-width: 36em;
+.feed-container .feed-post-container {
+    max-width: 48em;
+}
+
+.feed-container .timestamp_formatted {
+    color: lightgray;
+    
 }

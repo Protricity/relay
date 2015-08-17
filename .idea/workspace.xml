@@ -2,13 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f1a3609b-05f2-4e93-b5c1-0f477f2ec236" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/build/web/css/client.css" afterPath="$PROJECT_DIR$/system/service/websocket/build/web/css/client.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/css/client.css" afterPath="$PROJECT_DIR$/system/service/websocket/web/css/client.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-db.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-db.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-form.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-form.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-worker.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-worker.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed.css" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/index.html" afterPath="$PROJECT_DIR$/system/service/websocket/web/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/cmd/socket-client.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/socket-client.js" />
     </list>
     <ignored path="relay.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,15 +36,25 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="feed-worker.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="feed-worker.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-worker.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-29.0" vertical-offset="1077" max-vertical-offset="3927">
-              <caret line="106" column="26" selection-start-line="106" selection-start-column="26" selection-end-line="106" selection-end-column="26" />
+            <state vertical-scroll-proportion="0.33296338" vertical-offset="2811" max-vertical-offset="4437">
+              <caret line="183" column="13" selection-start-line="183" selection-start-column="13" selection-end-line="183" selection-end-column="13" />
               <folding>
-                <marker date="1439827941256" expanded="false" signature="2698:2711" placeholder="..." />
-                <marker date="1439827941256" expanded="false" signature="4020:4033" placeholder="..." />
+                <marker date="1439830077170" expanded="false" signature="2704:2717" placeholder="..." />
+                <marker date="1439830077170" expanded="false" signature="4026:4039" placeholder="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="socket-client.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/socket-client.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1472" max-vertical-offset="3570">
+              <caret line="128" column="47" selection-start-line="128" selection-start-column="47" selection-end-line="128" selection-end-column="47" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -56,17 +62,17 @@
       <file leaf-file-name="feed-form.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-form.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="3001" max-vertical-offset="6681">
+            <state vertical-scroll-proportion="0.0" vertical-offset="2695" max-vertical-offset="6681">
               <caret line="197" column="0" selection-start-line="197" selection-start-column="0" selection-end-line="197" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/system/service/websocket/web/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.31653887" vertical-offset="0" max-vertical-offset="913">
+            <state vertical-scroll-proportion="-11.115385" vertical-offset="0" max-vertical-offset="765">
               <caret line="17" column="25" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
               <folding />
             </state>
@@ -147,7 +153,6 @@
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/lib/kbpgp/kbpgp.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/socket-worker.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/css/client.css" />
-        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/socket-client.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/socket-defaults.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/post-db.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-worker.js" />
@@ -166,9 +171,10 @@
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-listener.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-db.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-db.js" />
-        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-worker.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-form.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/index.html" />
+        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/socket-client.js" />
+        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-worker.js" />
       </list>
     </option>
   </component>
@@ -467,7 +473,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1928" y="-1088" width="1936" height="1096" extended-state="6" />
+    <frame x="-1928" y="-1088" width="1936" height="1096" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -803,14 +809,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/socket-client.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1798" max-vertical-offset="3553">
-          <caret line="143" column="0" selection-start-line="143" selection-start-column="0" selection-end-line="148" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat-form.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="464" max-vertical-offset="1088">
@@ -877,30 +875,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-worker.js">
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-29.0" vertical-offset="1077" max-vertical-offset="3927">
-          <caret line="106" column="26" selection-start-line="106" selection-start-column="26" selection-end-line="106" selection-end-column="26" />
-          <folding>
-            <marker date="1439827941256" expanded="false" signature="2698:2711" placeholder="..." />
-            <marker date="1439827941256" expanded="false" signature="4020:4033" placeholder="..." />
-          </folding>
+        <state vertical-scroll-proportion="-11.115385" vertical-offset="0" max-vertical-offset="765">
+          <caret line="17" column="25" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-form.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3001" max-vertical-offset="6681">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2695" max-vertical-offset="6681">
           <caret line="197" column="0" selection-start-line="197" selection-start-column="0" selection-end-line="197" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/index.html">
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/socket-client.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.31653887" vertical-offset="0" max-vertical-offset="913">
-          <caret line="17" column="25" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1472" max-vertical-offset="3570">
+          <caret line="128" column="47" selection-start-line="128" selection-start-column="47" selection-end-line="128" selection-end-column="47" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-worker.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33296338" vertical-offset="2811" max-vertical-offset="4437">
+          <caret line="183" column="13" selection-start-line="183" selection-start-column="13" selection-end-line="183" selection-end-column="13" />
+          <folding>
+            <marker date="1439830077170" expanded="false" signature="2704:2717" placeholder="..." />
+            <marker date="1439830077170" expanded="false" signature="4026:4039" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
