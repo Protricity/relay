@@ -7,7 +7,7 @@
     var verificationRequiredElms = document.getElementsByClassName('verification-required');
     document.addEventListener('log', function(e) {
         var htmlContainer = e.target;
-        console.log("Needs decryption: ", htmlContainer, verificationRequiredElms);
+        //console.log("Needs decryption: ", htmlContainer, verificationRequiredElms);
 
         for(var i=decryptionRequiredElms.length-1; i>=0; i--) {
             var decryptionRequiredElm = decryptionRequiredElms[i];

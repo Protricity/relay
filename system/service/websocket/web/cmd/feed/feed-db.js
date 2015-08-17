@@ -33,7 +33,8 @@
                     var postStore = upgradeDB.createObjectStore(DB_TABLE_FEED_POSTS, { autoIncrement : true });
                     postStore.createIndex("channel", "channel", { unique: false });
                     postStore.createIndex("timestamp", "timestamp", { unique: false });
-                    postStore.createIndex("uid", ["key_id", "timestamp"], { unique: false });
+                    postStore.createIndex("uid", ["key_id", "timestamp"], { unique: true });
+                    postStore.createIndex("index_channel_timestamp", ["channel", "timestamp"], { unique: false });
                 }
 
             };
@@ -80,7 +81,7 @@
     self.FeedDB.addVerifiedPostContentToDB = function(verifiedContent, callback) {
         var verifiedText = verifiedContent.text;
         var pgpSignedPost = verifiedContent.encrypted;
-        var feedKeyID = verifiedText.signingKeyId;
+        var feedKeyID = verifiedContent.signingKeyId;
         var channel = /data-channel='([^']+)'/i.exec(verifiedText)[1];
         var timestamp = /data-timestamp='(\d+)'/i.exec(verifiedText)[1];
 
@@ -123,7 +124,7 @@
         );
     };
 
-    self.FeedDB.queryFeedPosts = function(authorKeyIDs, timeSpan, callback, onComplete) {
+    self.FeedDB.queryFeedPosts = function(feedChannelPrefix, timeSpan, callback, onComplete) {
         self.FeedDB(function(db, FeedDB) {
             if(typeof timeSpan !== 'object')
                 timeSpan = [Date.now(), timeSpan];
@@ -134,30 +135,25 @@
             var transaction = db.transaction([DB_TABLE_FEED_POSTS], "readwrite");
             var objectStore = transaction.objectStore(DB_TABLE_FEED_POSTS);
 
-            var indexUID = objectStore.index('uid');
-            for(var i=0; i<authorKeyIDs.length; i++)
-                (function(authorKeyID) {
+            var indexChannelTimestamp = objectStore.index('index_channel_timestamp');
 
-                    var lowerBound = [authorKeyID, startTime];
-                    var upperBound = [authorKeyID, endTime];
-                    var range = IDBKeyRange.bound(lowerBound,upperBound);
-                    var request = indexUID.index('males25')
-                        .openCursor(range,'next')
-                        .onsuccess = function(e) {
-                            var cursor = e.target.result;
-                            if (cursor)
-                            {
-                                var uid = cursor.value;
-                                console.log("Found UID: ", uid);
-                                callback(uid);
-                                cursor.continue();
-                            } else {
-                                if(onComplete)
-                                    onComplete();
-                            }
-                        };
-                })(authorKeyIDs[i]);
-
+            var lowerBound = [feedChannelPrefix, startTime];
+            var upperBound = [feedChannelPrefix + '\uffff', endTime];
+            var request = indexChannelTimestamp
+                .openCursor(IDBKeyRange.bound(lowerBound,upperBound), 'next')
+                .onsuccess = function(e) {
+                    var cursor = e.target.result;
+                    if (cursor)
+                    {
+                        var feedData = cursor.value;
+                        console.log("Found Feed Data: ", feedData, [feedChannelPrefix, startTime, endTime]);
+                        callback(feedData);
+                        cursor.continue();
+                    } else {
+                        if(onComplete)
+                            onComplete();
+                    }
+                };
 
         });
 

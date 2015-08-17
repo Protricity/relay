@@ -102,44 +102,64 @@
 
     /**
      *
-     * @param commandString FEED [channel prefix]
+     * @param commandString FEED [channel prefix] [start time] [end time]
      */
     self.feedCommand = function (commandString) {
         var match = /^feed\s*(.*)$/im.exec(commandString);
-        var channelPath = fixChannelPath(match[1] || '~');
-        var logChannelPath = PATH_PREFIX_FEED + channelPath;
+
+        var channelPrefix = match[1] || '~';
+        var fixedChannelPath = fixChannelPath(channelPrefix);
+        var logChannelPath = PATH_PREFIX_FEED + channelPrefix;
 
         var feedEndTime = Date.now();
         var feedStartTime = feedEndTime - MS_DAY;
-        var authorKeyIDs = []; todo wtf keys? derive from command? iduno
 
         routeResponseToClient("RLOG " + logChannelPath + ' ' +
             FEED_TEMPLATE
-                .replace(/{\$title}/gi, "Viewing Feed for " + channelPath)
-                .replace(/{\$channel}/gi, channelPath)
+                .replace(/{\$title}/gi, "Viewing Feed for " + fixedChannelPath)
+                .replace(/{\$channel}/gi, fixedChannelPath)
         );
 
-        getFeedDB(function(db, FeedDB) {
-            FeedDB.queryFeedPosts(
-                authorKeyIDs,
-                [feedStartTime, feedEndTime],
-                function(data) {
-                    routeResponseToClient("LOG " + logChannelPath + " " + MANAGE_TEMPLATE_ENTRY
-                        .replace(/{\$id_private}/gi, data.id_private)
-                        .replace(/{\$id_public}/gi, data.id_public)
-                        .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
-                        .replace(/{\$id_public_short}/gi, data.id_public.substr(data.id_public.length - 8))
-                        .replace(/{\$block_private}/gi, data.block_private)
-                        .replace(/{\$block_public}/gi, data.block_public)
-                        .replace(/{\$user_id}/gi, data.user_id.replace(/</, '&lt;'))
-                        .replace(/{\$user_name}/gi, data.user_name || '')
-                        .replace(/{\$user_email}/gi, data.user_email || '')
-                        .replace(/{\$user_comment}/gi, data.user_comment || '')
-                        .replace(/{\$passphrase_required}/gi, data.passphrase_required ? "Yes" : "No")
-                        .replace(/{\$[^}]+}/gi, '')
-                );
-            });
+        getPGPDB(function (db, PGPDB) {
+
+            var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readonly");
+            var dbStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
+
+            dbStore.openCursor().onsuccess = function (evt) {
+                var cursor = evt.target.result;
+                if (cursor) {
+                    var keyID = cursor.value.id_public;
+                    var fixedChannelPrefix = fixHomePath(channelPrefix, keyID);
+
+
+                    getFeedDB(function(db, FeedDB) {
+                        FeedDB.queryFeedPosts(
+                            fixedChannelPrefix,
+                            [feedStartTime, feedEndTime],
+                            function(data) {
+                                console.log("FEED POST: ", data);
+                                routeResponseToClient("LOG " + logChannelPath + " " + FEED_TEMPLATE_ENTRY
+                                        .replace(/{\$id_private}/gi, data.id_private)
+                                        .replace(/{\$id_public}/gi, data.id_public)
+                                        .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
+                                        .replace(/{\$id_public_short}/gi, data.id_public.substr(data.id_public.length - 8))
+                                        .replace(/{\$block_private}/gi, data.block_private)
+                                        .replace(/{\$block_public}/gi, data.block_public)
+                                        .replace(/{\$user_id}/gi, data.user_id.replace(/</, '&lt;'))
+                                        .replace(/{\$user_name}/gi, data.user_name || '')
+                                        .replace(/{\$user_email}/gi, data.user_email || '')
+                                        .replace(/{\$user_comment}/gi, data.user_comment || '')
+                                        .replace(/{\$passphrase_required}/gi, data.passphrase_required ? "Yes" : "No")
+                                        .replace(/{\$[^}]+}/gi, '')
+                                );
+                            });
+                    });
+
+                } else {
+                }
+            };
         });
+
     };
 
     self.feedResponse = routeResponseToClient;
@@ -150,6 +170,18 @@
         return path;
     }
 
+
+    function fixHomePath(channelPath, keyID) {
+        keyID = keyID.substr(keyID.length - 8);
+        channelPath = fixChannelPath(channelPath);
+        if(channelPath[0] === '~') {
+            channelPath = channelPath.substr(1);
+            if(!channelPath || channelPath[0] !== '/')
+                channelPath = '/' + channelPath;
+            channelPath = '/home/' + keyID + channelPath;
+        }
+        return channelPath;
+    }
 
     function getKBPGP() {
         if(typeof self.kbpgp !== 'undefined')

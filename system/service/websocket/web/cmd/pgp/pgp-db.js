@@ -53,6 +53,9 @@
         onDBCallbacks.push(dbReadyCallback);
     };
 
+    self.PGPDB.DB_NAME = DB_NAME;
+    self.PGPDB.DB_TABLE_PUBLIC_KEYS = DB_TABLE_PUBLIC_KEYS;
+    self.PGPDB.DB_TABLE_PRIVATE_KEYS = DB_TABLE_PRIVATE_KEYS;
 
     // Database Methods
 

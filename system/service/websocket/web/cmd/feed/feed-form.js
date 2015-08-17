@@ -143,7 +143,6 @@
 
         var selectPGPIDElm = formElm.querySelector('*[name=pgp-id]');
         var selectedPGPFingerprint = selectPGPIDElm.value;
-        var selectedPGPShortID = selectedPGPFingerprint.substr(selectedPGPFingerprint.length - 8);
         var passphraseElm = formElm.querySelector('*[name=passphrase]');
 
         var postContent = postContentElm.value.trim();
@@ -178,8 +177,11 @@
                 throw new Error(errMSG);
             }
 
-            var postChannel = fixHomePath(channelElm.value, selectedPGPShortID);
-            var homeChannel = fixHomePath('~', selectedPGPShortID);
+            var publicKeyID = privateKeyData.id_public;
+            publicKeyID = publicKeyID.substr(publicKeyID.length - 8);
+
+            var postChannel = fixHomePath(channelElm.value, publicKeyID);
+            var homeChannel = fixHomePath('~', publicKeyID);
 
             postContent = "<div class='" + CLASS_FEED_POST + "' data-channel='" + postChannel + "' data-timestamp='" + Date.now() + "'>" + postContent + "</div>";
 
@@ -263,6 +265,7 @@
 
 
     function fixHomePath(channelPath, keyID) {
+        keyID = keyID.substr(keyID.length - 8);
         channelPath = fixChannelPath(channelPath);
         if(channelPath[0] === '~') {
             channelPath = channelPath.substr(1);
