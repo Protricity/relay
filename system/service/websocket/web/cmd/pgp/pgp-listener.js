@@ -58,7 +58,7 @@
                                 var verifiedText = verifiedContent.text;
                                 for(var i=0; i<verifiedContent.signatures.length; i++)
                                     if(!verifiedContent.signatures[i].valid)
-                                        throw new Error("Invalid Signature [" + feedKeyID + "]: " + verifiedContent.signatures[0].keyid.toHex().toUpperCase());
+                                        throw new Error("Invalid Signature: " + verifiedContent.signatures[i].keyid.toHex().toUpperCase());
 
                                 verificationRequiredElm.classList.add('verified');
                                 verificationRequiredElm.classList.remove('verification-pending');

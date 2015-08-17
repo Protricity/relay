@@ -3,6 +3,8 @@
  */
 (function() {
 
+    var MS_DAY = 24 * 60 * 60 * 1000;
+
     var PATH_PREFIX_POST = 'post:';
     var PATH_PREFIX_FEED = 'feed:';
 
@@ -13,7 +15,6 @@
         "<link rel='stylesheet' href='cmd/feed/feed.css' type='text/css'>" +
         "<legend>{$title}</legend>" +
         "<div class='feed-container'>" +
-        "<button oninput='loadNextFeedPage(\"{$channel}\", 0{$page})'>Load more feed...</button>";
         "</div>";
 
 
@@ -25,7 +26,7 @@
 
         "<form name='post-form' action='#' onsubmit='return submitPostForm(event);'>" +
             "<label class='label-content'>Use this text box to create a new feed post:<br/><i>Your post will be appear on your subscribers' feeds</i><br/>" +
-                "<textarea cols='56' rows='8' onfocus='focusPostForm(event)' class='focus' name='content' required='required' placeholder='Post anything you like'>{$content}</textarea>" +
+                "<textarea cols='56' rows='8' onfocus='focusPostForm(event)' class='focus' name='content' required='required' placeholder='Post anything you like! Some HTML Tags allowed.\nExample:\n\n\t<h1>Optional Topic Header</h1>\n\tPost <i>anything</i> you like!\n\t<img src=\"#mylink\" alt=\"my pic\" />'>{$content}</textarea>" +
             "<br/></label>" +
 
             "<label class='label-pgp-id'>Post with (PGP Identity):<br/>" +
@@ -81,7 +82,7 @@
             sendWithFastestSocket(commandString);
             //
             //getFeedDB(function (db, FeedDB) {
-            //    FeedDB.addPostToDB(content);
+            //    FeedDB.addVerifiedPostContentToDB(content);
             //});
 
         } else {
@@ -106,13 +107,39 @@
     self.feedCommand = function (commandString) {
         var match = /^feed\s*(.*)$/im.exec(commandString);
         var channelPath = fixChannelPath(match[1] || '~');
+        var logChannelPath = PATH_PREFIX_FEED + channelPath;
 
-        routeResponseToClient("RLOG " + PATH_PREFIX_FEED + channelPath + ' ' +
+        var feedEndTime = Date.now();
+        var feedStartTime = feedEndTime - MS_DAY;
+        var authorKeyIDs = []; todo wtf keys? derive from command? iduno
+
+        routeResponseToClient("RLOG " + logChannelPath + ' ' +
             FEED_TEMPLATE
                 .replace(/{\$title}/gi, "Viewing Feed for " + channelPath)
                 .replace(/{\$channel}/gi, channelPath)
         );
 
+        getFeedDB(function(db, FeedDB) {
+            FeedDB.queryFeedPosts(
+                authorKeyIDs,
+                [feedStartTime, feedEndTime],
+                function(data) {
+                    routeResponseToClient("LOG " + logChannelPath + " " + MANAGE_TEMPLATE_ENTRY
+                        .replace(/{\$id_private}/gi, data.id_private)
+                        .replace(/{\$id_public}/gi, data.id_public)
+                        .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
+                        .replace(/{\$id_public_short}/gi, data.id_public.substr(data.id_public.length - 8))
+                        .replace(/{\$block_private}/gi, data.block_private)
+                        .replace(/{\$block_public}/gi, data.block_public)
+                        .replace(/{\$user_id}/gi, data.user_id.replace(/</, '&lt;'))
+                        .replace(/{\$user_name}/gi, data.user_name || '')
+                        .replace(/{\$user_email}/gi, data.user_email || '')
+                        .replace(/{\$user_comment}/gi, data.user_comment || '')
+                        .replace(/{\$passphrase_required}/gi, data.passphrase_required ? "Yes" : "No")
+                        .replace(/{\$[^}]+}/gi, '')
+                );
+            });
+        });
     };
 
     self.feedResponse = routeResponseToClient;

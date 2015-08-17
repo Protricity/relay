@@ -17,13 +17,13 @@ form[name=pgp-keygen-form] select[name=bits] {
 
 form[name=pgp-manage-form] {
     max-width: 41em;
-    vertical-align:;
 }
 form[name=pgp-manage-form] .pgp-id-box {
     padding: 0.5em;
     margin: 0 0.5em 0.5em 0.5em;
     max-width: 18em;
     display: inline-block;
+    vertical-align: top;
 }
 
 form[name=pgp-manage-form] select[name=actions] {

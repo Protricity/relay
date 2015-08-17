@@ -33,6 +33,7 @@
                     var postStore = upgradeDB.createObjectStore(DB_TABLE_FEED_POSTS, { autoIncrement : true });
                     postStore.createIndex("channel", "channel", { unique: false });
                     postStore.createIndex("timestamp", "timestamp", { unique: false });
+                    postStore.createIndex("uid", ["key_id", "timestamp"], { unique: false });
                 }
 
             };
@@ -56,23 +57,30 @@
 
          var pgpSignedMessage = openpgp.cleartext.readArmored(pgpMessageContent);
          var encIDs = pgpSignedMessage.getSigningKeyIds();
-         var fp = encIDs[0].toHex().toUpperCase();
+         var feedKeyID = encIDs[0].toHex().toUpperCase();
 
-        self.PGPDB.getPublicKeyData(fp, function (err, pkData) {
+        self.PGPDB.getPublicKeyData(feedKeyID, function (err, pkData) {
 
             var publicKey = openpgp.key.readArmored(pkData.block_public);
 
-//                 openpgp._worker_init = false;
             openpgp.verifyClearSignedMessage(publicKey.keys, pgpSignedMessage)
             .then(function(verifiedContent) {
-                callback(null, verifiedContent.text, verifiedContent);
+                for(var i=0; i<verifiedContent.signatures.length; i++)
+                    if(!verifiedContent.signatures[i].valid)
+                        throw new Error("Invalid Signature: " + verifiedContent.signatures[i].keyid.toHex().toUpperCase());
+
+                verifiedContent.encrypted = pgpMessageContent;
+                verifiedContent.signingKeyId = feedKeyID;
+                callback(null, verifiedContent);
             });
         });
 
     };
 
-    self.FeedDB.addPostToDB = function(pgpSignedPost, verifiedText, callback) {
-
+    self.FeedDB.addVerifiedPostContentToDB = function(verifiedContent, callback) {
+        var verifiedText = verifiedContent.text;
+        var pgpSignedPost = verifiedContent.encrypted;
+        var feedKeyID = verifiedText.signingKeyId;
         var channel = /data-channel='([^']+)'/i.exec(verifiedText)[1];
         var timestamp = /data-timestamp='(\d+)'/i.exec(verifiedText)[1];
 
@@ -82,6 +90,7 @@
             var feedPostStore = transaction.objectStore(DB_TABLE_FEED_POSTS);
 
             var insertData = {
+                'key_id': feedKeyID,
                 'channel': channel,
                 'timestamp': timestamp,
                 'content': pgpSignedPost,
@@ -106,39 +115,50 @@
 
     self.FeedDB.verifyAndAddPostToDB = function(pgpSignedPost, callback) {
         self.FeedDB.verifySignedPost(pgpSignedPost,
-            function(err, verifiedText, verifiedContent) {
+            function(err, verifiedContent) {
                 if(err)
                     throw new Error(err);
-                self.FeedDB.addPostToDB(pgpSignedPost, verifiedText, callback);
+                self.FeedDB.addVerifiedPostContentToDB(verifiedContent, callback);
             }
         );
     };
 
-    self.FeedDB.querySubscribedPosts = function(callback, authorKeyIDs, startTime, endTime) {
+    self.FeedDB.queryFeedPosts = function(authorKeyIDs, timeSpan, callback, onComplete) {
         self.FeedDB(function(db, FeedDB) {
+            if(typeof timeSpan !== 'object')
+                timeSpan = [Date.now(), timeSpan];
 
-            var transaction = db.transaction([DB_TABLE_POSTS], "readwrite");
-            var objectStore = transaction.objectStore(DB_TABLE_POSTS);
+            timeSpan = timeSpan.sort();
+            var startTime = timeSpan[0];
+            var endTime = timeSpan[1];
+            var transaction = db.transaction([DB_TABLE_FEED_POSTS], "readwrite");
+            var objectStore = transaction.objectStore(DB_TABLE_FEED_POSTS);
 
-            var indexTimestamp = objectStore.index('timestamp');
-            var keyRangeValue = endTime > 0
-                ? IDBKeyRange.bound(startTime, endTime)
-                : IDBKeyRange.lowerBound(startTime, true);
+            var indexUID = objectStore.index('uid');
+            for(var i=0; i<authorKeyIDs.length; i++)
+                (function(authorKeyID) {
 
-            var cursor = indexTimestamp.openCursor(keyRangeValue);
-            cursor.onsuccess = function(e) {
-                var cursor = e.target.result;
-                if (cursor)
-                {
-                    var postEntry = cursor.value;
-                    if(authorKeyIDs === null
-                        || authorKeyIDs.indexOf(postEntry.author) >= 0) {
-                        callback(postEntry);
-                    }
-                    cursor.continue();
-                }
-            };
-            //return cursor;
+                    var lowerBound = [authorKeyID, startTime];
+                    var upperBound = [authorKeyID, endTime];
+                    var range = IDBKeyRange.bound(lowerBound,upperBound);
+                    var request = indexUID.index('males25')
+                        .openCursor(range,'next')
+                        .onsuccess = function(e) {
+                            var cursor = e.target.result;
+                            if (cursor)
+                            {
+                                var uid = cursor.value;
+                                console.log("Found UID: ", uid);
+                                callback(uid);
+                                cursor.continue();
+                            } else {
+                                if(onComplete)
+                                    onComplete();
+                            }
+                        };
+                })(authorKeyIDs[i]);
+
+
         });
 
     };

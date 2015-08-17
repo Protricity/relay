@@ -1,4 +1,9 @@
 
+.pgp-verified-content .feed-post {
+    display: none;
+}
+
+
 form[name=post-form] label {
 }
 

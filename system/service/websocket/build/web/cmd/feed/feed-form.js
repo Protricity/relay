@@ -47,7 +47,7 @@
     //                if(!hasMatchingIDs(pgpKeyIDs, encryptionIDs))
     //                    throw new Error("pk mismatch " + encryptionIDs.join(', ') + " ! IN " + pgpKeyIDs.join(', '));
     //
-    //                //addPostToDB(pgpMessageContent, feedKeyID); // TODO cache command
+    //                //addVerifiedPostContentToDB(pgpMessageContent, feedKeyID); // TODO cache command
     //                userPostElm.classList.add(CLASS_FEED_POST_CACHED);
     //            }
     //
