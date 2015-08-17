@@ -14,10 +14,24 @@
         "<script src='cmd/feed/feed-form.js'></script>" +
         "<link rel='stylesheet' href='cmd/feed/feed.css' type='text/css'>" +
         "<legend>{$title}</legend>" +
-        "<div class='feed-container'>" +
+        "<div class='feed-container channel-content'>" +
         "</div>";
 
 
+    var FEED_TEMPLATE_ENTRY =
+        "<div class='feed-post-container'>" +
+            "<div class='feed-post-author'>" +
+                //"<img src='generic' alt='' />" +
+                "<a href='{$user_home}' class='user'>{$user_id}</a>" +
+                "<div class='timestamp_posted'>{$timestamp_posted}</div>" +
+            "</div>" +
+            "{$content_verified}" +
+            "<div class='feed-post-commands'>" +
+                "<button class='command-like'>Like</button>" +
+                "<button class='command-comment'>Comment</button>" +
+                "<button class='command-share'>Share</button>" +
+            "</div>" +
+        "</div>";
 
     var FEED_POST_FORM_TEMPLATE =
         "<script src='cmd/feed/feed-form.js'></script>" +
@@ -128,7 +142,9 @@
             dbStore.openCursor().onsuccess = function (evt) {
                 var cursor = evt.target.result;
                 if (cursor) {
-                    var keyID = cursor.value.id_public;
+                    var privateKeyData = cursor.value;
+                    var keyID = privateKeyData.id_public;
+                    var userID = privateKeyData.user_id;
                     var fixedChannelPrefix = fixHomePath(channelPrefix, keyID);
 
 
@@ -139,17 +155,13 @@
                             function(data) {
                                 console.log("FEED POST: ", data);
                                 routeResponseToClient("LOG " + logChannelPath + " " + FEED_TEMPLATE_ENTRY
-                                        .replace(/{\$id_private}/gi, data.id_private)
-                                        .replace(/{\$id_public}/gi, data.id_public)
-                                        .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
-                                        .replace(/{\$id_public_short}/gi, data.id_public.substr(data.id_public.length - 8))
-                                        .replace(/{\$block_private}/gi, data.block_private)
-                                        .replace(/{\$block_public}/gi, data.block_public)
-                                        .replace(/{\$user_id}/gi, data.user_id.replace(/</, '&lt;'))
-                                        .replace(/{\$user_name}/gi, data.user_name || '')
-                                        .replace(/{\$user_email}/gi, data.user_email || '')
-                                        .replace(/{\$user_comment}/gi, data.user_comment || '')
-                                        .replace(/{\$passphrase_required}/gi, data.passphrase_required ? "Yes" : "No")
+                                        .replace(/{\$user_id}/gi, userID)
+                                        .replace(/{\$key_id}/gi, data.key_id)
+                                        .replace(/{\$short_key_id}/gi, data.key_id.substr(data.key_id.length - 8))
+                                        .replace(/{\$channel}/gi, data.channel)
+                                        .replace(/{\$timestamp}/gi, data.timestamp)
+                                        .replace(/{\$content}/gi, data.content)
+                                        .replace(/{\$content_verified}/gi, data.content_verified)
                                         .replace(/{\$[^}]+}/gi, '')
                                 );
                             });
@@ -161,6 +173,8 @@
         });
 
     };
+
+
 
     self.feedResponse = routeResponseToClient;
 
