@@ -19,6 +19,21 @@
 //            updateUserFeedCache(htmlContainer);
     });
 
+    self.scrollFeed = function(e) {
+        console.log(this.scrollTop, this.scrollHeight, this.scrollHeight - this.scrollTop - this.offsetHeight);
+    };
+
+    self.toggleFeedPostLike = function(uid, e) {
+        console.log("Like " + uid);
+    };
+
+    self.toggleFeedSection = function(sectionClassName, e) {
+        this._toggle = typeof this._toggle !== 'undefined' ? !this._toggle : true;
+        var sections = document.getElementsByClassName(sectionClassName);
+        for(var i=0; i<sections.length; i++)
+            sections[i].style.display = this._toggle ? 'block' : 'none';
+    };
+
     //
     //function updateUserFeedCache(containerElm) {
     //    if(!containerElm)
@@ -264,17 +279,6 @@
 
     };
 
-
-    function hasMatchingIDs(keyIDs1, keyIDs2) {
-        for(var i=0; i<keyIDs1.length; i++) {
-            for(var j=0; j<keyIDs2.length; j++) {
-                if(keyIDs1[i].toHex() === keyIDs2[j].toHex()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
 
     function fixHomePath(channelPath, keyID) {

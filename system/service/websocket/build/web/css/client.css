@@ -1,7 +1,8 @@
 .channel-container {
     font-family: monospace;
     color: #333;
-    padding: 1em 0 10em 0;
+    padding: 1em 0 10em 0; /* Chrome, Safari, Opera */       /* Firefox */       /* Chrome, Safari, Opera */       /* Firefox */      
+
 }
 
 .channel-container label {
@@ -16,6 +17,8 @@
 .channel-content {
     /* overflow: auto; too broad*/
     /* max-height: 20vw; */
+    /* width: 36em; */
+    
 }
 
 .channel {
@@ -25,7 +28,7 @@
     
 
       
-     min-width: 36em;
+     /* min-width: 36em; */
     
 
       display: inline-block;
@@ -69,6 +72,7 @@ ul.channel-list li,
 .channel .message {
     white-space: normal;
     color: black;
+    word-break: break-all;
 }
 
 

@@ -14,25 +14,33 @@
         "<script src='cmd/feed/feed-form.js'></script>" +
         "<link rel='stylesheet' href='cmd/feed/feed.css' type='text/css'>" +
         "<legend>{$title}</legend>" +
-        "<div class='feed-container channel-content'>" +
+        "<div class='feed-container channel-content' onscroll='scrollFeed.apply(this, [event]);'>" +
         "</div>";
 
 
     var FEED_TEMPLATE_ENTRY =
-        "<fieldset class='feed-post-container'>" +
+        "<fieldset class='feed-post-container unsorted'>" +
             "<legend>Feed Post</legend>" +
             "<div class='feed-post-author'>" +
-                //"<img src='generic' alt='' />" +
+                "<img class='user_icon' src='cmd/feed/img/user_icon_default.png' alt='UI' />" +
                 "<a href='{$user_home}' class='user'>{$user_id}</a>" +
                 "<div class='timestamp_formatted'>{$timestamp_formatted}</div>" +
             "</div>" +
             "{$content_verified}" +
             "<div class='feed-post-commands'>" +
-                "<button class='command-like'>Like</button>" +
-                "<button class='command-comment'>Comment</button>" +
-                "<button class='command-share'>Share</button>" +
+                "<button onclick='toggleFeedPostLike.apply(this, [\"{$uid}\", event])' class='command command-like'>Like</button>" +
+                "<button onclick='toggleFeedSection.apply(this, [\"feed-section-comments:{$row_n}\", event])' class='command command-comment'>Comments</button>" +
+                "<button onclick='toggleFeedSection.apply(this, [\"feed-section-share:{$row_n}\", event])' class='command command-share'>Share</button>" +
+                "<button onclick='toggleFeedSection.apply(this, [\"feed-section-info:{$row_n}\", event])' class='command command-info'>Info</button>" +
+            "</div>" +
+            "<div class='feed-section-comments:{$row_n}' style='display:none;'>Comments" +
+            "</div>" +
+            "<div class='feed-section-share:{$row_n}' style='display:none;'>Share" +
+            "</div>" +
+            "<div class='feed-section-info:{$row_n}' style='display:none;'>Info" +
             "</div>" +
         "</fieldset>";
+
 
     var FEED_POST_FORM_TEMPLATE =
         "<script src='cmd/feed/feed-form.js'></script>" +
@@ -54,10 +62,6 @@
                 "</select>" +
             "<br/><br/></label>" +
 
-            "<label class='label-passphrase' style='display: none'>PGP Passphrase (if required):<br/>" +
-            "<input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>" +
-            "<br/><br/></label>" +
-
             "<label class='label-channel'>Post to:<br/>" +
                 "<select name='channel'>" +
                     "<option value='~'>My Feed</option>" +
@@ -66,14 +70,20 @@
                 "</select>" +
             "<br/><br/></label>" +
 
-            "<label class='label-recipients'>Choose which subscribers may view this post:<br/>" +
-                "<select name='recipients'>" +
-                    "<option value='*'>Everybody</option>" +
-                    "<option disabled='disabled'>My friends</option>" +
-                    "<option disabled='disabled'>Friends of Friends</option>" +
-                    "<option disabled='disabled'>Specific Recipients</option>" +
-                "</select>" +
+            //"<label class='label-recipients'>Choose which subscribers may view this post:<br/>" +
+            //    "<select name='recipients'>" +
+            //        "<option value='*'>Everybody</option>" +
+            //        "<option disabled='disabled'>My friends</option>" +
+            //        "<option disabled='disabled'>Friends of Friends</option>" +
+            //        "<option disabled='disabled'>Specific Recipients</option>" +
+            //    "</select>" +
+            //"<br/><br/></label>" +
+            "<label class='label-passphrase' style='display: none;'>PGP Passphrase (if required):<br/>" +
+                "<input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>" +
             "<br/><br/></label>" +
+
+            "<hr/>" +
+
 
             "<label class='label-post-form'>Submit your post:<br/>" +
                 "<input type='submit' value='Post' name='submit-post-form' />" +
@@ -115,6 +125,7 @@
 
     self.postResponse = routeResponseToClient;
 
+    var feedNCounter = 0;
     /**
      *
      * @param commandString FEED [channel prefix] [start time] [end time]
@@ -156,6 +167,8 @@
                             function(data) {
 //                                 console.log("FEED POST: ", data);
                                 routeResponseToClient("PLOG " + logChannelPath + " " + FEED_TEMPLATE_ENTRY
+                                        .replace(/{\$row_n}/gi, feedNCounter++)
+                                        .replace(/{\$uid}/gi, data.key_id + '-' + data.timestamp)
                                         .replace(/{\$user_id}/gi, userID)
                                         .replace(/{\$key_id}/gi, data.key_id)
                                         .replace(/{\$short_key_id}/gi, data.key_id.substr(data.key_id.length - 8))

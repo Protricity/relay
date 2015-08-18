@@ -3,6 +3,17 @@
     display: none;
 }
 
+.label-passphrase {
+    animation: fadein 0.5s;
+    -moz-animation: fadein 0.5s;
+    -webkit-animation: fadein 0.5s; /* Safari and Chrome */
+}
+
+.feed-post-author .user_icon {
+    float:left;
+    width: 24px;
+    height: 24px;
+}
 
 form[name=post-form] label {
 }
@@ -26,19 +37,22 @@ form[name=post-form] input[type=submit] {
 
 
 
-.feed-container button.command-like,
-.feed-container button.command-comment,
-.feed-container button.command-share {
+.feed-container button.command {
     padding: 0.2em 0.5em;
     margin: 0.1em;
     animation: fadein 2s;
 }
 
 .feed-container .feed-post-container {
-    max-width: 48em;
+    max-width: 42em;
+    /* width: 23em; */
 }
 
 .feed-container .timestamp_formatted {
-    color: lightgray;
-    
+    color: gray;
+}
+
+.feed-container {
+    max-height: 42em;
+    overflow-y:auto;
 }
