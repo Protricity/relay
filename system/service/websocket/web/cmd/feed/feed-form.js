@@ -12,95 +12,49 @@
     var PREFIX_FEED_POSTS_BY_KEY = 'feed-posts-by-key';
     var PREFIX_REPLIES_POSTS_BY_KEY = 'feed-replies-by-key';
 
+    var postFormUninitiatedElms = document.getElementsByClassName('post-form:uninitiated');
 
     document.addEventListener('log', function(e) {
-        var htmlContainer = e.target;
-//         if(htmlContainer.getElementsByClassName(CLASS_FEED_POST).length > 0) // TODO: ugly/inefficient
-//            updateUserFeedCache(htmlContainer);
+        for(var i=postFormUninitiatedElms.length-1; i>=0; i--)
+            (function(postFormUninitiatedElm) {
+                postFormUninitiatedElm.classList.remove('post-form:uninitiated');
+                doFocus(e, postFormUninitiatedElm);
+            })(postFormUninitiatedElms[i]);
     });
 
     self.scrollFeed = function(e) {
         console.log(this.scrollTop, this.scrollHeight, this.scrollHeight - this.scrollTop - this.offsetHeight);
     };
 
-    self.toggleFeedPostLike = function(uid, e) {
+    self.toggleFeedPostLike = function(uid) {
         console.log("Like " + uid);
     };
 
-    self.toggleFeedSection = function(sectionClassName, e) {
-        this._toggle = typeof this._toggle !== 'undefined' ? !this._toggle : true;
-        var sections = document.getElementsByClassName(sectionClassName);
-        for(var i=0; i<sections.length; i++)
-            sections[i].style.display = this._toggle ? 'block' : 'none';
+    self.toggleSection = function(sectionClassNames, toggleValue) {
+        if(typeof sectionClassNames !== 'object')
+            sectionClassNames = [sectionClassNames];
+
+        var THIS = null;
+        for(var i=0; i<sectionClassNames.length; i++) {
+
+            var sectionClassName = sectionClassNames[i];
+            var sections = document.getElementsByClassName(sectionClassName);
+            for(var j=0; j<sections.length; j++) {
+                if(!THIS) {
+                    THIS = sections[j];
+                    if(typeof toggleValue === 'undefined')
+                        toggleValue = typeof THIS._toggle !== 'undefined' ? !THIS._toggle : true;
+                    THIS._toggle = toggleValue;
+                }
+                sections[j].style.display = THIS._toggle ? 'block' : 'none';
+            }
+
+        }
     };
 
-    //
-    //function updateUserFeedCache(containerElm) {
-    //    if(!containerElm)
-    //        containerElm = document;
-    //
-    //    var LocalStore = new openpgp.Keyring.localstore();
-    //    var privateKeys = LocalStore.loadPrivate();
-    //    var publicKeys = LocalStore.loadPublic();
-    //    var allKeys = privateKeys.concat(publicKeys);
-    //
-    //    for(var i=0; i<allKeys.length; i++) {
-    //        var pgpKey = allKeys[i];
-    //        var pgpKeyIDs = pgpKey.getKeyIds();
-    //        var feedKeyID = pgpKey.primaryKey.getKeyId().toHex();
-    //
-    //        var userPosts = containerElm.getElementsByClassName(PREFIX_FEED_POSTS_BY_KEY + ':' + feedKeyID);
-    //
-    //        for(var j=0; j<userPosts.length; j++) {
-    //            var userPostElm = userPosts[j];
-    //            if(!userPostElm.classList.contains(CLASS_FEED_POST_CACHED)) {
-    //                var pgpMessageContent = userPostElm.getElementsByClassName(CLASS_PGP_MESSAGE)[0].innerHTML;
-    //                var pgpMessage = openpgp.message.readArmored(pgpMessageContent);
-    //
-    //                var encryptionIDs = pgpMessage.getEncryptionKeyIds();
-    //
-    //                if(!hasMatchingIDs(pgpKeyIDs, encryptionIDs))
-    //                    throw new Error("pk mismatch " + encryptionIDs.join(', ') + " ! IN " + pgpKeyIDs.join(', '));
-    //
-    //                //addVerifiedPostContentToDB(pgpMessageContent, feedKeyID); // TODO cache command
-    //                userPostElm.classList.add(CLASS_FEED_POST_CACHED);
-    //            }
-    //
-    //
-    //            if(userPostElm.getElementsByClassName(CLASS_FEED_POST_DECRYPTED_CONTENT).length === 0) {
-    //                var decryptedContentContainer = document.createElement('span');
-    //                decryptedContentContainer.setAttribute('class', CLASS_FEED_POST_DECRYPTED_CONTENT);
-    //                decryptedContentContainer.innerHTML = '<span class="action">decrypting...</span>';
-    //                userPostElm.appendChild(decryptedContentContainer);
-    //
-    //                function decrypt(privateKey, pgpMessage, decryptedContentContainer) {
-    //
-    //                    openpgp.decryptMessage(privateKey, pgpMessage)
-    //                        .then(function(decryptedMessage) {
-    //                            decryptedContentContainer.innerHTML = decryptedMessage;
-    //
-    //                        }, function(error) {
-    //                            decryptedContentContainer.innerHTML += '<span class="error">' + error + '</span>';
-    //                            console.log("Could not decrypt", error, privateKey, pgpMessage, decryptedContentContainer);
-    //
-    //                        }).catch(function(error) {
-    //                            decryptedContentContainer.innerHTML += '<span class="error">' + error + '</span>';
-    //                            throw new Error(error);
-    //
-    //                        });
-    //                }
-    //                console.log("Attempting to decrypt with: " + feedKeyID, userPostElm);
-    //                decrypt(pgpKey, pgpMessage, decryptedContentContainer);
-    //            }
-    //        }
-    //    }
-    //
-    //}
-    //
-
     var selectedKeyID = null;
-    function doFocus(e) {
-        var formElm = e.target.form ? e.target.form : e.target;
+    function doFocus(e, formElm) {
+        formElm = formElm || (e.target.form ? e.target.form : e.target);
         if(formElm.nodeName.toLowerCase() !== 'form')
             throw new Error("Invalid Form: " + formElm);
         if(formElm.getAttribute('name') !== 'post-form')
@@ -109,6 +63,17 @@
         var optGroupPGPIdentities = formElm.getElementsByClassName('pgp-identities')[0];
         var selectPGPIDElm = formElm.querySelector('*[name=pgp-id]');
         var passphraseElm = formElm.querySelector('*[name=passphrase]');
+        var postContentElm = formElm.querySelector('*[name=content], input[type=text], textarea');
+        if(!postContentElm)
+            throw new Error("No content field found");
+
+        var showSectionsValue = postContentElm.value.length > 0;
+        var sections = formElm.getElementsByClassName('show-section-on-value');
+        for(var si=0; si<sections.length; si++)
+            sections[si].style.display = showSectionsValue ? 'block' : 'none';
+
+        if(showSectionsValue === false)
+            return formElm;
 
         if(selectedKeyID
             && selectPGPIDElm.value === selectedKeyID)
@@ -201,6 +166,12 @@
             var timestamp = Date.now();
 
             postContent = "<div class='" + CLASS_FEED_POST + "' data-channel='" + fixedPostChannel + "' data-timestamp='" + timestamp + "'>" + postContent + "</div>";
+            try {
+                protectHTMLContent(postContent);
+            } catch (e) {
+                setStatus(formElm, e.toString());
+                throw e;
+            }
 
             //var commandString = "MESSAGE " + postChannel + ' !post ' + postContent;
 
@@ -280,6 +251,31 @@
     };
 
 
+    function protectHTMLContent(htmlContent) {
+        var tagsToReplace = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;'
+        };
+
+        htmlContent = htmlContent.replace(/[&<>]/g, function(tag) {
+            return tagsToReplace[tag] || tag;
+        });
+
+        htmlContent = htmlContent.replace(/&lt;(a|p|span|div)(?:\s+(class|data-channel|data-timestamp)=[^=&]+\s*)*&gt;/g, function(tag) {
+            tag = tag.replace('&lt;', '<');
+            return tag;
+        });
+
+        htmlContent = htmlContent.replace(/&lt;\//i, '</');
+        htmlContent = htmlContent.replace(/&gt;/ig, '>');
+
+        var match = /(lt;|<)[^>]+(on\w+)=/ig.exec(htmlContent);
+        if(match)
+            throw new Error("Dangerous HTML: " + match[2]);
+
+        return htmlContent;
+    }
 
     function fixHomePath(channelPath, keyID) {
         keyID = keyID.substr(keyID.length - 8);

@@ -14,13 +14,6 @@
     color: #111;
 }
 
-.channel-content {
-    /* overflow: auto; too broad*/
-    /* max-height: 20vw; */
-    /* width: 36em; */
-    
-}
-
 .channel {
      animation: fadein 0.5s;
     -moz-animation: fadein 0.5s;

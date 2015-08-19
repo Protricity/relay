@@ -3,6 +3,14 @@
  */
 (function() {
 
+    document.addEventListener('log', function(e) {
+        var htmlContainer = e.target;
+        // If this is a chat container, scroll to the bottom
+        var channelContent = htmlContainer.querySelector('form[name=chat-form] .channel-content');
+        if(channelContent)
+            channelContent.scrollTop = channelContent.scrollHeight;
+    });
+
 
     window.submitChatForm = function(e) {
         e.preventDefault();

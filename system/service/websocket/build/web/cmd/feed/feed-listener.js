@@ -43,12 +43,13 @@
                 var newTimeStamp = parseInt(unsortedFeedPostElm.getElementsByClassName('feed-post')[0].getAttribute('data-timestamp'));
 
                 var parent = unsortedFeedPostElm.parentNode;
-                var children = parent.getElementsByClassName('feed-post sorted');
+                var children = parent.getElementsByClassName('feed-post-container sorted');
                 for(var j=0; j<children.length; j++) {
-                    var child = children[i];
-                    var existingTimeStamp = parseInt(child.getElementsByClassName('feed-post')[0].getAttribute('data-timestamp'));
+                    var child = children[j];
+                    var feedPostElm = child.getElementsByClassName('feed-post')[0];
+                    var existingTimeStamp = parseInt(feedPostElm.getAttribute('data-timestamp'));
 
-                    if(existingTimeStamp > newTimeStamp) {
+                    if(existingTimeStamp < newTimeStamp) {
                         parent.insertBefore(unsortedFeedPostElm, child);
                         unsortedFeedPostElm.classList.remove('unsorted');
                         unsortedFeedPostElm.classList.add('sorted');
@@ -56,6 +57,7 @@
                     }
                 }
 
+//                 console.log("not sorted: ", unsortedFeedPostElm);
                 unsortedFeedPostElm.classList.remove('unsorted');
                 unsortedFeedPostElm.classList.add('sorted');
 

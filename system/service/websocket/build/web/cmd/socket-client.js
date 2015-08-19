@@ -126,11 +126,11 @@
 
                 if(prepend) {
                     contentTarget.innerHTML = content + contentTarget.innerHTML;
-                    contentTarget.scrollTop = 0;
+//                     contentTarget.scrollTop = 0;
 
                 } else {
                     contentTarget.innerHTML += content;
-                    contentTarget.scrollTop = channelOutput.scrollHeight;
+//                     contentTarget.scrollTop = channelOutput.scrollHeight;
                 }
             }
 

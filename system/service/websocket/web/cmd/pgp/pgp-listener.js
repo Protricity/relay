@@ -110,6 +110,11 @@
 
         htmlContent = htmlContent.replace(/&lt;\//i, '</');
         htmlContent = htmlContent.replace(/&gt;/ig, '>');
+
+        var match = /<[^>]+on\w+=/i.exec(htmlContent);
+        if(match)
+            throw new Error("Dangerous HTML: " + match[0]);
+
         return htmlContent;
     }
 
