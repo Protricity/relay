@@ -38,7 +38,7 @@
         var args = commandString.split(/\s+/, 2);
         var channelPath = fixChannelPath(args[1]);
         checkChannel(channelPath);
-        sendWithFastestSocket(commandString);
+        sendWithFastestSocket(commandString, channelPath);
     };
 
     self.msgResponse =
@@ -128,8 +128,8 @@
     }
 
     function fixChannelPath(path) {
-        if(!/#?[~:./a-z_-]+/i.test(path))
-            throw new Error("Invalid Path: " + path);
+        //if(!/#?[~:./a-z_-]+/i.test(path))
+        //    throw new Error("Invalid Path: " + path);
         return path;
     }
 

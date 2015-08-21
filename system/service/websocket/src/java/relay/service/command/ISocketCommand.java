@@ -21,6 +21,12 @@ public interface ISocketCommand {
      * @throws java.lang.Exception  
      */
     boolean executeCommand(String data, Session session) throws Exception;
-    
+ 
+    /**
+     * Called on new socket connection
+     * @param newSession
+     * @throws Exception 
+     */
+    void onSocketConnection(Session newSession) throws Exception;
 }
 

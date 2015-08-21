@@ -68,7 +68,7 @@
             throw new Error("No content field found");
 
         var showSectionsValue = postContentElm.value.length > 0;
-        var sections = formElm.getElementsByClassName('show-section-on-value');
+        var sections = formElm.getElementsByClassName(showSectionsValue ? 'show-section-on-value' : 'hide-section-on-no-value');
         for(var si=0; si<sections.length; si++)
             sections[si].style.display = showSectionsValue ? 'block' : 'none';
 
@@ -93,11 +93,9 @@
             if(selectedKeyID === keyID) {
                 if(privateKey.primaryKey.isDecrypted) {
                     passphraseElm.parentNode.style.display = 'none';
-                    passphraseElm.style.display = 'none';
                     passphraseElm.removeAttribute('required');
                 } else {
                     passphraseElm.parentNode.style.display = 'block';
-                    passphraseElm.style.display = 'inline-block';
                     passphraseElm.setAttribute('required', 'required');
                 }
             }

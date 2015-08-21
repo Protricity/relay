@@ -26,6 +26,11 @@ public class ChannelCommands implements ISocketCommand {
 
         return session.getId();
     }
+
+    @Override
+    public void onSocketConnection(Session newSession) throws Exception {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
     @Override
     public boolean executeCommand(String data, Session session) throws Exception {

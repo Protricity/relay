@@ -259,6 +259,7 @@
                             //'fp_public': publicKeyFingerprint,
                             'id_public': publicKeyFingerprint.substr(publicKeyFingerprint.length - 16),
                             'user_id': userIDString,
+                            //'user_profile_signed': signedUserProfile,
                             'block_private': privateKeyBlock,
                             'block_public': publicKeyBlock,
                             'passphrase_required': alice.is_pgp_locked() ? 1 : 0
@@ -273,7 +274,10 @@
                         var insertRequest = privateKeyStore.add(insertData);
                         insertRequest.onsuccess = function(event) {
                             console.log("Added private key block to database: " + privateKeyFingerprint, insertData);
-                            callback(null, insertData);
+                            self.PGPDB.addPublicKeyBlock(publicKeyBlock, function() {
+                                callback(null, insertData);
+
+                            });
                         };
                         insertRequest.onerror = function(event) {
                             var err = event.currentTarget.error;
@@ -282,9 +286,6 @@
                             callback(status_content, insertData);
                         };
 
-                        self.PGPDB.addPublicKeyBlock(publicKeyBlock, function() {
-                            
-                        });
 
                     });
                 });
@@ -311,7 +312,7 @@
         if(publicKeyBlock.indexOf("-----BEGIN PGP PUBLIC KEY BLOCK-----") === -1)
             throw new Error("PGP PUBLIC KEY BLOCK not found");
 
-        self.PGPDB(function (db) {
+        self.PGPDB(function (db, PGPDB) {
 
             var kbpgp = getKBPGP();
             kbpgp.KeyManager.import_from_armored_pgp({
@@ -336,7 +337,9 @@
                     //'fp_public': publicKeyFingerprint,
                     'id_public': publicKeyFingerprint.substr(publicKeyFingerprint.length - 16),
                     'user_id': userIDString,
+                    //'user_profile_signed': signedUserProfile,
                     'block_public': publicKeyBlock
+
                 };
 
                 var insertRequest = publicKeyStore.add(insertData);
@@ -353,6 +356,18 @@
 
     };
 
+    function UserProfile(user_profile_content) {
+        this.verify = function() {
+
+        };
+        this.decryptConfig = function(passphrase, callback) {
+
+        };
+    }
+
+    self.PGPDB.getUserProfile = function(keyID, callback) {
+        //user_profile_signed
+    };
 
     function getKBPGP() {
         if(typeof self.kbpgp !== 'undefined')

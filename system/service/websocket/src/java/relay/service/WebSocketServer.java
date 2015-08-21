@@ -17,6 +17,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import relay.service.command.ChannelCommands;
+import relay.service.command.PGPCommands;
  
 /** 
  * @ServerEndpoint gives the relative name for the end point
@@ -32,6 +33,7 @@ public class WebSocketServer {
     
     public WebSocketServer() {
         addCommand(new ChannelCommands());
+        addCommand(new PGPCommands());
 //        addCommand(new PostCommands());
 
     }
@@ -56,6 +58,18 @@ public class WebSocketServer {
 //            if(ipProp != null)
 //                session.getBasicRemote().sendText("INFO Remote Address: " + ipProp.toString() );
             
+
+            for(int i=0; i<callbacks.size(); i++) {
+                try {
+                    ISocketCommand command = callbacks.get(i);
+                    command.onSocketConnection(session);
+
+                } catch (Exception ex) {
+                    session.getBasicRemote().sendText("ERROR " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            }
+
         } catch (IOException ex) {
             ex.printStackTrace();
         }

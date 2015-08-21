@@ -26,6 +26,8 @@
         if(channelElm.length === 0 || !channelElm[0].value)
             throw new Error("No channel field found");
 
+        // if hasn't identified yet, ask to identify now
+
         var commandString = "MESSAGE " + channelElm[0].value + " " + messageElm[0].value;
         if(messageElm[0].value[0] === '/') {
             commandString = messageElm[0].value.substr(1);

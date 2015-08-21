@@ -1,17 +1,6 @@
 
-form[name=pgp-keygen-form] {
-}
-
 form[name=pgp-register-form] textarea[name=private_key] {
     font-family: monospace;
-}
-
-
-form[name=pgp-keygen-form] input[name=user_id] {
-}
-form[name=pgp-keygen-form] input[name=passphrase] {
-}
-form[name=pgp-keygen-form] select[name=bits] {
 }
 
 
@@ -34,7 +23,8 @@ form[name=pgp-manage-form] select[name=actions] {
 
 form[name=pgp-manage-form] .load-pgp-btn,
 form[name=pgp-register-form] input[type=submit],
-form[name=pgp-keygen-form] input[type=submit] {
+form[name=pgp-keygen-form] input[type=submit],
+form[name=pgp-identify-form] input[type=submit] {
     padding: 0.5em 1em;
     margin: 0.5em;
     animation: fadein 2s;

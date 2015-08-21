@@ -44492,16 +44492,9 @@ module.exports = ZStream;
     return new Buffer(v);
   };
 
-  _browser_rng_primitive = (m = typeof window !== "undefined" && window !== null ? (_ref = window.crypto) != null ? _ref.getRandomValues : void 0 : void 0) != null ? m.bind(window.crypto) : (m = typeof window !== "undefined" && window !== null ? (_ref1 = window.msCrypto) != null ? _ref1.getRandomValues : void 0 : void 0) != null ? m.bind(window.msCrypto) : null;
+    //_browser_rng_primitive = (m = typeof window !== "undefined" && window !== null ? (_ref = window.crypto) != null ? _ref.getRandomValues : void 0 : void 0) != null ? m.bind(window.crypto) : (m = typeof window !== "undefined" && window !== null ? (_ref1 = window.msCrypto) != null ? _ref1.getRandomValues : void 0 : void 0) != null ? m.bind(window.msCrypto) : null;
+    _browser_rng_primitive = (m = typeof self !== "undefined" && self !== null ? (_ref = self.crypto) != null ? _ref.getRandomValues : void 0 : void 0) != null ? m.bind(self.crypto) : (m = typeof self !== "undefined" && self !== null ? (_ref1 = self.msCrypto) != null ? _ref1.getRandomValues : void 0 : void 0) != null ? m.bind(self.msCrypto) : null;
 
-
-    /** Fix **/
-    if(!_browser_rng_primitive && typeof crypto !== "undefined") {
-        _browser_rng_primitive = function(arg) {
-            return self.crypto.getRandomValues(arg);
-        };
-    }
-    
   if (_browser_rng_primitive != null) {
     _native_rng = browser_rng;
   } else {

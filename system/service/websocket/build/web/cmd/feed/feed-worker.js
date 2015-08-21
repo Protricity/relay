@@ -18,43 +18,47 @@
         "<legend>Post to your feed</legend>" +
 
         "<form name='post-form' class='post-form:uninitiated' action='#' onsubmit='return submitPostForm(event);'>" +
-            "<label class='label-content'>Use this text box to create a new feed post:<br/><i>Your post will be appear on your subscribers' feeds</i><br/>" +
+            "<label class='label-content'>Use this text box to create a new feed post:<br/>" +
                 "<textarea cols='56' rows='8' onfocus='focusPostForm(event)' oninput='focusPostForm(event)' class='focus' name='content' required='required' placeholder='Post anything you like! Some HTML Tags allowed.\nExample:\n\n\t<h1>Optional Topic Header</h1>\n\tPost <i>anything</i> you like!\n\t<img src=\"#mylink\" alt=\"my pic\" />'>{$content}</textarea>" +
             "<br/></label>" +
 
-            "<label class='label-pgp-id show-section-on-value'>Post with (PGP Identity):<br/>" +
-                "<select name='pgp-id' required='required' onfocus='focusPostForm(event)' onselect='focusPostForm(event)' oninput='focusPostForm(event)'>" +
-                    "<optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>" +
-                    "</optgroup>" +
-                    "<optgroup disabled='disabled' label='Other options'>" +
-                        "<option value=''>Manage PGP Identities...</option>" +
-                    "</optgroup>" +
-                "</select>" +
-            "<br/><br/></label>" +
+            "<div class='show-section-on-value hide-section-on-no-value'>" +
 
-            "<label class='label-channel show-section-on-value'>Post to:<br/>" +
-                "<select name='channel'>" +
-                    "<option value='~'>My Feed</option>" +
-                    "<option disabled='disabled'>Other Feed...</option>" +
-                    "<option disabled='disabled'>Friend's Feed...</option>" +
-                "</select>" +
-            "<br/><br/></label>" +
+                "<label class='label-pgp-id'>Post with (PGP Identity):<br/>" +
+                    "<select name='pgp-id' required='required' onfocus='focusPostForm(event)' onselect='focusPostForm(event)' oninput='focusPostForm(event)'>" +
+                        "<optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>" +
+                        "</optgroup>" +
+                        "<optgroup disabled='disabled' label='Other options'>" +
+                            "<option value=''>Manage PGP Identities...</option>" +
+                        "</optgroup>" +
+                    "</select>" +
+                "<br/><br/></label>" +
 
-            //"<label class='label-recipients show-section-on-value'>Choose which subscribers may view this post:<br/>" +
-            //    "<select name='recipients'>" +
-            //        "<option value='*'>Everybody</option>" +
-            //        "<option disabled='disabled'>My friends</option>" +
-            //        "<option disabled='disabled'>Friends of Friends</option>" +
-            //        "<option disabled='disabled'>Specific Recipients</option>" +
-            //    "</select>" +
-            //"<br/><br/></label>" +
-            "<label class='label-passphrase show-section-on-valu1e' style='display: none'>PGP Passphrase (if required):<br/>" +
-                "<input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>" +
-            "<br/><br/></label>" +
+                "<label class='label-channel'>Post to:<br/>" +
+                    "<select name='channel'>" +
+                        "<option value='~'>My Feed</option>" +
+                        "<option disabled='disabled'>Other Feed...</option>" +
+                        "<option disabled='disabled'>Friend's Feed...</option>" +
+                    "</select>" +
+                "<br/><br/></label>" +
 
-            "<label class='label-submit show-section-on-value'><hr/>Submit your post:<br/>" +
-                "<input type='submit' value='Post' name='submit-post-form' />" +
-            "</label>" +
+                //"<label class='label-recipients show-section-on-value'>Choose which subscribers may view this post:<br/>" +
+                //    "<select name='recipients'>" +
+                //        "<option value='*'>Everybody</option>" +
+                //        "<option disabled='disabled'>My friends</option>" +
+                //        "<option disabled='disabled'>Friends of Friends</option>" +
+                //        "<option disabled='disabled'>Specific Recipients</option>" +
+                //    "</select>" +
+                //"<br/><br/></label>" +
+
+                "<label class='label-passphrase' style='display: none'>PGP Passphrase (if required):<br/>" +
+                    "<input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>" +
+                "<br/><br/></label>" +
+
+                "<label class='label-submit'><hr/>Submit your post:<br/>" +
+                    "<input type='submit' value='Post' name='submit-post-form' />" +
+                "</label>" +
+            "</div>" +
         "</form>" +
         "<fieldset class='preview-container' style='display: none'>" +
             "<legend>Preview</legend>" +
@@ -107,7 +111,7 @@
         var content = match[1];
 
         if(content) {
-            sendWithFastestSocket(commandString);
+            self.sendWithFastestSocket(commandString);
             //
             //getFeedDB(function (db, FeedDB) {
             //    FeedDB.addVerifiedPostContentToDB(content);
@@ -115,7 +119,7 @@
 
         } else {
             var channelPath = '~';
-            routeResponseToClient("RLOG " + PATH_PREFIX_POST + channelPath + ' ' +
+            self.routeResponseToClient("RLOG " + PATH_PREFIX_POST + channelPath + ' ' +
                 FEED_POST_FORM_TEMPLATE
                     .replace(/{\$row_n}/gi, (postFormNCounter++).toString())
                     .replace(/{\$content}/gi, content || '')
@@ -128,7 +132,7 @@
 
     };
 
-    self.postResponse = routeResponseToClient;
+    self.postResponse = self.routeResponseToClient;
 
     var feedNCounter = 0;
     /**
@@ -145,7 +149,7 @@
         var feedEndTime = Date.now();
         var feedStartTime = feedEndTime - MS_DAY;
 
-        routeResponseToClient("RLOG " + logChannelPath + ' ' +
+        self.routeResponseToClient("RLOG " + logChannelPath + ' ' +
             FEED_TEMPLATE
                 .replace(/{\$row_n}/gi, (postFormNCounter++).toString())
                 .replace(/{\$title}/gi, "Viewing Feed for " + fixedChannelPath)
@@ -174,7 +178,7 @@
                             function(data) {
                                 try{
                                     var contentProtected = protectHTMLContent(data.content_verified);
-                                    routeResponseToClient("LOG " + logChannelPath + " " + FEED_TEMPLATE_ENTRY
+                                    self.routeResponseToClient("LOG " + logChannelPath + " " + FEED_TEMPLATE_ENTRY
                                             .replace(/{\$row_n}/gi, (feedNCounter++).toString())
                                             .replace(/{\$uid}/gi, data.key_id + '-' + data.timestamp)
                                             .replace(/{\$user_id}/gi, userID)
@@ -190,6 +194,8 @@
 
                                 } catch (e) {
                                     console.error("Skipping Feed Post: " + e);
+
+                                    //discard? config
                                 }
                             });
                     });
@@ -203,7 +209,7 @@
 
 
 
-    self.feedResponse = routeResponseToClient;
+    self.feedResponse = self.routeResponseToClient;
 
 
     function protectHTMLContent(htmlContent) {

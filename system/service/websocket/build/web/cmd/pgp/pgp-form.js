@@ -23,8 +23,8 @@
         var send_as_socket_command = parseInt(formElm.querySelector('*[name=send_as_socket_command]').value);
 
         formElm.querySelector('*[type=submit]').setAttribute('disabled', 'disabled');
-
-        if(0 && send_as_socket_command) {
+//0 &&
+        if(send_as_socket_command) {
             setStatus(formElm, "Generating new PGP Key via socket command...");
             var commandString = 'KEYGEN --bits ' + bits;
             if(passphrase)
@@ -134,6 +134,46 @@
         });
         document.dispatchEvent(messageEvent);
 
+    };
+
+
+
+
+
+    window.focusPGPIdentifyForm = function(e, formElm) {
+        if(!formElm) formElm = e.target.form ? e.target.form : e.target;
+        if(formElm.nodeName.toLowerCase() !== 'form')
+            throw new Error("Not a Form: " + formElm.nodeName);
+        if(formElm.getAttribute('name') !== 'pgp-identify-form')
+            throw new Error("Wrong Form name: " + formElm.getAttribute('name'));
+
+
+        var optGroupPGPIdentities = formElm.getElementsByClassName('pgp-identities')[0];
+        var passphraseElm = formElm.querySelector('*[name=passphrase]');
+
+        var selectedKeyID = null;
+        optGroupPGPIdentities.innerHTML = '';
+        self.PGPDB.queryPrivateKeys(function(pkData) {
+            var privateKey = openpgp.key.readArmored(pkData.block_private).keys[0];
+
+            var keyID = pkData.id_private;
+            if(!selectedKeyID)
+                selectedKeyID = keyID;
+            var userID = privateKey.getUserIds().join('; ');
+
+            optGroupPGPIdentities.innerHTML += '<option ' + (keyID === selectedKeyID ? 'selected="selected"' : '') + ' value="' + keyID + '">' + (privateKey.primaryKey.isDecrypted ? '' : '(*) ') + userID.replace(/</, '&lt;') + '</option>';
+            if(selectedKeyID === keyID) {
+                if(privateKey.primaryKey.isDecrypted) {
+                    passphraseElm.parentNode.style.display = 'none';
+                    passphraseElm.removeAttribute('required');
+                } else {
+                    passphraseElm.parentNode.style.display = 'block';
+                    passphraseElm.setAttribute('required', 'required');
+                }
+            }
+        });
+
+        return formElm;
     };
 
     window.changePGPManageFormKeyPassphrase = function(e, keyID) {

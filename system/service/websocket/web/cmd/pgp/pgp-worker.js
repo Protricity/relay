@@ -1,11 +1,14 @@
 /**
- * Created by ari on 7/2/2015.
+ * Ari 7/2/2015.
  */
 (function() {
 
 
     var PATH_PREFIX = 'pgp:';
     var PATH_MAIN = PATH_PREFIX + 'main';
+    var PATH_ID_REQUEST = PATH_PREFIX + 'identify';
+
+    var USE_SOCKET_PGP_KEYGEN = false;
 
     var KEYGEN_CLOSED_TEMPLATE =
         "<legend><a href='#KEYGEN'>Generate a new PGP Key Pair</a></legend>";
@@ -64,13 +67,13 @@
         "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
         "<legend>Register a new PGP Key Pair</legend>" +
         "<form name='pgp-register-form' action='#' onsubmit='return submitPGPRegisterForm(event);'>" +
-        "<div class='status-box'>{$status_content}</div>" +
-        "<label>Paste or <a href='#KEYGEN'>generate</a> a PGP Private key and <br/>enter it into the box below to register:<br/>" +
-        "<textarea onchange='changePGPRegisterForm(event);' name='private_key' required='required' placeholder='" + EXAMPLE_PUBLIC_KEY + "' rows='12' cols='68'>{$private_key}</textarea>" +
-        "</label>" +
-        "<br/><br/>Register:<br/>" +
-        "<input type='submit' name='submit-register' value='Register'/>" +
-        " or <a href='#KEYGEN'>Generate a new PGP Key pair</a>" +
+            "<div class='status-box'>{$status_content}</div>" +
+            "<label>Paste or <a href='#KEYGEN'>generate</a> a PGP Private key and <br/>enter it into the box below to register:<br/>" +
+                "<textarea onchange='changePGPRegisterForm(event);' name='private_key' required='required' placeholder='" + EXAMPLE_PUBLIC_KEY + "' rows='12' cols='68'>{$private_key}</textarea>" +
+            "</label>" +
+            "<br/><br/>Register:<br/>" +
+            "<input type='submit' name='submit-register' value='Register'/>" +
+            " or <a href='#KEYGEN'>Generate a new PGP Key pair</a>" +
         "</form>";
 
     var REGISTER_TEMPLATE_COMPLETE =
@@ -78,6 +81,51 @@
         "<legend>Registration Successful</legend>" +
         "<div class='status-box'>{$status_content}</div>" +
         "<a href='#HIDE'>Close Window</a>";
+
+
+    var IDENTIFY_TEMPLATE =
+        "<script src='cmd/pgp/pgp-form.js'></script>" +
+        "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
+        "<legend>Identify yourself to the network</legend>" +
+        "<form name='pgp-identify-form' action='#' onsubmit='return submitPGPIdentifyForm(event);'>" +
+            "<div class='status-box'>{$status_content}</div>" +
+            "<label>This is your <strong>Identification Signature</strong> for this session<br/>(What others see when they request your <i>IDSIG</i>):<br/>" +
+                "<textarea disabled='disabled' name='id_signature' required='required' rows='12' cols='68'>{$id_signature}</textarea>" +
+            "<br/></label>" +
+
+            "<label class='label-pgp-id'>Identify using PGP Identity:<br/>" +
+                "<select name='pgp-id' required='required' onfocus='focusPGPIdentifyForm(event)' onselect='focusPGPIdentifyForm(event)' oninput='focusPGPIdentifyForm(event)'>" +
+                    "<optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>" +
+                        "<option value=''>Click to load...</option>" +
+                    "</optgroup>" +
+                    "<optgroup disabled='disabled' label='Other options'>" +
+                    "<option value=''>Manage PGP Identities...</option>" +
+                    "</optgroup>" +
+                "</select>" +
+            "<br/><br/></label>" +
+
+            "<label class='label-passphrase' style='display: none'>PGP Passphrase (if required):<br/>" +
+                "<input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>" +
+            "<br/><br/></label>" +
+
+
+            "<label class='label-username'>Your <strong>Session Username</strong> (how you appear to others while connected):<br/>" +
+                "<input type='text' name='username' placeholder='Enter a user name'/>" +
+            "<br/><br/></label>" +
+
+            "<label class='label-visibility'>Who should be able to request your <br/><strong>Identification Signature</strong> while you're online?<br/>" +
+                "<select name='channel'>" +
+                    "<option value=':all'>Anyone (including anonymous users)</option>" +
+                    "<option value=':identified'>Only other identified users</option>" +
+                    "<option value=':none'>No one (Only username and key id)</option>" +
+                "</select>" +
+            "<br/><br/></label>" +
+
+
+        "<hr/>Register:<br/>" +
+            "<input type='submit' name='submit-identify' value='Identify'/>" +
+        "</form>";
+
 
     var MANAGE_TEMPLATE =
         "<script src='cmd/pgp/pgp-form.js'></script>" +
@@ -138,21 +186,21 @@
             userID = contents; return '';
         });
 
-        var send_as_socket_command = true;
-        if(typeof crypto === 'undefined') {
+        var kbpgp = getKBPGP();
+        var send_as_socket_command = USE_SOCKET_PGP_KEYGEN;
+        if(send_as_socket_command && typeof crypto === 'undefined' || crypto.polyfill === true) {
             console.warn("Crypto is undefined within the WebWorker. Falling back to client-side cryptography");
             send_as_socket_command = false;
         }
 
         if(!userID || !send_as_socket_command) {
-            routeResponseToClient("RLOG " + PATH_MAIN + " " + GENERATE_TEMPLATE
+            self.routeResponseToClient("RLOG " + PATH_MAIN + " " + GENERATE_TEMPLATE
                     .replace(/{\$send_as_socket_command}/gi, send_as_socket_command ? '1' : '0')
                     .replace(/{\$[^}]+}/gi, '')
             );
             return;
         }
 
-        var kbpgp = getKBPGP();
         var F = kbpgp["const"].openpgp;
 
         var opts = {
@@ -188,7 +236,7 @@
                     }, function(err, pgp_private) {
                         console.log("private key: ", err, pgp_private);
 
-                        routeResponseToClient("RLOG " + PATH_MAIN + " " + REGISTER_TEMPLATE
+                        self.routeResponseToClient("RLOG " + PATH_MAIN + " " + REGISTER_TEMPLATE
                                 .replace(/{\$private_key}/gi, pgp_private)
                                 .replace(/{\$[^}]+}/gi, '')
                         );
@@ -231,7 +279,7 @@
 
         if(showForm) {
             //routeResponseToClient("RLOG " + PATH_MARKER + " " + KEYGEN_CLOSED_TEMPLATE);
-            routeResponseToClient("RLOG " + PATH_MAIN + " " + REGISTER_TEMPLATE
+            self.routeResponseToClient("RLOG " + PATH_MAIN + " " + REGISTER_TEMPLATE
                     .replace(/{\$private_key}/gi, privateKeyBlock)
                     .replace(/{\$[^}]+}/gi, '')
             );
@@ -241,7 +289,7 @@
         getPGPDB(function(db, PGPDB) {
             PGPDB.addPrivateKeyBlock(privateKeyBlock, function(err, data) {
                 if(err) {
-                    routeResponseToClient("RLOG " + PATH_MAIN + " " + REGISTER_TEMPLATE
+                    self.routeResponseToClient("RLOG " + PATH_MAIN + " " + REGISTER_TEMPLATE
                             .replace(/{\$status_content}/gi, err)
                             .replace(/{\$private_key}/gi, privateKeyBlock)
                             .replace(/{\$[^}]+}/gi, '')
@@ -270,8 +318,8 @@
         var privateKeyID = privateKeyFingerprint.substr(privateKeyFingerprint.length - 16);
 
         getPGPDB(function (db, PGPDB) {
-            var transaction = db.transaction([DB_TABLE_PRIVATE_KEYS], "readwrite");
-            var privateKeyStore = transaction.objectStore(DB_TABLE_PRIVATE_KEYS);
+            var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readwrite");
+            var privateKeyStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
 
             var insertRequest = privateKeyStore.delete(privateKeyID);
             insertRequest.onsuccess = function(event) {
@@ -302,14 +350,14 @@
     self.manageCommand = function (commandString, status_content) {
         //var match = /^manage$/im.exec(commandString);
 
-        routeResponseToClient("RLOG " + PATH_MAIN + " " + MANAGE_TEMPLATE
+        self.routeResponseToClient("RLOG " + PATH_MAIN + " " + MANAGE_TEMPLATE
                 .replace(/{\$status_content}/gi, status_content || '')
                 .replace(/{\$[^}]+}/gi, '')
         );
 
         getPGPDB(function(db, PGPDB) {
             PGPDB.queryPrivateKeys(function(data) {
-                routeResponseToClient("LOG " + PATH_MAIN + " " + MANAGE_TEMPLATE_ENTRY
+                self.routeResponseToClient("LOG " + PATH_MAIN + " " + MANAGE_TEMPLATE_ENTRY
                         .replace(/{\$id_private}/gi, data.id_private)
                         .replace(/{\$id_public}/gi, data.id_public)
                         .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
@@ -332,6 +380,70 @@
         throw new Error("manage response is not implemented");
     };
 
+    /**
+     * @param commandString [signed_identity]
+     */
+    self.identifyCommand = function (commandString) {
+        console.log(commandString);
+    };
+
+    /**
+     * @param responseString [challenge_string] [session_id]
+     */
+    self.identifyResponse = function (responseString, e) {
+        var socket = e.target;
+        var match = /^identify\s+(\S*)\s+(\S*)/im.exec(responseString);
+        var challengeString = match[1];
+        var sessionID = match[2];
+        console.log(socket, challengeString, sessionID);
+
+        var identityString = "IDENT " + challengeString + " userid ";
+        var id_signature = identityString;
+
+        self.routeResponseToClient("RLOG " + PATH_ID_REQUEST + " " + IDENTIFY_TEMPLATE
+                //.replace(/{\$status_content}/gi, status_content || '')
+                .replace(/{\$id_signature}/gi, id_signature || '')
+                .replace(/{\$[^}]+}/gi, '')
+        );
+
+        //var socketKeyID = null;
+        //if(typeof pgpConfig['socket-id-url:' + newSocket.url] !== 'undefined')
+        //    socketKeyID = pgpConfig['socket-id-url:' + newSocket.url];
+        //else if(typeof pgpConfig['socket-id-url-default'] !== 'undefined')
+        //    socketKeyID = pgpConfig['socket-id-url-default'];
+        //
+        //getPGPDB(function(db, PGPDB) {
+        //    PGPDB.queryPrivateKeys(function(privData) {
+        //        if(!socketKeyID)
+        //            socketKeyID = privData.id_private;
+        //        if(socketKeyID === privData.id_private) {
+        //            PGPDB.getPublicKey(privData.id_public, function(err, pubData) {
+        //                if(err)
+        //                    throw new Error(err);
+        //
+        //
+        //
+        //                socket.send("IDENTIFY " + pubData.block_public +
+        //                "\n" + pubData.user_profile_signed);
+        //
+        //            });
+        //            return true;
+        //        }
+        //    });
+        //});
+    };
+
+
+    var pgpConfig = {};
+
+    function onNewSocket(newSocket) {
+        console.log("New Socket", newSocket);
+        // type as guest until identify. most functionality won't work without identifying
+
+
+    }
+
+
     function fixChannelPath(path) {
         if(!/#?[~:./a-z_-]+/i.test(path))
             throw new Error("Invalid Path: " + path);
@@ -341,6 +453,11 @@
     function getKBPGP() {
         if(typeof self.kbpgp !== 'undefined')
             return self.kbpgp;
+        if(typeof self.crypto === 'undefined') {
+            importScripts('pgp/lib/support/nfcrypto.js');
+            self.crypto = self.nfCrypto;
+            console.log(self.crypto);
+        }
         importScripts('pgp/lib/kbpgp/kbpgp.js');
         console.log("Loaded: ", self.kbpgp);
         return self.kbpgp;
