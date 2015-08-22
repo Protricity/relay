@@ -136,7 +136,7 @@ public class PGPCommands implements ISocketCommand {
                         }
                                  
                         if (sig.verify()) {
-                            sendText(session, "INFO Found Signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
+                            sendText(session, "INFO Verified Signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
                             return unverifiedContent;
                         }
                         else {
