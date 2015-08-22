@@ -473,7 +473,7 @@
                         .replace(/{\$pgp_id_options}/gi, pgp_id_options_html || '')
                         .replace(/{\$challenge_string}/gi, challenge_string || '')
                         .replace(/{\$session_id}/gi, session_id || '')
-                        .replace(/{\$username}/gi, username || '')
+                        .replace(/{\$username}/gi, username.trim().replace(/[^a-zA-Z0-9_-]+/ig, '_') || '')
                         .replace(/{\$[^}]+}/gi, '')
                 );
             });

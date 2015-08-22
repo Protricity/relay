@@ -120,7 +120,10 @@
             var req = dbStore.get(id_private);
             req.onsuccess = function (evt) {
                 var privateKeyData = evt.target.result;
-                callback(null, privateKeyData);
+                if(!privateKeyData)
+                    callback("Private Key Not Found: " + id_private, null);
+                else
+                    callback(null, privateKeyData);
             };
             req.onerror = function(err) {
                 callback(err, null);
@@ -307,7 +310,7 @@
 
     };
 
-    self.PGPDB.addPublicKeyBlock = function(publicKeyBlock) {
+    self.PGPDB.addPublicKeyBlock = function(publicKeyBlock, callback) {
 
         if(publicKeyBlock.indexOf("-----BEGIN PGP PUBLIC KEY BLOCK-----") === -1)
             throw new Error("PGP PUBLIC KEY BLOCK not found");
@@ -318,8 +321,10 @@
             kbpgp.KeyManager.import_from_armored_pgp({
                 armored: publicKeyBlock
             }, function(err, alice) {
-                if (err)
+                if (err) {
+                    callback(err, null);
                     throw new Error(err);
+                }
 
 //                 var publicKey = alice.find_signing_pgp_key();
                 var publicKeyFingerprint = alice.get_pgp_fingerprint_str().toUpperCase(); 
@@ -345,6 +350,7 @@
                 var insertRequest = publicKeyStore.add(insertData);
                 insertRequest.onsuccess = function(event) {
                     console.log("Added public key block to database: " + publicKeyFingerprint, insertData);
+                    callback(null, insertData);
                 };
                 insertRequest.onerror = function(event) {
                     var err = event.currentTarget.error;

@@ -1,8 +1,9 @@
 (function() {
 
     self.defaultSocketList = [
-           //'ws://relay.co.il:8080/relay-server/socket'
-        'ws://localhost:8080/relay-server/socket'
+        'ws://' + self.location.host + (self.location.port ? '' : ':8080') + '/relay-server/socket'
+        //'ws://relay.co.il:8080/relay-server/socket'
+        //'ws://localhost:8080/relay-server/socket'
     ];
 
 
@@ -43,9 +44,9 @@
     };
 
 
-    // Post Commands
+    // Feed Commands
 
-    self.postCommand = //todo post post
+    self.postCommand = //todo post=>put
     self.feedCommand =
     function(commandString, e) {
         importScripts('feed/feed-worker.js');

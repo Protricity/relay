@@ -17,14 +17,13 @@ import javax.websocket.Session;
  */
 public class ChannelCommands implements ISocketCommand {
     
-    private static final HashMap<String, ArrayList<Session>> mSubscriptions = new HashMap<>(); 
-    private static final HashMap<Session, String> mUserNames = new HashMap<>();
+    private final HashMap<String, ArrayList<Session>> mSubscriptions = new HashMap<>(); 
+//    private final HashMap<Session, String> mUserNames = new HashMap<>();
+
 
     public String getSessionChatID(Session session) {
-        if(mUserNames.containsKey(session))
-            return mUserNames.get(session);
-
-        return session.getId();
+        PGPCommands.PGPUserInfo userInfo = PGPCommands.getStatic().getSessionPGPInfo(session);
+        return userInfo.getUserName(session);
     }
 
     @Override
@@ -59,9 +58,6 @@ public class ChannelCommands implements ISocketCommand {
                 messageUser(session, privArgs[0], privArgs[1]);
                 return true;
                 
-            case "nick":
-                setNick(session, args[1]);
-                return true;
             default:
                 return false;
         }
@@ -154,24 +150,6 @@ public class ChannelCommands implements ISocketCommand {
         }
     }
     
-    public void setNick(Session userSession, String newNick) {
-        String ePattern = "^[a-zA-Z0-9._-]+@?((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))?$";
-        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
-        java.util.regex.Matcher m = p.matcher(newNick);
-        if(!m.matches()) {
-            sendText(userSession, "ERROR could not find user " + getSessionChatID(userSession));
-            return;
-        }
-        
-        String oldNick = getSessionChatID(userSession);
-        if(mUserNames.containsKey(userSession)) {
-            mUserNames.put(userSession, newNick);
-        } else {
-            mUserNames.replace(userSession, oldNick, newNick);
-        }
-        sendText(userSession, "NICK " + userSession.getId() + ' ' + getSessionChatID(userSession));
-    }
-
     public ArrayList<Session> getChannelUsers(String channel) {
         if(mSubscriptions.containsKey(channel))
             return mSubscriptions.get(channel);
@@ -201,5 +179,14 @@ public class ChannelCommands implements ISocketCommand {
         if(!path.contains("/") && !path.contains(".") && path.charAt(0) != '#')
             path = '#' + path;
         return path;
+    }
+    
+    
+    private static ChannelCommands _inst = null;
+    public static ChannelCommands getStatic() {
+        if(_inst != null)
+            return _inst;
+        _inst = new ChannelCommands();
+        return _inst;
     }
 }

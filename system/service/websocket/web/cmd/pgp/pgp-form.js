@@ -169,10 +169,14 @@
         }
         setStatus(formElm, "");
 
-        var identityString = "IDSIG " + challenge_string + " " + usernameElm.value;
+        var identityString = "IDSIG " + challenge_string +
+            " " + usernameElm.value +
+            " " + cache_time;
         var id_signature = identityString;
 
         self.PGPDB.getPrivateKeyData(keyID, function(err, privateKeyData) {
+            if(err)
+                throw new Error(err);
             var privateKey = openpgp.key.readArmored(privateKeyData.block_private).keys[0];
 
             if(!lastIDString || identityString !== lastIDString) {
@@ -181,7 +185,7 @@
             }
 
             if(!usernameElm.value)
-                usernameElm.value = privateKey.getUserIds()[0];
+                usernameElm.value = privateKey.getUserIds()[0].trim().replace(/[^a-zA-Z0-9_-]+/ig, '_');
 
 
             if(privateKey.primaryKey.isDecrypted) {

@@ -32,8 +32,8 @@ public class WebSocketServer {
     private final ArrayList<ISocketCommand> callbacks = new ArrayList<>();
     
     public WebSocketServer() {
-        addCommand(new ChannelCommands());
-        addCommand(new PGPCommands());
+        addCommand(ChannelCommands.getStatic());
+        addCommand(PGPCommands.getStatic());
 //        addCommand(new PostCommands());
 
     }
