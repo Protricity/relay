@@ -5,6 +5,7 @@
         <group>
             <file>file:/D:/Dev/Server/WWW/relay/system/service/websocket/web/cmd/chat/chat-worker.js</file>
             <file>file:/D:/Dev/Server/WWW/relay/system/service/websocket/src/java/relay/service/command/PGPCommands.java</file>
+            <file>file:/D:/Dev/Server/WWW/relay/system/service/websocket/nbproject/build-impl.xml</file>
             <file>file:/D:/Dev/Server/WWW/relay/system/service/websocket/src/java/relay/service/command/ISocketCommand.java</file>
             <file>file:/D:/Dev/Server/WWW/relay/system/service/websocket/web/cmd/chat/chat-form.js</file>
             <file>file:/D:/Dev/Server/WWW/relay/system/service/websocket/src/java/relay/service/WebSocketServer.java</file>
