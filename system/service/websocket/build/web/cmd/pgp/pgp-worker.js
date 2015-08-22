@@ -106,7 +106,7 @@
             "<br/><br/></label>" +
 
 
-            "<label class='label-username'>Your <strong>Session Username</strong> (how you appear to others while connected):<br/>" +
+            "<label class='label-username' oninput='focusPGPIdentifyForm(event)'>Your <strong>Session Username</strong> (how you appear to others while connected):<br/>" +
                 "<input type='text' name='username' required='required' placeholder='Enter a user name' value='{$username}'/>" +
             "<br/><br/></label>" +
 
@@ -119,14 +119,14 @@
             "<br/><br/></label>" +
 
             "<label class='label-content'>What content should be included along with your ID Signature?<br/>" +
-                "<select name='content'>" +
+                "<select name='contents'>" +
                     "<option value=':pub:idsig'>Just the Public Key and IDSIG (No profile)</option>" +
                     "<option value=':pub:idsig:profile'>Public Key, IDSIG and Signed Profile</option>" +
                 "</select>" +
             "<br/><br/></label>" +
 
             "<label class='label-cache-time'>How long should your ID Signature (and included content)<br/>stay cached on the server after you disconnect?<br/>" +
-                "<select name='cache-time'>" +
+                "<select name='cache_time'>" +
                     "<option value='0'>Remove immediately</option>" +
                     "<option value='60'>Remove after 1 minute</option>" +
                     "<option value='3600'>Remove after 1 hour</option>" +
@@ -404,8 +404,22 @@
     /**
      * @param commandString [signed_identity]
      */
-    self.identifyCommand = function (commandString) {
-        console.info(identifyRequests);
+    self.identifyCommand = function (commandString, e) {
+        var match1 = /IDSIG (\S+) /i.exec(commandString);
+        if(!match1 || !match1[1])
+            throw new Error("Could not find challenge string");
+        var challengeString = match1[1];
+        for(var i=0; i<identifyRequests.length; i++) {
+            if(identifyRequests[i][0].indexOf("IDENTIFY " + challengeString) !== -1) {
+                var socket = identifyRequests[i][1];
+                socket.send(commandString);
+                console.log("SOCKET OUT (" + socket.url + "): " + commandString);
+                //console.info("Removing IDENTIFY request: " + identifyRequests[i]);
+                //identifyRequests.splice(i, 1);
+                return;
+            }
+        }
+        throw new Error("Could not find original IDENTIFY request socket: " + challengeString);
     };
 
     /**
@@ -428,38 +442,41 @@
 
         var username = '';
 
-        self.PGPDB.queryPrivateKeys(function(privateKeyData) {
+        getPGPDB(function(db, PGPDB) {
 
-            var keyID = privateKeyData.id_private;
-            if(!selectedKeyID) {
-                selectedKeyID = keyID;
-            }
+            PGPDB.queryPrivateKeys(function(privateKeyData) {
 
-            if(selectedKeyID === keyID) {
-                username = privateKeyData.user_name || privateKeyData.user_id;
-            }
+                var keyID = privateKeyData.id_private;
+                if(!selectedKeyID) {
+                    selectedKeyID = keyID;
+                }
 
-            pgp_id_options_html +=
-                '<option ' + (keyID === selectedKeyID ? 'selected="selected"' : '') + ' value="' + keyID + '">' +
+                if(selectedKeyID === keyID) {
+                    username = privateKeyData.user_name || privateKeyData.user_id;
+                }
+
+                pgp_id_options_html +=
+                    '<option ' + (keyID === selectedKeyID ? 'selected="selected"' : '') + ' value="' + keyID + '">' +
                     (privateKeyData.passphrase_required ? '(*) ' : '') + privateKeyData.user_id.replace(/</, '&lt;') +
-                '</option>';
+                    '</option>';
 
-            if(selectedKeyID === keyID && privateKeyData.passphrase_required) {
-                password_style = 'display: none';
-                password_required = 'required';
-            }
+                if(selectedKeyID === keyID && privateKeyData.passphrase_required) {
+                    password_style = 'display: none';
+                    password_required = 'required';
+                }
 
 
-        }, function() {
-            self.routeResponseToClient("RLOG " + PATH_ID_REQUEST + " " + IDENTIFY_TEMPLATE
-                    //.replace(/{\$status_content}/gi, status_content || '')
-                    .replace(/{\$id_signature}/gi, id_signature || '')
-                    .replace(/{\$pgp_id_options}/gi, pgp_id_options_html || '')
-                    .replace(/{\$challenge_string}/gi, challenge_string || '')
-                    .replace(/{\$session_id}/gi, session_id || '')
-                    .replace(/{\$username}/gi, username || '')
-                    .replace(/{\$[^}]+}/gi, '')
-            );
+            }, function() {
+                self.routeResponseToClient("RLOG " + PATH_ID_REQUEST + " " + IDENTIFY_TEMPLATE
+                        //.replace(/{\$status_content}/gi, status_content || '')
+                        .replace(/{\$id_signature}/gi, id_signature || '')
+                        .replace(/{\$pgp_id_options}/gi, pgp_id_options_html || '')
+                        .replace(/{\$challenge_string}/gi, challenge_string || '')
+                        .replace(/{\$session_id}/gi, session_id || '')
+                        .replace(/{\$username}/gi, username || '')
+                        .replace(/{\$[^}]+}/gi, '')
+                );
+            });
         });
 
 

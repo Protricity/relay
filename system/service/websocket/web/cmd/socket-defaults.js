@@ -14,6 +14,22 @@
 
     self.infoCommand = function(commandString) { return self.sendWithFastestSocket(commandString); };
     self.infoResponse = function(commandResponse) { return self.routeResponseToClient(commandResponse); };
+    self.errorCommand = function(commandString) { return self.sendWithFastestSocket(commandString); };
+    self.errorResponse = function(commandResponse) { return self.routeResponseToClient(commandResponse); };
+
+
+    // HTTP Commands
+
+    self.getCommand =
+    self.postCommand =
+    self.putCommand =
+    self.deleteCommand =
+    self.patchCommand =
+    self.headCommand =
+    function(commandString) {
+        importScripts('http/http-worker.js');
+        self.executeWorkerCommand(commandString);
+    };
 
     // Chat Commands
 
@@ -21,20 +37,19 @@
     self.leaveCommand =
     self.messageCommand =
     self.msgCommand =
-    function(commandString) {
+    function(commandString, e) {
         importScripts('chat/chat-worker.js');
-        self.executeWorkerCommand(commandString);
+        self.executeWorkerCommand(commandString, e);
     };
 
 
     // Post Commands
 
-    self.spostCommand =
-    self.postCommand =
+    self.postCommand = //todo post post
     self.feedCommand =
-    function(commandString) {
+    function(commandString, e) {
         importScripts('feed/feed-worker.js');
-        self.executeWorkerCommand(commandString);
+        self.executeWorkerCommand(commandString, e);
     };
 
 
@@ -47,15 +62,15 @@
     self.unregisterCommand =
     self.manageCommand =
     self.identifyCommand =
-        function(commandString) {
+        function(commandString, e) {
             importScripts('pgp/pgp-worker.js');
-            self.executeWorkerCommand(commandString);
+            self.executeWorkerCommand(commandString, e);
         };
 
     self.identifyResponse =
-        function(responseString) {
+        function(responseString, e) {
             importScripts('pgp/pgp-worker.js');
-            self.executeWorkerResponse(responseString);
+            self.executeWorkerResponse(responseString, e);
         };
 
 })();

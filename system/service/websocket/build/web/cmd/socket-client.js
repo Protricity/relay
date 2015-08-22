@@ -98,9 +98,9 @@
                 newChannel.setAttribute('data-channel', channelPath);
                 //newChannel.setAttribute('draggable', 'true');
 
-//                 if(channelContainer.firstChild)
-//                    channelContainer.insertBefore(newChannel, channelContainer.firstChild);
-//                 else
+                 if(channelContainer.firstChild)
+                    channelContainer.insertBefore(newChannel, channelContainer.firstChild);
+                 else
                     channelContainer.appendChild(newChannel);
             }
 

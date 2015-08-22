@@ -139,7 +139,7 @@
 
 
 
-    var lastIdentifyFormPGPKeyID = null;
+    var lastIDString = null;
     window.focusPGPIdentifyForm = function(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
         if(formElm.nodeName.toLowerCase() !== 'form')
@@ -159,14 +159,24 @@
         var session_id = formElm.querySelector('[name=session_id]').value;
         var keyID = formElm.querySelector('[name=pgp-id]').value;
 
+        var visibility = formElm.querySelector('[name=visibility]').value;
+        var contents = formElm.querySelector('[name=contents]').value;
+        var cache_time = formElm.querySelector('[name=cache_time]').value;
+
+        if(/\s/.test(usernameElm.value)) {
+            setStatus(formElm, "<span class='error'>Username may not contain spaces. Bummer :(</span>");
+            return formElm;
+        }
+        setStatus(formElm, "");
+
         var identityString = "IDSIG " + challenge_string + " " + usernameElm.value;
         var id_signature = identityString;
 
         self.PGPDB.getPrivateKeyData(keyID, function(err, privateKeyData) {
             var privateKey = openpgp.key.readArmored(privateKeyData.block_private).keys[0];
 
-            if(!lastIdentifyFormPGPKeyID || keyID !== lastIdentifyFormPGPKeyID) {
-                lastIdentifyFormPGPKeyID = keyID;
+            if(!lastIDString || identityString !== lastIDString) {
+                lastIDString = identityString;
                 idSignatureElm.innerHTML = '';
             }
 
@@ -199,6 +209,8 @@
 
                             setStatus(formElm, "<span class='success'>" + "Signature successful. Ready to IDENTIFY!" + "</span>");
                             idSignatureElm.innerHTML = signedIDString.trim();
+                            //idSignatureElm.innerHTML += "\n" + privateKeyData.user_profile_signed;
+                            idSignatureElm.innerHTML += "\n" + privateKeyData.block_public;
                         });
                 }
 
@@ -227,6 +239,10 @@
         var formElm = e.target.form ? e.target.form : e.target;
         var idSignatureElm = formElm.querySelector('*[name=id_signature]');
         var passphraseElm = formElm.querySelector('[name=passphrase]');
+
+        var visibility = formElm.querySelector('[name=visibility]').value;
+        var contents = formElm.querySelector('[name=contents]').value;
+        var cache_time = formElm.querySelector('[name=cache_time]').value;
         var idSigString = idSignatureElm.value;
 
         if(idSigString.indexOf("-----BEGIN PGP SIGNED MESSAGE-----") === -1)
@@ -315,3 +331,14 @@
 })();
 
 
+// For Public/Private Key Database access
+
+(function() {
+    var SCRIPT_PATH = 'cmd/pgp/pgp-db.js';
+    var head = document.getElementsByTagName('head')[0];
+    if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+        var newScript = document.createElement('script');
+        newScript.setAttribute('src', SCRIPT_PATH);
+        head.appendChild(newScript);
+    }
+})();

@@ -8,6 +8,7 @@ package relay.service.command;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Security;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -18,9 +19,15 @@ import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPObjectFactory;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
+import org.bouncycastle.openpgp.PGPSignature;
+import org.bouncycastle.openpgp.PGPSignatureList;
 import org.bouncycastle.openpgp.PGPUtil;
+import org.bouncycastle.openpgp.jcajce.JcaPGPObjectFactory;
 import org.bouncycastle.openpgp.jcajce.JcaPGPPublicKeyRingCollection;
+import org.bouncycastle.openpgp.operator.KeyFingerPrintCalculator;
+import org.bouncycastle.openpgp.operator.PGPContentVerifierBuilderProvider;
 import org.bouncycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
+import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 
 /**
  *
@@ -50,7 +57,7 @@ public class PGPCommands implements ISocketCommand {
 
     @Override
     public boolean executeCommand(String data, Session session) throws Exception {
-        String[] args = data.split("\\s+", 1);
+        String[] args = data.split("\\s+", 2);
         switch(args[0].toLowerCase()) {
             case "identify":
                 identifySession(session, data);
@@ -67,7 +74,7 @@ public class PGPCommands implements ISocketCommand {
         PGPUserInfo userInfo = mUserInfo.get(session);
         
         PGPPublicKey publicKey = identifyPublicKeyBlock(session, data);
-        String signatureContent = identifySignedContent(session, data);
+        String signatureContent = identifySignedContent(session, data, publicKey);
         
             //            mIDKeys.put(session, key);
 
@@ -80,11 +87,18 @@ public class PGPCommands implements ISocketCommand {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-    public String identifySignedContent(Session session, String data) throws PGPException {
+    public String identifySignedContent(Session session, String data, PGPPublicKey publicKey) throws PGPException {
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        
         String tag = "-----BEGIN PGP SIGNED MESSAGE-----";
         int sPos = data.indexOf(tag);
         if(sPos == -1)
             throw new PGPException("No " + tag + " found");
+        int textSPos = data.indexOf("\n\n", sPos);
+        if(textSPos == -1)
+            throw new PGPException("Couldn't find start of signed text");
+        textSPos += 2;
+        
         tag = "-----BEGIN PGP SIGNATURE-----";
         int mPos = data.indexOf(tag, sPos);
         if(mPos == -1)
@@ -95,38 +109,64 @@ public class PGPCommands implements ISocketCommand {
         if(fPos == -1)
             throw new PGPException("No " + tag + " found");
         fPos += tag.length();
-        String publicKeyString = data.substring(sPos, fPos);
+        String unverifiedContent = data.substring(textSPos, mPos-1);
+        String signatureArmored = data.substring(mPos, fPos);
         try {
-            InputStream in=new ByteArrayInputStream(publicKeyString.getBytes());
+            InputStream in=new ByteArrayInputStream(signatureArmored.getBytes());
             in = PGPUtil.getDecoderStream(in);
             PGPObjectFactory pgpF = new PGPObjectFactory(in, new JcaKeyFingerprintCalculator());
-            PGPEncryptedDataList enc;
 
-            Object o = pgpF.nextObject();
-            //
-            // the first object might be a PGP marker packet.
-            //
-            if (o instanceof PGPEncryptedDataList) {
-                enc = (PGPEncryptedDataList) o;
-            } else {
-                enc = (PGPEncryptedDataList) pgpF.nextObject();
+            PGPEncryptedDataList enc;
+            Object o;
+            while((o = pgpF.nextObject()) != null) {
+
+                if (o instanceof PGPEncryptedDataList) {
+                    enc = (PGPEncryptedDataList) o;
+                } else if(o instanceof PGPSignatureList) {
+                    PGPSignatureList list = (PGPSignatureList) o;
+                    Iterator<PGPSignature> it = list.iterator();
+                    while(it.hasNext()) {
+                        InputStream unverifiedContentIn = new ByteArrayInputStream(unverifiedContent.getBytes());
+                                    
+                        PGPSignature sig = it.next();
+                        sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider("BC"), publicKey);
+                        int ch;
+                        while ((ch = unverifiedContentIn.read()) >= 0) {
+                            sig.update((byte)ch);
+                        }
+                                 
+                        if (sig.verify()) {
+                            sendText(session, "INFO Found Signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
+                            return unverifiedContent;
+                        }
+                        else {
+                            sendText(session, "ERROR Could not verify signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
+                            throw new IOException("Could not verify signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
+                        }
+//                        sig.(publicKey);
+                    }
+                } else {
+                    sendText(session, "ERROR Unrecognized Object: " + o.getClass());
+
+                }
             }
 
             return "";
             
         } catch (IOException ex) {
+            sendText(session, "ERROR " + ex);
             Logger.getLogger(PGPCommands.class.getName()).log(Level.SEVERE, null, ex);
             throw new PGPException(ex.getMessage(), ex);
         }
     }
     
     public PGPPublicKey identifyPublicKeyBlock(Session session, String data) throws PGPException {
-        String tag = "-----BEGIN PGP SIGNED MESSAGE-----";
+        String tag = "-----BEGIN PGP PUBLIC KEY BLOCK-----";
         int sPos = data.indexOf(tag);
         if(sPos == -1)
             throw new PGPException("No " + tag + " found");
         
-        tag = "-----END PGP SIGNED MESSAGE-----";
+        tag = "-----END PGP PUBLIC KEY BLOCK-----";
         int fPos = data.indexOf(tag, sPos);
         if(fPos == -1)
             throw new PGPException("No " + tag + " found");
@@ -149,6 +189,15 @@ public class PGPCommands implements ISocketCommand {
         }
 
 
+    }
+    
+    private void sendText(Session session, String text) {
+        try {
+            System.out.println(session.getId() + " SENDING " + text); 
+            session.getBasicRemote().sendText(text);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
     
     public static String byteArrayToHex(byte[] a) {
