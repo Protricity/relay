@@ -40,6 +40,7 @@ public class PGPCommands implements ISocketCommand {
         public String ChallengeString;
         public String PublicKeyID = null;
         public String UserName = null;
+        public String Visibility = "";
         public int CacheTime = 0;
         
         public String getUserName(Session session) {
@@ -96,10 +97,12 @@ public class PGPCommands implements ISocketCommand {
         for(String verifiedContent : verifiedContentList) {
             int pos = verifiedContent.indexOf(challengePrefix);
             if(pos != -1) {
-                String[] split = verifiedContent.substring(pos).split(" ",4);
-                userInfo.UserName = split[2];
-                userInfo.CacheTime = Integer.parseInt(split[3]);
-                sendText(session, "INFO User Identified: " + userInfo.UserName);
+                String[] split = verifiedContent.substring(pos).split(" ",6);
+//                userInfo.UserName = split[2];
+                userInfo.UserName = split[3];
+                userInfo.Visibility = split[4];
+                userInfo.CacheTime = Integer.parseInt(split[5]);
+                sendText(session, "INFO User Identified: " + userInfo.UserName + " [" + userInfo.Visibility + "]");
             }
         }
             //            mIDKeys.put(session, key);

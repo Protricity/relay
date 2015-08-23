@@ -39,7 +39,7 @@
         "<script src='cmd/pgp/pgp-form.js'></script>" +
         "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
         "<legend>Generate a new PGP Key Pair</legend>" +
-        "<form name='pgp-keygen-form' action='#' onsubmit='return submitPGPKeyGenForm(event);'>" +
+        "<form name='pgp-keygen-form' action='#' method='post' onsubmit='return submitPGPKeyGenForm(event);'>" +
             "<div class='status-box' style='display: none'></div>" +
             "Select key strength: </br><i>or: your fear level for getting hacked on a scale from 512 to 4096</i><br/>" +
             "<select name='bits'>" +
@@ -66,7 +66,7 @@
         "<script src='cmd/pgp/pgp-form.js'></script>" +
         "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
         "<legend>Register a new PGP Key Pair</legend>" +
-        "<form name='pgp-register-form' action='#' onsubmit='return submitPGPRegisterForm(event);'>" +
+        "<form name='pgp-register-form' action='#' method='post' onsubmit='return submitPGPRegisterForm(event);'>" +
             "<div class='status-box'>{$status_content}</div>" +
             "<label>Paste or <a href='#KEYGEN'>generate</a> a PGP Private key and <br/>enter it into the box below to register:<br/>" +
                 "<textarea onchange='changePGPRegisterForm(event);' name='private_key' required='required' placeholder='" + EXAMPLE_PUBLIC_KEY + "' rows='12' cols='68'>{$private_key}</textarea>" +
@@ -86,12 +86,12 @@
     var IDENTIFY_TEMPLATE =
         "<script src='cmd/pgp/pgp-form.js'></script>" +
         "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
-        "<legend>Identify yourself to the network</legend>" +
-        "<form name='pgp-identify-form' action='#' onsubmit='return submitPGPIdentifyForm(event);'>" +
+        "<legend>Identify yourself to the network [{$socket_host}]</legend>" +
+        "<form name='pgp-identify-form' action='#' method='post' onsubmit='return submitPGPIdentifyForm(event);'>" +
             "<div class='status-box'>{$status_content}</div>" +
 
             "<label class='label-pgp-id'>Identify using PGP Identity:<br/>" +
-                "<select name='pgp-id' required='required' onfocus='focusPGPIdentifyForm(event)' onselect='focusPGPIdentifyForm(event)' oninput='focusPGPIdentifyForm(event)'>" +
+                "<select name='pgp_id' required='required' onfocus='focusPGPIdentifyForm(event)' onselect='focusPGPIdentifyForm(event)' oninput='focusPGPIdentifyForm(event)'>" +
                     "<optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>" +
                         "{$pgp_id_options}" +
                     "</optgroup>" +
@@ -106,42 +106,60 @@
             "<br/><br/></label>" +
 
 
-            "<label class='label-username' oninput='focusPGPIdentifyForm(event)'>Your <strong>Session Username</strong> (how you appear to others while connected):<br/>" +
+            "<label class='label-username' oninput='focusPGPIdentifyForm(event)'>Your <strong>Session Username</strong>:<br/>(how you appear to others while connected)<br/>" +
                 "<input type='text' name='username' required='required' placeholder='Enter a user name' value='{$username}'/>" +
             "<br/><br/></label>" +
 
-            "<label class='label-visibility'>Who should be able to request your <br/><strong>Identification Signature</strong> while you're online?<br/>" +
-                "<select name='visibility'>" +
-                    "<option value=':all'>Anyone (including anonymous users)</option>" +
-                    "<option value=':identified'>Only other identified users</option>" +
-                    "<option value=':none'>No one (Only username and key id)</option>" +
+            //"<label class='label-visibility'>Who should be able to request your <br/><strong>Identification Signature</strong> while you're online?<br/>" +
+            //    "<select name='visibility'>" +
+            //        "<option value=':all'>Anyone (including anonymous users)</option>" +
+            //        "<option value=':identified'>Only other identified users</option>" +
+            //        "<option value=':none'>No one (Only username and key id)</option>" +
+            //    "</select>" +
+            //"<br/><br/></label>" +
+
+            "<label class='label-visibility'>How should other users be allowed to interact<br/>with your client while connected?<br/>" +
+                "<select name='visibility' style='max-width:20em'>" +
+                    "<option value=''>No visibility (won't accept requests from any users)</option>" +
+                    "<option value='M'>[MESSAGE] Accept private messages from other users (no one can see your feed)</option>" +
+                    "<option selected='selected' value='MG'>[MESSAGE, GET] Accept Content requests (like feed posts) and private messages</option>" +
+                    "<option value='MGP'>[MESSAGE, GET, POST] Content Hosting with form submission (allow others to post to your feed)</option>" +
+                    "<option value='MGPD'>[MESSAGE, GET, POST, DELETE] Content Hosting with delete requests (allow others to help manage your feed)</option>" +
+                    "<option value=''>Custom visibility...</option>" +
                 "</select>" +
             "<br/><br/></label>" +
 
             "<label class='label-content'>What content should be included along with your ID Signature?<br/>" +
                 "<select name='contents'>" +
-                    "<option value=':pub:idsig'>Just the Public Key and IDSIG (No profile)</option>" +
-                    "<option value=':pub:idsig:profile'>Public Key, IDSIG and Signed Profile</option>" +
+                    "<option value=''>Just the Public Key and IDSIG (No profile information)</option>" +
+                    "<option value='profile'>Public Key, IDSIG and Signed Profile</option>" +
                 "</select>" +
             "<br/><br/></label>" +
 
-            "<label class='label-cache-time'>How long should your ID Signature (and included content)<br/>stay cached on the server after you disconnect?<br/>" +
+            "<label class='label-cache-time'>How long should your content (like feed posts) stay cached <br/>on the server after you disconnect from it?<br/>" +
                 "<select name='cache_time'>" +
                     "<option value='0'>Remove immediately</option>" +
-                    "<option value='60'>Remove after 1 minute</option>" +
-                    "<option value='3600'>Remove after 1 hour</option>" +
+                    "<option value='900'>Remove after 15 minute</option>" +
+                    "<option value='21600'>Remove after 6 hour</option>" +
+                    "<option value='86400'>Remove after 24 hours</option>" +
                     "<option value='max'>Keep on server as long as possible</option>" +
                     "<option onclick='clickPGPIdentityCustomCacheTime(event)' value='-1'>Custom Value</option>" +
                 "</select>" +
             "<br/><br/></label>" +
 
             "<label>This is your <strong>Identification Signature</strong> for this session<br/>(What others see when they request your <i>IDSIG</i>):<br/>" +
-                "<textarea required='required' name='id_signature' required='required' rows='12' cols='68'>{$id_signature}</textarea>" +
+                "<textarea class='pgp-idsig-required'  required='required' name='id_signature' required='required' rows='12' cols='68'>{$id_signature}</textarea>" +
             "<br/></label>" +
 
-            "<hr/>Register:<br/>" +
+            "<hr/>Submit Identification Signature:<br/>" +
             //"<input type='button' name='submit-sign' value='Sign' onclick='focusPGPIdentifyForm(event)'/>" +
             "<input type='submit' name='submit-identify' value='Identify'/>" +
+
+            "<label>" +
+                "<input type='checkbox' name='auto_identify' value='1' {$auto_identify_checked_attr}/>" +
+                "Auto-Identify" +
+            "</label>" +
+
             "<input type='hidden' name='session_id' value='{$session_id}'/>" +
             "<input type='hidden' name='challenge_string' value='{$challenge_string}'/>" +
         "</form>";
@@ -159,16 +177,18 @@
     var MANAGE_TEMPLATE_ENTRY =
         "<script src='cmd/pgp/pgp-form.js'></script>" +
         "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
-        "<fieldset class='pgp-id-box pgp-id-box:{$id_private}'>" +
+        "<fieldset class='pgp-id-box pgp-id-box:{$id_private}{$class}'>" +
             "<legend class='user'>{$user_id}</legend>" +
             "<label><strong>ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='fingerprint'>{$id_private}</span></label><br/>" +
             "<label><strong>Sub ID:&nbsp;&nbsp;&nbsp;&nbsp;</strong> {$id_public}</label><br/>" +
             "<label><strong>User ID:&nbsp;&nbsp;&nbsp;</strong> <span class='user'>{$user_id}</span></label><br/>" +
             "<label><strong>Email:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='email'>{$user_email}</span></label><br/>" +
             "<label><strong>Passphrase:</strong> {$passphrase_required}</label><br/>" +
+            "<label><strong>Is Default:</strong> {$is_default}</label><br/>" +
             "<label><strong>Actions:&nbsp;&nbsp;&nbsp;</strong> " +
                 "<select name='actions' onselect='window[this.value](event, \"{$id_private}\"); ' oninput='window[this.value](event, \"{$id_private}\"); '>" +
                     "<option selected='selected'>Select action</option>" +
+                    "<option disabled='disabled'>Make Default Identity</option>" +
                     "<option value='changePGPManageFormKeyPassphrase'>Change Password</option>" +
                     //"<option value='changePGPManageFormKeyPassphrase'>Add Password</option>" +
 
@@ -389,6 +409,9 @@
                         .replace(/{\$user_email}/gi, data.user_email || '')
                         .replace(/{\$user_comment}/gi, data.user_comment || '')
                         .replace(/{\$passphrase_required}/gi, data.passphrase_required ? "Yes" : "No")
+                        .replace(/{\$is_default}/gi, data.default === '1' ? "<strong>Yes</strong>" : "No")
+                        .replace(/{\$class}/gi, data.default === '1' ? " pgp-id-box-default" : "")
+                        .replace(/{\$default}/gi, data.default)
                         .replace(/{\$[^}]+}/gi, '')
                 );
             });
@@ -434,11 +457,11 @@
         var session_id = match[2];
         //console.log(socket, challenge_string, session_id);
 
-        var selectedKeyID = null;
         var pgp_id_options_html = '';
         var id_signature = null;
-        var password_style = '';
+        var password_style = 'display: none';
         var password_required = '';
+        var auto_identify_checked_attr = '';
 
         var username = '';
 
@@ -447,21 +470,18 @@
             PGPDB.queryPrivateKeys(function(privateKeyData) {
 
                 var keyID = privateKeyData.id_private;
-                if(!selectedKeyID) {
-                    selectedKeyID = keyID;
-                }
 
-                if(selectedKeyID === keyID) {
+                if(privateKeyData.default === '1') {
                     username = privateKeyData.user_name || privateKeyData.user_id;
                 }
 
                 pgp_id_options_html +=
-                    '<option ' + (keyID === selectedKeyID ? 'selected="selected"' : '') + ' value="' + keyID + '">' +
+                    '<option ' + (privateKeyData.default === '1' ? 'selected="selected"' : '') + ' value="' + keyID + '">' +
                     (privateKeyData.passphrase_required ? '(*) ' : '') + privateKeyData.user_id.replace(/</, '&lt;') +
                     '</option>';
 
-                if(selectedKeyID === keyID && privateKeyData.passphrase_required) {
-                    password_style = 'display: none';
+                if(privateKeyData.default === '1' && privateKeyData.passphrase_required) {
+                    password_style = '';
                     password_required = 'required';
                 }
 
@@ -470,10 +490,14 @@
                 self.routeResponseToClient("RLOG " + PATH_ID_REQUEST + " " + IDENTIFY_TEMPLATE
                         //.replace(/{\$status_content}/gi, status_content || '')
                         .replace(/{\$id_signature}/gi, id_signature || '')
+                        .replace(/{\$socket_host}/gi, socket.url || '')
                         .replace(/{\$pgp_id_options}/gi, pgp_id_options_html || '')
                         .replace(/{\$challenge_string}/gi, challenge_string || '')
                         .replace(/{\$session_id}/gi, session_id || '')
-                        .replace(/{\$username}/gi, username.trim().replace(/[^a-zA-Z0-9_-]+/ig, '_') || '')
+                        .replace(/{\$password_style}/gi, password_style || '')
+                        .replace(/{\$password_required}/gi, password_required || '')
+                        .replace(/{\$auto_identify_checked_attr}/gi, auto_identify_checked_attr || '')
+                        //.replace(/{\$username}/gi, username.replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_') || '')
                         .replace(/{\$[^}]+}/gi, '')
                 );
             });

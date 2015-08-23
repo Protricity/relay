@@ -144,11 +144,11 @@
             }
 
             var contentEvent = new CustomEvent('log', {
-                bubbles: true,
-                detail: content
+                bubbles: true
+//                 detail: content
             });
             channelOutput.dispatchEvent(contentEvent);
-
+            console.log(contentEvent);
         }
 
     }

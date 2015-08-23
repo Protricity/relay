@@ -35,3 +35,11 @@ form[name=pgp-manage-form] legend.user {
     overflow: hidden;
     max-width: 15em;
 }
+
+.pgp-id-box {
+
+}
+
+.pgp-id-box-default {
+    border-width: 4px !important;
+}

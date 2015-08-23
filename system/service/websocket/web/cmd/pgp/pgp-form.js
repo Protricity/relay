@@ -7,7 +7,6 @@
 
     var selectedPublicKeyID = null;
 
-
     window.submitPGPKeyGenForm = function(e) {
         e.preventDefault();
         var formElm = e.target.form ? e.target.form : e.target;
@@ -154,12 +153,13 @@
             passphraseElm.parentNode._original_display = passphraseElm.parentNode.style.display;
         var idSignatureElm = formElm.querySelector('[name=id_signature]');
         var usernameElm = formElm.querySelector('[name=username]');
+        var visibilityElm = formElm.querySelector('[name=visibility]');
 
         var challenge_string = formElm.querySelector('[name=challenge_string]').value;
         var session_id = formElm.querySelector('[name=session_id]').value;
-        var keyID = formElm.querySelector('[name=pgp-id]').value;
+        var keyID = formElm.querySelector('[name=pgp_id]').value;
+        var autoIdentify = formElm.querySelector('[name=auto_identify]').checked ? true : false;
 
-        var visibility = formElm.querySelector('[name=visibility]').value;
         var contents = formElm.querySelector('[name=contents]').value;
         var cache_time = formElm.querySelector('[name=cache_time]').value;
 
@@ -167,10 +167,11 @@
             setStatus(formElm, "<span class='error'>Username may not contain spaces. Bummer :(</span>");
             return formElm;
         }
-        setStatus(formElm, "");
 
         var identityString = "IDSIG " + challenge_string +
-            " " + usernameElm.value +
+            " " + keyID +
+            " " + usernameElm.value +            
+            " " + visibilityElm.value +
             " " + cache_time;
         var id_signature = identityString;
 
@@ -182,10 +183,11 @@
             if(!lastIDString || identityString !== lastIDString) {
                 lastIDString = identityString;
                 idSignatureElm.innerHTML = '';
+                setStatus(formElm, "");
             }
 
             if(!usernameElm.value)
-                usernameElm.value = privateKey.getUserIds()[0].trim().replace(/[^a-zA-Z0-9_-]+/ig, '_');
+                usernameElm.value = privateKey.getUserIds()[0].trim().replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
 
 
             if(privateKey.primaryKey.isDecrypted) {
@@ -215,6 +217,11 @@
                             idSignatureElm.innerHTML = signedIDString.trim();
                             //idSignatureElm.innerHTML += "\n" + privateKeyData.user_profile_signed;
                             idSignatureElm.innerHTML += "\n" + privateKeyData.block_public;
+
+                            if(autoIdentify) {
+                                console.info("Auto-submitting form: ", formElm);
+                                submitPGPIdentifyForm(e);
+                            }
                         });
                 }
 
@@ -289,6 +296,20 @@
         statusElm.innerHTML = statusText;
         console.log(statusText);
     }
+
+    // Auto focus
+
+    var focusRequiredElms = document.getElementsByClassName('pgp-idsig-required');
+    var onLog = function(e) {
+        for(var i=focusRequiredElms.length-1; i>=0; i--) (function(focusRequiredElm) {
+            focusRequiredElm.classList.remove('pgp-idsig-required');
+            setTimeout(function () {
+                window.focusPGPIdentifyForm(e, focusRequiredElm.form);
+            }, 400);
+        })(focusRequiredElms[i])
+    };
+    document.addEventListener('log', onLog);
+    onLog();
 
 
     // IE Fix

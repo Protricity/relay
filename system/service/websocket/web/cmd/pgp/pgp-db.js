@@ -33,6 +33,7 @@
                     console.log('Upgrading Table: ', DB_TABLE_PRIVATE_KEYS);
                     var postStore = upgradeDB.createObjectStore(DB_TABLE_PRIVATE_KEYS, { keyPath: "id_private" });
                     postStore.createIndex("id_public", "id_public", { unique: true });
+                    postStore.createIndex("default", "default", { unique: false });
                 }
 
                 if(!upgradeDB.objectStoreNames.contains(DB_TABLE_PUBLIC_KEYS)) {
@@ -109,6 +110,23 @@
         });
     };
 
+    self.PGPDB.getDefaultPrivateKeyData = function (callback) {
+
+        self.PGPDB(function (db, PGPDB) {
+            var transaction = db.transaction([DB_TABLE_PRIVATE_KEYS], "readonly");
+            var privateKeyStore = transaction.objectStore(DB_TABLE_PRIVATE_KEYS);
+
+            var index = privateKeyStore.index('default');
+            var req = index.get('1');
+            req.onsuccess = function (evt) {
+                var privateKeyData = evt.target.result;
+                if(!privateKeyData)
+                    callback("Default Private Key Not Found", null);
+                else
+                    callback(null, privateKeyData);
+            };
+        });
+    };
 
     self.PGPDB.getPrivateKeyData = function(id_private, callback) {
         id_private = id_private.substr(id_private.length - 16);
@@ -252,11 +270,22 @@
                     console.log("public key: ", publicKeyBlock);
 
                     self.PGPDB(function(db, PGPDB) {
-
                         var transaction = db.transaction([DB_TABLE_PRIVATE_KEYS], "readwrite");
                         var privateKeyStore = transaction.objectStore(DB_TABLE_PRIVATE_KEYS);
 
+                        var index = privateKeyStore.index('default');
+                        var req = index.get('1');
+                        req.onsuccess = function (evt) {
+                            var privateKeyData = evt.target.result;
+                            if(privateKeyData) {
+                                console.log("Resetting Default PK: ", privateKeyData);
+                                privateKeyData.default = '0';
+                                privateKeyStore.put(privateKeyData);
+                            }
+                        };
+
                         var insertData = {
+                            'default': '1',
                             //'fp_private': privateKeyFingerprint,
                             'id_private': privateKeyFingerprint.substr(privateKeyFingerprint.length - 16),
                             //'fp_public': publicKeyFingerprint,

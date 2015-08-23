@@ -15,10 +15,13 @@
                 document.dispatchEvent(socketEvent);
                 return socketEvent.defaultPrevented;
             }
+            setTimeout(function() {
 //            send('feed');
-            send('JOIN /home');
+                send('JOIN /home');
 //            send('keygen');
 //            send('manage');
+
+            }, 200);
         </script>
     </head>
     <body>
