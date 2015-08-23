@@ -148,7 +148,6 @@
 //                 detail: content
             });
             channelOutput.dispatchEvent(contentEvent);
-            console.log(contentEvent);
         }
 
     }

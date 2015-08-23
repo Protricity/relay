@@ -147,32 +147,31 @@
             throw new Error("Wrong Form name: " + formElm.getAttribute('name'));
 
 
-        var optGroupPGPIdentities = formElm.getElementsByClassName('pgp-identities')[0];
         var passphraseElm = formElm.querySelector('[name=passphrase]');
         if(typeof passphraseElm.parentNode._original_display === 'undefined')
             passphraseElm.parentNode._original_display = passphraseElm.parentNode.style.display;
         var idSignatureElm = formElm.querySelector('[name=id_signature]');
         var usernameElm = formElm.querySelector('[name=username]');
         var visibilityElm = formElm.querySelector('[name=visibility]');
+        var submitSectionElm = formElm.getElementsByClassName('submit-section')[0];
 
         var challenge_string = formElm.querySelector('[name=challenge_string]').value;
         var session_id = formElm.querySelector('[name=session_id]').value;
         var keyID = formElm.querySelector('[name=pgp_id]').value;
-        var autoIdentify = formElm.querySelector('[name=auto_identify]').checked ? true : false;
+        var autoIdentify = formElm.querySelector('[name=auto_identify]').checked;
 
-        var contents = formElm.querySelector('[name=contents]').value;
-        var cache_time = formElm.querySelector('[name=cache_time]').value;
+        //var cache_time = formElm.querySelector('[name=cache_time]').value;
 
         if(/\s/.test(usernameElm.value)) {
             setStatus(formElm, "<span class='error'>Username may not contain spaces. Bummer :(</span>");
             return formElm;
         }
 
-        var identityString = "IDSIG " + challenge_string +
+        var identityString = "IDSIG" +
+            " " + challenge_string +
             " " + keyID +
             " " + usernameElm.value +            
-            " " + visibilityElm.value +
-            " " + cache_time;
+            " " + visibilityElm.value;
         var id_signature = identityString;
 
         self.PGPDB.getPrivateKeyData(keyID, function(err, privateKeyData) {
@@ -183,12 +182,16 @@
             if(!lastIDString || identityString !== lastIDString) {
                 lastIDString = identityString;
                 idSignatureElm.innerHTML = '';
-                setStatus(formElm, "");
+                submitSectionElm.style.display = 'none';
+                //setStatus(formElm, "");
             }
 
-            if(!usernameElm.value)
-                usernameElm.value = privateKey.getUserIds()[0].trim().replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
 
+            if(!usernameElm.value || usernameElm.default === usernameElm.value) {
+                var defaultUsername = privateKey.getUserIds()[0].trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
+                usernameElm.value = defaultUsername;
+                usernameElm.default = defaultUsername;
+            }
 
             if(privateKey.primaryKey.isDecrypted) {
                 passphraseElm.parentNode.style.display = 'none';
@@ -203,13 +206,15 @@
             if(!privateKey.primaryKey.isDecrypted) {
                 if (passphraseElm.value) {
                     privateKey.primaryKey.decrypt(passphraseElm.value);
+                } else {
+                    setStatus(formElm, "<span class='passphrase'>PGP Passphrase required</span>", true);
                 }
             }
 
             if(privateKey.primaryKey.isDecrypted) {
 
                 if(!idSignatureElm.innerHTML) {
-                    setStatus(formElm, "Signing Identity...");
+                    setStatus(formElm, "Signing Identity...", true);
                     openpgp.signClearMessage(privateKey, identityString)
                         .then(function (signedIDString) {
 
@@ -217,6 +222,7 @@
                             idSignatureElm.innerHTML = signedIDString.trim();
                             //idSignatureElm.innerHTML += "\n" + privateKeyData.user_profile_signed;
                             idSignatureElm.innerHTML += "\n" + privateKeyData.block_public;
+                            submitSectionElm.style.display = 'block';
 
                             if(autoIdentify) {
                                 console.info("Auto-submitting form: ", formElm);
@@ -233,6 +239,7 @@
             //    console.error(errMSG);
             } else {
                 idSignatureElm.innerHTML = '';
+                submitSectionElm.style.display = 'none';
 
             }
 
@@ -255,16 +262,22 @@
         var contents = formElm.querySelector('[name=contents]').value;
         var cache_time = formElm.querySelector('[name=cache_time]').value;
         var idSigString = idSignatureElm.value;
+        var submitSectionElm = formElm.getElementsByClassName('submit-section')[0];
 
         if(idSigString.indexOf("-----BEGIN PGP SIGNED MESSAGE-----") === -1)
             throw new Error("BEGIN PGP SIGNED MESSAGE not found");
 
         var messageEvent = new CustomEvent('socket', {
-            detail: "IDENTIFY " + idSigString,
+            detail: {
+                message: "IDENTIFY " + idSigString,
+                passphrase: passphraseElm.value
+            },
             cancelable:true
         });
         document.dispatchEvent(messageEvent);
         idSignatureElm.innerHTML = '';
+        submitSectionElm.style.display = 'none';
+        formElm.classList.add('form-success');
         passphraseElm.value = '';
         setStatus(formElm, "<span class='success'>IDSIG Sent Successfully</span>");
 
@@ -284,7 +297,7 @@
 
 
 
-    function setStatus(formElm, statusText) {
+    function setStatus(formElm, statusText, append) {
         var statusElm = formElm.querySelector('.status-box');
         if(!statusElm) {
             statusElm = document.createElement('div');
@@ -293,8 +306,10 @@
         } else {
             statusElm.style.display= 'block';
         }
-        statusElm.innerHTML = statusText;
-        console.log(statusText);
+        if(append)
+            statusElm.innerHTML += (statusElm.innerHTML ? '<br/>' : '') + statusText;
+        else
+            statusElm.innerHTML = statusText;
     }
 
     // Auto focus

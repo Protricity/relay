@@ -95,8 +95,8 @@
                     "<optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>" +
                         "{$pgp_id_options}" +
                     "</optgroup>" +
-                    "<optgroup disabled='disabled' label='Other options'>" +
-                    "<option value=''>Manage PGP Identities...</option>" +
+                    "<optgroup label='Other options'>" +
+                        "<option value=''>Manage PGP Identities...</option>" +
                     "</optgroup>" +
                 "</select>" +
             "<br/><br/></label>" +
@@ -129,39 +129,42 @@
                 "</select>" +
             "<br/><br/></label>" +
 
-            "<label class='label-content'>What content should be included along with your ID Signature?<br/>" +
-                "<select name='contents'>" +
-                    "<option value=''>Just the Public Key and IDSIG (No profile information)</option>" +
-                    "<option value='profile'>Public Key, IDSIG and Signed Profile</option>" +
-                "</select>" +
-            "<br/><br/></label>" +
+            //"<label class='label-content'>What content should be included along with your ID Signature?<br/>" +
+            //    "<select name='contents'>" +
+            //        "<option value=''>Just the Public Key and IDSIG (No profile information)</option>" +
+            //        "<option value='profile'>Public Key, IDSIG and Signed Profile</option>" +
+            //    "</select>" +
+            //"<br/><br/></label>" +
 
-            "<label class='label-cache-time'>How long should your content (like feed posts) stay cached <br/>on the server after you disconnect from it?<br/>" +
-                "<select name='cache_time'>" +
-                    "<option value='0'>Remove immediately</option>" +
-                    "<option value='900'>Remove after 15 minute</option>" +
-                    "<option value='21600'>Remove after 6 hour</option>" +
-                    "<option value='86400'>Remove after 24 hours</option>" +
-                    "<option value='max'>Keep on server as long as possible</option>" +
-                    "<option onclick='clickPGPIdentityCustomCacheTime(event)' value='-1'>Custom Value</option>" +
-                "</select>" +
-            "<br/><br/></label>" +
+            //"<label class='label-cache-time'>How long should your content (like feed posts) stay cached <br/>on the server after you disconnect from it?<br/>" +
+            //    "<select name='cache_time'>" +
+            //        "<option value='0'>Remove immediately</option>" +
+            //        "<option value='900'>Remove after 15 minute</option>" +
+            //        "<option value='21600'>Remove after 6 hour</option>" +
+            //        "<option value='86400'>Remove after 24 hours</option>" +
+            //        "<option value='max'>Keep on server as long as possible</option>" +
+            //        "<option onclick='clickPGPIdentityCustomCacheTime(event)' value='-1'>Custom Value</option>" +
+            //    "</select>" +
+            //"<br/><br/></label>" +
 
-            "<label>This is your <strong>Identification Signature</strong> for this session<br/>(What others see when they request your <i>IDSIG</i>):<br/>" +
-                "<textarea class='pgp-idsig-required'  required='required' name='id_signature' required='required' rows='12' cols='68'>{$id_signature}</textarea>" +
-            "<br/></label>" +
+            "<div class='submit-section'>" +
+                "<label>This is your <strong>Identification Signature</strong> for this session<br/>(What others see when they request your <i>IDSIG</i>):<br/>" +
+                    "<textarea class='pgp-idsig-required'  required='required' name='id_signature' required='required' rows='12' cols='68'>{$id_signature}</textarea>" +
+                "<br/></label>" +
 
-            "<hr/>Submit Identification Signature:<br/>" +
-            //"<input type='button' name='submit-sign' value='Sign' onclick='focusPGPIdentifyForm(event)'/>" +
-            "<input type='submit' name='submit-identify' value='Identify'/>" +
+                "<hr/>Submit Identification Signature:<br/>" +
+                //"<input type='button' name='submit-sign' value='Sign' onclick='focusPGPIdentifyForm(event)'/>" +
+                "<input type='submit' name='submit-identify' value='Identify'/>" +
 
-            "<label>" +
-                "<input type='checkbox' name='auto_identify' value='1' {$auto_identify_checked_attr}/>" +
-                "Auto-Identify" +
-            "</label>" +
+                "<label>" +
+                    "<input type='checkbox' name='auto_identify' value='1' {$auto_identify_checked_attr}/>" +
+                    "Auto-Identify" +
+                "</label>" +
 
-            "<input type='hidden' name='session_id' value='{$session_id}'/>" +
-            "<input type='hidden' name='challenge_string' value='{$challenge_string}'/>" +
+                "<input type='hidden' name='session_id' value='{$session_id}'/>" +
+                "<input type='hidden' name='challenge_string' value='{$challenge_string}'/>" +
+            "</div>" +
+
         "</form>";
 
 
@@ -423,56 +426,72 @@
         throw new Error("manage response is not implemented");
     };
 
+
+
+
     var identifyRequests = [];
     /**
-     * @param commandString [signed_identity]
+     * @param commandString IDENTIFY [challenge-string] [pgp-key-id] [username] [visibility]
      */
     self.identifyCommand = function (commandString, e) {
-        var match1 = /IDSIG (\S+) /i.exec(commandString);
-        if(!match1 || !match1[1])
-            throw new Error("Could not find challenge string");
-        var challengeString = match1[1];
-        for(var i=0; i<identifyRequests.length; i++) {
-            if(identifyRequests[i][0].indexOf("IDENTIFY " + challengeString) !== -1) {
-                var socket = identifyRequests[i][1];
-                socket.send(commandString);
-                console.log("SOCKET OUT (" + socket.url + "): " + commandString);
-                //console.info("Removing IDENTIFY request: " + identifyRequests[i]);
-                //identifyRequests.splice(i, 1);
-                return;
-            }
+        if(identifyRequests.length === 0) {
+            throw new Error("No IDENTIFY REQUESTS received");
         }
-        throw new Error("Could not find original IDENTIFY request socket: " + challengeString);
-    };
 
-    /**
-     * @param responseString [challenge_string] [session_id]
-     */
-    self.identifyResponse = function (responseString, e) {
-        identifyRequests.push([responseString, e.target]);
+        var match = /^identify(?:\s+(\S*))?(?:\s+(\S*))?(?:\s+(\S*))?(?:\s+(\S*))?(?:\s+(\S*))?$/im.exec(commandString);
+        if(!match)
+            throw new Error("Could not match identify command");
 
-        var socket = e.target;
-        var match = /^identify\s+(\S*)\s+(\S*)/im.exec(responseString);
-        var challenge_string = match[1];
-        var session_id = match[2];
-        //console.log(socket, challenge_string, session_id);
+        var challengeString = match[1];
+        var pgpKeyID = match[2];
+        var username = match[3];
+        var visibility = match[4];
+        var cacheTime = match[5];
 
-        var pgp_id_options_html = '';
-        var id_signature = null;
-        var password_style = 'display: none';
-        var password_required = '';
-        var auto_identify_checked_attr = '';
-
-        var username = '';
+        //
+        //var idSigContent = null; // match[1];
+        //if(idSigContent) {
+        //    match = /IDSIG (\S+) /i.exec(idSigContent);
+        //    if(!match || !match[1])
+        //        throw new Error("Could not find challenge string");
+        //    var challengeString = match[1];
+        //
+        //    for(var j=0; j<identifyRequests.length; j++) {
+        //        if(identifyRequests[j][0].indexOf("IDENTIFY " + challengeString) !== -1) {
+        //            var sendSocket = identifyRequests[j][1];
+        //            sendSocket.send(commandString);
+        //            console.log("SOCKET OUT (" + sendSocket.url + "): " + commandString);
+        //            //console.info("Removing IDENTIFY request: " + identifyRequests[i]);
+        //            //identifyRequests.splice(i, 1);
+        //            return;
+        //        }
+        //    }
+        //    throw new Error("Could not find original IDENTIFY request socket: " + challengeString);
+        //}
 
         getPGPDB(function(db, PGPDB) {
+            var pgp_id_options_html = '';
+            var id_signature = null;
+            var password_style = 'display: none';
+            var password_required = '';
+            var auto_identify_checked_attr = '';
+            var username = '';
+            var pgpIDCount = 0;
+
+            var status_content = '';
 
             PGPDB.queryPrivateKeys(function(privateKeyData) {
 
                 var keyID = privateKeyData.id_private;
+                pgpIDCount++;
 
                 if(privateKeyData.default === '1') {
+                    if(!pgpKeyID)
+                        pgpKeyID = privateKeyData.id_private;
+                }
+                if(privateKeyData.id_private === pgpKeyID) {
                     username = privateKeyData.user_name || privateKeyData.user_id;
+                    username = username.trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
                 }
 
                 pgp_id_options_html +=
@@ -487,48 +506,45 @@
 
 
             }, function() {
-                self.routeResponseToClient("RLOG " + PATH_ID_REQUEST + " " + IDENTIFY_TEMPLATE
-                        //.replace(/{\$status_content}/gi, status_content || '')
-                        .replace(/{\$id_signature}/gi, id_signature || '')
-                        .replace(/{\$socket_host}/gi, socket.url || '')
-                        .replace(/{\$pgp_id_options}/gi, pgp_id_options_html || '')
-                        .replace(/{\$challenge_string}/gi, challenge_string || '')
-                        .replace(/{\$session_id}/gi, session_id || '')
-                        .replace(/{\$password_style}/gi, password_style || '')
-                        .replace(/{\$password_required}/gi, password_required || '')
-                        .replace(/{\$auto_identify_checked_attr}/gi, auto_identify_checked_attr || '')
-                        //.replace(/{\$username}/gi, username.replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_') || '')
-                        .replace(/{\$[^}]+}/gi, '')
-                );
+
+                for(var i=0; i<identifyRequests.length; i++) {
+                    var responseString = identifyRequests[i][0];
+                    var socket = identifyRequests[i][1];
+                    match = /^identify\s+(\S*)\s+(\S*)/im.exec(responseString);
+                    var challenge_string = match[1];
+                    var session_id = match[2];
+                    //console.log(socket, challenge_string, session_id);
+
+                    var status_content = "<span class='info'>IDENTIFY request received from</br>[" + socket.url + "]</span>";
+
+                    if(pgpIDCount === 0)
+                        status_content += "<br/><span class='error'>No PGP Private Keys found on the client. Please import or <a href='#KEYGEN' onclick='send(\"KEYGEN\");'>generate</a> a new PGP Key and re-<a href='#IDENTIFY' onclick='send(\"IDENTIFY\");'>identify</a>.</span>";
+
+                    self.routeResponseToClient("RLOG " + PATH_ID_REQUEST + " " + IDENTIFY_TEMPLATE
+                            .replace(/{\$status_content}/gi, status_content || '')
+                            .replace(/{\$id_signature}/gi, id_signature || '')
+                            .replace(/{\$socket_url}/gi, socket.url || '')
+                            .replace(/{\$socket_host}/gi, socket.url.split('/')[2] || '')
+                            .replace(/{\$pgp_id_options}/gi, pgp_id_options_html || '')
+                            .replace(/{\$challenge_string}/gi, challenge_string || '')
+                            .replace(/{\$session_id}/gi, session_id || '')
+                            .replace(/{\$password_style}/gi, password_style || '')
+                            .replace(/{\$password_required}/gi, password_required || '')
+                            .replace(/{\$auto_identify_checked_attr}/gi, auto_identify_checked_attr || '')
+                            //.replace(/{\$username}/gi, username.replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_') || '')
+                            .replace(/{\$[^}]+}/gi, '')
+                    );
+                }
             });
         });
+    };
 
-
-        //var socketKeyID = null;
-        //if(typeof pgpConfig['socket-id-url:' + newSocket.url] !== 'undefined')
-        //    socketKeyID = pgpConfig['socket-id-url:' + newSocket.url];
-        //else if(typeof pgpConfig['socket-id-url-default'] !== 'undefined')
-        //    socketKeyID = pgpConfig['socket-id-url-default'];
-        //
-        //getPGPDB(function(db, PGPDB) {
-        //    PGPDB.queryPrivateKeys(function(privData) {
-        //        if(!socketKeyID)
-        //            socketKeyID = privData.id_private;
-        //        if(socketKeyID === privData.id_private) {
-        //            PGPDB.getPublicKey(privData.id_public, function(err, pubData) {
-        //                if(err)
-        //                    throw new Error(err);
-        //
-        //
-        //
-        //                socket.send("IDENTIFY " + pubData.block_public +
-        //                "\n" + pubData.user_profile_signed);
-        //
-        //            });
-        //            return true;
-        //        }
-        //    });
-        //});
+    /**
+     * @param responseString [challenge_string] [session_id]
+     */
+    self.identifyResponse = function (responseString, e) {
+        identifyRequests.push([responseString, e.target]);
+        self.identifyCommand("IDENTIFY", e);
     };
 
 

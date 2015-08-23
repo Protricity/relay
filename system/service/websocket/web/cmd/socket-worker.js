@@ -115,18 +115,18 @@
     };
 
     self.executeWorkerCommand = function(commandString, e) {
-        var args = commandString.split(/\s+/, 1);
-        var cmd = args[0].toLowerCase();
+        if(typeof commandString === 'object')
+            commandString = commandString.message;
+        var cmd = commandString.split(/\s+/, 1)[0].toLowerCase();
         var functionName = cmd+'Command';
         if(typeof self[functionName] !== 'function')
             throw new Error("Command failed to load: " + cmd);
-        return self[functionName](commandString, e);
+        return self[functionName](arguments[0], e);
     };
 
 
     self.executeWorkerResponse = function(commandResponse, e) {
-        var args = commandResponse.split(/\s+/, 1);
-        var cmd = args[0].toLowerCase();
+        var cmd = commandResponse.split(/\s+/, 1)[0].toLowerCase();
         var functionName = cmd+'Response';
         if(typeof self[functionName] !== 'function')
             throw new Error("Command Response failed to load: " + cmd);

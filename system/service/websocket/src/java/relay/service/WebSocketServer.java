@@ -53,7 +53,7 @@ public class WebSocketServer {
     public void onOpen(Session session){
         System.out.println(session.getId() + " has opened a connection"); 
         try {
-            session.getBasicRemote().sendText("INFO Connection Established: \n\t" + session.toString() + "\n\t" + session.getUserProperties().toString());
+            session.getBasicRemote().sendText("INFO Connection Established: \n\t" + session.getId());
 //            Object ipProp = session.getUserProperties().get("javax.websocket.endpoint.remoteAddress");
 //            if(ipProp != null)
 //                session.getBasicRemote().sendText("INFO Remote Address: " + ipProp.toString() );
