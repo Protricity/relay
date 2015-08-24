@@ -151,30 +151,34 @@
         if(typeof passphraseElm.parentNode._original_display === 'undefined')
             passphraseElm.parentNode._original_display = passphraseElm.parentNode.style.display;
         var idSignatureElm = formElm.querySelector('[name=id_signature]');
-        var usernameElm = formElm.querySelector('[name=username]');
         var visibilityElm = formElm.querySelector('[name=visibility]');
         var submitSectionElm = formElm.getElementsByClassName('submit-section')[0];
+        var usernameElm = formElm.querySelector('[name=username');
 
+        var username = usernameElm.value;
+        var visibility = visibilityElm.value;
         var challenge_string = formElm.querySelector('[name=challenge_string]').value;
         var session_id = formElm.querySelector('[name=session_id]').value;
-        var keyID = formElm.querySelector('[name=pgp_id]').value;
+        var selectedPGPKeyID = formElm.querySelector('[name=pgp_id]').value;
         var autoIdentify = formElm.querySelector('[name=auto_identify]').checked;
 
         //var cache_time = formElm.querySelector('[name=cache_time]').value;
 
-        if(/\s/.test(usernameElm.value)) {
+        if(/\s/.test(username)) {
             setStatus(formElm, "<span class='error'>Username may not contain spaces. Bummer :(</span>");
             return formElm;
         }
 
         var identityString = "IDSIG" +
             " " + challenge_string +
-            " " + keyID +
-            " " + usernameElm.value +            
-            " " + visibilityElm.value;
-        var id_signature = identityString;
+            " " + session_id +
+            " " + selectedPGPKeyID +
+            " " + username +
+            " " + visibility;
 
-        self.PGPDB.getPrivateKeyData(keyID, function(err, privateKeyData) {
+        //var id_signature = identityString;
+
+        self.PGPDB.getPrivateKeyData(selectedPGPKeyID, function(err, privateKeyData) {
             if(err)
                 throw new Error(err);
             var privateKey = openpgp.key.readArmored(privateKeyData.block_private).keys[0];
@@ -187,10 +191,10 @@
             }
 
 
-            if(!usernameElm.value || usernameElm.default === usernameElm.value) {
+            if(!username || username.default === username) {
                 var defaultUsername = privateKey.getUserIds()[0].trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
                 usernameElm.value = defaultUsername;
-                usernameElm.default = defaultUsername;
+                username.default = defaultUsername;
             }
 
             if(privateKey.primaryKey.isDecrypted) {
@@ -258,18 +262,22 @@
         var idSignatureElm = formElm.querySelector('*[name=id_signature]');
         var passphraseElm = formElm.querySelector('[name=passphrase]');
 
+
+        var pgp_id = formElm.querySelector('[name=pgp_id]').value;
+        var username = formElm.querySelector('[name=username]').value;
+        var challenge_string = formElm.querySelector('[name=challenge_string]').value;
         var visibility = formElm.querySelector('[name=visibility]').value;
-        var contents = formElm.querySelector('[name=contents]').value;
-        var cache_time = formElm.querySelector('[name=cache_time]').value;
         var idSigString = idSignatureElm.value;
         var submitSectionElm = formElm.getElementsByClassName('submit-section')[0];
 
         if(idSigString.indexOf("-----BEGIN PGP SIGNED MESSAGE-----") === -1)
             throw new Error("BEGIN PGP SIGNED MESSAGE not found");
 
+        //var commandString = "IDENTIFY --challenge " + challenge_string + " --id " + pgp_id + " --username " + username + " --visibility " + visibility;
+
         var messageEvent = new CustomEvent('socket', {
             detail: {
-                message: "IDENTIFY " + idSigString,
+                message:  "IDENTIFY " + idSigString, // commandString, //
                 passphrase: passphraseElm.value
             },
             cancelable:true
@@ -279,7 +287,7 @@
         submitSectionElm.style.display = 'none';
         formElm.classList.add('form-success');
         passphraseElm.value = '';
-        setStatus(formElm, "<span class='success'>IDSIG Sent Successfully</span>");
+        //setStatus(formElm, "<span class='success'>IDSIG Sent Successfully</span>");
 
     };
 

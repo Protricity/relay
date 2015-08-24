@@ -8,7 +8,7 @@
     importScripts('socket-defaults.js');
 
     self.addEventListener('message', function (e) {
-        self.executeWorkerCommand(e.data);
+        self.executeWorkerCommand(e.data, e);
     });
 
     var activeSockets = [];
@@ -115,13 +115,14 @@
     };
 
     self.executeWorkerCommand = function(commandString, e) {
-        if(typeof commandString === 'object')
-            commandString = commandString.message;
-        var cmd = commandString.split(/\s+/, 1)[0].toLowerCase();
+        var message = commandString;
+        if(typeof message === 'object')
+            message = message.message;
+        var cmd = message.split(/\s+/, 1)[0].toLowerCase();
         var functionName = cmd+'Command';
         if(typeof self[functionName] !== 'function')
             throw new Error("Command failed to load: " + cmd);
-        return self[functionName](arguments[0], e);
+        return self[functionName](commandString, e);
     };
 
 

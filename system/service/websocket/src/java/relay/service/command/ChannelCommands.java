@@ -22,8 +22,9 @@ public class ChannelCommands implements ISocketCommand {
 
 
     public String getSessionChatID(Session session) {
-        PGPCommands.PGPUserInfo userInfo = PGPCommands.getStatic().getSessionPGPInfo(session);
-        return userInfo.getUserName(session);
+        return session.getId();
+//        PGPCommands.PGPUserInfo userInfo = PGPCommands.getStatic().getSessionPGPInfo(session);
+        return userInfo.getUser/Name(session);
     }
 
     @Override

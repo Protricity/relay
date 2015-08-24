@@ -69,6 +69,7 @@
         };
 
     self.identifyResponse =
+    self.idsigResponse =
         function(responseString, e) {
             importScripts('pgp/pgp-worker.js');
             self.executeWorkerResponse(responseString, e);

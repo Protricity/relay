@@ -167,6 +167,27 @@
 
         "</form>";
 
+    var IDENTIFY_TEMPLATE_SUCCESS =
+        "<script src='cmd/pgp/pgp-form.js'></script>" +
+        "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
+        "<legend>IDSIG Successful to [{$socket_host}]</legend>" +
+        "<form name='pgp-identify-success-form' action='#' method='post'>" +
+        "<div class='status-box'>{$status_content}</div>" +
+
+        "<input type='submit' name='submit-close' value='Close'/>" +
+
+        "<hr/>Options for next time:<br/>" +
+        "<label>" +
+        "<input type='checkbox' name='auto_identify' value='1' {$auto_identify_checked_attr}/>" +
+        "Auto-Identify to {$socket_host}" +
+        "</label>" +
+
+        "<input type='hidden' name='session_id' value='{$session_id}'/>" +
+        "<input type='hidden' name='challenge_string' value='{$challenge_string}'/>" +
+        "</div>" +
+
+        "</form>";
+
 
     var MANAGE_TEMPLATE =
         "<script src='cmd/pgp/pgp-form.js'></script>" +
@@ -431,47 +452,69 @@
 
     var identifyRequests = [];
     /**
-     * @param commandString IDENTIFY [challenge-string] [pgp-key-id] [username] [visibility]
+     * @param commandData IDENTIFY --challenge [challenge-string] --id [pgp-key-id] --username [username] --visibility [visibility]
      */
-    self.identifyCommand = function (commandString, e) {
+    self.identifyCommand = function (commandData, e) {
+        if(typeof commandData === 'string')
+            commandData = {message: commandData, passphrase: null};
+        var commandString = commandData.message;
+
         if(identifyRequests.length === 0) {
             throw new Error("No IDENTIFY REQUESTS received");
         }
 
-        var match = /^identify(?:\s+(\S*))?(?:\s+(\S*))?(?:\s+(\S*))?(?:\s+(\S*))?(?:\s+(\S*))?$/im.exec(commandString);
+        var match = /^identify\s?([\s\S]*)$/im
+            .exec(commandString);
         if(!match)
             throw new Error("Could not match identify command");
+        var identifyContent = match[1] || '';
 
-        var challengeString = match[1];
-        var pgpKeyID = match[2];
-        var username = match[3];
-        var visibility = match[4];
-        var cacheTime = match[5];
+        var challenge_string = null; // match[1];
+        var selectedPGPKeyID = null; // match[2];
+        var selectedPrivateKeyData = null; // null;
+        var username = null; // match[3];
+        var visibility = null; // match[4];
+        //var cacheTime = match[5];
 
-        //
-        //var idSigContent = null; // match[1];
-        //if(idSigContent) {
-        //    match = /IDSIG (\S+) /i.exec(idSigContent);
-        //    if(!match || !match[1])
-        //        throw new Error("Could not find challenge string");
-        //    var challengeString = match[1];
-        //
-        //    for(var j=0; j<identifyRequests.length; j++) {
-        //        if(identifyRequests[j][0].indexOf("IDENTIFY " + challengeString) !== -1) {
-        //            var sendSocket = identifyRequests[j][1];
-        //            sendSocket.send(commandString);
-        //            console.log("SOCKET OUT (" + sendSocket.url + "): " + commandString);
-        //            //console.info("Removing IDENTIFY request: " + identifyRequests[i]);
-        //            //identifyRequests.splice(i, 1);
-        //            return;
-        //        }
-        //    }
-        //    throw new Error("Could not find original IDENTIFY request socket: " + challengeString);
-        //}
+        identifyContent = identifyContent.replace(/--challenge (\S+)/i, function(match, contents, offset, s) {
+            challenge_string = contents; return '';
+        });
+        identifyContent = identifyContent.replace(/--id (\S+)/i, function(match, contents, offset, s) {
+            selectedPGPKeyID = contents; return '';
+        });
+        identifyContent = identifyContent.replace(/--username (\S+)/i, function(match, contents, offset, s) {
+            username = contents; return '';
+        });
+        identifyContent = identifyContent.replace(/--visibility (\S+)/i, function(match, contents, offset, s) {
+            visibility = contents; return '';
+        });
+
+        match = /IDSIG (\S+) /i.exec(identifyContent);
+        if(match && match[1]) {
+            //throw new Error("Could not find challenge string");
+            challenge_string = match[1];
+
+            var foundRequest = null;
+            for (var j = 0; j < identifyRequests.length; j++) (function(identifyRequest) {
+                if (identifyRequest[0].indexOf("IDENTIFY " + challenge_string) !== -1) {
+                    foundRequest = identifyRequest;
+                }
+            })(identifyRequests[j]);
+
+            if(!foundRequest)
+                throw new Error("Could not find IDENTITY request: " + challenge_string);
+
+            var sendSocket = foundRequest[1];
+            sendSocket.send(commandString);
+            console.log("SOCKET OUT (" + sendSocket.url + "): " + commandString);
+
+            return;
+        }
+            //throw new Error("Could not find original IDENTIFY request socket: " + challengeString);
 
         getPGPDB(function(db, PGPDB) {
             var pgp_id_options_html = '';
-            var id_signature = null;
+            //var id_signature = null;
             var password_style = 'display: none';
             var password_required = '';
             var auto_identify_checked_attr = '';
@@ -486,12 +529,16 @@
                 pgpIDCount++;
 
                 if(privateKeyData.default === '1') {
-                    if(!pgpKeyID)
-                        pgpKeyID = privateKeyData.id_private;
+                    if(!selectedPGPKeyID)
+                        selectedPGPKeyID = privateKeyData.id_private;
                 }
-                if(privateKeyData.id_private === pgpKeyID) {
-                    username = privateKeyData.user_name || privateKeyData.user_id;
-                    username = username.trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
+
+                var defaultUsername = privateKeyData.user_name || privateKeyData.user_id;
+                defaultUsername = defaultUsername.trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
+
+                if(privateKeyData.id_private === selectedPGPKeyID) {
+                    selectedPrivateKeyData = privateKeyData;
+                    username = defaultUsername;
                 }
 
                 pgp_id_options_html +=
@@ -505,11 +552,13 @@
                 }
 
 
+
+
             }, function() {
 
-                for(var i=0; i<identifyRequests.length; i++) {
-                    var responseString = identifyRequests[i][0];
-                    var socket = identifyRequests[i][1];
+                for(var i=0; i<identifyRequests.length; i++) (function(identifyRequest) {
+                    var responseString = identifyRequest[0];
+                    var socket = identifyRequest[1];
                     match = /^identify\s+(\S*)\s+(\S*)/im.exec(responseString);
                     var challenge_string = match[1];
                     var session_id = match[2];
@@ -520,24 +569,31 @@
                     if(pgpIDCount === 0)
                         status_content += "<br/><span class='error'>No PGP Private Keys found on the client. Please import or <a href='#KEYGEN' onclick='send(\"KEYGEN\");'>generate</a> a new PGP Key and re-<a href='#IDENTIFY' onclick='send(\"IDENTIFY\");'>identify</a>.</span>";
 
-                    self.routeResponseToClient("RLOG " + PATH_ID_REQUEST + " " + IDENTIFY_TEMPLATE
-                            .replace(/{\$status_content}/gi, status_content || '')
-                            .replace(/{\$id_signature}/gi, id_signature || '')
-                            .replace(/{\$socket_url}/gi, socket.url || '')
-                            .replace(/{\$socket_host}/gi, socket.url.split('/')[2] || '')
-                            .replace(/{\$pgp_id_options}/gi, pgp_id_options_html || '')
-                            .replace(/{\$challenge_string}/gi, challenge_string || '')
-                            .replace(/{\$session_id}/gi, session_id || '')
-                            .replace(/{\$password_style}/gi, password_style || '')
-                            .replace(/{\$password_required}/gi, password_required || '')
-                            .replace(/{\$auto_identify_checked_attr}/gi, auto_identify_checked_attr || '')
-                            //.replace(/{\$username}/gi, username.replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_') || '')
-                            .replace(/{\$[^}]+}/gi, '')
-                    );
-                }
+                    //signWithPrivateKey(identityString, selectedPrivateKeyData.block_private, commandData.passphrase,
+                    //    function(err, signedIdentityString) {
+
+                            self.routeResponseToClient("RLOG " + PATH_ID_REQUEST + " " + IDENTIFY_TEMPLATE
+                                    .replace(/{\$status_content}/gi, status_content || '')
+                                    //.replace(/{\$id_signature}/gi, signedIdentityString || '')
+                                    .replace(/{\$socket_url}/gi, socket.url || '')
+                                    .replace(/{\$socket_host}/gi, socket.url.split('/')[2] || '')
+                                    .replace(/{\$pgp_id_options}/gi, pgp_id_options_html || '')
+                                    .replace(/{\$challenge_string}/gi, challenge_string || '')
+                                    .replace(/{\$session_id}/gi, session_id || '')
+                                    .replace(/{\$password_style}/gi, password_style || '')
+                                    .replace(/{\$password_required}/gi, password_required || '')
+                                    .replace(/{\$auto_identify_checked_attr}/gi, auto_identify_checked_attr || '')
+                                    //.replace(/{\$username}/gi, username.replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_') || '')
+                                    .replace(/{\$[^}]+}/gi, '')
+                            );
+                        //});
+
+                })(identifyRequests[i]);
             });
         });
     };
+
+
 
     /**
      * @param responseString [challenge_string] [session_id]
@@ -547,6 +603,97 @@
         self.identifyCommand("IDENTIFY", e);
     };
 
+    /**
+     * @param commandData IDSIG [challenge-string] [session-id] [pgp-key-id] [username] [visibility]
+     */
+    self.idsigResponse = function (commandData, e) {
+        var split = commandData.split(/\s+/g);
+        if(split[0].toUpperCase() !== 'IDSIG')
+            throw new Error("Invalid IDSIG: " + commandData);
+
+        var challenge_string = split[1];
+        var session_id = split[2];
+        var pgp_key_id = split[3];
+        var username = split[4];
+        var visibility = split[5];
+        console.log(split);
+
+        var status_content =
+            "<label><strong>User ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='user'>" + username + "</span><br/></label>" +
+            "<label><strong>PGP Key ID:&nbsp;&nbsp;&nbsp;</strong> <span class='pgp-id'>" + pgp_key_id + "</span><br/></label>" +
+            "<label><strong>Session ID:&nbsp;&nbsp;&nbsp;</strong> <span class='user'>" + session_id + "</span><br/></label>" +
+            "<label><strong>Visibility:&nbsp;&nbsp;&nbsp;</strong> <span class='visibility'>" + visibility + "</span><br/></label>" +
+            "<div class='idsig' style='padding: 1em'>" + commandData + "</div>";
+
+        var foundRequest = null;
+        for (var j = 0; j < identifyRequests.length; j++) (function(identifyRequest) {
+            if (identifyRequest[0].indexOf("IDENTIFY " + challenge_string) !== -1) {
+                foundRequest = identifyRequest;
+                var socket = identifyRequest[1];
+
+                self.routeResponseToClient("RLOG " + PATH_ID_REQUEST + " " + IDENTIFY_TEMPLATE_SUCCESS
+                        .replace(/{\$status_content}/gi, status_content || '')
+                        .replace(/{\$socket_url}/gi, socket.url || '')
+                        .replace(/{\$socket_host}/gi, socket.url.split('/')[2] || '')
+                        .replace(/{\$challenge_string}/gi, challenge_string || '')
+                        .replace(/{\$session_id}/gi, session_id || '')
+                        .replace(/{\$[^}]+}/gi, '')
+                );
+
+                console.info("Removing IDENTIFY request: ", foundRequest);
+                identifyRequests.splice(j, 1);
+                j--;
+            }
+        })(identifyRequests[j]);
+
+        if(foundRequest) {
+        }
+
+
+        console.info("Adding IDSIG to database: ", commandString);
+    };
+
+    //
+    //
+    //
+    //function signWithPrivateKey(contentToSign, privateKeyBlock, passphrase, callback) {
+    //
+    //    var kbpgp = getKBPGP();
+    //
+    //    kbpgp.KeyManager.import_from_armored_pgp({
+    //        armored: privateKeyBlock
+    //    }, function(err, alice) {
+    //        var params = {
+    //            msg:        contentToSign,
+    //            sign_with:  alice
+    //        };
+    //        if (!err) {
+    //            if (alice.is_pgp_locked()) {
+    //                alice.unlock_pgp({
+    //                    passphrase: passphrase
+    //                }, function(err) {
+    //                    if (!err) {
+    //                        console.log("Loaded private key with passphrase");
+    //                        kbpgp.box (params, function(err, result_string, result_buffer) {
+    //                            callback(err, result_string);
+    //                        });
+    //
+    //                    } else {
+    //                        callback(err, null);
+    //                    }
+    //                });
+    //            } else {
+    //                console.log("Loaded private key w/o passphrase");
+    //                kbpgp.box (params, function(err, result_string, result_buffer) {
+    //                    callback(err, result_string);
+    //                });
+    //            }
+    //        } else {
+    //            callback(err, null);
+    //        }
+    //    });
+    //
+    //}
 
     var pgpConfig = {};
 

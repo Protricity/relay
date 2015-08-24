@@ -97,12 +97,19 @@ public class PGPCommands implements ISocketCommand {
         for(String verifiedContent : verifiedContentList) {
             int pos = verifiedContent.indexOf(challengePrefix);
             if(pos != -1) {
-                String[] split = verifiedContent.substring(pos).split(" ",6);
+                String IDSIG = verifiedContent.substring(pos);
+                String[] split = IDSIG.split(" ",6);
 //                userInfo.UserName = split[2];
+                String challengeString = split[1];
+                if(challengeString.compareTo(userInfo.ChallengeString) != 0)
+                    throw new PGPException("Challenge String Mismatch: " + challengeString);
+                String sessionID = split[2];
+                if(sessionID.compareTo(session.getId()) != 0)
+                    throw new PGPException("Session ID Mismatch: " + sessionID);
                 userInfo.UserName = split[3];
                 userInfo.Visibility = split[4];
-                userInfo.CacheTime = Integer.parseInt(split[5]);
-                sendText(session, "INFO User Identified: " + userInfo.UserName + " [" + userInfo.Visibility + "]");
+//                userInfo.CacheTime = Integer.parseInt(split[5]);
+                sendText(session, IDSIG); // "INFO User Identified: " + userInfo.UserName + " [" + userInfo.Visibility + "]");
             }
         }
             //            mIDKeys.put(session, key);
