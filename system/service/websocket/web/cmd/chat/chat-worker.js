@@ -19,12 +19,12 @@
         "</form>";
 
     var MESSAGE_TEMPLATE = '<div class="channel-log">' +
-        '<span class="user">{$user}</span>: ' +
+        '<span class="unidentified-session-uid">{$session_uid}</span>: ' +
         '<span class="message">{$content}</span>' +
         '</div>';
 
     var ACTION_TEMPLATE = '<div class="channel-log">' +
-        '<span class="user">{$user}</span>' +
+        '<span class="unidentified-session-uid">{$session_uid}</span>' +
         ' has <span class="action">{$action}</span>' +
         ' <a href="#JOIN {$channel}" class="path">{$channel}</a>' +
         '</div>';
@@ -38,19 +38,19 @@
         var args = commandString.split(/\s+/, 2);
         var channelPath = fixChannelPath(args[1]);
         checkChannel(channelPath);
-        sendWithFastestSocket(commandString, channelPath);
+        self.sendWithFastestSocket(commandString, channelPath);
     };
 
     self.msgResponse =
     self.messageResponse = function(commandResponse) {
         var match = /^(msg|message)\s+([^\s]+)\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandResponse);
         var channelPath = fixChannelPath(match[2]);
-        var user = match[3];
+        var session_uid = match[3];
         var content = fixPGPMessage(match[4]);
         checkChannel(channelPath);
-        routeResponseToClient('LOG ' + PATH_PREFIX + channelPath + ' ' + MESSAGE_TEMPLATE
+        self.routeResponseToClient('LOG ' + PATH_PREFIX + channelPath + ' ' + MESSAGE_TEMPLATE
             .replace(/{\$channel}/gi, channelPath)
-            .replace(/{\$user}/gi, user)
+            .replace(/{\$session_uid}/gi, session_uid)
             .replace(/{\$content}/gi, content)
         );
     };
@@ -58,24 +58,24 @@
     self.joinResponse = function(commandResponse) {
         var args = commandResponse.split(/\s+/, 3);
         var channelPath = fixChannelPath(args[1]);
-        var user = args[2];
+        var session_uid = args[2];
         checkChannel(channelPath);
-        routeResponseToClient('LOG ' + PATH_PREFIX + channelPath +  ' ' + ACTION_TEMPLATE
+        self.routeResponseToClient('LOG ' + PATH_PREFIX + channelPath +  ' ' + ACTION_TEMPLATE
             .replace(/{\$action}/gi, 'joined')
             .replace(/{\$channel}/gi, channelPath)
-            .replace(/{\$user}/gi, user)
+            .replace(/{\$session_uid}/gi, session_uid)
         );
     };
 
     self.leaveResponse = function(commandResponse) {
         var args = commandResponse.split(/\s+/, 2);
         var channelPath = fixChannelPath(args[1]);
-        var user = args[2];
+        var session_uid = args[2];
         checkChannel(channelPath);
-        routeResponseToClient('LOG ' + PATH_PREFIX + channelPath +  ' ' + ACTION_TEMPLATE
+        self.routeResponseToClient('LOG ' + PATH_PREFIX + channelPath +  ' ' + ACTION_TEMPLATE
             .replace(/{\$action}/gi, 'left')
             .replace(/{\$channel}/gi, channelPath)
-            .replace(/{\$user}/gi, user)
+            .replace(/{\$session_uid}/gi, session_uid)
         );
     };
 

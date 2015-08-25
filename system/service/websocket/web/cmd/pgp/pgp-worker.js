@@ -161,8 +161,7 @@
                     "Auto-Identify" +
                 "</label>" +
 
-                "<input type='hidden' name='session_id' value='{$session_id}'/>" +
-                "<input type='hidden' name='challenge_string' value='{$challenge_string}'/>" +
+                "<input type='hidden' name='session_uid' value='{$session_uid}'/>" +
             "</div>" +
 
         "</form>";
@@ -174,16 +173,15 @@
         "<form name='pgp-identify-success-form' action='#' method='post'>" +
         "<div class='status-box'>{$status_content}</div>" +
 
-        "<input type='submit' name='submit-close' value='Close'/>" +
+            "<input type='submit' name='submit-close' value='Close'/>" +
 
-        "<hr/>Options for next time:<br/>" +
-        "<label>" +
-        "<input type='checkbox' name='auto_identify' value='1' {$auto_identify_checked_attr}/>" +
-        "Auto-Identify to {$socket_host}" +
-        "</label>" +
+            "<hr/>Options for next time:<br/>" +
+            "<label>" +
+                "<input type='checkbox' name='auto_identify' value='1' {$auto_identify_checked_attr}/>" +
+                "Auto-Identify to {$socket_host}" +
+            "</label>" +
 
-        "<input type='hidden' name='session_id' value='{$session_id}'/>" +
-        "<input type='hidden' name='challenge_string' value='{$challenge_string}'/>" +
+            "<input type='hidden' name='session_uid' value='{$session_uid}'/>" +
         "</div>" +
 
         "</form>";
@@ -452,7 +450,7 @@
 
     var identifyRequests = [];
     /**
-     * @param commandData IDENTIFY --challenge [challenge-string] --id [pgp-key-id] --username [username] --visibility [visibility]
+     * @param commandData IDENTIFY --session [session-uid] --id [pgp-key-id] --username [username] --visibility [visibility]
      */
     self.identifyCommand = function (commandData, e) {
         if(typeof commandData === 'string')
@@ -469,15 +467,15 @@
             throw new Error("Could not match identify command");
         var identifyContent = match[1] || '';
 
-        var challenge_string = null; // match[1];
+        var session_uid = null; // match[1];
         var selectedPGPKeyID = null; // match[2];
         var selectedPrivateKeyData = null; // null;
         var username = null; // match[3];
         var visibility = null; // match[4];
         //var cacheTime = match[5];
 
-        identifyContent = identifyContent.replace(/--challenge (\S+)/i, function(match, contents, offset, s) {
-            challenge_string = contents; return '';
+        identifyContent = identifyContent.replace(/--session (\S+)/i, function(match, contents, offset, s) {
+            session_uid = contents; return '';
         });
         identifyContent = identifyContent.replace(/--id (\S+)/i, function(match, contents, offset, s) {
             selectedPGPKeyID = contents; return '';
@@ -492,17 +490,17 @@
         match = /IDSIG (\S+) /i.exec(identifyContent);
         if(match && match[1]) {
             //throw new Error("Could not find challenge string");
-            challenge_string = match[1];
+            session_uid = match[1];
 
             var foundRequest = null;
             for (var j = 0; j < identifyRequests.length; j++) (function(identifyRequest) {
-                if (identifyRequest[0].indexOf("IDENTIFY " + challenge_string) !== -1) {
+                if (identifyRequest[0].indexOf("IDENTIFY " + session_uid) !== -1) {
                     foundRequest = identifyRequest;
                 }
             })(identifyRequests[j]);
 
             if(!foundRequest)
-                throw new Error("Could not find IDENTITY request: " + challenge_string);
+                throw new Error("Could not find IDENTITY request: " + session_uid);
 
             var sendSocket = foundRequest[1];
             sendSocket.send(commandString);
@@ -559,10 +557,10 @@
                 for(var i=0; i<identifyRequests.length; i++) (function(identifyRequest) {
                     var responseString = identifyRequest[0];
                     var socket = identifyRequest[1];
-                    match = /^identify\s+(\S*)\s+(\S*)/im.exec(responseString);
-                    var challenge_string = match[1];
-                    var session_id = match[2];
-                    //console.log(socket, challenge_string, session_id);
+                    match = /^identify\s+(\S*)/im.exec(responseString);
+                    if(!match)
+                        throw new Error("Invalid IDENTIFY: " + responseString);
+                    var session_uid = match[1];
 
                     var status_content = "<span class='info'>IDENTIFY request received from</br>[" + socket.url + "]</span>";
 
@@ -578,8 +576,7 @@
                                     .replace(/{\$socket_url}/gi, socket.url || '')
                                     .replace(/{\$socket_host}/gi, socket.url.split('/')[2] || '')
                                     .replace(/{\$pgp_id_options}/gi, pgp_id_options_html || '')
-                                    .replace(/{\$challenge_string}/gi, challenge_string || '')
-                                    .replace(/{\$session_id}/gi, session_id || '')
+                                    .replace(/{\$session_uid}/gi, session_uid || '')
                                     .replace(/{\$password_style}/gi, password_style || '')
                                     .replace(/{\$password_required}/gi, password_required || '')
                                     .replace(/{\$auto_identify_checked_attr}/gi, auto_identify_checked_attr || '')
@@ -611,46 +608,45 @@
         if(split[0].toUpperCase() !== 'IDSIG')
             throw new Error("Invalid IDSIG: " + commandData);
 
-        var challenge_string = split[1];
-        var session_id = split[2];
-        var pgp_key_id = split[3];
-        var username = split[4];
-        var visibility = split[5];
-        console.log(split);
+        var session_uid = split[1];
+        var pgp_key_id = split[2];
+        var username = split[3];
+        var visibility = split[4];
 
         var status_content =
             "<label><strong>User ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='user'>" + username + "</span><br/></label>" +
             "<label><strong>PGP Key ID:&nbsp;&nbsp;&nbsp;</strong> <span class='pgp-id'>" + pgp_key_id + "</span><br/></label>" +
-            "<label><strong>Session ID:&nbsp;&nbsp;&nbsp;</strong> <span class='user'>" + session_id + "</span><br/></label>" +
+            "<label><strong>Session ID:&nbsp;&nbsp;&nbsp;</strong> <span class='session-uid'>" + session_uid + "</span><br/></label>" +
             "<label><strong>Visibility:&nbsp;&nbsp;&nbsp;</strong> <span class='visibility'>" + visibility + "</span><br/></label>" +
             "<div class='idsig' style='padding: 1em'>" + commandData + "</div>";
 
-        var foundRequest = null;
         for (var j = 0; j < identifyRequests.length; j++) (function(identifyRequest) {
-            if (identifyRequest[0].indexOf("IDENTIFY " + challenge_string) !== -1) {
-                foundRequest = identifyRequest;
+            if (identifyRequest[0].indexOf("IDENTIFY " + session_uid) !== -1) {
                 var socket = identifyRequest[1];
 
                 self.routeResponseToClient("RLOG " + PATH_ID_REQUEST + " " + IDENTIFY_TEMPLATE_SUCCESS
                         .replace(/{\$status_content}/gi, status_content || '')
                         .replace(/{\$socket_url}/gi, socket.url || '')
                         .replace(/{\$socket_host}/gi, socket.url.split('/')[2] || '')
-                        .replace(/{\$challenge_string}/gi, challenge_string || '')
-                        .replace(/{\$session_id}/gi, session_id || '')
+                        .replace(/{\#session_uid}/gi, session_uid || '')
                         .replace(/{\$[^}]+}/gi, '')
                 );
 
-                console.info("Removing IDENTIFY request: ", foundRequest);
+                console.info("Removing IDENTIFY request: ", identifyRequest);
                 identifyRequests.splice(j, 1);
                 j--;
             }
         })(identifyRequests[j]);
 
-        if(foundRequest) {
-        }
+
+        getPGPDB(function(db, PGPDB) {
+           PGPDB.addIDSIGToDatabase(commandData, function(err, sessionData) {
+                if(err)
+                    throw new Error(err);
 
 
-        console.info("Adding IDSIG to database: ", commandString);
+           }) ;
+        });
     };
 
     //

@@ -4,9 +4,7 @@
 (function() {
     // Database
 
-    var DB_NAME = 'pgp';
-    var DB_TABLE_PUBLIC_KEYS = 'public-keys';
-    var DB_TABLE_PRIVATE_KEYS = 'private-keys';
+
     var openRequest = null;
     var onDBCallbacks = [];
 
@@ -31,15 +29,22 @@
 
                 if(!upgradeDB.objectStoreNames.contains(DB_TABLE_PRIVATE_KEYS)) {
                     console.log('Upgrading Table: ', DB_TABLE_PRIVATE_KEYS);
-                    var postStore = upgradeDB.createObjectStore(DB_TABLE_PRIVATE_KEYS, { keyPath: "id_private" });
-                    postStore.createIndex("id_public", "id_public", { unique: true });
-                    postStore.createIndex("default", "default", { unique: false });
+                    var postDBStore = upgradeDB.createObjectStore(DB_TABLE_PRIVATE_KEYS, { keyPath: "id_private" });
+                    postDBStore.createIndex("id_public", "id_public", { unique: true });
+                    postDBStore.createIndex("default", "default", { unique: false });
                 }
 
                 if(!upgradeDB.objectStoreNames.contains(DB_TABLE_PUBLIC_KEYS)) {
                     console.log('Upgrading Table: ', DB_TABLE_PUBLIC_KEYS);
-                    var publicKeyStore = upgradeDB.createObjectStore(DB_TABLE_PUBLIC_KEYS, { keyPath: "id_public" });
-                    publicKeyStore.createIndex("user_id", "user_id", { unique: false });
+                    var publicKeyDBStore = upgradeDB.createObjectStore(DB_TABLE_PUBLIC_KEYS, { keyPath: "id_public" });
+                    publicKeyDBStore.createIndex("user_id", "user_id", { unique: false });
+                }
+
+                if(!upgradeDB.objectStoreNames.contains(DB_TABLE_SESSIONS)) {
+                    console.log('Upgrading Table: ', DB_TABLE_SESSIONS);
+                    var sessionDBStore = upgradeDB.createObjectStore(DB_TABLE_SESSIONS, { keyPath: "session_uid" });
+                    sessionDBStore.createIndex("pgp_id_public", "pgp_id_public", { unique: false });
+                    //sessionDBStore.createIndex("user_id", "user_id", { unique: false });
                 }
 
             };
@@ -54,9 +59,10 @@
         onDBCallbacks.push(dbReadyCallback);
     };
 
-    self.PGPDB.DB_NAME = DB_NAME;
-    self.PGPDB.DB_TABLE_PUBLIC_KEYS = DB_TABLE_PUBLIC_KEYS;
-    self.PGPDB.DB_TABLE_PRIVATE_KEYS = DB_TABLE_PRIVATE_KEYS;
+    var DB_NAME =               self.PGPDB.DB_NAME                  = 'pgp';
+    var DB_TABLE_PUBLIC_KEYS =  self.PGPDB.DB_TABLE_PUBLIC_KEYS     = 'public-keys';
+    var DB_TABLE_PRIVATE_KEYS = self.PGPDB.DB_TABLE_PRIVATE_KEYS    = 'private-keys';
+    var DB_TABLE_SESSIONS =     self.PGPDB.DB_TABLE_SESSIONS        = 'sessions';
 
     // Database Methods
 
@@ -391,18 +397,61 @@
 
     };
 
-    function UserProfile(user_profile_content) {
-        this.verify = function() {
 
-        };
-        this.decryptConfig = function(passphrase, callback) {
+    self.PGPDB.addIDSIGToDatabase = function(idsigString, callback) {
 
-        };
-    }
+        var split = idsigString.split(/\s+/g);
+        if(split[0].toUpperCase() !== 'IDSIG')
+            throw new Error("Invalid IDSIG: " + idsigString);
 
-    self.PGPDB.getUserProfile = function(keyID, callback) {
-        //user_profile_signed
+        var session_uid = split[1];
+        var pgp_key_id = split[2];
+        var username = split[3];
+        var visibility = split[4];
+
+
+        self.PGPDB(function (db, PGPDB) {
+
+
+            var transaction = db.transaction([DB_TABLE_SESSIONS], "readwrite");
+            var sessionDBStore = transaction.objectStore(DB_TABLE_SESSIONS);
+
+            var sessionInsertData = {
+                'session_uid': session_uid,
+                'pgp_id_public': pgp_key_id.substr(pgp_key_id.length - 16),
+                'username': username,
+                'visibility': visibility,
+                'idsig': idsigString
+            };
+
+            var insertRequest = sessionDBStore.add(sessionInsertData);
+            insertRequest.onsuccess = function(event) {
+                console.log("Added session IDSIG to database: " + idsigString, sessionInsertData);
+                callback(null, sessionInsertData);
+            };
+            insertRequest.onerror = function(event) {
+                var err = event.currentTarget.error;
+                var status_content = "Error adding IDSIG to database: " + err.message;
+                console.error(status_content, sessionInsertData, arguments);
+                callback(err, null);
+            };
+
+
+        });
     };
+
+    //function UserProfile(user_profile_content) {
+    //    this.verify = function() {
+    //
+    //    };
+    //    this.decryptConfig = function(passphrase, callback) {
+    //
+    //    };
+    //}
+    //
+    //self.PGPDB.getUserProfile = function(keyID, callback) {
+    //    //user_profile_signed
+    //};
 
     function getKBPGP() {
         if(typeof self.kbpgp !== 'undefined')

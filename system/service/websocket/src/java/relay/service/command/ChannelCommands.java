@@ -8,7 +8,6 @@ package relay.service.command;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import javax.websocket.Session;
 
 /**
@@ -22,9 +21,8 @@ public class ChannelCommands implements ISocketCommand {
 
 
     public String getSessionChatID(Session session) {
-        return session.getId();
-//        PGPCommands.PGPUserInfo userInfo = PGPCommands.getStatic().getSessionPGPInfo(session);
-        return userInfo.getUser/Name(session);
+        PGPCommands.PGPUserInfo userInfo = PGPCommands.getStatic().getSessionPGPInfo(session);
+        return userInfo.SessionUID; // userInfo.getUserName(session);
     }
 
     @Override

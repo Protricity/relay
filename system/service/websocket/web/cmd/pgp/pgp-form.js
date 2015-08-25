@@ -157,8 +157,7 @@
 
         var username = usernameElm.value;
         var visibility = visibilityElm.value;
-        var challenge_string = formElm.querySelector('[name=challenge_string]').value;
-        var session_id = formElm.querySelector('[name=session_id]').value;
+        var session_uid = formElm.querySelector('[name=session_uid]').value;
         var selectedPGPKeyID = formElm.querySelector('[name=pgp_id]').value;
         var autoIdentify = formElm.querySelector('[name=auto_identify]').checked;
 
@@ -170,8 +169,7 @@
         }
 
         var identityString = "IDSIG" +
-            " " + challenge_string +
-            " " + session_id +
+            " " + session_uid +
             " " + selectedPGPKeyID +
             " " + username +
             " " + visibility;
@@ -265,7 +263,7 @@
 
         var pgp_id = formElm.querySelector('[name=pgp_id]').value;
         var username = formElm.querySelector('[name=username]').value;
-        var challenge_string = formElm.querySelector('[name=challenge_string]').value;
+        //var challenge_string = formElm.querySelector('[name=challenge_string]').value;
         var visibility = formElm.querySelector('[name=visibility]').value;
         var idSigString = idSignatureElm.value;
         var submitSectionElm = formElm.getElementsByClassName('submit-section')[0];

@@ -35,9 +35,9 @@ public class PGPCommands implements ISocketCommand {
     
     public class PGPUserInfo {
         public PGPUserInfo(String challengeString) {
-            ChallengeString = challengeString;
+            SessionUID = challengeString;
         }
-        public String ChallengeString;
+        public String SessionUID;
         public String PublicKeyID = null;
         public String UserName = null;
         public String Visibility = "";
@@ -46,10 +46,9 @@ public class PGPCommands implements ISocketCommand {
         public String getUserName(Session session) {
             if(UserName != null)
                 return UserName;
-            return session.getId(); // TODO move to chat or make generic
+            return getSessionPGPInfo(session).SessionUID; // TODO move to chat or make generic
         }
-//        public PGPPublicKey PublicKey = null;
-//        public String IdentifyContent = null;
+        
     }
     
     private final HashMap<Session, PGPUserInfo> mUserInfo = new HashMap<>();
@@ -64,9 +63,11 @@ public class PGPCommands implements ISocketCommand {
     
     @Override
     public void onSocketConnection(Session newSession) throws Exception {
-        String challengeString = java.util.UUID.randomUUID().toString();
-        mUserInfo.put(newSession, new PGPUserInfo(challengeString));
-        newSession.getBasicRemote().sendText("IDENTIFY " + challengeString + " " + newSession.getId());
+        String sessionUID = newSession.getId().length() == 32
+            ? getSessionPGPInfo(newSession).SessionUID
+            : java.util.UUID.randomUUID().toString();
+        mUserInfo.put(newSession, new PGPUserInfo(sessionUID));
+        newSession.getBasicRemote().sendText("IDENTIFY " + sessionUID);
 
     }
 
@@ -93,21 +94,21 @@ public class PGPCommands implements ISocketCommand {
         String publicKeyID = publicKeyFingerprint.substring(publicKeyFingerprint.length() - 16);
         ArrayList<String> verifiedContentList = verifySignedContent(session, data, publicKey);
         
-        String challengePrefix = "IDSIG " + userInfo.ChallengeString;
+        String challengePrefix = "IDSIG " + userInfo.SessionUID;
         for(String verifiedContent : verifiedContentList) {
             int pos = verifiedContent.indexOf(challengePrefix);
             if(pos != -1) {
                 String IDSIG = verifiedContent.substring(pos);
                 String[] split = IDSIG.split(" ",6);
 //                userInfo.UserName = split[2];
-                String challengeString = split[1];
-                if(challengeString.compareTo(userInfo.ChallengeString) != 0)
-                    throw new PGPException("Challenge String Mismatch: " + challengeString);
-                String sessionID = split[2];
-                if(sessionID.compareTo(session.getId()) != 0)
-                    throw new PGPException("Session ID Mismatch: " + sessionID);
-                userInfo.UserName = split[3];
-                userInfo.Visibility = split[4];
+                String sessionUID = split[1];
+                if(sessionUID.compareTo(userInfo.SessionUID) != 0)
+                    throw new PGPException("Session UID String Mismatch: " + sessionUID);
+//                String sessionID = split[2];
+//                if(sessionID.compareTo(session.getId()) != 0)
+//                    throw new PGPException("Session ID Mismatch: " + sessionID);
+                userInfo.UserName = split[2];
+                userInfo.Visibility = split[3];
 //                userInfo.CacheTime = Integer.parseInt(split[5]);
                 sendText(session, IDSIG); // "INFO User Identified: " + userInfo.UserName + " [" + userInfo.Visibility + "]");
             }
@@ -229,7 +230,7 @@ public class PGPCommands implements ISocketCommand {
     
     private void sendText(Session session, String text) {
         try {
-            System.out.println(session.getId() + " SENDING " + text); 
+            System.out.println(getSessionPGPInfo(session).SessionUID + " SENDING " + text); 
             session.getBasicRemote().sendText(text);
         } catch (IOException ex) {
             ex.printStackTrace();
