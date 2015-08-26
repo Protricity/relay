@@ -151,12 +151,15 @@
         if(typeof passphraseElm.parentNode._original_display === 'undefined')
             passphraseElm.parentNode._original_display = passphraseElm.parentNode.style.display;
         var idSignatureElm = formElm.querySelector('[name=id_signature]');
-        var visibilityElm = formElm.querySelector('[name=visibility]');
         var submitSectionElm = formElm.getElementsByClassName('submit-section')[0];
         var usernameElm = formElm.querySelector('[name=username');
+        var visibilityElm = formElm.querySelector('[name=visibility]');
 
         var username = usernameElm.value;
-        var visibility = visibilityElm.value;
+        var visibility = '';
+        for(var vi=0; vi<visibilityElm.length; vi++)
+            if(visibilityElm[vi].selected)
+                visibility = (visibilityElm[vi].value[0] !== '_' ? visibility : '') + visibilityElm[vi].value.replace('_', '');
         var session_uid = formElm.querySelector('[name=session_uid]').value;
         var selectedPGPKeyID = formElm.querySelector('[name=pgp_id]').value;
         var autoIdentify = formElm.querySelector('[name=auto_identify]').checked;
@@ -264,7 +267,11 @@
         var pgp_id = formElm.querySelector('[name=pgp_id]').value;
         var username = formElm.querySelector('[name=username]').value;
         //var challenge_string = formElm.querySelector('[name=challenge_string]').value;
-        var visibility = formElm.querySelector('[name=visibility]').value;
+        var visibilityElm = formElm.querySelector('[name=visibility]');
+        var visibility = '';
+        for(var vi=0; vi<visibilityElm.length; vi++)
+            if(visibilityElm[vi].selected)
+                visibility = (visibilityElm[vi].value[0] !== '_' ? visibility : '') + visibilityElm[vi].value.replace('_', '');
         var idSigString = idSignatureElm.value;
         var submitSectionElm = formElm.getElementsByClassName('submit-section')[0];
 

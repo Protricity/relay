@@ -37,7 +37,7 @@
     self.joinCommand =
     self.leaveCommand =
     self.messageCommand =
-    self.msgCommand =
+    self.chatCommand =
     function(commandString, e) {
         importScripts('chat/chat-worker.js');
         self.executeWorkerCommand(commandString, e);

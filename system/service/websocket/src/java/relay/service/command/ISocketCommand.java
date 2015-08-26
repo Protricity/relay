@@ -28,5 +28,6 @@ public interface ISocketCommand {
      * @throws Exception 
      */
     void onSocketConnection(Session newSession) throws Exception;
+    
 }
 

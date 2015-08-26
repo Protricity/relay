@@ -119,13 +119,20 @@
             //"<br/><br/></label>" +
 
             "<label class='label-visibility'>How should other users be allowed to interact<br/>with your client while connected?<br/>" +
-                "<select name='visibility' style='max-width:20em'>" +
-                    "<option value=''>No visibility (won't accept requests from any users)</option>" +
-                    "<option value='M'>[MESSAGE] Accept private messages from other users (no one can see your feed)</option>" +
-                    "<option selected='selected' value='MG'>[MESSAGE, GET] Accept Content requests (like feed posts) and private messages</option>" +
-                    "<option value='MGP'>[MESSAGE, GET, POST] Content Hosting with form submission (allow others to post to your feed)</option>" +
-                    "<option value='MGPD'>[MESSAGE, GET, POST, DELETE] Content Hosting with delete requests (allow others to help manage your feed)</option>" +
-                    "<option value=''>Custom visibility...</option>" +
+                "<select multiple='multiple' name='visibility' style='max-width:20em' size='6'  onselect='focusPGPIdentifyForm(event)' oninput='focusPGPIdentifyForm(event)'>" +
+                    "<optgroup label='Visibility Options'>" +
+                        "<option selected='selected' value='M'>[MESSAGE] Accept private messages from other users</option>" +
+                        "<option selected='selected' value='G'>[GET] Accept Content requests (like feed posts)</option>" +
+                        "<option value='P'>[POST] Content Hosting with form submission (allow others to post to your feed)</option>" +
+                        "<option value='D'>[DELETE] Content Hosting with delete requests (allow others to help manage your feed)</option>" +
+                    "</optgroup>" +
+                    "<optgroup label='Visibility Combos'>" +
+                        "<option value='_'>[] No Visibility (No one can tell you're on a server until you join a channel)</option>" +
+                        "<option value='_M'>[M] Accept private messages from other users (no one can see your feed)</option>" +
+                        "<option value='_MG'>[MG] Accept Content requests (like feed posts) and private messages</option>" +
+                        "<option value='_MGP'>[MGP] Content Hosting with form submission (allow others to post to your feed)</option>" +
+                        "<option value='_MGPD'>[MGPD] Content Hosting with delete requests (allow others to help manage your feed)</option>" +
+                    "</optgroup>" +
                 "</select>" +
             "<br/><br/></label>" +
 

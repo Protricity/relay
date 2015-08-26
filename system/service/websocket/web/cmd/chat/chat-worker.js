@@ -3,7 +3,8 @@
  */
 (function() {
 
-    var PATH_PREFIX = 'chat:';
+    var PATH_PREFIX_CHAT = 'chat:';
+    var PATH_PREFIX_MESSAGE = 'message:';
 
     var CLASS_CHANNEL_CONTENT = 'channel-content';
 
@@ -18,7 +19,7 @@
         "<input type='hidden' value='{$channel}' name='channel' />" +
         "</form>";
 
-    var MESSAGE_TEMPLATE = '<div class="channel-log">' +
+    var CHAT_TEMPLATE = '<div class="channel-log">' +
         '<span class="unidentified-session-uid">{$session_uid}</span>: ' +
         '<span class="message">{$content}</span>' +
         '</div>';
@@ -31,7 +32,6 @@
 
     var activeChannels = [];
 
-    self.msgCommand =
     self.messageCommand =
     self.joinCommand =
     self.leaveCommand = function(commandString) {
@@ -41,17 +41,19 @@
         self.sendWithFastestSocket(commandString, channelPath);
     };
 
-    self.msgResponse =
-    self.messageResponse = function(commandResponse) {
-        var match = /^(msg|message)\s+([^\s]+)\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandResponse);
+
+    self.chatCommand = self.sendWithFastestSocket;
+
+    self.chatResponse = function(commandResponse) {
+        var match = /^(chat)\s+([^\s]+)\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandResponse);
         var channelPath = fixChannelPath(match[2]);
         var session_uid = match[3];
         var content = fixPGPMessage(match[4]);
         checkChannel(channelPath);
-        self.routeResponseToClient('LOG ' + PATH_PREFIX + channelPath + ' ' + MESSAGE_TEMPLATE
-            .replace(/{\$channel}/gi, channelPath)
-            .replace(/{\$session_uid}/gi, session_uid)
-            .replace(/{\$content}/gi, content)
+        self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath + ' ' + CHAT_TEMPLATE
+                .replace(/{\$channel}/gi, channelPath)
+                .replace(/{\$session_uid}/gi, session_uid)
+                .replace(/{\$content}/gi, content)
         );
     };
 
@@ -60,7 +62,7 @@
         var channelPath = fixChannelPath(args[1]);
         var session_uid = args[2];
         checkChannel(channelPath);
-        self.routeResponseToClient('LOG ' + PATH_PREFIX + channelPath +  ' ' + ACTION_TEMPLATE
+        self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath +  ' ' + ACTION_TEMPLATE
             .replace(/{\$action}/gi, 'joined')
             .replace(/{\$channel}/gi, channelPath)
             .replace(/{\$session_uid}/gi, session_uid)
@@ -72,10 +74,20 @@
         var channelPath = fixChannelPath(args[1]);
         var session_uid = args[2];
         checkChannel(channelPath);
-        self.routeResponseToClient('LOG ' + PATH_PREFIX + channelPath +  ' ' + ACTION_TEMPLATE
+        self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath +  ' ' + ACTION_TEMPLATE
             .replace(/{\$action}/gi, 'left')
             .replace(/{\$channel}/gi, channelPath)
             .replace(/{\$session_uid}/gi, session_uid)
+        );
+    };
+
+    self.messageResponse = function(commandResponse) {
+        var match = /^(msg|message)\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandResponse);
+        var session_uid = match[2];
+        var content = fixPGPMessage(match[3]);
+        self.routeResponseToClient('LOG ' + PATH_PREFIX_MESSAGE + session_uid + ' ' + MESSAGE_TEMPLATE
+                .replace(/{\$session_uid}/gi, session_uid)
+                .replace(/{\$content}/gi, content)
         );
     };
 
@@ -120,7 +132,7 @@
             throw new Error("Invalid Channel: " + channelPath);
         
         if(activeChannels.indexOf(channelPath) === -1) {
-            routeResponseToClient("LOG " + PATH_PREFIX + channelPath + ' ' + CHANNEL_TEMPLATE
+            routeResponseToClient("LOG " + PATH_PREFIX_CHAT + channelPath + ' ' + CHANNEL_TEMPLATE
                 .replace(/{\$channel}/gi, channelPath));
             activeChannels.push(channelPath);
             console.info("New active channel: " + channelPath);

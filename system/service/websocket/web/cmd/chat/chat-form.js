@@ -3,7 +3,7 @@
  */
 (function() {
 
-    var unidentifiedSessionUserElms = document.getElementsByClassName('unidentified-session-user');
+    var unidentifiedSessionUserElms = document.getElementsByClassName('unidentified-session-uid');
     document.addEventListener('log', function(e) {
         var htmlContainer = e.target;
         // If this is a chat container, scroll to the bottom
@@ -17,15 +17,25 @@
                 var sessionDBStore = transaction.objectStore(PGPDB.DB_TABLE_SESSIONS);
 
                 for(var i=0; i<unidentifiedSessionUserElms.length; i++) (function(unidentifiedSessionUserElm) {
-                    unidentifiedSessionUserElm.classList.remove('unidentified-session-user');
+                    unidentifiedSessionUserElm.classList.remove('unidentified-session-uid');
+                    unidentifiedSessionUserElm.classList.add('unknown-session-uid');
+                    var session_uid = unidentifiedSessionUserElm.innerHTML;
 
-                    var req = sessionDBStore.get(id_private);
+                    var req = sessionDBStore.get(session_uid);
                     req.onsuccess = function (evt) {
-                        var privateKeyData = evt.target.result;
-                        if(!privateKeyData)
-                            callback("Private Key Not Found: " + id_private, null);
-                        else
-                            callback(null, privateKeyData);
+                        var sessionData = evt.target.result;
+                        if(!sessionData)
+                            throw new Error("Session IDSIG not found: " + session_uid);
+
+                        unidentifiedSessionUserElm.classList.remove('unknown-session-uid');
+                        unidentifiedSessionUserElm.classList.add('found-session-uid');
+
+                        var newUsernameElm = document.createElement('span');
+                        newUsernameElm.classList.add('session-username');
+                        newUsernameElm.innerHTML = sessionData.username;
+                        unidentifiedSessionUserElm.parentNode.insertBefore(newUsernameElm, unidentifiedSessionUserElm);
+
+//                        search for others since it was succesful?
                     };
                     req.onerror = function(err) {
                         callback(err, null);
@@ -54,7 +64,7 @@
 
         // if hasn't identified yet, ask to identify now
 
-        var commandString = "MESSAGE " + channelElm[0].value + " " + messageElm[0].value;
+        var commandString = "CHAT " + channelElm[0].value + " " + messageElm[0].value;
         if(messageElm[0].value[0] === '/') {
             commandString = messageElm[0].value.substr(1);
             var commandEvent = new CustomEvent('command', {

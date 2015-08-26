@@ -110,7 +110,10 @@ public class PGPCommands implements ISocketCommand {
                 userInfo.UserName = split[2];
                 userInfo.Visibility = split[3];
 //                userInfo.CacheTime = Integer.parseInt(split[5]);
-                sendText(session, IDSIG); // "INFO User Identified: " + userInfo.UserName + " [" + userInfo.Visibility + "]");
+//                sendText(session, IDSIG); // "INFO User Identified: " + userInfo.UserName + " [" + userInfo.Visibility + "]");
+            
+                ChannelCommands CC = ChannelCommands.getStatic();
+                CC.sendIDSIG(session, IDSIG);
             }
         }
             //            mIDKeys.put(session, key);
