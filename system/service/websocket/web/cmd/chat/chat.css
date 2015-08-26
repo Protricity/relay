@@ -12,6 +12,10 @@
     display: none;
 }
 
+.found-session-uid {
+    display: none;
+}
+
 form[name=chat-form] {
     max-width: 37em;
     font-family: monospace;

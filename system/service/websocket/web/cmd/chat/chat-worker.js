@@ -57,6 +57,19 @@
         );
     };
 
+    self.userlistResponse = function(commandResponse) {
+        var match = /^(userlist)\s+([^\s]+)\n([\s\S]+)$/im.exec(commandResponse);
+        var channelPath = fixChannelPath(match[2]);
+        var userList = match[3];
+        //checkChannel(channelPath);
+        //self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath + ' ' + CHAT_TEMPLATE
+        //        .replace(/{\$channel}/gi, channelPath)
+        //        .replace(/{\$session_uid}/gi, session_uid)
+        //        .replace(/{\$content}/gi, content)
+        //);
+        console.log([channelPath, userList]);
+    };
+
     self.joinResponse = function(commandResponse) {
         var args = commandResponse.split(/\s+/, 3);
         var channelPath = fixChannelPath(args[1]);

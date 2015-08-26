@@ -162,7 +162,7 @@
                 visibility = (visibilityElm[vi].value[0] !== '_' ? visibility : '') + visibilityElm[vi].value.replace('_', '');
         var session_uid = formElm.querySelector('[name=session_uid]').value;
         var selectedPGPKeyID = formElm.querySelector('[name=pgp_id]').value;
-        var autoIdentify = formElm.querySelector('[name=auto_identify]').checked;
+        var autoIdentify = formElm.querySelector('[name=auto_identify]').value;
 
         //var cache_time = formElm.querySelector('[name=cache_time]').value;
 
@@ -229,10 +229,10 @@
                             idSignatureElm.innerHTML += "\n" + privateKeyData.block_public;
                             submitSectionElm.style.display = 'block';
 
-                            if(autoIdentify) {
-                                console.info("Auto-submitting form: ", formElm);
-                                submitPGPIdentifyForm(e);
-                            }
+                            //if(autoIdentify) {
+                            //    console.info("Auto-submitting form: ", formElm);
+                            //    submitPGPIdentifyForm(e);
+                            //}
                         });
                 }
 

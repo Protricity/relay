@@ -164,8 +164,11 @@
                 "<input type='submit' name='submit-identify' value='Identify'/>" +
 
                 "<label>" +
-                    "<input type='checkbox' name='auto_identify' value='1' {$auto_identify_checked_attr}/>" +
-                    "Auto-Identify" +
+                    "<select name='auto_identify' style='width:16em;' oninput='focusPGPIdentifyForm(event)'>" +
+                        "<option value='ask'>Ask me every time</option>" +
+                        "<option value='auto-host'>Auto-Identify to {$socket_host} (passphrase may be required)</option>" +
+                        "<option value='auto-all'>Auto-Identify to all hosts (passphrase may be required)</option>" +
+                    "</select>" +
                 "</label>" +
 
                 "<input type='hidden' name='session_uid' value='{$session_uid}'/>" +
@@ -184,8 +187,11 @@
 
             "<hr/>Options for next time:<br/>" +
             "<label>" +
-                "<input type='checkbox' name='auto_identify' value='1' {$auto_identify_checked_attr}/>" +
-                "Auto-Identify to {$socket_host}" +
+                "<select name='auto_identify' style='width:16em;' oninput='focusPGPIdentifyForm(event)'>" +
+                    "<option value='ask'>Ask me every time</option>" +
+                    "<option value='auto-host'>Auto-Identify to {$socket_host} (passphrase may be required)</option>" +
+                    "<option value='auto-all'>Auto-Identify to all hosts (passphrase may be required)</option>" +
+                "</select>" +
             "</label>" +
 
             "<input type='hidden' name='session_uid' value='{$session_uid}'/>" +

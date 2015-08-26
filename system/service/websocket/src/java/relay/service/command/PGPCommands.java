@@ -34,14 +34,19 @@ import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProv
 public class PGPCommands implements ISocketCommand {
     
     public class PGPUserInfo {
-        public PGPUserInfo(String challengeString) {
-            SessionUID = challengeString;
+        public PGPUserInfo(String sessionUID) {
+            SessionUID = sessionUID;
+            UserName = "guest";
+            Visibility = "M";
+            IDSigFirstLine = "IDSIG " + sessionUID + " " + UserName + " " + Visibility;
         }
         public String SessionUID;
-        public String PublicKeyID = null;
-        public String UserName = null;
-        public String Visibility = "";
+        public String PublicKeyID;
+        public String UserName;
+        public String Visibility;
+        public String IDSigFirstLine;
         public int CacheTime = 0;
+        
         
         public String getUserName(Session session) {
             if(UserName != null)
@@ -99,7 +104,8 @@ public class PGPCommands implements ISocketCommand {
             int pos = verifiedContent.indexOf(challengePrefix);
             if(pos != -1) {
                 String IDSIG = verifiedContent.substring(pos);
-                String[] split = IDSIG.split(" ",6);
+                String IDSIGFirstLine = IDSIG.split("\n")[0];
+                String[] split = IDSIGFirstLine.split(" ",6);
 //                userInfo.UserName = split[2];
                 String sessionUID = split[1];
                 if(sessionUID.compareTo(userInfo.SessionUID) != 0)
@@ -109,6 +115,7 @@ public class PGPCommands implements ISocketCommand {
 //                    throw new PGPException("Session ID Mismatch: " + sessionID);
                 userInfo.UserName = split[2];
                 userInfo.Visibility = split[3];
+                userInfo.IDSigFirstLine = IDSIGFirstLine;
 //                userInfo.CacheTime = Integer.parseInt(split[5]);
 //                sendText(session, IDSIG); // "INFO User Identified: " + userInfo.UserName + " [" + userInfo.Visibility + "]");
             

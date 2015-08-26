@@ -80,11 +80,6 @@ public class ChannelCommands implements ISocketCommand {
 
         channelUsers.add(userSession);
 
-        for(Session session : channelUsers) 
-            if(session.isOpen()) 
-                sendText(session, "JOIN " + channel + " " + getSessionChatID(userSession));
-        
-        
         ArrayList<String> userChannels;
         if(mUserChannels.containsKey(userSession)) {
             userChannels = mUserChannels.get(userSession);
@@ -94,6 +89,20 @@ public class ChannelCommands implements ISocketCommand {
         }
         userChannels.add(channel);
 
+        String userListContent = "";
+        
+        PGPCommands PC = PGPCommands.getStatic();
+        // Notify other users
+        for(Session channelUserSession : channelUsers) {
+            if(channelUserSession.isOpen()) {
+                PGPCommands.PGPUserInfo userInfo = PC.getSessionPGPInfo(channelUserSession);
+                sendText(channelUserSession, "JOIN " + channel + " " + userInfo.getUserName(userSession));
+                userListContent += "\n" + userInfo.IDSigFirstLine.trim();
+            }
+        }
+        
+        // Give session the user list for this channel
+        sendText(userSession, "USERLIST " + channel + userListContent);
     }
 
     public void leaveChannel(Session userSession, String channel) throws IllegalArgumentException {
@@ -115,12 +124,28 @@ public class ChannelCommands implements ISocketCommand {
             .remove(channel);
     }
 
-    public boolean hasSubscription(Session userSession, String channel) {
+    public boolean hasChannel(Session userSession, String channel) {
         if(mChannelUsers.containsKey(channel)) 
             return mChannelUsers.get(channel).contains(userSession);
 
         return false;
     }
+    
+    public boolean checkSession(Session expiredSession) {
+        if(expiredSession.isOpen())
+            return true;
+        if(mUserChannels.containsKey(expiredSession)) {
+            // Leave all channels
+            for(String channel: mUserChannels.get(expiredSession)) {
+                leaveChannel(expiredSession, channel);
+            }
+            
+            // Remove from user record
+            mUserChannels.remove(expiredSession);
+        }
+        return false;
+    }
+
 
     public void messageUser(Session userSession, String userTarget, String message) {
         for(Session session: userSession.getOpenSessions()) {
@@ -136,7 +161,7 @@ public class ChannelCommands implements ISocketCommand {
     public void chatChannel(Session userSession, String channel, String message) {
         channel = fixPath(channel);
         
-        if(!hasSubscription(userSession, channel))
+        if(!hasChannel(userSession, channel))
             joinChannel(userSession, channel);
 
         ArrayList<Session> users;
@@ -211,15 +236,23 @@ public class ChannelCommands implements ISocketCommand {
         _inst = new ChannelCommands();
         return _inst;
     }
+    
 
     public void sendIDSIG(Session session, String IDSIG) {
         String idSigFirstLine = IDSIG.split("\n")[0];
-        for(String channel: getUserChannels(session)) {
-            for(Session channelUserSession: getChannelUsers(channel)) {
-                sendText(channelUserSession, idSigFirstLine);
-
+        ArrayList<Session> removeSessions = new ArrayList<>();
+        for(String channel: mUserChannels.get(session)) {
+            for(Session channelUserSession: mChannelUsers.get(channel)) {
+                if(channelUserSession.isOpen()) {
+                    sendText(channelUserSession, idSigFirstLine);
+                } else {
+                    removeSessions.add(channelUserSession);
+                }
             }
         }
+        
+        for(Session removeSession: removeSessions)
+            checkSession(removeSession);
                 
     }
 }
