@@ -36,11 +36,11 @@
     +"-----END PGP PUBLIC KEY BLOCK-----";
 
     var GENERATE_TEMPLATE =
-        "<script src='cmd/pgp/pgp-form.js'></script>" +
-        "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
+        "<script src='command/pgp/pgp-form.js'></script>" +
+        "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
         "<legend>Generate a new PGP Key Pair</legend>" +
         "<form name='pgp-keygen-form' action='#' method='post' onsubmit='return submitPGPKeyGenForm(event);'>" +
-            "<div class='status-box' style='display: none'></div>" +
+            "<code class='status-box' style='display: none'></code>" +
             "Select key strength: </br><i>or: your fear level for getting hacked on a scale from 512 to 4096</i><br/>" +
             "<select name='bits'>" +
                 "<option value='512'>512 (Weak)</option>" +
@@ -63,11 +63,11 @@
         "</form>";
 
     var REGISTER_TEMPLATE =
-        "<script src='cmd/pgp/pgp-form.js'></script>" +
-        "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
+        "<script src='command/pgp/pgp-form.js'></script>" +
+        "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
         "<legend>Register a new PGP Key Pair</legend>" +
         "<form name='pgp-register-form' action='#' method='post' onsubmit='return submitPGPRegisterForm(event);'>" +
-            "<div class='status-box'>{$status_content}</div>" +
+            "<code class='status-box'>{$status_content}</code>" +
             "<label>Paste or <a href='#KEYGEN'>generate</a> a PGP Private key and <br/>enter it into the box below to register:<br/>" +
                 "<textarea onchange='changePGPRegisterForm(event);' name='private_key' required='required' placeholder='" + EXAMPLE_PUBLIC_KEY + "' rows='12' cols='68'>{$private_key}</textarea>" +
             "</label>" +
@@ -77,18 +77,18 @@
         "</form>";
 
     var REGISTER_TEMPLATE_COMPLETE =
-        "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
+        "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
         "<legend>Registration Successful</legend>" +
-        "<div class='status-box'>{$status_content}</div>" +
+        "<code class='status-box'>{$status_content}</code>" +
         "<a href='#HIDE'>Close Window</a>";
 
 
     var IDENTIFY_TEMPLATE =
-        "<script src='cmd/pgp/pgp-form.js'></script>" +
-        "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
+        "<script src='command/pgp/pgp-form.js'></script>" +
+        "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
         "<legend>Identify yourself to the network [{$socket_host}]</legend>" +
         "<form name='pgp-identify-form' action='#' method='post' onsubmit='return submitPGPIdentifyForm(event);'>" +
-            "<div class='status-box'>{$status_content}</div>" +
+            "<code class='status-box'>{$status_content}</code>" +
 
             "<label class='label-pgp-id'>Identify using PGP Identity:<br/>" +
                 "<select name='pgp_id_public' required='required' onfocus='focusPGPIdentifyForm(event)' onselect='focusPGPIdentifyForm(event)' oninput='focusPGPIdentifyForm(event)'>" +
@@ -175,11 +175,11 @@
         "</form>";
 
     var IDENTIFY_TEMPLATE_SUCCESS =
-        "<script src='cmd/pgp/pgp-form.js'></script>" +
-        "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
+        "<script src='command/pgp/pgp-form.js'></script>" +
+        "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
         "<legend>IDSIG Successful to [{$socket_host}]</legend>" +
         "<form name='pgp-identify-success-form' action='#' method='post'>" +
-        "<div class='status-box'>{$status_content}</div>" +
+            "<code class='status-box'>{$status_content}</code>" +
 
             "Options for next time:<hr/>" +
 
@@ -197,17 +197,17 @@
 
 
     var MANAGE_TEMPLATE =
-        "<script src='cmd/pgp/pgp-form.js'></script>" +
-        "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
+        "<script src='command/pgp/pgp-form.js'></script>" +
+        "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
         "<legend>Manage PGP Identities</legend>" +
         "<form name='pgp-manage-form' action='#' onsubmit='return submitPGPManageForm(event);'>" +
-            "<div class='status-box'>{$status_content}</div>" +
+            "<code class='status-box'>{$status_content}</code>" +
             "<div class='pgp-id-box-container channel-content'>{$pgp_id_public_box_content}</div>" +
         "</form>";
 
     var MANAGE_TEMPLATE_ENTRY =
-        "<script src='cmd/pgp/pgp-form.js'></script>" +
-        "<link rel='stylesheet' href='cmd/pgp/pgp.css' type='text/css'>" +
+        "<script src='command/pgp/pgp-form.js'></script>" +
+        "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
         "<fieldset class='pgp-id-box pgp-id-box:{$id_private}{$class}'>" +
             "<legend class='user'>{$user_id}</legend>" +
             "<label><strong>ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='fingerprint'>{$id_private}</span></label><br/>" +
@@ -366,7 +366,7 @@
                             .replace(/{\$[^}]+}/gi, '')
                     );
                 } else {
-                    self.manageCommand("MANAGE");
+                    socketCommands.manage("MANAGE");
 
                 }
             });

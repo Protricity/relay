@@ -30,7 +30,7 @@ socketResponses.error = function(commandResponse) { return self.routeResponseToC
 socketAutoLoaders['http/http-worker.js'] = ['get', 'post', 'put', 'delete', 'patch', 'head'];
 
 // Chat Commands
-socketAutoLoaders['chat/chat-worker.js'] = ['join', 'leave', 'message', 'chat'];
+socketAutoLoaders['chat/chat-worker.js'] = ['join', 'leave', 'message', 'chat', 'nick'];
 
 // Feed Commands
 socketAutoLoaders['feed/feed-worker.js'] = ['feed'];

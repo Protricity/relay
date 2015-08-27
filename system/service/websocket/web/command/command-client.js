@@ -12,7 +12,7 @@
     var CLASS_CHANNEL_LIST = 'channel-list';
     var CLASS_CHANNEL_LIST_ENTRY = 'channel-list-entry';
 
-    var socketWorker = new Worker('cmd/socket-worker.js');
+    var socketWorker = new Worker('command/command-worker.js');
     socketWorker.addEventListener('message', function(e) {
         receiveMessage(e.data || e.detail);
     }, true);
@@ -105,10 +105,11 @@
                 var newChannel = document.createElement('fieldset');
                 newChannel.setAttribute('class', CLASS_CHANNEL + ' ' + channelPath);
                 newChannel.setAttribute('data-channel', channelPath);
+                newChannel.setAttribute('style', 'display: inline-block');
 
-                 if(channelContainer.firstChild)
+                if(channelContainer.firstChild)
                     channelContainer.insertBefore(newChannel, channelContainer.firstChild);
-                 else
+                else
                     channelContainer.appendChild(newChannel);
             }
 
@@ -123,26 +124,21 @@
             switch(subCommand) {
                 case 'replace':
                     contentTarget.innerHTML = content;
+                    contentTarget.scrollTop = 0;
                     break;
 
                 case 'prepend':
                     contentTarget.innerHTML = content + contentTarget.innerHTML;
+                    contentTarget.scrollTop = 0;
                     break;
 
                 case 'append':
-                    contentTarget.innerHTML = content + contentTarget.innerHTML;
+                    contentTarget.innerHTML += content;
+                    contentTarget.scrollTop = contentTarget.scrollHeight;
                     break;
 
                 default:
                     throw new Error("Unknown subcommand: " + subCommand);
-            }
-            if(subCommand === 'replace') {
-            } else {
-                if(subCommand === 'prepend') {
-                    contentTarget.innerHTML = content + contentTarget.innerHTML;
-                } else {
-                    contentTarget.innerHTML += content;
-                }
             }
 
             var contentEvent = new CustomEvent('log', {

@@ -17,8 +17,8 @@
 }
 
 form[name=chat-form] {
-    max-width: 37em;
-    font-family: monospace;
+    /* max-width: 37em; */
+    /* font-family: monospace; */
 }
 
 
@@ -52,6 +52,20 @@ form[name=chat-form] .pgp-message:hover {
 
 form[name=chat-form] .channel-content {
     overflow: auto;
-    max-height: 20vw;
-    min-width: 26em;
+    max-height: 18em;
+    width: 42em;
+}
+
+
+form[name=chat-form] .channel-log {
+    border: 1px solid transparent;
+    overflow: hidden;
+    max-height: 5em;
+}
+
+form[name=chat-form] .channel-log:hover {
+    border-radius: 0.2em;
+    border: 1px solid lightgrey;
+    overflow: hidden;
+    max-height: inherit;
 }

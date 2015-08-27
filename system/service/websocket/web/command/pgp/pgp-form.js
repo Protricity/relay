@@ -330,7 +330,7 @@
     function setStatus(formElm, statusText, append) {
         var statusElm = formElm.querySelector('.status-box');
         if(!statusElm) {
-            statusElm = document.createElement('div');
+            statusElm = document.createElement('code');
             statusElm.setAttribute('class', 'status-box');
             formElm.firstChild ? formElm.insertBefore(statusElm, formElm.firstChild) : formElm.appendChild(statusElm);
         } else {
@@ -371,6 +371,59 @@
 
             window.CustomEvent = CustomEvent;
         })();
+
+
+
+    // Includes
+
+    function includeScript(scriptPath, onInsert) {
+        var head = document.getElementsByTagName('head')[0];
+        if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+            var newScript = document.createElement('script');
+            newScript.setAttribute('src', scriptPath);
+            head.appendChild(newScript);
+            if(onInsert)
+                onInsert();
+        }
+    }
+    // For PGP Decryption in chat rooms
+    var openPGPScriptPath = 'command/pgp/lib/openpgpjs/openpgp.js';
+    includeScript(openPGPScriptPath, function(openPGPScriptPath) {
+
+        var timeout = setInterval(function() {
+            var src = openPGPScriptPath.replace('/openpgp.', '/openpgp.worker.');
+            if(!window.openpgp || window.openpgp._worker_init)
+                return;
+            window.openpgp.initWorker(src);
+            window.openpgp._worker_init = true;
+            clearInterval(timeout);
+             //console.info("OpenPGP Worker Loaded: " + src);
+        }, 500);
+    });
+
+    // For Public/Private Key Database access
+    includeScript('command/pgp/pgp-db.js');
+
+//
+//    var SCRIPT_PATH = 'command/pgp/lib/openpgpjs/openpgp.js';
+//    var head = document.getElementsByTagName('head')[0];
+//    if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+//        var newScript = document.createElement('script');
+//        newScript.setAttribute('src', SCRIPT_PATH);
+//        head.appendChild(newScript);
+//
+//        var timeout = setInterval(function() {
+//            var src = SCRIPT_PATH.replace('/openpgp.', '/openpgp.worker.');
+//            if(!window.openpgp || window.openpgp._worker_init)
+//                return;
+//            window.openpgp.initWorker(src);
+//            window.openpgp._worker_init = true;
+//            clearInterval(timeout);
+////             console.info("OpenPGP Worker Loaded: " + src);
+//        }, 500);
+//    }
+
+
 })();
 
 
@@ -379,36 +432,3 @@
 
 //var pgpMessage = openpgp.message.readArmored(encryptedMessage);
 //var encIDs = pgpMessage.getEncryptionKeyIds();
-
-(function() {
-    var SCRIPT_PATH = 'cmd/pgp/lib/openpgpjs/openpgp.js';
-    var head = document.getElementsByTagName('head')[0];
-    if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
-        var newScript = document.createElement('script');
-        newScript.setAttribute('src', SCRIPT_PATH);
-        head.appendChild(newScript);
-
-        var timeout = setInterval(function() {
-            var src = SCRIPT_PATH.replace('/openpgp.', '/openpgp.worker.');
-            if(!window.openpgp || window.openpgp._worker_init)
-                return;
-            window.openpgp.initWorker(src);
-            window.openpgp._worker_init = true;
-            clearInterval(timeout);
-//             console.info("OpenPGP Worker Loaded: " + src);
-        }, 500);
-    }
-})();
-
-
-// For Public/Private Key Database access
-
-(function() {
-    var SCRIPT_PATH = 'cmd/pgp/pgp-db.js';
-    var head = document.getElementsByTagName('head')[0];
-    if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
-        var newScript = document.createElement('script');
-        newScript.setAttribute('src', SCRIPT_PATH);
-        head.appendChild(newScript);
-    }
-})();

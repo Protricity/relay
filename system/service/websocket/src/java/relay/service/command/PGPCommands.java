@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.websocket.Session;
+import jdk.nashorn.internal.objects.NativeString;
 import org.bouncycastle.openpgp.PGPEncryptedDataList;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPObjectFactory;
@@ -36,7 +37,7 @@ public class PGPCommands implements ISocketCommand {
     public class PGPUserInfo {
         public PGPUserInfo(String sessionUID) {
             SessionUID = sessionUID;
-            UserName = "guest";
+            UserName = "guest-" + sessionUID.substring(sessionUID.length() - 4);
             Visibility = "M";
             PublicKeyID = "_"; // TODO: Guest pgp key
             IDSigFirstLine = "IDSIG " + PublicKeyID + " " + sessionUID + " " + UserName + " " + Visibility;
@@ -121,6 +122,7 @@ public class PGPCommands implements ISocketCommand {
 
                 if(split[3].length() == 0)
                     throw new PGPException("Invalid Username in IDSIG");
+                String oldUserName = userInfo.UserName;
                 userInfo.UserName = split[3];
 
                 userInfo.Visibility = split[4];
@@ -129,7 +131,7 @@ public class PGPCommands implements ISocketCommand {
 //                sendText(session, IDSIG); // "INFO User Identified: " + userInfo.UserName + " [" + userInfo.Visibility + "]");
             
                 ChannelCommands CC = ChannelCommands.getStatic();
-                CC.sendIDSIG(session, IDSIG);
+                CC.sendIDSIG(session, IDSIG, oldUserName);
                 return;
             }
         }

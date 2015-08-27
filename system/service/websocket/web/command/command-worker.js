@@ -6,11 +6,12 @@
     var SOCKET_RECONNECT_INTERVAL = 5000;
 
     var PATH_PREFIX_SOCKET = 'socket:';
-    var CLASS_CHANNEL_CONTENT = 'channel-content';
+    var CLASS_SOCKET_CONTENT = 'socket-content';
 
     var SOCKET_TEMPLATE =
-        "<legend>Socket: {$socket_host}</legend>" +
-        "<fieldset class='" + CLASS_CHANNEL_CONTENT + "' style='overflow: auto; max-height: 20vw; max-width: 20vw;'></fieldset>" +
+        "<link rel='stylesheet' href='command/socket/socket.css' type='text/css'>" +
+        "<legend>Socket IO: {$socket_host}</legend>" +
+        "<fieldset class='" + CLASS_SOCKET_CONTENT + "'></fieldset>" +
         //"<input name='message' type='text' placeholder='Send a message directly the socket [hit enter]'/>" +
         //"<input type='submit' value='Send' name='submit-send-socket' />" +
         "</form>";
@@ -24,7 +25,7 @@
         '<span class="action">{$content}</span>' +
         '</div>';
 
-    importScripts('socket-defaults.js');
+    importScripts('command-defaults.js');
 
     self.addEventListener('message', function (e) {
         self.executeWorkerCommand(e.data, e);
@@ -54,7 +55,7 @@
             for(var i=0; i<onNewSocketOpenCallbacks.length; i++)
                 onNewSocketOpenCallbacks[i](newSocket);
 
-            self.routeResponseToClient('LOG.PREPEND ' + PATH_PREFIX_SOCKET + newSocket.url + ' .' + CLASS_CHANNEL_CONTENT + ' ' + SOCKET_TEMPLATE_ACTION_ENTRY
+            self.routeResponseToClient('LOG ' + PATH_PREFIX_SOCKET + newSocket.url + ' .' + CLASS_SOCKET_CONTENT + ' ' + SOCKET_TEMPLATE_ACTION_ENTRY
                 .replace(/{\$content}/gi, "SOCKET OPEN: " + newSocket.url)
             );
         }
@@ -72,12 +73,12 @@
                 self.getSocket(socketURL);
             }, SOCKET_RECONNECT_INTERVAL);
 
-            self.routeResponseToClient('LOG.PREPEND ' + PATH_PREFIX_SOCKET + newSocket.url + ' .' + CLASS_CHANNEL_CONTENT + ' ' + SOCKET_TEMPLATE_ACTION_ENTRY
+            self.routeResponseToClient('LOG ' + PATH_PREFIX_SOCKET + newSocket.url + ' .' + CLASS_SOCKET_CONTENT + ' ' + SOCKET_TEMPLATE_ACTION_ENTRY
                 .replace(/{\$content}/gi, "SOCKET CLOSED: " + newSocket.url)
             );
         }
         function onSocketMessage(e) {
-            console.log("SOCKET IN: ", e.data);
+//             console.log("SOCKET IN: ", e.data);
             self.executeWorkerResponse(e.data, e);
 
         }
@@ -139,7 +140,12 @@
         }
 
         self.selectFastestSocket(function(selectedSocket) {
-            console.log("SOCKET OUT (" + selectedSocket.url + "): " + commandString);
+//             console.log("SOCKET OUT (" + selectedSocket.url + "): " + commandString);
+            self.routeResponseToClient('LOG ' + PATH_PREFIX_SOCKET + selectedSocket.url + ' .' + CLASS_SOCKET_CONTENT + ' ' + SOCKET_TEMPLATE_LOG_ENTRY
+                    .replace(/{\$DIR}/g, "O")
+                    .replace(/{\$content}/gi, commandString)
+            );
+
             selectedSocket.send(commandString);
         }, socketList);
     };
@@ -172,13 +178,6 @@
         if(typeof socketCommands[cmd] === 'undefined')
             throw new Error("Command failed to load: " + cmd);
 
-        if(socket instanceof WebSocket) {
-            self.routeResponseToClient('LOG.PREPEND ' + PATH_PREFIX_SOCKET + socket.url + ' .' + CLASS_CHANNEL_CONTENT + ' ' + SOCKET_TEMPLATE_LOG_ENTRY
-                    .replace(/{\$dir}/g, "out")
-                    .replace(/{\$DIR}/g, "OUT")
-                    .replace(/{\$content}/gi, commandString)
-            );
-        }
 
         return socketCommands[cmd](commandString, e);
     };
@@ -205,9 +204,8 @@
             throw new Error("Command Response failed to load: " + cmd);
 
         if(socket instanceof WebSocket) {
-            self.routeResponseToClient('LOG.PREPEND ' + PATH_PREFIX_SOCKET + socket.url + ' .' + CLASS_CHANNEL_CONTENT + ' ' + SOCKET_TEMPLATE_LOG_ENTRY
-                    .replace(/{\$dir}/g, "in")
-                    .replace(/{\$DIR}/g, "IN")
+            self.routeResponseToClient('LOG ' + PATH_PREFIX_SOCKET + socket.url + ' .' + CLASS_SOCKET_CONTENT + ' ' + SOCKET_TEMPLATE_LOG_ENTRY
+                    .replace(/{\$DIR}/g, "I")
                     .replace(/{\$content}/gi, commandResponse)
             );
         }

@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import javax.websocket.Session;
 
 /**
@@ -54,7 +55,7 @@ public class ChannelCommands implements ISocketCommand {
             case "chat":
                 String[] chatArgs = args[1].split("\\s+", 2);
                 if(chatArgs.length == 1) 
-                    throw new Exception("Missing path");
+                    throw new IllegalArgumentException("Missing path");
                 chatChannel(session, chatArgs[0], chatArgs[1]);
                 return true;
                       
@@ -62,7 +63,7 @@ public class ChannelCommands implements ISocketCommand {
             case "message":
                 String[] messageArgs = args[1].split("\\s+", 2);
                 if(messageArgs.length == 1) 
-                    throw new Exception("Missing user");
+                    throw new IllegalArgumentException("Missing user");
                 messageUser(session, messageArgs[0], messageArgs[1]);
                 return true;
                 
@@ -72,7 +73,7 @@ public class ChannelCommands implements ISocketCommand {
 //        session.getBasicRemote().sendText("ECHO " + message);
     }
     
-    public void joinChannel(Session userSession, String channel) {
+    public void joinChannel(Session userSession, String channel) throws IllegalArgumentException {
         channel = fixPath(channel);
         PGPCommands PC = PGPCommands.getStatic();
         PGPCommands.PGPUserInfo userInfo = PC.getSessionPGPInfo(userSession);
@@ -80,20 +81,25 @@ public class ChannelCommands implements ISocketCommand {
         ArrayList<Session> channelUsers;
         if(mChannelUsers.containsKey(channel)) {
             channelUsers = mChannelUsers.get(channel);
+            if(channelUsers.contains(userSession)) 
+                throw new IllegalArgumentException("User already joined channel: " + channel);
         } else {
             channelUsers = new ArrayList<>();
             mChannelUsers.put(channel, channelUsers);
         }
 
-        channelUsers.add(userSession);
 
         ArrayList<String> userChannels;
         if(mUserChannels.containsKey(userSession)) {
             userChannels = mUserChannels.get(userSession);
+            if(userChannels.contains(channel)) 
+                throw new IllegalArgumentException("User already joined channel: " + channel);
         } else {
             userChannels = new ArrayList<>();
             mUserChannels.put(userSession, userChannels);
         }
+            
+        channelUsers.add(userSession);
         userChannels.add(channel);
 
         String userListContent = "";
@@ -101,7 +107,7 @@ public class ChannelCommands implements ISocketCommand {
         // Notify other users
         for(Session channelUserSession : channelUsers) {
             if(channelUserSession.isOpen()) {
-                sendText(channelUserSession, "JOIN " + channel + " " + userInfo.SessionUID + " " + userInfo.UserName);
+                sendText(channelUserSession, "JOIN " + channel + " " + userInfo.PublicKeyID + " " + userInfo.SessionUID + " " + userInfo.UserName + " " + userInfo.Visibility);
             
                 userListContent += "\n" + 
                     PC.getSessionPGPInfo(channelUserSession)
@@ -118,27 +124,20 @@ public class ChannelCommands implements ISocketCommand {
         
         PGPCommands PC = PGPCommands.getStatic();
         PGPCommands.PGPUserInfo userInfo = PC.getSessionPGPInfo(userSession);
-        
         if(!mChannelUsers.containsKey(channel))
-            throw new IllegalArgumentException("Channel not found");
+            throw new IllegalArgumentException("Channel not found: " + channel);
+        
         ArrayList<Session> channelUsers = mChannelUsers.get(channel);
         if(!channelUsers.contains(userSession))
             throw new IllegalArgumentException("User not found in channel: " + channel);
 
         for(Session session : channelUsers) 
             if(session.isOpen()) 
-                sendText(session, "LEAVE " + channel + " " + userInfo.SessionUID + " " + userInfo.UserName);
+                sendText(session, "LEAVE " + channel + " " + userInfo.PublicKeyID + " " + userInfo.SessionUID + " " + userInfo.UserName);
         
         channelUsers.remove(userSession);
-        
-        Iterator<String> iter = mUserChannels.get(userSession).iterator();
-
-        while (iter.hasNext()) {
-            String userChannel = iter.next();
-
-            if (userChannel.compareToIgnoreCase(channel) == 0)
-                iter.remove();
-        }
+        ArrayList<String> userChannels = mUserChannels.get(userSession);
+        userChannels.remove(channel);
     }
 
     public boolean hasChannel(Session userSession, String channel) {
@@ -153,10 +152,11 @@ public class ChannelCommands implements ISocketCommand {
             return true;
         if(mUserChannels.containsKey(expiredSession)) {
             // Leave all channels
-            Iterator<String> channels = mUserChannels.get(expiredSession).iterator();
+            ArrayList<String> channelList = mUserChannels.get(expiredSession);
+            String[] channels = channelList.toArray(new String[channelList.size()]);
 
-            while (channels.hasNext()) 
-                leaveChannel(expiredSession, channels.next());
+            for(String channel: channels)
+                leaveChannel(expiredSession, channel);
             
             // Remove from user record
             mUserChannels.remove(expiredSession);
@@ -179,7 +179,7 @@ public class ChannelCommands implements ISocketCommand {
         sendText(userSession, "ERROR could not find user " + getSessionChatID(userSession));
     }
 
-    public void chatChannel(Session userSession, String channel, String message) {
+    public void chatChannel(Session userSession, String channel, String message) throws IllegalArgumentException {
         PGPCommands PC = PGPCommands.getStatic();
         PGPCommands.PGPUserInfo userInfo = PC.getSessionPGPInfo(userSession);
         
@@ -262,21 +262,34 @@ public class ChannelCommands implements ISocketCommand {
     }
     
 
-    public void sendIDSIG(Session userSession, String IDSIG) {
+    public void sendIDSIG(Session userSession, String IDSIG, String oldUsername) {
         String idSigFirstLine = IDSIG.split("\n")[0];
-        ArrayList<Session> removeSessions = new ArrayList<>();
+        ArrayList<Session> sendOnce = new ArrayList<>();
+        
+        PGPCommands PC = PGPCommands.getStatic();
+        PGPCommands.PGPUserInfo userInfo = PC.getSessionPGPInfo(userSession);
+
+//        ArrayList<Session> removeSessions = new ArrayList<>();
+        // Get all channels user is in
         for(String channel: mUserChannels.get(userSession)) {
+            
+            // Get all users in those channels
             for(Session channelUserSession: mChannelUsers.get(channel)) {
                 if(channelUserSession.isOpen()) {
-                    sendText(channelUserSession, idSigFirstLine);
-                } else {
-                    removeSessions.add(channelUserSession);
+                    if(!sendOnce.contains(channelUserSession)) {
+                        sendOnce.add(channelUserSession);
+                        sendText(channelUserSession, idSigFirstLine);
+                    }
+                    sendText(channelUserSession, "NICK " + channel + " " + oldUsername + " " + userInfo.PublicKeyID + " " + userInfo.SessionUID + " " + userInfo.UserName + " " + userInfo.Visibility);
+
+//                } else {
+//                    removeSessions.add(channelUserSession);
                 }
             }
         }
         
-        for(Session removeSession: removeSessions)
-            checkSession(removeSession);
+//        for(Session removeSession: removeSessions)
+//            checkSession(removeSession);
                 
 //        sendText(userSession, idSigFirstLine);
     }

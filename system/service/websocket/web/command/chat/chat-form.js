@@ -4,14 +4,13 @@
 (function() {
 
 //    var unidentifiedSessionUserElms = document.getElementsByClassName('unidentified-session-uid');
-    document.addEventListener('log', function(e) {
-        var htmlContainer = e.target;
-        // If this is a chat container, scroll to the bottom
-        var channelContent = htmlContainer.querySelector('form[name=chat-form] .channel-content');
-        if (channelContent)
-            channelContent.scrollTop = channelContent.scrollHeight;
-
-    });
+//    document.addEventListener('log', function(e) {
+//        var htmlContainer = e.target;
+//        // If this is a chat container, scroll to the bottom
+//        var channelContent = htmlContainer.querySelector('form[name=chat-form] .channel-content');
+//        if (channelContent)
+//            channelContent.scrollTop = channelContent.scrollHeight;
+//    });
 //
 //        if(unidentifiedSessionUserElms.length > 0) {
 //            self.PGPDB(function(db, PGPDB) {
@@ -56,19 +55,22 @@
         if(formElm.nodeName.toLowerCase() !== 'form')
             throw new Error("Invalid Form: " + formElm);
 
-        var messageElm = formElm.querySelectorAll('*[name=message], input[type=text], textarea');
-        if(messageElm.length === 0 || !messageElm[0].value)
+        var messageElm = formElm.querySelector('*[name=message], input[type=text], textarea');
+        if(!messageElm)
             throw new Error("No message field found");
 
-        var channelElm = formElm.querySelectorAll('*[name=channel]');
-        if(channelElm.length === 0 || !channelElm[0].value)
-            throw new Error("No channel field found");
+        
+        var channelElm = formElm.querySelector('*[name=channel]');
+        if(!channelElm || !channelElm.value)
+            throw new Error("No channel value found");
 
+        if(!messageElm.value)
+            return false;
         // if hasn't identified yet, ask to identify now
 
-        var commandString = "CHAT " + channelElm[0].value + " " + messageElm[0].value;
-        if(messageElm[0].value[0] === '/') {
-            commandString = messageElm[0].value.substr(1);
+        var commandString = "CHAT " + channelElm.value + " " + messageElm.value;
+        if(messageElm.value[0] === '/') {
+            commandString = messageElm.value.substr(1);
             var commandEvent = new CustomEvent('command', {
                 detail: commandString,
                 cancelable:true,
@@ -76,7 +78,7 @@
             });
             formElm.dispatchEvent(commandEvent);
             if(commandEvent.defaultPrevented)
-                messageElm[0].value = '';
+                messageElm.value = '';
             return false;
         }
 
@@ -87,34 +89,25 @@
         });
         formElm.dispatchEvent(socketEvent);
         if(socketEvent.defaultPrevented)
-            messageElm[0].value = '';
+            messageElm.value = '';
         return false;
     };
 
+    // Includes
 
-
-})();
-
-// For PGP Decryption in chat rooms
-(function() {
-    var SCRIPT_PATH = 'cmd/pgp/pgp-listener.js';
-    var head = document.getElementsByTagName('head')[0];
-    if (head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
-        var newScript = document.createElement('script');
-        newScript.setAttribute('src', SCRIPT_PATH);
-        head.appendChild(newScript);
+    function includeScript(scriptPath) {
+        var head = document.getElementsByTagName('head')[0];
+        if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+            var newScript = document.createElement('script');
+            newScript.setAttribute('src', scriptPath);
+            head.appendChild(newScript);
+        }
     }
-})();
+    // For PGP Decryption in chat rooms
+    includeScript('command/pgp/pgp-listener.js');
+
+    // For Public/Private Key Database access
+    includeScript('command/pgp/pgp-db.js');
 
 
-// For Public/Private Key Database access
-
-(function() {
-    var SCRIPT_PATH = 'cmd/pgp/pgp-db.js';
-    var head = document.getElementsByTagName('head')[0];
-    if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
-        var newScript = document.createElement('script');
-        newScript.setAttribute('src', SCRIPT_PATH);
-        head.appendChild(newScript);
-    }
 })();

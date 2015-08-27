@@ -11,18 +11,33 @@
     var CLASS_CHANNEL_CONTENT = 'channel-content';
 
     var CHANNEL_TEMPLATE =
-        "<script src='cmd/chat/chat-form.js'></script>" +
-        "<link rel='stylesheet' href='cmd/chat/chat.css' type='text/css'>" +
+        "<script src='command/chat/chat-form.js'></script>" +
+        "<link rel='stylesheet' href='command/chat/chat.css' type='text/css'>" +
         "<legend>Channel: {$channel}</legend>" +
         "<form name='chat-form' action='#' onsubmit='return submitChatForm(event);'>" +
-            "<select multiple='multiple' name='user-list' style='float: left'>" +
-                "<optgroup class='" + CLASS_ACTIVE_USERS + "' label='Active Users (0)'></optgroup>" +
-                "<optgroup class='" + CLASS_INACTIVE_USERS + "' label='Inactive Users (0)'></optgroup>" +
-            "</select>" +
-            "<fieldset class='" + CLASS_CHANNEL_CONTENT + "'>Joining {$channel}...</fieldset>" +
-            "<input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' />" +
-            "<input type='submit' value='Send' name='submit-send-chat' />" +
-            "<input type='hidden' value='{$channel}' name='channel' />" +
+            "<table>" +
+                "<tbody>" +
+                    "<tr>" +
+                        "<td style='vertical-align: top'>" +
+                            "<select multiple='multiple' name='user-list' size='15'>" +
+                                "<optgroup class='" + CLASS_ACTIVE_USERS + "' label='Active Users (0)'></optgroup>" +
+                                "<optgroup class='" + CLASS_INACTIVE_USERS + "' label='Inactive Users (0)'></optgroup>" +
+                            "</select>" +
+                        "</td>" +
+                        "<td style='vertical-align: top'>" +
+                            "<fieldset class='" + CLASS_CHANNEL_CONTENT + "'>Joining {$channel}...</fieldset>" +
+                        "</td>" +
+                    "</tr>" +
+                    "<tr>" +
+                        "<td colspan='2'>" +
+                            "<input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' />" +
+                            "<input type='submit' value='Send' name='submit-send-chat' />" +
+                            "<input type='hidden' value='{$channel}' name='channel' />" +
+                        "</td>" +
+                    "</tr>" +
+                "</tbody>" +
+            "</table>" +
+
         "</form>";
 
     var CHAT_TEMPLATE = '<div class="channel-log">' +
@@ -34,6 +49,11 @@
         '<span class="username" data-session-uid="{$session_uid}">{$username}</span>' +
         ' has <span class="action">{$action}</span>' +
         ' <a href="#JOIN {$channel}" class="path">{$channel}</a>' +
+        '</div>';
+
+    var NICK_TEMPLATE = '<div class="channel-log">' +
+        'Username <span class="username">{$old_username}</span>' +
+        ' has been <span class="action">renamed</span> to <span class="username">{$new_username}</span>' +
         '</div>';
 
 
@@ -73,13 +93,9 @@
         );
     };
 
-    socketResponses.userlist = function(commandResponse) {
-        var match = /^(userlist)\s+([^\s]+)\n([\s\S]+)$/im.exec(commandResponse);
-        var channelPath = fixChannelPath(match[2]);
-        var userList = match[3].split(/\n/img);
-
+    function sendUserList(channelPath, sigIDList) {
         var optionHTML = '';
-        for(var ui=0; ui<userList.length; ui++) (function(sigid) {
+        for(var ui=0; ui<sigIDList.length; ui++) (function(sigid) {
 
             var split = sigid.split(/\s+/g);
             if(split[0].toUpperCase() !== 'IDSIG')
@@ -97,40 +113,132 @@
                 .replace(/{\$pgp_id_public}/gi, pgp_id_public)
                 .replace(/{\$visibility}/gi, visibility);
 
-        })(userList[ui]);
+        })(sigIDList[ui]);
         checkChannel(channelPath);
-        self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath + ' .' + CLASS_ACTIVE_USERS + ' ' + optionHTML);
+        self.routeResponseToClient('LOG.REPLACE ' + PATH_PREFIX_CHAT + channelPath + ' .' + CLASS_ACTIVE_USERS + ' ' + optionHTML);
 
+//         console.log([channelPath, sigIDList, optionHTML]);
+    }
 
-        console.log([channelPath, userList, optionHTML]);
+    var sigIDLists = {};
+    socketResponses.userlist = function(commandResponse) {
+        var match = /^(userlist)\s+([^\s]+)\n([\s\S]+)$/im.exec(commandResponse);
+        var channelPath = fixChannelPath(match[2]);
+        var sigIDList = match[3].split(/\n/img);
+        sigIDLists[channelPath] = sigIDList;
+
+        sendUserList(channelPath, sigIDList);
     };
 
     socketResponses.join = function(commandResponse) {
-        var args = commandResponse.split(/\s+/, 4);
+        var args = commandResponse.split(/\s/);
         var channelPath = fixChannelPath(args[1]);
-        var session_uid = args[2];
-        var username = args[3];
+        var pgp_id_public = args[2];
+        var session_uid = args[3];
+        var username = args[4];
+        var visibility = args[5];
         checkChannel(channelPath);
         self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath + ' .' + CLASS_CHANNEL_CONTENT +  ' ' + ACTION_TEMPLATE
             .replace(/{\$action}/gi, 'joined')
             .replace(/{\$channel}/gi, channelPath)
             .replace(/{\$session_uid}/gi, session_uid)
             .replace(/{\$username}/gi, username)
+            .replace(/{\$pgp_id_public}/gi, pgp_id_public)
         );
+
+        var sigIDList = sigIDLists[channelPath] || [];
+        var identityString = "IDSIG" + // Recreate IDSIG cause we can
+            " " + pgp_id_public +
+            " " + session_uid +
+            " " + username +
+            " " + visibility;
+
+        if(!sigIDList.indexOf(identityString)) {
+            //throw new Error("Duplicate SIGID in user list: " + identityString);
+
+            sigIDList.push(identityString);
+
+            sigIDList.sort(function (s1, s2) {
+                return s1.split(/\s+/g)[3] - s2.split(/\s+/g)[3];
+            });
+            sigIDLists[channelPath] = sigIDList;
+        }
+        sendUserList(channelPath, sigIDList);
+
     };
 
     socketResponses.leave = function(commandResponse) {
-        var args = commandResponse.split(/\s+/, 4);
+        var args = commandResponse.split(/\s/);
         var channelPath = fixChannelPath(args[1]);
-        var session_uid = args[2];
-        var username = args[3];
+        var pgp_id_public = args[2];
+        var session_uid = args[3];
+        var username = args[4];
         checkChannel(channelPath);
         self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath + ' .' + CLASS_CHANNEL_CONTENT +  ' ' + ACTION_TEMPLATE
-            .replace(/{\$action}/gi, 'left')
-            .replace(/{\$channel}/gi, channelPath)
-            .replace(/{\$session_uid}/gi, session_uid)
-            .replace(/{\$username}/gi, username)
+                .replace(/{\$action}/gi, 'left')
+                .replace(/{\$channel}/gi, channelPath)
+                .replace(/{\$session_uid}/gi, session_uid)
+                .replace(/{\$username}/gi, username)
+                .replace(/{\$pgp_id_public}/gi, pgp_id_public)
         );
+
+        var sigIDList = sigIDLists[channelPath] || [];
+        var sigIDMatch = "SIGID " + pgp_id_public + " " + session_uid;
+        for(var i=0; i<sigIDList.length; i++) {
+            var sigID = sigIDList[i];
+            if(sigID.indexOf(sigIDMatch) === 0) {
+                sigIDList.splice(i, 1);
+                break;
+            }
+        }
+
+        sigIDLists[channelPath] = sigIDList;
+
+        sendUserList(channelPath, sigIDList);
+    };
+
+    socketResponses.nick = function(commandResponse) {
+        var args = commandResponse.split(/\s/);
+        var channelPath = fixChannelPath(args[1]);
+        var old_username = args[2];
+        var pgp_id_public = args[3];
+        var session_uid = args[4];
+        var new_username = args[5];
+        var visibility = args[6];
+        checkChannel(channelPath);
+        self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath + ' .' + CLASS_CHANNEL_CONTENT +  ' ' + NICK_TEMPLATE
+                .replace(/{\$action}/gi, 'left')
+                .replace(/{\$channel}/gi, channelPath)
+                //.replace(/{\$old_session_uid}/gi, session_uid)
+                .replace(/{\$old_username}/gi, old_username)
+                //.replace(/{\$new_session_uid}/gi, session_uid)
+                .replace(/{\$new_username}/gi, new_username)
+        );
+
+        var sigIDList = sigIDLists[channelPath] || [];
+        var sigIDMatch = "SIGID " + pgp_id_public + " " + session_uid;
+        for(var i=0; i<sigIDList.length; i++) {
+            var sigID = sigIDList[i];
+            if(sigID.indexOf(sigIDMatch) === 0) {
+                sigIDList.splice(i, 1);
+                break;
+            }
+        }
+
+        var identityString = "IDSIG" + // Recreate IDSIG cause we can
+            " " + pgp_id_public +
+            " " + session_uid +
+            " " + new_username +
+            " " + visibility;
+        sigIDList.push(identityString);
+
+        sigIDList.sort(function (s1, s2) {
+            return s1.split(/\s+/g)[3] - s2.split(/\s+/g)[3];
+        });
+
+        sigIDLists[channelPath] = sigIDList;
+
+        sendUserList(channelPath, sigIDList);
     };
 
     socketResponses.message = function(commandResponse) {

@@ -13,8 +13,8 @@
 
 
     var FEED_POST_FORM_TEMPLATE =
-        "<script src='cmd/feed/feed-form.js'></script>" +
-        "<link rel='stylesheet' href='cmd/feed/feed.css' type='text/css'>" +
+        "<script src='command/feed/feed-form.js'></script>" +
+        "<link rel='stylesheet' href='command/feed/feed.css' type='text/css'>" +
         "<legend>Post to your feed</legend>" +
 
         "<form name='post-form' class='post-form:uninitiated' action='#' onsubmit='return submitPostForm(event);'>" +
@@ -67,8 +67,8 @@
 
 
     var FEED_TEMPLATE =
-        "<script src='cmd/feed/feed-form.js'></script>" +
-        "<link rel='stylesheet' href='cmd/feed/feed.css' type='text/css'>" +
+        "<script src='command/feed/feed-form.js'></script>" +
+        "<link rel='stylesheet' href='command/feed/feed.css' type='text/css'>" +
         "<legend>{$title}</legend>" +
         "<div class='feed-container channel-content' onscroll='scrollFeed.apply(this, [event]);'>" +
             "<fieldset class='feed-post-form-container'>" +
@@ -81,7 +81,7 @@
         "<fieldset class='feed-post-container unsorted'>" +
             "<legend>Feed Post</legend>" +
             "<div class='feed-post-author'>" +
-                "<img class='user_icon' src='cmd/feed/img/user_icon_default.png' alt='UI' />" +
+                "<img class='user_icon' src='command/feed/img/user_icon_default.png' alt='UI' />" +
                 "<a href='{$user_home}' class='user'>{$user_id}</a>" +
                 "<div class='timestamp_formatted'>{$timestamp_formatted}</div>" +
             "</div>" +

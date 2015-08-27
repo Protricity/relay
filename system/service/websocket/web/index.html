@@ -4,8 +4,8 @@
         <title>TODO supply a title</title>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="css/client.css" type="text/css" />
-        <script src="cmd/socket-client.js"></script>
+        <link rel="stylesheet" href="template/minimal/minimal.css" type="text/css" />
+        <script src="command/command-client.js"></script>
         <script>
             function send(commandString) {
                 var socketEvent = new CustomEvent('command', {
@@ -24,7 +24,7 @@
             }, 200);
         </script>
     </head>
-    <body>
+    <body class="template-minimal">
         <ul class="command-list">
             <li><a href="#" onclick="send('JOIN /home');">JOIN /home</a></li>
             <li><a href="#" onclick="send('POST');">POST to feed</a></li>

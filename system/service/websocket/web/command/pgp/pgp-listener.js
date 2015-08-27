@@ -123,7 +123,7 @@
 
 
 (function() {
-    var SCRIPT_PATH = 'cmd/pgp/lib/openpgpjs/openpgp.js';
+    var SCRIPT_PATH = 'command/pgp/lib/openpgpjs/openpgp.js';
     var head = document.getElementsByTagName('head')[0];
     if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
         var newScript = document.createElement('script');
