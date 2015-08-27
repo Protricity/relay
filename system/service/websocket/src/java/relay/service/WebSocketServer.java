@@ -53,7 +53,7 @@ public class WebSocketServer {
     public void onOpen(Session session){
         System.out.println(session.getId() + " has opened a connection"); 
         try {
-            session.getBasicRemote().sendText("INFO Connection Established: \n\t" + session.getId());
+            session.getBasicRemote().sendText("INFO WebSocketServer.onSocketOpen() Connection Established: \n\t" + session.getId());
 //            Object ipProp = session.getUserProperties().get("javax.websocket.endpoint.remoteAddress");
 //            if(ipProp != null)
 //                session.getBasicRemote().sendText("INFO Remote Address: " + ipProp.toString() );
@@ -65,7 +65,7 @@ public class WebSocketServer {
                     command.onSocketOpen(session);
 
                 } catch (Exception ex) {
-                    session.getBasicRemote().sendText("ERROR " + ex.getMessage());
+                    session.getBasicRemote().sendText("ERROR WebSocketServer.onSocketOpen() " + ex.getMessage());
                     ex.printStackTrace();
                 }
             }
@@ -95,7 +95,7 @@ public class WebSocketServer {
                     continue;
                 
             } catch (Exception ex) {
-                session.getBasicRemote().sendText("ERROR " + ex.getMessage());
+                session.getBasicRemote().sendText("ERROR WebSocketServer.onMessage() " + ex);
                 ex.printStackTrace();
             }
         }
@@ -110,7 +110,7 @@ public class WebSocketServer {
     public void onClose(Session session){
         System.out.println("Session " + session.getId()+" has ended");
         try {
-            session.getBasicRemote().sendText("INFO Connection Closed: " + session.getId());
+            session.getBasicRemote().sendText("INFO WebSocketServer.onClose() Connection Closed: " + session.getId());
 
             for(int i=0; i<callbacks.size(); i++) {
                 try {
@@ -118,7 +118,7 @@ public class WebSocketServer {
                     command.onSocketOpen(session);
 
                 } catch (Exception ex) {
-                    session.getBasicRemote().sendText("ERROR " + ex.getMessage());
+                    session.getBasicRemote().sendText("ERROR WebSocketServer.onClose() " + ex.getMessage());
                     ex.printStackTrace();
                 }
             }
@@ -130,6 +130,6 @@ public class WebSocketServer {
 
     @OnError
     public void onError(Throwable t) {
-        System.out.println("Error: " + t.getMessage());
+        System.out.println("Error: WebSocketServer.onError() " + t.getMessage());
     }
 }

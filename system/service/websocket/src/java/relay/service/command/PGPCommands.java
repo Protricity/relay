@@ -119,7 +119,10 @@ public class PGPCommands implements ISocketCommand {
                 if(sessionUID.compareTo(userInfo.SessionUID) != 0)
                     throw new PGPException("Session UID String Mismatch: " + sessionUID);
 
+                if(split[3].length() == 0)
+                    throw new PGPException("Invalid Username in IDSIG");
                 userInfo.UserName = split[3];
+
                 userInfo.Visibility = split[4];
                 userInfo.IDSigFirstLine = IDSIGFirstLine;
 //                userInfo.CacheTime = Integer.parseInt(split[5]);

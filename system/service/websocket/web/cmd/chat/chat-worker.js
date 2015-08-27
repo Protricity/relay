@@ -41,9 +41,9 @@
 
     var activeChannels = [];
 
-    self.messageCommand =
-    self.joinCommand =
-    self.leaveCommand = function(commandString) {
+    socketCommands.message =
+    socketCommands.join =
+    socketCommands.leave = function(commandString) {
         var args = commandString.split(/\s+/, 3);
         var channelPath = fixChannelPath(args[1]);
 //         var session_uid = match[2];
@@ -54,10 +54,12 @@
     };
 
 
-    self.chatCommand = self.sendWithFastestSocket;
+    socketCommands.chat = function(commandString) { return self.sendWithFastestSocket(commandString); };
 
-    self.chatResponse = function(commandResponse) {
+    socketResponses.chat = function(commandResponse, e) {
         var match = /^(chat)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandResponse);
+        if(!match)
+            throw new Error("Invalid Chat Response: " + commandResponse);
         var channelPath = fixChannelPath(match[2]);
         var session_uid = match[3];
         var username = match[4];
@@ -71,7 +73,7 @@
         );
     };
 
-    self.userlistResponse = function(commandResponse) {
+    socketResponses.userlist = function(commandResponse) {
         var match = /^(userlist)\s+([^\s]+)\n([\s\S]+)$/im.exec(commandResponse);
         var channelPath = fixChannelPath(match[2]);
         var userList = match[3].split(/\n/img);
@@ -103,7 +105,7 @@
         console.log([channelPath, userList, optionHTML]);
     };
 
-    self.joinResponse = function(commandResponse) {
+    socketResponses.join = function(commandResponse) {
         var args = commandResponse.split(/\s+/, 4);
         var channelPath = fixChannelPath(args[1]);
         var session_uid = args[2];
@@ -117,7 +119,7 @@
         );
     };
 
-    self.leaveResponse = function(commandResponse) {
+    socketResponses.leave = function(commandResponse) {
         var args = commandResponse.split(/\s+/, 4);
         var channelPath = fixChannelPath(args[1]);
         var session_uid = args[2];
@@ -131,7 +133,7 @@
         );
     };
 
-    self.messageResponse = function(commandResponse) {
+    socketResponses.message = function(commandResponse) {
         var match = /^(msg|message)\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandResponse);
         var session_uid = match[2];
         var content = fixPGPMessage(match[3]);

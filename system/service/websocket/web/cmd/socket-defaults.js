@@ -1,78 +1,39 @@
-(function() {
-
-    self.defaultSocketList = [
-        'ws://' + self.location.host + (self.location.port ? '' : ':8080') + '/relay-server/socket'
-        //'ws://relay.co.il:8080/relay-server/socket'
-        //'ws://localhost:8080/relay-server/socket'
-    ];
+//if(typeof _socket_defaults_js === 'undefined') {
+//    _socket_defaults_js = true;
 
 
-    self.socketListByPath = [];
-    //socketListByPath.push([/regex/, ['ws://domain:port/path/to/socket']]);
+var socketDefaultList = [
+    'ws://' + location.host + (location.port ? '' : ':8080') + '/relay-server/socket'
+    //'ws://relay.co.il:8080/relay-server/socket'
+    //'ws://localhost:8080/relay-server/socket'
+];
 
 
-    // Socket Commands
+var socketListByPath = [];
+//socketListByPath.push([/regex/, ['ws://domain:port/path/to/socket']]);
 
-    self.infoCommand = function(commandString) { return self.sendWithFastestSocket(commandString); };
-    self.infoResponse = function(commandResponse) { return self.routeResponseToClient(commandResponse); };
-    self.errorCommand = function(commandString) { return self.sendWithFastestSocket(commandString); };
-    self.errorResponse = function(commandResponse) { return self.routeResponseToClient(commandResponse); };
+var socketCommands = {};
+var socketResponses = {};
+var socketAutoLoaders = {};
 
-
-    // HTTP Commands
-
-    self.getCommand =
-    self.postCommand =
-    self.putCommand =
-    self.deleteCommand =
-    self.patchCommand =
-    self.headCommand =
-    function(commandString) {
-        importScripts('http/http-worker.js');
-        self.executeWorkerCommand(commandString);
-    };
-
-    // Chat Commands
-
-    self.joinCommand =
-    self.leaveCommand =
-    self.messageCommand =
-    self.chatCommand =
-    function(commandString, e) {
-        importScripts('chat/chat-worker.js');
-        self.executeWorkerCommand(commandString, e);
-    };
+// Socket Commands
 
 
-    // Feed Commands
-
-    self.postCommand = //todo post=>put
-    self.feedCommand =
-    function(commandString, e) {
-        importScripts('feed/feed-worker.js');
-        self.executeWorkerCommand(commandString, e);
-    };
+socketCommands.info = function(commandString) { return self.sendWithFastestSocket(commandString); };
+socketResponses.info = function(commandResponse) { return self.routeResponseToClient(commandResponse); };
+socketCommands.error = function(commandString) { return self.sendWithFastestSocket(commandString); };
+socketResponses.error = function(commandResponse) { return self.routeResponseToClient(commandResponse); };
 
 
 
-    // PGP Commands
+// HTTP Commands
+socketAutoLoaders['http/http-worker.js'] = ['get', 'post', 'put', 'delete', 'patch', 'head'];
 
-    self.keygenCommand =
-    self.encryptCommand =
-    self.registerCommand =
-    self.unregisterCommand =
-    self.manageCommand =
-    self.identifyCommand =
-        function(commandString, e) {
-            importScripts('pgp/pgp-worker.js');
-            self.executeWorkerCommand(commandString, e);
-        };
+// Chat Commands
+socketAutoLoaders['chat/chat-worker.js'] = ['join', 'leave', 'message', 'chat'];
 
-    self.identifyResponse =
-    self.idsigResponse =
-        function(responseString, e) {
-            importScripts('pgp/pgp-worker.js');
-            self.executeWorkerResponse(responseString, e);
-        };
+// Feed Commands
+socketAutoLoaders['feed/feed-worker.js'] = ['feed'];
 
-})();
+// PGP Commands
+socketAutoLoaders['pgp/pgp-worker.js'] = ['keygen', 'encrypt', 'register', 'unregister', 'manage', 'identify'];

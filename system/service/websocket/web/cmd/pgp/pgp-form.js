@@ -152,10 +152,11 @@
             passphraseElm.parentNode._original_display = passphraseElm.parentNode.style.display;
         var idSignatureElm = formElm.querySelector('[name=id_signature]');
         var submitSectionElm = formElm.getElementsByClassName('submit-section')[0];
-        var usernameElm = formElm.querySelector('[name=username');
         var visibilityElm = formElm.querySelector('[name=visibility]');
 
+        var usernameElm = formElm.querySelector('[name=username]');
         var username = usernameElm.value;
+
         var visibility = '';
         for(var vi=0; vi<visibilityElm.length; vi++)
             if(visibilityElm[vi].selected)
@@ -169,11 +170,6 @@
             return formElm;
         }
 
-        var identityString = "IDSIG" +
-            " " + selectedPGPPublicKeyID +
-            " " + session_uid +
-            " " + username +
-            " " + visibility;
 
         selectedPGPPublicKeyID = selectedPGPPublicKeyID.substr(selectedPGPPublicKeyID.length - 16);
 
@@ -193,6 +189,18 @@
 
                 var privateKey = openpgp.key.readArmored(privateKeyData.block_private).keys[0];
 
+                if(!username || username.default === username) {
+                    username = privateKey.getUserIds()[0].trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
+                    usernameElm.value = username;
+                    usernameElm.default = username;
+                }
+
+                var identityString = "IDSIG" +
+                    " " + selectedPGPPublicKeyID +
+                    " " + session_uid +
+                    " " + username +
+                    " " + visibility;
+
                 if(!lastIDString || identityString !== lastIDString) {
                     lastIDString = identityString;
                     idSignatureElm.innerHTML = '';
@@ -200,12 +208,6 @@
                     //setStatus(formElm, "");
                 }
 
-
-                if(!username || username.default === username) {
-                    var defaultUsername = privateKey.getUserIds()[0].trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
-                    usernameElm.value = defaultUsername;
-                    username.default = defaultUsername;
-                }
 
                 if(privateKey.primaryKey.isDecrypted) {
                     passphraseElm.parentNode.style.display = 'none';
@@ -254,6 +256,18 @@
         });
 
         return formElm;
+    };
+
+    window.savePGPIdentitySettings = function(e) {
+        switch(e.target.getAttribute('name')) {
+            case 'auto_identify':
+                var autoSetting = e.target.value;
+                console.info(autoSetting, e.target, e);
+                break;
+
+            default:
+                console.error("Invalid settings target: ", e.target, e);
+        }
     };
 
     window.clickPGPIdentityCustomCacheTime = function(e) {
@@ -340,7 +354,7 @@
         })(focusRequiredElms[i])
     };
     document.addEventListener('log', onLog);
-    onLog();
+    setTimeout(onLog, 500);
 
 
     // IE Fix

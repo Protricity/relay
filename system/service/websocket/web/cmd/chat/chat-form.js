@@ -4,12 +4,14 @@
 (function() {
 
 //    var unidentifiedSessionUserElms = document.getElementsByClassName('unidentified-session-uid');
-//    document.addEventListener('log', function(e) {
-//        var htmlContainer = e.target;
-//        // If this is a chat container, scroll to the bottom
-//        var channelContent = htmlContainer.querySelector('form[name=chat-form] .channel-content');
-//        if(channelContent)
-//            channelContent.scrollTop = channelContent.scrollHeight;
+    document.addEventListener('log', function(e) {
+        var htmlContainer = e.target;
+        // If this is a chat container, scroll to the bottom
+        var channelContent = htmlContainer.querySelector('form[name=chat-form] .channel-content');
+        if (channelContent)
+            channelContent.scrollTop = channelContent.scrollHeight;
+
+    });
 //
 //        if(unidentifiedSessionUserElms.length > 0) {
 //            self.PGPDB(function(db, PGPDB) {

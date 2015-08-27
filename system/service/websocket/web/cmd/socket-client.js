@@ -69,7 +69,7 @@
         var args = /^log(?:.(\w+))?\s+(\S+)\s+(\S+)\s+([\s\S]*)$/mi.exec(commandString);
         if(!args)
             throw new Error("Invalid Log: " + commandString);
-        var subCommand = args[1] ? args[1].toLowerCase() : null;
+        var subCommand = args[1] ? args[1].toLowerCase() : 'append';
         var channelPath = args[2];
         var channelSelector = args[3];
         var content = args[4];
@@ -85,12 +85,13 @@
             if(match2) {
                 var hrefValue = match2[1];
                 var oldScript = document.querySelector('script[src=' + hrefValue.replace(/[/.:~]/g, '\\$&') + ']');
-                if(oldScript)
-                    oldScript.parentNode.removeChild(oldScript);
-                var newScript = document.createElement('script');
-                newScript.setAttribute('src', hrefValue);
-                document.getElementsByTagName('head')[0].appendChild(newScript);
-                //console.log("Inserted: ", newScript, oldScript);
+                if(!oldScript) {
+                    //oldScript.parentNode.removeChild(oldScript);
+                    var newScript = document.createElement('script');
+                    newScript.setAttribute('src', hrefValue);
+                    document.getElementsByTagName('head')[0].appendChild(newScript);
+                    //console.log("Inserted: ", newScript, oldScript);
+                }
             } else {
                 console.error("Invalid Script: " + scriptContent);
             }
@@ -119,8 +120,23 @@
                     throw new Error("Could not find selector: " + channelSelector);
             }
 
+            switch(subCommand) {
+                case 'replace':
+                    contentTarget.innerHTML = content;
+                    break;
+
+                case 'prepend':
+                    contentTarget.innerHTML = content + contentTarget.innerHTML;
+                    break;
+
+                case 'append':
+                    contentTarget.innerHTML = content + contentTarget.innerHTML;
+                    break;
+
+                default:
+                    throw new Error("Unknown subcommand: " + subCommand);
+            }
             if(subCommand === 'replace') {
-                contentTarget.innerHTML = content;
             } else {
                 if(subCommand === 'prepend') {
                     contentTarget.innerHTML = content + contentTarget.innerHTML;

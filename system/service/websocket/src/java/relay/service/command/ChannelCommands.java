@@ -131,8 +131,14 @@ public class ChannelCommands implements ISocketCommand {
         
         channelUsers.remove(userSession);
         
-        mUserChannels.get(userSession)
-            .remove(channel);
+        Iterator<String> iter = mUserChannels.get(userSession).iterator();
+
+        while (iter.hasNext()) {
+            String userChannel = iter.next();
+
+            if (userChannel.compareToIgnoreCase(channel) == 0)
+                iter.remove();
+        }
     }
 
     public boolean hasChannel(Session userSession, String channel) {
@@ -147,9 +153,10 @@ public class ChannelCommands implements ISocketCommand {
             return true;
         if(mUserChannels.containsKey(expiredSession)) {
             // Leave all channels
-            for(String channel: mUserChannels.get(expiredSession)) {
-                leaveChannel(expiredSession, channel);
-            }
+            Iterator<String> channels = mUserChannels.get(expiredSession).iterator();
+
+            while (channels.hasNext()) 
+                leaveChannel(expiredSession, channels.next());
             
             // Remove from user record
             mUserChannels.remove(expiredSession);
@@ -271,6 +278,6 @@ public class ChannelCommands implements ISocketCommand {
         for(Session removeSession: removeSessions)
             checkSession(removeSession);
                 
-        sendText(userSession, idSigFirstLine);
+//        sendText(userSession, idSigFirstLine);
     }
 }

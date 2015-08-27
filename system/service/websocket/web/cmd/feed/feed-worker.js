@@ -105,7 +105,7 @@
      *
      * @param commandString POST [channel] [content]
      */
-    self.postCommand = function (commandString) {
+    socketCommands.post12 = function (commandString) {
         var match = /^post\s*([\s\S]*)?$/im.exec(commandString);
 
         var content = match[1];
@@ -132,14 +132,14 @@
 
     };
 
-    self.postResponse = self.routeResponseToClient;
+    socketResponses.pos1t2 = function(commandString) { return self.sendWithFastestSocket(commandString); };
 
     var feedNCounter = 0;
     /**
      *
      * @param commandString FEED [channel prefix] [start time] [end time]
      */
-    self.feedCommand = function (commandString) {
+    socketCommands.feed = function (commandString) {
         var match = /^feed\s*(.*)$/im.exec(commandString);
 
         var channelPrefix = match[1] || '~';
@@ -209,7 +209,7 @@
 
 
 
-    self.feedResponse = self.routeResponseToClient;
+    socketResponses.feed = function(commandString) { return self.sendWithFastestSocket(commandString); };
 
 
     function protectHTMLContent(htmlContent) {

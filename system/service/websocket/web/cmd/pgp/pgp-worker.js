@@ -163,13 +163,11 @@
                 //"<input type='button' name='submit-sign' value='Sign' onclick='focusPGPIdentifyForm(event)'/>" +
                 "<input type='submit' name='submit-identify' value='Identify'/>" +
 
-                "<label>" +
-                    "<select name='auto_identify' style='width:16em;' oninput='focusPGPIdentifyForm(event)'>" +
-                        "<option value='ask'>Ask me every time</option>" +
-                        "<option value='auto-host'>Auto-Identify to {$socket_host} (passphrase may be required)</option>" +
-                        "<option value='auto-all'>Auto-Identify to all hosts (passphrase may be required)</option>" +
-                    "</select>" +
-                "</label>" +
+                "<select name='auto_identify' style='width:16em;' oninput='savePGPIdentitySettings(event)'>" +
+                    "<option value='ask'>Ask me every time</option>" +
+                    "<option value='auto-host'>Auto-Identify to {$socket_host} (passphrase may be required)</option>" +
+                    "<option value='auto-all'>Auto-Identify to all hosts (passphrase may be required)</option>" +
+                "</select>" +
 
                 "<input type='hidden' name='session_uid' value='{$session_uid}'/>" +
             "</div>" +
@@ -183,16 +181,14 @@
         "<form name='pgp-identify-success-form' action='#' method='post'>" +
         "<div class='status-box'>{$status_content}</div>" +
 
-            "<input type='submit' name='submit-close' value='Close'/>" +
+            "Options for next time:<hr/>" +
 
-            "<hr/>Options for next time:<br/>" +
-            "<label>" +
-                "<select name='auto_identify' style='width:16em;' oninput='focusPGPIdentifyForm(event)'>" +
-                    "<option value='ask'>Ask me every time</option>" +
-                    "<option value='auto-host'>Auto-Identify to {$socket_host} (passphrase may be required)</option>" +
-                    "<option value='auto-all'>Auto-Identify to all hosts (passphrase may be required)</option>" +
-                "</select>" +
-            "</label>" +
+            "<input type='submit' name='submit-close' value='Close'/>" +
+            "<select name='auto_identify' style='width:16em;' oninput='savePGPIdentitySettings(event)'>" +
+                "<option value='ask'>Ask me every time</option>" +
+                "<option value='auto-host'>Auto-Identify to {$socket_host} (passphrase may be required)</option>" +
+                "<option value='auto-all'>Auto-Identify to all hosts (passphrase may be required)</option>" +
+            "</select>" +
 
             "<input type='hidden' name='session_uid' value='{$session_uid}'/>" +
         "</div>" +
@@ -240,7 +236,7 @@
     /**
      * @param commandString KEYGEN --bits [2048] [user id]
      */
-    self.keygenCommand = function (commandString) {
+    socketCommands.keygen = function (commandString, e) {
         var match = /^keygen ?(.+)?$/im.exec(commandString);
         if(!match)
             throw new Error("Invalid command: " + commandString);
@@ -329,14 +325,14 @@
         });
     };
 
-    self.keygenResponse = function(e) {
+    socketResponses.keygen = function(responseString, e) {
         throw new Error("keygen response is not implemented");
     };
 
     /**
      * @param commandString REGISTER
      */
-    self.registerCommand = function (commandString) {
+    socketCommands.register = function (commandString, e) {
         var privateKeyBlock = '';
         var match = /^register\s*([\s\S]*)$/im.exec(commandString);
         if(match && match[1])
@@ -378,16 +374,14 @@
 
     };
 
-    self.registerResponse = function(e) {
-        throw new Error("keygen response is not implemented");
+    socketResponses.register = function(responseString, e) {
+        throw new Error("register response is not implemented");
     };
-
-
 
     /**
      * @param commandString UNREGISTER [PGP Private Key Fingerprint]
      */
-    self.unregisterCommand = function (commandString) {
+    socketCommands.unregister = function (commandString) {
         var match = /^unregister\s+(.*)$/im.exec(commandString);
         var privateKeyFingerprint = match[1].trim();
         var privateKeyID = privateKeyFingerprint.substr(privateKeyFingerprint.length - 16);
@@ -397,24 +391,25 @@
             var privateKeyStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
 
             var insertRequest = privateKeyStore.delete(privateKeyID);
-            insertRequest.onsuccess = function(event) {
+            insertRequest.onsuccess = function(e) {
                 var status_content = "Deleted private key block from database: " + privateKeyID;
                 console.log(status_content);
-                self.manageCommand("MANAGE", status_content);
+                socketCommands.manage("MANAGE", e, status_content);
 
             };
-            insertRequest.onerror = function(event) {
-                var err = event.currentTarget.error;
+            insertRequest.onerror = function(e) {
+                var err = e.currentTarget.error;
                 var status_content = "Error adding private key (" + privateKeyID + ") database: " + err.message;
-                console.error(status_content, event);
-                self.manageCommand("MANAGE", status_content);
+                console.error(status_content, e);
+                socketCommands.manage("MANAGE", e, status_content);
 
             };
         });
     };
 
-    self.unregisterResponse = function(e) {
-        throw new Error("keygen response is not implemented");
+
+    socketResponses.unregister = function(responseString, e) {
+        throw new Error("unregister response is not implemented");
     };
 
 
@@ -422,7 +417,7 @@
      * @param commandString
      * @param status_content
      */
-    self.manageCommand = function (commandString, status_content) {
+    socketCommands.manage = function (commandString, e, status_content) {
         //var match = /^manage$/im.exec(commandString);
 
         self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + MANAGE_TEMPLATE
@@ -454,7 +449,7 @@
 
     };
 
-    self.manageResponse = function(e) {
+    socketResponses.manage = function(e) {
         throw new Error("manage response is not implemented");
     };
 
@@ -465,7 +460,7 @@
     /**
      * @param commandData IDENTIFY --session [session-uid] --id [pgp-key-id] --username [username] --visibility [visibility]
      */
-    self.identifyCommand = function (commandData, e) {
+    socketCommands.identify = function (commandData, e) {
         if(typeof commandData === 'string')
             commandData = {message: commandData, passphrase: null};
         var commandString = commandData.message;
@@ -610,15 +605,16 @@
     /**
      * @param responseString [challenge_string] [session_id]
      */
-    self.identifyResponse = function (responseString, e) {
-        identifyRequests.push([responseString, e.target]);
-        self.identifyCommand("IDENTIFY", e);
+    socketResponses.identify = function (responseString, e) {
+        var socket = e.target;
+        identifyRequests.push([responseString, socket]);
+        socketCommands.identify("IDENTIFY", e);
     };
 
     /**
      * @param commandData IDSIG [challenge-string] [session-id] [pgp-key-id] [username] [visibility]
      */
-    self.idsigResponse = function (commandData, e) {
+    socketResponses.idsig = function (commandData, e) {
         var split = commandData.split(/\s+/g);
         if(split[0].toUpperCase() !== 'IDSIG')
             throw new Error("Invalid IDSIG: " + commandData);
