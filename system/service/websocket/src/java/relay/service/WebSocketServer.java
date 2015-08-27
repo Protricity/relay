@@ -62,7 +62,7 @@ public class WebSocketServer {
             for(int i=0; i<callbacks.size(); i++) {
                 try {
                     ISocketCommand command = callbacks.get(i);
-                    command.onSocketConnection(session);
+                    command.onSocketOpen(session);
 
                 } catch (Exception ex) {
                     session.getBasicRemote().sendText("ERROR " + ex.getMessage());
@@ -109,6 +109,23 @@ public class WebSocketServer {
     @OnClose
     public void onClose(Session session){
         System.out.println("Session " + session.getId()+" has ended");
+        try {
+            session.getBasicRemote().sendText("INFO Connection Closed: " + session.getId());
+
+            for(int i=0; i<callbacks.size(); i++) {
+                try {
+                    ISocketCommand command = callbacks.get(i);
+                    command.onSocketOpen(session);
+
+                } catch (Exception ex) {
+                    session.getBasicRemote().sendText("ERROR " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            }
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @OnError

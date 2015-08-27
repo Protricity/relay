@@ -161,10 +161,8 @@
             if(visibilityElm[vi].selected)
                 visibility = (visibilityElm[vi].value[0] !== '_' ? visibility : '') + visibilityElm[vi].value.replace('_', '');
         var session_uid = formElm.querySelector('[name=session_uid]').value;
-        var selectedPGPKeyID = formElm.querySelector('[name=pgp_id]').value;
+        var selectedPGPPublicKeyID = formElm.querySelector('[name=pgp_id_public]').value;
         var autoIdentify = formElm.querySelector('[name=auto_identify]').value;
-
-        //var cache_time = formElm.querySelector('[name=cache_time]').value;
 
         if(/\s/.test(username)) {
             setStatus(formElm, "<span class='error'>Username may not contain spaces. Bummer :(</span>");
@@ -172,82 +170,87 @@
         }
 
         var identityString = "IDSIG" +
+            " " + selectedPGPPublicKeyID +
             " " + session_uid +
-            " " + selectedPGPKeyID +
             " " + username +
             " " + visibility;
 
-        //var id_signature = identityString;
+        selectedPGPPublicKeyID = selectedPGPPublicKeyID.substr(selectedPGPPublicKeyID.length - 16);
 
-        self.PGPDB.getPrivateKeyData(selectedPGPKeyID, function(err, privateKeyData) {
-            if(err)
+        self.PGPDB(function (db, PGPDB) {
+            var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readonly");
+            var privateKeyDBStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
+
+            var index = privateKeyDBStore.index('id_public');
+            var req = index.get(selectedPGPPublicKeyID);
+            req.onerror = function(err) {
                 throw new Error(err);
-            var privateKey = openpgp.key.readArmored(privateKeyData.block_private).keys[0];
+            };
+            req.onsuccess = function (evt) {
+                var privateKeyData = evt.target.result;
+                if(!privateKeyData)
+                    throw new Error("Private Key Not Found: " + selectedPGPPublicKeyID);
 
-            if(!lastIDString || identityString !== lastIDString) {
-                lastIDString = identityString;
-                idSignatureElm.innerHTML = '';
-                submitSectionElm.style.display = 'none';
-                //setStatus(formElm, "");
-            }
+                var privateKey = openpgp.key.readArmored(privateKeyData.block_private).keys[0];
+
+                if(!lastIDString || identityString !== lastIDString) {
+                    lastIDString = identityString;
+                    idSignatureElm.innerHTML = '';
+                    submitSectionElm.style.display = 'none';
+                    //setStatus(formElm, "");
+                }
 
 
-            if(!username || username.default === username) {
-                var defaultUsername = privateKey.getUserIds()[0].trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
-                usernameElm.value = defaultUsername;
-                username.default = defaultUsername;
-            }
+                if(!username || username.default === username) {
+                    var defaultUsername = privateKey.getUserIds()[0].trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
+                    usernameElm.value = defaultUsername;
+                    username.default = defaultUsername;
+                }
 
-            if(privateKey.primaryKey.isDecrypted) {
-                passphraseElm.parentNode.style.display = 'none';
-                passphraseElm.removeAttribute('required');
+                if(privateKey.primaryKey.isDecrypted) {
+                    passphraseElm.parentNode.style.display = 'none';
+                    passphraseElm.removeAttribute('required');
 
-            } else {
-                passphraseElm.parentNode.style.display = passphraseElm.parentNode._original_display || 'block';
-                passphraseElm.setAttribute('required', 'required');
-            }
+                } else {
+                    passphraseElm.parentNode.style.display = passphraseElm.parentNode._original_display || 'block';
+                    passphraseElm.setAttribute('required', 'required');
+                }
 
 //             var publicKey = openpgp.key.readArmored(privateKeyData.block_pubic).keys[0];
-            if(!privateKey.primaryKey.isDecrypted) {
-                if (passphraseElm.value) {
-                    privateKey.primaryKey.decrypt(passphraseElm.value);
+                if(!privateKey.primaryKey.isDecrypted) {
+                    if (passphraseElm.value) {
+                        privateKey.primaryKey.decrypt(passphraseElm.value);
+                    } else {
+                        setStatus(formElm, "<span class='passphrase'>PGP Passphrase required</span>", true);
+                    }
+                }
+
+                if(privateKey.primaryKey.isDecrypted) {
+
+                    if(!idSignatureElm.innerHTML) {
+                        setStatus(formElm, "Signing Identity...", true);
+                        openpgp.signClearMessage(privateKey, identityString)
+                            .then(function (signedIDString) {
+
+                                setStatus(formElm, "<span class='success'>" + "Signature successful. Ready to IDENTIFY!" + "</span>");
+                                idSignatureElm.innerHTML = signedIDString.trim();
+                                //idSignatureElm.innerHTML += "\n" + privateKeyData.user_profile_signed;
+                                idSignatureElm.innerHTML += "\n" + privateKeyData.block_public;
+                                submitSectionElm.style.display = 'block';
+
+                                //if(autoIdentify) {
+                                //    console.info("Auto-submitting form: ", formElm);
+                                //    submitPGPIdentifyForm(e);
+                                //}
+                            });
+                    }
+
                 } else {
-                    setStatus(formElm, "<span class='passphrase'>PGP Passphrase required</span>", true);
+                    idSignatureElm.innerHTML = '';
+                    submitSectionElm.style.display = 'none';
+
                 }
-            }
-
-            if(privateKey.primaryKey.isDecrypted) {
-
-                if(!idSignatureElm.innerHTML) {
-                    setStatus(formElm, "Signing Identity...", true);
-                    openpgp.signClearMessage(privateKey, identityString)
-                        .then(function (signedIDString) {
-
-                            setStatus(formElm, "<span class='success'>" + "Signature successful. Ready to IDENTIFY!" + "</span>");
-                            idSignatureElm.innerHTML = signedIDString.trim();
-                            //idSignatureElm.innerHTML += "\n" + privateKeyData.user_profile_signed;
-                            idSignatureElm.innerHTML += "\n" + privateKeyData.block_public;
-                            submitSectionElm.style.display = 'block';
-
-                            //if(autoIdentify) {
-                            //    console.info("Auto-submitting form: ", formElm);
-                            //    submitPGPIdentifyForm(e);
-                            //}
-                        });
-                }
-
-            //    var errMSG = passphraseElm.value === ''
-            //        ? 'PGP key pair requires a passphrase'
-            //        : 'Invalid PGP passphrase';
-            //    setStatus(formElm, "<span class='error'>" + errMSG + "</span>");
-            //    //passphraseElm.focus();
-            //    console.error(errMSG);
-            } else {
-                idSignatureElm.innerHTML = '';
-                submitSectionElm.style.display = 'none';
-
-            }
-
+            };
         });
 
         return formElm;
@@ -264,7 +267,7 @@
         var passphraseElm = formElm.querySelector('[name=passphrase]');
 
 
-        var pgp_id = formElm.querySelector('[name=pgp_id]').value;
+        var pgp_id_public = formElm.querySelector('[name=pgp_id_public]').value;
         var username = formElm.querySelector('[name=username]').value;
         //var challenge_string = formElm.querySelector('[name=challenge_string]').value;
         var visibilityElm = formElm.querySelector('[name=visibility]');

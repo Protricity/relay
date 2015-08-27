@@ -91,9 +91,9 @@
             "<div class='status-box'>{$status_content}</div>" +
 
             "<label class='label-pgp-id'>Identify using PGP Identity:<br/>" +
-                "<select name='pgp_id' required='required' onfocus='focusPGPIdentifyForm(event)' onselect='focusPGPIdentifyForm(event)' oninput='focusPGPIdentifyForm(event)'>" +
+                "<select name='pgp_id_public' required='required' onfocus='focusPGPIdentifyForm(event)' onselect='focusPGPIdentifyForm(event)' oninput='focusPGPIdentifyForm(event)'>" +
                     "<optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>" +
-                        "{$pgp_id_options}" +
+                        "{$pgp_id_public_options}" +
                     "</optgroup>" +
                     "<optgroup label='Other options'>" +
                         "<option value=''>Manage PGP Identities...</option>" +
@@ -206,7 +206,7 @@
         "<legend>Manage PGP Identities</legend>" +
         "<form name='pgp-manage-form' action='#' onsubmit='return submitPGPManageForm(event);'>" +
             "<div class='status-box'>{$status_content}</div>" +
-            "<div class='pgp-id-box-container channel-content'>{$pgp_id_box_content}</div>" +
+            "<div class='pgp-id-box-container channel-content'>{$pgp_id_public_box_content}</div>" +
         "</form>";
 
     var MANAGE_TEMPLATE_ENTRY =
@@ -269,7 +269,7 @@
         }
 
         if(!userID || !send_as_socket_command) {
-            self.routeResponseToClient("RLOG " + PATH_MAIN + " " + GENERATE_TEMPLATE
+            self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + GENERATE_TEMPLATE
                     .replace(/{\$send_as_socket_command}/gi, send_as_socket_command ? '1' : '0')
                     .replace(/{\$[^}]+}/gi, '')
             );
@@ -311,7 +311,7 @@
                     }, function(err, pgp_private) {
                         console.log("private key: ", err, pgp_private);
 
-                        self.routeResponseToClient("RLOG " + PATH_MAIN + " " + REGISTER_TEMPLATE
+                        self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + REGISTER_TEMPLATE
                                 .replace(/{\$private_key}/gi, pgp_private)
                                 .replace(/{\$[^}]+}/gi, '')
                         );
@@ -353,8 +353,8 @@
         }
 
         if(showForm) {
-            //routeResponseToClient("RLOG " + PATH_MARKER + " " + KEYGEN_CLOSED_TEMPLATE);
-            self.routeResponseToClient("RLOG " + PATH_MAIN + " " + REGISTER_TEMPLATE
+            //routeResponseToClient("LOG.REPLACE " + PATH_MARKER + " " + KEYGEN_CLOSED_TEMPLATE);
+            self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + REGISTER_TEMPLATE
                     .replace(/{\$private_key}/gi, privateKeyBlock)
                     .replace(/{\$[^}]+}/gi, '')
             );
@@ -364,7 +364,7 @@
         getPGPDB(function(db, PGPDB) {
             PGPDB.addPrivateKeyBlock(privateKeyBlock, function(err, data) {
                 if(err) {
-                    self.routeResponseToClient("RLOG " + PATH_MAIN + " " + REGISTER_TEMPLATE
+                    self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + REGISTER_TEMPLATE
                             .replace(/{\$status_content}/gi, err)
                             .replace(/{\$private_key}/gi, privateKeyBlock)
                             .replace(/{\$[^}]+}/gi, '')
@@ -425,14 +425,14 @@
     self.manageCommand = function (commandString, status_content) {
         //var match = /^manage$/im.exec(commandString);
 
-        self.routeResponseToClient("RLOG " + PATH_MAIN + " " + MANAGE_TEMPLATE
+        self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + MANAGE_TEMPLATE
                 .replace(/{\$status_content}/gi, status_content || '')
                 .replace(/{\$[^}]+}/gi, '')
         );
 
         getPGPDB(function(db, PGPDB) {
             PGPDB.queryPrivateKeys(function(data) {
-                self.routeResponseToClient("LOG " + PATH_MAIN + " " + MANAGE_TEMPLATE_ENTRY
+                self.routeResponseToClient("LOG " + PATH_MAIN + " * " + MANAGE_TEMPLATE_ENTRY
                         .replace(/{\$id_private}/gi, data.id_private)
                         .replace(/{\$id_public}/gi, data.id_public)
                         .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
@@ -500,10 +500,12 @@
             visibility = contents; return '';
         });
 
-        match = /IDSIG (\S+) /i.exec(identifyContent);
+        match = /IDSIG\s+(\S+)\s+(\S+)\s+(\S+)/i.exec(identifyContent);
         if(match && match[1]) {
             //throw new Error("Could not find challenge string");
-            session_uid = match[1];
+            if(match[1]) selectedPGPKeyID = match[1];
+            if(match[2]) session_uid = match[2];
+            if(match[3]) username = match[3];
 
             var foundRequest = null;
             for (var j = 0; j < identifyRequests.length; j++) (function(identifyRequest) {
@@ -524,7 +526,7 @@
             //throw new Error("Could not find original IDENTIFY request socket: " + challengeString);
 
         getPGPDB(function(db, PGPDB) {
-            var pgp_id_options_html = '';
+            var pgp_id_public_options_html = '';
             //var id_signature = null;
             var password_style = 'display: none';
             var password_required = '';
@@ -536,7 +538,7 @@
 
             PGPDB.queryPrivateKeys(function(privateKeyData) {
 
-                var keyID = privateKeyData.id_private;
+                var publicKeyID = privateKeyData.id_public;
                 pgpIDCount++;
 
                 if(privateKeyData.default === '1') {
@@ -552,8 +554,8 @@
                     username = defaultUsername;
                 }
 
-                pgp_id_options_html +=
-                    '<option ' + (privateKeyData.default === '1' ? 'selected="selected"' : '') + ' value="' + keyID + '">' +
+                pgp_id_public_options_html +=
+                    '<option ' + (privateKeyData.default === '1' ? 'selected="selected"' : '') + ' value="' + publicKeyID + '">' +
                     (privateKeyData.passphrase_required ? '(*) ' : '') + privateKeyData.user_id.replace(/</, '&lt;') +
                     '</option>';
 
@@ -583,12 +585,12 @@
                     //signWithPrivateKey(identityString, selectedPrivateKeyData.block_private, commandData.passphrase,
                     //    function(err, signedIdentityString) {
 
-                            self.routeResponseToClient("RLOG " + PATH_ID_REQUEST + " " + IDENTIFY_TEMPLATE
+                            self.routeResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE
                                     .replace(/{\$status_content}/gi, status_content || '')
                                     //.replace(/{\$id_signature}/gi, signedIdentityString || '')
                                     .replace(/{\$socket_url}/gi, socket.url || '')
                                     .replace(/{\$socket_host}/gi, socket.url.split('/')[2] || '')
-                                    .replace(/{\$pgp_id_options}/gi, pgp_id_options_html || '')
+                                    .replace(/{\$pgp_id_public_options}/gi, pgp_id_public_options_html || '')
                                     .replace(/{\$session_uid}/gi, session_uid || '')
                                     .replace(/{\$password_style}/gi, password_style || '')
                                     .replace(/{\$password_required}/gi, password_required || '')
@@ -621,8 +623,8 @@
         if(split[0].toUpperCase() !== 'IDSIG')
             throw new Error("Invalid IDSIG: " + commandData);
 
-        var session_uid = split[1];
-        var pgp_key_id = split[2];
+        var pgp_key_id = split[1];
+        var session_uid = split[2];
         var username = split[3];
         var visibility = split[4];
 
@@ -637,7 +639,7 @@
             if (identifyRequest[0].indexOf("IDENTIFY " + session_uid) !== -1) {
                 var socket = identifyRequest[1];
 
-                self.routeResponseToClient("RLOG " + PATH_ID_REQUEST + " " + IDENTIFY_TEMPLATE_SUCCESS
+                self.routeResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE_SUCCESS
                         .replace(/{\$status_content}/gi, status_content || '')
                         .replace(/{\$socket_url}/gi, socket.url || '')
                         .replace(/{\$socket_host}/gi, socket.url.split('/')[2] || '')

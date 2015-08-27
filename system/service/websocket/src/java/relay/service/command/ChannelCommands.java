@@ -30,8 +30,13 @@ public class ChannelCommands implements ISocketCommand {
     }
 
     @Override
-    public void onSocketConnection(Session newSession) throws Exception {
+    public void onSocketOpen(Session newSession) throws Exception {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void onSocketClosed(Session oldSession) throws Exception {
+        checkSession(oldSession);
     }
     
     @Override
@@ -69,6 +74,8 @@ public class ChannelCommands implements ISocketCommand {
     
     public void joinChannel(Session userSession, String channel) {
         channel = fixPath(channel);
+        PGPCommands PC = PGPCommands.getStatic();
+        PGPCommands.PGPUserInfo userInfo = PC.getSessionPGPInfo(userSession);
         
         ArrayList<Session> channelUsers;
         if(mChannelUsers.containsKey(channel)) {
@@ -91,13 +98,14 @@ public class ChannelCommands implements ISocketCommand {
 
         String userListContent = "";
         
-        PGPCommands PC = PGPCommands.getStatic();
         // Notify other users
         for(Session channelUserSession : channelUsers) {
             if(channelUserSession.isOpen()) {
-                PGPCommands.PGPUserInfo userInfo = PC.getSessionPGPInfo(channelUserSession);
-                sendText(channelUserSession, "JOIN " + channel + " " + userInfo.getUserName(userSession));
-                userListContent += "\n" + userInfo.IDSigFirstLine.trim();
+                sendText(channelUserSession, "JOIN " + channel + " " + userInfo.SessionUID + " " + userInfo.UserName);
+            
+                userListContent += "\n" + 
+                    PC.getSessionPGPInfo(channelUserSession)
+                    .IDSigFirstLine;
             }
         }
         
@@ -108,6 +116,9 @@ public class ChannelCommands implements ISocketCommand {
     public void leaveChannel(Session userSession, String channel) throws IllegalArgumentException {
 //        channel = fixPath(channel);
         
+        PGPCommands PC = PGPCommands.getStatic();
+        PGPCommands.PGPUserInfo userInfo = PC.getSessionPGPInfo(userSession);
+        
         if(!mChannelUsers.containsKey(channel))
             throw new IllegalArgumentException("Channel not found");
         ArrayList<Session> channelUsers = mChannelUsers.get(channel);
@@ -116,7 +127,7 @@ public class ChannelCommands implements ISocketCommand {
 
         for(Session session : channelUsers) 
             if(session.isOpen()) 
-                sendText(session, "LEAVE " + channel + " " + getSessionChatID(userSession));
+                sendText(session, "LEAVE " + channel + " " + userInfo.SessionUID + " " + userInfo.UserName);
         
         channelUsers.remove(userSession);
         
@@ -148,9 +159,12 @@ public class ChannelCommands implements ISocketCommand {
 
 
     public void messageUser(Session userSession, String userTarget, String message) {
+        PGPCommands PC = PGPCommands.getStatic();
+        PGPCommands.PGPUserInfo userInfo = PC.getSessionPGPInfo(userSession);
+        
         for(Session session: userSession.getOpenSessions()) {
             if(userTarget.compareToIgnoreCase(session.getId()) == 0) {
-               sendText(session, "MESSAGE " + getSessionChatID(userSession) + " " + message);
+               sendText(session, "MESSAGE " + userInfo.SessionUID + " " + userInfo.UserName + " " + message);
                return;
             }
         }
@@ -159,6 +173,9 @@ public class ChannelCommands implements ISocketCommand {
     }
 
     public void chatChannel(Session userSession, String channel, String message) {
+        PGPCommands PC = PGPCommands.getStatic();
+        PGPCommands.PGPUserInfo userInfo = PC.getSessionPGPInfo(userSession);
+        
         channel = fixPath(channel);
         
         if(!hasChannel(userSession, channel))
@@ -174,7 +191,7 @@ public class ChannelCommands implements ISocketCommand {
         
         for(Session session : users)
             if(session.isOpen()) 
-               sendText(session, "CHAT " + channel + " " + getSessionChatID(userSession) + " " + message);
+               sendText(session, "CHAT " + channel + " " + userInfo.SessionUID + " " + userInfo.UserName + " " + message);
 
 //        String[] parts = channel.replaceAll("\\/$|^\\/", "").split("\\/");
 //        String wildCardPath = "*";
@@ -238,10 +255,10 @@ public class ChannelCommands implements ISocketCommand {
     }
     
 
-    public void sendIDSIG(Session session, String IDSIG) {
+    public void sendIDSIG(Session userSession, String IDSIG) {
         String idSigFirstLine = IDSIG.split("\n")[0];
         ArrayList<Session> removeSessions = new ArrayList<>();
-        for(String channel: mUserChannels.get(session)) {
+        for(String channel: mUserChannels.get(userSession)) {
             for(Session channelUserSession: mChannelUsers.get(channel)) {
                 if(channelUserSession.isOpen()) {
                     sendText(channelUserSession, idSigFirstLine);
@@ -254,5 +271,6 @@ public class ChannelCommands implements ISocketCommand {
         for(Session removeSession: removeSessions)
             checkSession(removeSession);
                 
+        sendText(userSession, idSigFirstLine);
     }
 }

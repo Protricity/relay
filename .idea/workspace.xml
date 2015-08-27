@@ -3,11 +3,17 @@
   <component name="ChangeListManager">
     <list default="true" id="f1a3609b-05f2-4e93-b5c1-0f477f2ec236" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/src/java/relay/service/command/ChannelCommands.java" afterPath="$PROJECT_DIR$/system/service/websocket/src/java/relay/service/command/ChannelCommands.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/src/java/relay/service/command/ISocketCommand.java" afterPath="$PROJECT_DIR$/system/service/websocket/src/java/relay/service/command/ISocketCommand.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/src/java/relay/service/command/PGPCommands.java" afterPath="$PROJECT_DIR$/system/service/websocket/src/java/relay/service/command/PGPCommands.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/src/java/relay/service/WebSocketServer.java" afterPath="$PROJECT_DIR$/system/service/websocket/src/java/relay/service/WebSocketServer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat-form.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat-form.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat-worker.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat-worker.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat.css" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-worker.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-worker.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-db.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-db.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-form.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-form.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-worker.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-worker.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/cmd/socket-client.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/cmd/socket-client.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="relay.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -42,35 +48,37 @@
       <file leaf-file-name="pgp-worker.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-worker.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-4.76" vertical-offset="2703" max-vertical-offset="12801">
-              <caret line="166" column="48" selection-start-line="166" selection-start-column="48" selection-end-line="166" selection-end-column="48" />
+            <state vertical-scroll-proportion="10.54" vertical-offset="10591" max-vertical-offset="12835">
+              <caret line="592" column="76" selection-start-line="592" selection-start-column="76" selection-end-line="592" selection-end-column="76" />
               <folding>
-                <marker date="1440601475044" expanded="true" signature="1825:1838" placeholder="..." />
-                <marker date="1440601475044" expanded="true" signature="5662:5679" placeholder="..." />
-                <marker date="1440601475044" expanded="true" signature="6989:7003" placeholder="..." />
-                <marker date="1440601475044" expanded="true" signature="10536:10547" placeholder="..." />
-                <marker date="1440601475044" expanded="true" signature="11672:11683" placeholder="..." />
-                <marker date="1440601475044" expanded="true" signature="31258:31270" placeholder="..." />
+                <marker date="1440639434202" expanded="true" signature="1825:1838" placeholder="..." />
+                <marker date="1440639434202" expanded="true" signature="5676:5693" placeholder="..." />
+                <marker date="1440639434202" expanded="true" signature="7003:7017" placeholder="..." />
+                <marker date="1440639434202" expanded="true" signature="10550:10561" placeholder="..." />
+                <marker date="1440639434202" expanded="true" signature="11686:11697" placeholder="..." />
+                <marker date="1440639434202" expanded="true" signature="31511:31523" placeholder="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="socket-defaults.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/socket-defaults.js">
+      <file leaf-file-name="chat-worker.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat-worker.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="268" max-vertical-offset="1428">
-              <caret line="39" column="22" selection-start-line="39" selection-start-column="22" selection-end-line="39" selection-end-column="22" />
-              <folding />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1390" max-vertical-offset="3519">
+              <caret line="94" column="48" selection-start-line="94" selection-start-column="48" selection-end-line="94" selection-end-column="48" />
+              <folding>
+                <marker date="1440639434206" expanded="true" signature="643:654" placeholder="..." />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="chat-worker.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat-worker.js">
+      <file leaf-file-name="pgp-db.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-db.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6784" vertical-offset="681" max-vertical-offset="2890">
-              <caret line="65" column="34" selection-start-line="65" selection-start-column="34" selection-end-line="65" selection-end-column="34" />
+            <state vertical-scroll-proportion="-7.32" vertical-offset="1908" max-vertical-offset="8109">
+              <caret line="123" column="0" selection-start-line="123" selection-start-column="0" selection-end-line="125" selection-end-column="37" />
               <folding />
             </state>
           </provider>
@@ -79,8 +87,34 @@
       <file leaf-file-name="pgp-form.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-form.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="3591" max-vertical-offset="6851">
-              <caret line="237" column="0" selection-start-line="237" selection-start-column="0" selection-end-line="237" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="2754" max-vertical-offset="6902">
+              <caret line="177" column="0" selection-start-line="177" selection-start-column="0" selection-end-line="177" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="feed-worker.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-worker.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-3.74" vertical-offset="2873" max-vertical-offset="5406">
+              <caret line="180" column="107" selection-start-line="180" selection-start-column="105" selection-end-line="180" selection-end-column="107" />
+              <folding>
+                <marker date="1440638545914" expanded="false" signature="2805:2818" placeholder="..." />
+                <marker date="1440638545914" expanded="false" signature="3290:3303" placeholder="..." />
+                <marker date="1440638545914" expanded="false" signature="4999:5012" placeholder="..." />
+                <marker date="1440638545914" expanded="false" signature="5110:5123" placeholder="..." />
+                <marker date="1440638545914" expanded="false" signature="5217:5230" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="socket-client.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/socket-client.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-0.864" vertical-offset="1747" max-vertical-offset="3315">
+              <caret line="71" column="19" selection-start-line="71" selection-start-column="19" selection-end-line="71" selection-end-column="19" />
               <folding />
             </state>
           </provider>
@@ -102,13 +136,15 @@
         <option value="$PROJECT_DIR$/system/service/websocket/nbproject/project.xml" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/index.html" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/socket-worker.js" />
-        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-db.js" />
-        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat-form.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/src/java/relay/service/command/ChannelCommands.java" />
-        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-form.js" />
-        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-worker.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/socket-defaults.js" />
+        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat-form.js" />
+        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-worker.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat-worker.js" />
+        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-worker.js" />
+        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-db.js" />
+        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-form.js" />
+        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/socket-client.js" />
       </list>
     </option>
   </component>
@@ -846,26 +882,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-worker.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.8" vertical-offset="281" max-vertical-offset="5406">
-          <caret line="28" column="34" selection-start-line="28" selection-start-column="26" selection-end-line="28" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavaScriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/EcmaScript5.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33333334" vertical-offset="2288" max-vertical-offset="3349">
           <caret line="153" column="17" selection-start-line="153" selection-start-column="17" selection-end-line="153" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-db.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-24.4" vertical-offset="6547" max-vertical-offset="7990">
-          <caret line="421" column="16" selection-start-line="421" selection-start-column="16" selection-end-line="421" selection-end-column="16" />
           <folding />
         </state>
       </provider>
@@ -878,10 +898,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat-form.js">
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/socket-defaults.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2108">
-          <caret line="66" column="33" selection-start-line="66" selection-start-column="33" selection-end-line="66" selection-end-column="33" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="268" max-vertical-offset="1428">
+          <caret line="39" column="22" selection-start-line="39" selection-start-column="22" selection-end-line="39" selection-end-column="22" />
           <folding />
         </state>
       </provider>
@@ -891,55 +911,79 @@
         <state />
       </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.107143" vertical-offset="2368" max-vertical-offset="3927">
-          <caret line="151" column="33" selection-start-line="151" selection-start-column="33" selection-end-line="151" selection-end-column="33" />
+        <state vertical-scroll-proportion="-7.107143" vertical-offset="4085" max-vertical-offset="4692">
+          <caret line="252" column="20" selection-start-line="252" selection-start-column="20" selection-end-line="252" selection-end-column="20" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/socket-client.js">
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat-form.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3553">
-          <caret line="30" column="26" selection-start-line="30" selection-start-column="26" selection-end-line="30" selection-end-column="26" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="251" max-vertical-offset="2108">
+          <caret line="27" column="55" selection-start-line="27" selection-start-column="55" selection-end-line="27" selection-end-column="55" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/feed/feed-worker.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.74" vertical-offset="2873" max-vertical-offset="5406">
+          <caret line="180" column="107" selection-start-line="180" selection-start-column="105" selection-end-line="180" selection-end-column="107" />
+          <folding>
+            <marker date="1440638545914" expanded="false" signature="2805:2818" placeholder="..." />
+            <marker date="1440638545914" expanded="false" signature="3290:3303" placeholder="..." />
+            <marker date="1440638545914" expanded="false" signature="4999:5012" placeholder="..." />
+            <marker date="1440638545914" expanded="false" signature="5110:5123" placeholder="..." />
+            <marker date="1440638545914" expanded="false" signature="5217:5230" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat-worker.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1390" max-vertical-offset="3519">
+          <caret line="94" column="48" selection-start-line="94" selection-start-column="48" selection-end-line="94" selection-end-column="48" />
+          <folding>
+            <marker date="1440639434206" expanded="true" signature="643:654" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-db.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.32" vertical-offset="1908" max-vertical-offset="8109">
+          <caret line="123" column="0" selection-start-line="123" selection-start-column="0" selection-end-line="125" selection-end-column="37" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-form.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3591" max-vertical-offset="6851">
-          <caret line="237" column="0" selection-start-line="237" selection-start-column="0" selection-end-line="237" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="2754" max-vertical-offset="6902">
+          <caret line="177" column="0" selection-start-line="177" selection-start-column="0" selection-end-line="177" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-worker.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.76" vertical-offset="2703" max-vertical-offset="12801">
-          <caret line="166" column="48" selection-start-line="166" selection-start-column="48" selection-end-line="166" selection-end-column="48" />
+        <state vertical-scroll-proportion="10.54" vertical-offset="10591" max-vertical-offset="12835">
+          <caret line="592" column="76" selection-start-line="592" selection-start-column="76" selection-end-line="592" selection-end-column="76" />
           <folding>
-            <marker date="1440601475044" expanded="true" signature="1825:1838" placeholder="..." />
-            <marker date="1440601475044" expanded="true" signature="5662:5679" placeholder="..." />
-            <marker date="1440601475044" expanded="true" signature="6989:7003" placeholder="..." />
-            <marker date="1440601475044" expanded="true" signature="10536:10547" placeholder="..." />
-            <marker date="1440601475044" expanded="true" signature="11672:11683" placeholder="..." />
-            <marker date="1440601475044" expanded="true" signature="31258:31270" placeholder="..." />
+            <marker date="1440639434202" expanded="true" signature="1825:1838" placeholder="..." />
+            <marker date="1440639434202" expanded="true" signature="5676:5693" placeholder="..." />
+            <marker date="1440639434202" expanded="true" signature="7003:7017" placeholder="..." />
+            <marker date="1440639434202" expanded="true" signature="10550:10561" placeholder="..." />
+            <marker date="1440639434202" expanded="true" signature="11686:11697" placeholder="..." />
+            <marker date="1440639434202" expanded="true" signature="31511:31523" placeholder="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/socket-defaults.js">
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/socket-client.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="268" max-vertical-offset="1428">
-          <caret line="39" column="22" selection-start-line="39" selection-start-column="22" selection-end-line="39" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat-worker.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6784" vertical-offset="681" max-vertical-offset="2890">
-          <caret line="65" column="34" selection-start-line="65" selection-start-column="34" selection-end-line="65" selection-end-column="34" />
+        <state vertical-scroll-proportion="-0.864" vertical-offset="1747" max-vertical-offset="3315">
+          <caret line="71" column="19" selection-start-line="71" selection-start-column="19" selection-end-line="71" selection-end-column="19" />
           <folding />
         </state>
       </provider>

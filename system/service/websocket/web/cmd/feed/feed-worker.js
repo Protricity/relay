@@ -119,7 +119,7 @@
 
         } else {
             var channelPath = '~';
-            self.routeResponseToClient("RLOG " + PATH_PREFIX_POST + channelPath + ' ' +
+            self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_POST + channelPath + ' * ' +
                 FEED_POST_FORM_TEMPLATE
                     .replace(/{\$row_n}/gi, (postFormNCounter++).toString())
                     .replace(/{\$content}/gi, content || '')
@@ -149,7 +149,7 @@
         var feedEndTime = Date.now();
         var feedStartTime = feedEndTime - MS_DAY;
 
-        self.routeResponseToClient("RLOG " + logChannelPath + ' ' +
+        self.routeResponseToClient("LOG.REPLACE " + logChannelPath + ' * ' +
             FEED_TEMPLATE
                 .replace(/{\$row_n}/gi, (postFormNCounter++).toString())
                 .replace(/{\$title}/gi, "Viewing Feed for " + fixedChannelPath)
@@ -178,7 +178,7 @@
                             function(data) {
                                 try{
                                     var contentProtected = protectHTMLContent(data.content_verified);
-                                    self.routeResponseToClient("LOG " + logChannelPath + " " + FEED_TEMPLATE_ENTRY
+                                    self.routeResponseToClient("LOG " + logChannelPath + " * " + FEED_TEMPLATE_ENTRY
                                             .replace(/{\$row_n}/gi, (feedNCounter++).toString())
                                             .replace(/{\$uid}/gi, data.key_id + '-' + data.timestamp)
                                             .replace(/{\$user_id}/gi, userID)

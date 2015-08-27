@@ -27,7 +27,14 @@ public interface ISocketCommand {
      * @param newSession
      * @throws Exception 
      */
-    void onSocketConnection(Session newSession) throws Exception;
+    void onSocketOpen(Session newSession) throws Exception;
+    
+    /**
+     * Called on closed socket connection
+     * @param oldSession
+     * @throws Exception 
+     */
+    void onSocketClosed(Session oldSession) throws Exception;
     
 }
 

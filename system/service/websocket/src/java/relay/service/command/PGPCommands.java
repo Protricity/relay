@@ -38,7 +38,8 @@ public class PGPCommands implements ISocketCommand {
             SessionUID = sessionUID;
             UserName = "guest";
             Visibility = "M";
-            IDSigFirstLine = "IDSIG " + sessionUID + " " + UserName + " " + Visibility;
+            PublicKeyID = "_"; // TODO: Guest pgp key
+            IDSigFirstLine = "IDSIG " + PublicKeyID + " " + sessionUID + " " + UserName + " " + Visibility;
         }
         public String SessionUID;
         public String PublicKeyID;
@@ -46,14 +47,6 @@ public class PGPCommands implements ISocketCommand {
         public String Visibility;
         public String IDSigFirstLine;
         public int CacheTime = 0;
-        
-        
-        public String getUserName(Session session) {
-            if(UserName != null)
-                return UserName;
-            return getSessionPGPInfo(session).SessionUID; // TODO move to chat or make generic
-        }
-        
     }
     
     private final HashMap<Session, PGPUserInfo> mUserInfo = new HashMap<>();
@@ -67,13 +60,17 @@ public class PGPCommands implements ISocketCommand {
     }
     
     @Override
-    public void onSocketConnection(Session newSession) throws Exception {
+    public void onSocketOpen(Session newSession) throws Exception {
         String sessionUID = newSession.getId().length() == 32
             ? getSessionPGPInfo(newSession).SessionUID
             : java.util.UUID.randomUUID().toString();
         mUserInfo.put(newSession, new PGPUserInfo(sessionUID));
         newSession.getBasicRemote().sendText("IDENTIFY " + sessionUID);
+    }
 
+    @Override
+    public void onSocketClosed(Session oldSession) throws Exception {
+        checkSession(oldSession);
     }
 
     @Override
@@ -90,6 +87,16 @@ public class PGPCommands implements ISocketCommand {
 //        session.getBasicRemote().sendText("ECHO " + message);
     }
 
+    public boolean checkSession(Session expiredSession) {
+        if(expiredSession.isOpen())
+            return true;
+        if(mUserInfo.containsKey(expiredSession)) {
+            // Remove from user record
+            mUserInfo.remove(expiredSession);
+        }
+        return false;
+    }
+    
     private void identifySession(Session session, String data) throws PGPException {
 
         PGPUserInfo userInfo = mUserInfo.get(session);
@@ -99,32 +106,33 @@ public class PGPCommands implements ISocketCommand {
         String publicKeyID = publicKeyFingerprint.substring(publicKeyFingerprint.length() - 16);
         ArrayList<String> verifiedContentList = verifySignedContent(session, data, publicKey);
         
-        String challengePrefix = "IDSIG " + userInfo.SessionUID;
+        String challengePrefix = "IDSIG " + publicKeyID + " " + userInfo.SessionUID;
         for(String verifiedContent : verifiedContentList) {
             int pos = verifiedContent.indexOf(challengePrefix);
             if(pos != -1) {
                 String IDSIG = verifiedContent.substring(pos);
-                String IDSIGFirstLine = IDSIG.split("\n")[0];
+                String IDSIGFirstLine = IDSIG.split("\n")[0].trim();
                 String[] split = IDSIGFirstLine.split(" ",6);
-//                userInfo.UserName = split[2];
-                String sessionUID = split[1];
+
+                userInfo.PublicKeyID = split[1];
+                String sessionUID = split[2];
                 if(sessionUID.compareTo(userInfo.SessionUID) != 0)
                     throw new PGPException("Session UID String Mismatch: " + sessionUID);
-//                String sessionID = split[2];
-//                if(sessionID.compareTo(session.getId()) != 0)
-//                    throw new PGPException("Session ID Mismatch: " + sessionID);
-                userInfo.UserName = split[2];
-                userInfo.Visibility = split[3];
+
+                userInfo.UserName = split[3];
+                userInfo.Visibility = split[4];
                 userInfo.IDSigFirstLine = IDSIGFirstLine;
 //                userInfo.CacheTime = Integer.parseInt(split[5]);
 //                sendText(session, IDSIG); // "INFO User Identified: " + userInfo.UserName + " [" + userInfo.Visibility + "]");
             
                 ChannelCommands CC = ChannelCommands.getStatic();
                 CC.sendIDSIG(session, IDSIG);
+                return;
             }
         }
             //            mIDKeys.put(session, key);
 
+        throw new PGPException("Failed to identify. No IDSIG found matching: " + challengePrefix);
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

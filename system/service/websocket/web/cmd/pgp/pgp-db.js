@@ -134,6 +134,13 @@
         });
     };
 
+    self.PGPDB.getPrivateKeyObjectStore = function(callback) {
+        self.PGPDB(function (db) {
+            var transaction = db.transaction([DB_TABLE_PRIVATE_KEYS], "readonly");
+            var dbStore = transaction.objectStore(DB_TABLE_PRIVATE_KEYS);
+            callback(dbStore);
+        });
+    };
     self.PGPDB.getPrivateKeyData = function(id_private, callback) {
         id_private = id_private.substr(id_private.length - 16);
 
@@ -404,8 +411,8 @@
         if(split[0].toUpperCase() !== 'IDSIG')
             throw new Error("Invalid IDSIG: " + idsigString);
 
-        var session_uid = split[1];
-        var pgp_key_id = split[2];
+        var pgp_key_id = split[1];
+        var session_uid = split[2];
         var username = split[3];
         var visibility = split[4];
 

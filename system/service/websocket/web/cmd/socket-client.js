@@ -34,40 +34,46 @@
 
     window.addEventListener('hashchange', onHashChange);
 
-    function receiveMessage(message) {
-        var args = /^(\w+)\s+([\s\S]*)$/mi.exec(message);
+    function receiveMessage(responseString) {
+        var args = /^([\w.]+)\s+([\s\S]*)$/mi.exec(responseString);
         if(!args)
-            throw new Error("Invalid Command: " + message);
+            throw new Error("Invalid Command: " + responseString);
             
-        var commandString = args[1].toLowerCase();
-        switch(commandString) {
+        var command = args[1]
+            .split('.', 2)[0]
+            .toLowerCase();
+
+        switch(command) {
             case 'log':
-            case 'replacelog':
-            case 'rlog':
-            case 'plog':
-                args = /^([^\s]+)\s+([\s\S]*)$/mi.exec(args[2]);
-                var channelPath = args[1];
-                logToChannel(channelPath, args[2], commandString[0] === 'r', commandString[0] === 'r', commandString[0] === 'p');
+                logToChannel(responseString);
                 break;
 
             default:
-                console.error("Unhandled command: " + message);
+                console.error("Unhandled command: " + responseString);
                 break;
 
             case 'socket':
-                console.info('SOCKET ' + message);
+                console.info('SOCKET ' + responseString);
                 break;
 
             case 'error':
             case 'warn':
             case 'info':
             case 'assert':
-                console[commandString](message);
+                console[command](responseString);
                 break;
         }
     }
 
-    function logToChannel(channelPath, content, replace, focus, prepend) {
+    function logToChannel(commandString) {
+        var args = /^log(?:.(\w+))?\s+(\S+)\s+(\S+)\s+([\s\S]*)$/mi.exec(commandString);
+        if(!args)
+            throw new Error("Invalid Log: " + commandString);
+        var subCommand = args[1] ? args[1].toLowerCase() : null;
+        var channelPath = args[2];
+        var channelSelector = args[3];
+        var content = args[4];
+
         content = content
             .replace(/{\$channel}/gi, channelPath);
 
@@ -78,11 +84,13 @@
             var match2 = /\s*src=['"]([^'"]*)['"]/gi.exec(match[1]);
             if(match2) {
                 var hrefValue = match2[1];
-                if(document.querySelectorAll('script[src=' + hrefValue.replace(/[/.:~]/g, '\\$&') + ']').length === 0) {
-                    var newScript = document.createElement('script');
-                    newScript.setAttribute('src', hrefValue);
-                    document.getElementsByTagName('head')[0].appendChild(newScript);
-                }
+                var oldScript = document.querySelector('script[src=' + hrefValue.replace(/[/.:~]/g, '\\$&') + ']');
+                if(oldScript)
+                    oldScript.parentNode.removeChild(oldScript);
+                var newScript = document.createElement('script');
+                newScript.setAttribute('src', hrefValue);
+                document.getElementsByTagName('head')[0].appendChild(newScript);
+                //console.log("Inserted: ", newScript, oldScript);
             } else {
                 console.error("Invalid Script: " + scriptContent);
             }
@@ -96,7 +104,6 @@
                 var newChannel = document.createElement('fieldset');
                 newChannel.setAttribute('class', CLASS_CHANNEL + ' ' + channelPath);
                 newChannel.setAttribute('data-channel', channelPath);
-                //newChannel.setAttribute('draggable', 'true');
 
                  if(channelContainer.firstChild)
                     channelContainer.insertBefore(newChannel, channelContainer.firstChild);
@@ -105,47 +112,26 @@
             }
 
             var channelOutput = channelOutputs[0];
-            var contentTargets = channelOutput.getElementsByClassName(CLASS_CHANNEL_CONTENT);
-            var contentTarget = contentTargets.length > 0 ? contentTargets[0] : channelOutput;
-            if(replace) {
-                var oldContent = null;
-                if(contentTargets.length > 0) {
-                    oldContent = contentTargets[0];
-                    oldContent.parentNode.removeChild(oldContent);
-                }
-                channelOutput.innerHTML = content;
-
-//                 if(oldContent && contentTarget.length > 0 && oldContent !== contentTarget[0]) {
-//                     var newTarget = contentTarget[0];
-//                     console.info("Preserving content: ", oldContent, newTarget);
-//                     newTarget.parentNode.insertBefore(oldContent, newTarget);
-//                     newTarget.parentNode.removeChild(newTarget);
-//                 }
-
-            } else {
-
-                if(prepend) {
-                    contentTarget.innerHTML = content + contentTarget.innerHTML;
-//                     contentTarget.scrollTop = 0;
-
-                } else {
-                    contentTarget.innerHTML += content;
-//                     contentTarget.scrollTop = channelOutput.scrollHeight;
-                }
+            var contentTarget = channelOutput;
+            if(channelSelector && channelSelector !== '*') {
+                contentTarget = channelOutput.querySelector(channelSelector);
+                if(!contentTarget)
+                    throw new Error("Could not find selector: " + channelSelector);
             }
 
-            if(focus) {
-                var channelInput = channelContainer.querySelector('textarea, input');
-                if(channelInput) (function(channelInput) {
-                        setTimeout(function () {
-                            channelInput.focus();
-                        }, 500);
-                    })(channelInput);
+            if(subCommand === 'replace') {
+                contentTarget.innerHTML = content;
+            } else {
+                if(subCommand === 'prepend') {
+                    contentTarget.innerHTML = content + contentTarget.innerHTML;
+                } else {
+                    contentTarget.innerHTML += content;
+                }
             }
 
             var contentEvent = new CustomEvent('log', {
-                bubbles: true
-//                 detail: content
+                bubbles: true,
+                detail: content
             });
             channelOutput.dispatchEvent(contentEvent);
         }
