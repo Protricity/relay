@@ -14,42 +14,43 @@
     function onFormEvent(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
         if(formElm.nodeName.toLowerCase() !== 'form')
-            throw new Error("Not a Form: " + formElm.nodeName);
-
-        if(e.type === 'submit')
-            e.preventDefault();
+            return false;
 
         switch(formElm.getAttribute('name')) {
             case 'pgp-keygen-form':
-                if(e.type === 'submit')
+                if(e.type === 'submit') {
+                    e.preventDefault();
                     submitPGPKeyGenForm(e, formElm);
-
-                break;
+                }
+                return true;
 
             case 'pgp-register-form':
                 focusPGPRegisterForm(e, formElm);
-                break;
+                return true;
 
             case 'pgp-manage-form':
-                if(e.type === 'submit')
+                if(e.type === 'submit') {
+                    e.preventDefault();
                     submitPGPManageForm(e, formElm);
-                break;
+                }
+                return true;
 
             case 'pgp-identify-form':
                 saveAutoIdentify(e, formElm);
                 generateIDSIG(e, formElm);
-                if(e.type === 'submit')
+                if(e.type === 'submit') {
+                    e.preventDefault();
                     submitPGPIdentifyForm(e, formElm);
-
-                break;
+                }
+                return true;
 
             case 'pgp-identify-success-form':
                 saveAutoIdentify(e, formElm);
                 //if(e.type === 'submit') { TODO:
-                break;
+                return true;
 
             default:
-                throw new Error("Invalid settings form: " + formElm.getAttribute('name'));
+                return false;
         }
     }
 
@@ -178,6 +179,9 @@
 
     var cancelReceived = false;
     function generateIDSIG(e, formElm) {
+        if(e.type === 'input') {
+            cancelReceived = true;
+        }
         ConfigDB.getConfig(CONFIG_ID, function(err, CONFIG) {
             if(err)
                 throw new Error(err);
@@ -203,15 +207,15 @@
             //var autoIdentify = formElm.querySelector('[name=auto_identify]').value;
 
             var autoIdentify = false;
-            if(CONFIG) {
+            if(CONFIG && !formElm.classList.contains('auto-identify-attempted')) {
                 autoIdentify = CONFIG.autoIdentify || CONFIG['autoIdentifyHost:' + socketHostElm.value] || false;
                 if(autoIdentify) {
                     selectedPGPPublicKeyIDElm.value = autoIdentify;
                 }
-                if(CONFIG.autoIdentify)
-                    autoIdentifyElm.value = 'auto-all';
-                if(CONFIG['autoIdentifyHost:' + socketHostElm.value])
-                    autoIdentifyElm.value = 'auto-host';
+                //if(CONFIG.autoIdentify)
+                //    autoIdentifyElm.value = 'auto-all';
+                //if(CONFIG['autoIdentifyHost:' + socketHostElm.value])
+                //    autoIdentifyElm.value = 'auto-host';
             }
             var selectedPGPPublicKeyID = selectedPGPPublicKeyIDElm.value;
 
@@ -295,14 +299,15 @@
                                         var interval = setInterval(function () {
                                             if(cancelReceived) {
                                                 clearInterval(interval);
-                                                setStatus(formElm, "<span class='error'>" + "Auto-Identify Canceled" + "</span>", true);
+                                                setStatus(formElm, "<span class='error'>" + "Auto-Identify Canceled" + "</span>", 5);
+                                                formElm.classList.add('auto-identify-attempted');
                                                 return;
                                             }
                                             var elapsedSeconds = parseInt(new Date().getTime() / 1000 - startTime);
                                             var secondsLeft = AUTO_IDENTIFY_TIMEOUT - elapsedSeconds;
-                                            setStatus(formElm, "<span class='pending'>" + "Auto-Identifying in " + (secondsLeft) + " second" + (secondsLeft === 1 ? "" : "s") + "...</span>");
+                                            setStatus(formElm, "<span class='pending'>" + "Auto-Identifying in " + (secondsLeft) + " second" + (secondsLeft === 1 ? "" : "s") + "...</span>", 1);
 
-                                            if(elapsedSeconds <= AUTO_IDENTIFY_TIMEOUT)
+                                            if(elapsedSeconds < AUTO_IDENTIFY_TIMEOUT)
                                                 return;
 
                                             clearInterval(interval);
@@ -310,10 +315,6 @@
 
                                         }, 1000);
                                     }
-                                    //if(autoIdentify) {
-                                    //    console.info("Auto-submitting form: ", formElm);
-                                    //    submitPGPIdentifyForm(e);
-                                    //}
                                 });
                         }
 
@@ -346,6 +347,7 @@
 
         if(!pgpPublicIDElm.value)
             throw new Error("Invalid Socket Host in form field 'pgp_id_public'");
+
         switch(autoIdentifyElm.value) {
             case 'ask':
                 break;
@@ -366,6 +368,8 @@
         }
 
         ConfigDB.addConfigToDatabase(newConfigData);
+        setStatus(formElm, "<span class='info'>Saved settings successfully</span>", 5, true);
+
         return true;
     }
 
@@ -406,13 +410,27 @@
 
     }
 
-    function setStatus(formElm, statusText, append) {
+    function setStatus(formElm, statusText, prepend, unique) {
         var statusElms = formElm.getElementsByClassName('status-box');
         for(var i=0; i<statusElms.length; i++) (function(statusElm) {
-            if(append)
-                statusElm.innerHTML += (statusElm.innerHTML ? '<br/>' : '') + statusText;
-            else
+            var textDiv = document.createElement('div');
+            textDiv.innerHTML = statusText;
+                
+            if(unique && statusElm.innerHTML.indexOf(textDiv.innerHTML) !== -1)
+                return;
+
+            if(prepend) {
+                statusElm.firstChild
+                    ? statusElm.insertBefore(textDiv, statusElm.firstChild)
+                    : statusElm.appendChild(textDiv);
+                if(typeof prepend === 'number')
+                    setTimeout(function () {
+                        if(textDiv && textDiv.parentNode)
+                            textDiv.parentNode.removeChild(textDiv);
+                    }, prepend * 1000);
+            } else {
                 statusElm.innerHTML = statusText;
+            }
         })(statusElms[i]);
     }
 

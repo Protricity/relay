@@ -192,6 +192,7 @@
                 "<option {$auto_identify_all_attr}value='auto-all'>Auto-Identify to all hosts (passphrase may be required)</option>" +
             "</select>" +
 
+            "<input type='hidden' name='pgp_id_public' value='{$pgp_id_public}'/>" +
             "<input type='hidden' name='session_uid' value='{$session_uid}'/>" +
             "<input type='hidden' name='socket_host' value='{$socket_host}'/>" +
         "</div>" +
@@ -467,7 +468,9 @@
      */
     socketCommands.identify = function (commandData, e) {
         var ConfigDB = getConfigDB();
-        ConfigDB.getConfig(CONFIG_ID, function(CONFIG) {
+        ConfigDB.getConfig(CONFIG_ID, function(err, CONFIG) {
+            if(err)
+                throw new Error(err);
 
             if(typeof commandData === 'string')
                 commandData = {message: commandData, passphrase: null};
@@ -572,15 +575,18 @@
                         var autoIdentify = false;
                         if(CONFIG) {
                             autoIdentify = CONFIG.autoIdentify || CONFIG['autoIdentifyHost:' + socket_host] || false;
-                            if(CONFIG.autoIdentify)
+                            if(CONFIG['autoIdentifyHost:' + socket_host])
                                 auto_identify_host_attr = "selected='selected'";
-                            else if(CONFIG['autoIdentifyHost:' + socket_host])
+                            else if(CONFIG['autoIdentify'])
                                 auto_identify_all_attr = "selected='selected'";
                         }
 
                         self.routeResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE
-                                .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
-                                .replace(/{\$id_public_short}/gi, data.id_public.substr(data.id_public.length - 8))
+//                                 .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
+                                .replace(/{\$pgp_id_private}/gi, selectedPrivateKeyData.id_private)
+                                .replace(/{\$pgp_id_public}/gi, selectedPrivateKeyData.id_public)
+                                .replace(/{\$pgp_id_private_short}/gi, selectedPrivateKeyData.id_private.substr(selectedPrivateKeyData.id_public.length - 8))
+                                .replace(/{\$pgp_id_public_short}/gi, selectedPrivateKeyData.id_public.substr(selectedPrivateKeyData.id_public.length - 8))
                                 .replace(/{\$status_content}/gi, status_content || '')
                                 //.replace(/{\$id_signature}/gi, signedIdentityString || '')
                                 .replace(/{\$socket_url}/gi, socket.url || '')
@@ -667,20 +673,22 @@
         if(split[0].toUpperCase() !== 'IDSIG')
             throw new Error("Invalid IDSIG: " + commandData);
 
-        var pgp_key_id = split[1];
+        var pgp_id_public = split[1];
         var session_uid = split[2];
         var username = split[3];
         var visibility = split[4];
 
         var status_content =
             "<label><strong>User ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='user'>" + username + "</span><br/></label>" +
-            "<label><strong>PGP Key ID:&nbsp;&nbsp;&nbsp;</strong> <span class='pgp-id'>" + pgp_key_id + "</span><br/></label>" +
+            "<label><strong>PGP Key ID:&nbsp;&nbsp;&nbsp;</strong> <span class='pgp-id'>" + pgp_id_public + "</span><br/></label>" +
             "<label><strong>Session ID:&nbsp;&nbsp;&nbsp;</strong> <span class='session-uid'>" + session_uid + "</span><br/></label>" +
             "<label><strong>Visibility:&nbsp;&nbsp;&nbsp;</strong> <span class='visibility'>" + visibility + "</span><br/></label>" +
             "<div class='idsig' style='padding: 1em'>" + commandData + "</div>";
 
         var ConfigDB = getConfigDB();
-        ConfigDB.getConfig(CONFIG_ID, function(CONFIG) {
+        ConfigDB.getConfig(CONFIG_ID, function(err, CONFIG) {
+            if(err)
+                throw new Error(err);
 
             for (var j = 0; j < identifyRequests.length; j++) (function(identifyRequest) {
                 if (identifyRequest[0].indexOf("IDENTIFY " + session_uid) !== -1) {
@@ -692,13 +700,15 @@
                     var autoIdentify = false;
                     if(CONFIG) {
                         autoIdentify = CONFIG.autoIdentify || CONFIG['autoIdentifyHost:' + socket_host] || false;
-                        if(CONFIG.autoIdentify)
-                            auto_identify_host_attr = "selected='selected' ";
-                        else if(CONFIG['autoIdentifyHost:' + socket_host.value])
-                            auto_identify_all_attr = "selected='selected' ";
+                        if(CONFIG['autoIdentifyHost:' + socket_host])
+                            auto_identify_host_attr = "selected='selected'";
+                        else if(CONFIG['autoIdentify'])
+                            auto_identify_all_attr = "selected='selected'";
                     }
 
                     self.routeResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE_SUCCESS
+                            .replace(/{\$pgp_id_public}/gi, pgp_id_public)
+                            .replace(/{\$pgp_id_public_short}/gi, pgp_id_public.substr(pgp_id_public.length - 8))
                             .replace(/{\$status_content}/gi, status_content || '')
                             .replace(/{\$socket_url}/gi, socket.url || '')
                             .replace(/{\$socket_host}/gi, socket.url.split('/')[2] || '')
