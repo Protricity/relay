@@ -8,40 +8,39 @@
     var AUTO_IDENTIFY_TIMEOUT = 10;
 
     self.addEventListener('submit', onFormEvent);
-    self.addEventListener('input', onFormEvent);
+    self.addEventListener('change', onFormEvent);
     self.addEventListener('log', onLog);
 
     function onFormEvent(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
         if(formElm.nodeName.toLowerCase() !== 'form')
             return false;
+        if(e.type === 'submit')
+            e.preventDefault();
 
         switch(formElm.getAttribute('name')) {
             case 'pgp-keygen-form':
-                if(e.type === 'submit') {
-                    e.preventDefault();
+                if(e.type === 'submit')
                     submitPGPKeyGenForm(e, formElm);
-                }
                 return true;
 
             case 'pgp-register-form':
                 focusPGPRegisterForm(e, formElm);
+                if(e.type === 'submit')
+                    submitPGPRegisterForm(e, formElm);
                 return true;
 
             case 'pgp-manage-form':
-                if(e.type === 'submit') {
-                    e.preventDefault();
+                if(e.type === 'submit')
                     submitPGPManageForm(e, formElm);
-                }
                 return true;
 
             case 'pgp-identify-form':
                 saveAutoIdentify(e, formElm);
                 generateIDSIG(e, formElm);
-                if(e.type === 'submit') {
-                    e.preventDefault();
+                if(e.type === 'submit')
                     submitPGPIdentifyForm(e, formElm);
-                }
+
                 return true;
 
             case 'pgp-identify-success-form':
@@ -178,9 +177,14 @@
     var lastIDSIG = null;
 
     var cancelReceived = false;
+    var autoIdentifyStartTime = null;
     function generateIDSIG(e, formElm) {
-        if(e.type === 'input') {
-            cancelReceived = true;
+        if(autoIdentifyStartTime && e.type === 'change') {
+            var elapsedSeconds = parseInt(new Date().getTime() / 1000 - autoIdentifyStartTime);
+            if(elapsedSeconds > 2) {
+                cancelReceived = true;
+                console.info("Cancel received by ", e.target);
+            }
         }
         ConfigDB.getConfig(CONFIG_ID, function(err, CONFIG) {
             if(err)
@@ -295,7 +299,7 @@
                                     submitSectionElm.style.display = 'block';
 
                                     if(autoIdentify) {
-                                        var startTime = new Date().getTime() / 1000;
+                                        autoIdentifyStartTime = new Date().getTime() / 1000;
                                         var interval = setInterval(function () {
                                             if(cancelReceived) {
                                                 clearInterval(interval);
@@ -303,7 +307,7 @@
                                                 formElm.classList.add('auto-identify-attempted');
                                                 return;
                                             }
-                                            var elapsedSeconds = parseInt(new Date().getTime() / 1000 - startTime);
+                                            var elapsedSeconds = parseInt(new Date().getTime() / 1000 - autoIdentifyStartTime);
                                             var secondsLeft = AUTO_IDENTIFY_TIMEOUT - elapsedSeconds;
                                             setStatus(formElm, "<span class='pending'>" + "Auto-Identifying in " + (secondsLeft) + " second" + (secondsLeft === 1 ? "" : "s") + "...</span>", 1);
 

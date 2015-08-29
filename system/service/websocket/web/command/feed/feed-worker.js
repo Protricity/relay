@@ -20,73 +20,80 @@
 
 
     var FEED_POST_FORM_TEMPLATE =
-        "<script src='command/feed/feed-form.js'></script>" +
-        "<link rel='stylesheet' href='command/feed/feed.css' type='text/css'>" +
-        "<legend>Post to your feed</legend>" +
+        "<article class='{$attr_class}'>" +
+            "<script src='command/feed/feed-form.js'></script>" +
+            "<link rel='stylesheet' href='command/feed/feed.css' type='text/css'>" +
+            "<header>Post to your feed</header>" +
+            "{$html_header_commands}" +
 
-        "<form name='feed-post-form' class='feed-post-form:uninitiated' action='#' onsubmit='return submitPostForm(event);'>" +
-            "<label class='label-content'>Use this text box to create a new feed post:<br/>" +
-                "<textarea cols='56' rows='8' onfocus='focusPostForm(event)' oninput='focusPostForm(event)' class='focus' name='content' required='required' placeholder='" + ARTICLE_PLACEHOLDER + "'>{$content}</textarea>" +
-            "<br/></label>" +
+            "<form name='feed-post-form' class='feed-post-form:uninitiated' action='#' onsubmit='return submitPostForm(event);'>" +
+                "<label class='label-content'>Use this text box to create a new feed post:<br/>" +
+                    "<textarea cols='56' rows='8' onfocus='focusPostForm(event)' oninput='focusPostForm(event)' class='focus' name='content' required='required' placeholder='" + ARTICLE_PLACEHOLDER + "'>{$content}</textarea>" +
+                "<br/></label>" +
 
-            "<div class='show-section-on-value hide-section-on-no-value'>" +
+                "<div class='show-section-on-value hide-section-on-no-value'>" +
 
-                "<label class='label-pgp-id'>Post with (PGP Identity):<br/>" +
-                    "<select name='pgp-id' required='required' onfocus='focusPostForm(event)' onselect='focusPostForm(event)' oninput='focusPostForm(event)'>" +
-                        "<optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>" +
-                        "</optgroup>" +
-                        "<optgroup disabled='disabled' label='Other options'>" +
-                            "<option value=''>Manage PGP Identities...</option>" +
-                        "</optgroup>" +
-                    "</select>" +
-                "<br/><br/></label>" +
+                    "<label class='label-pgp-id'>Post with (PGP Identity):<br/>" +
+                        "<select name='pgp-id' required='required' onfocus='focusPostForm(event)' onselect='focusPostForm(event)' oninput='focusPostForm(event)'>" +
+                            "<optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>" +
+                            "</optgroup>" +
+                            "<optgroup disabled='disabled' label='Other options'>" +
+                                "<option value=''>Manage PGP Identities...</option>" +
+                            "</optgroup>" +
+                        "</select>" +
+                    "<br/><br/></label>" +
 
-                "<label class='label-channel'>Post to:<br/>" +
-                    "<select name='channel'>" +
-                        "<option value='~'>My Feed</option>" +
-                        "<option disabled='disabled'>Other Feed...</option>" +
-                        "<option disabled='disabled'>Friend's Feed...</option>" +
-                    "</select>" +
-                "<br/><br/></label>" +
+                    "<label class='label-channel'>Post to:<br/>" +
+                        "<select name='channel'>" +
+                            "<option value='~'>My Feed</option>" +
+                            "<option disabled='disabled'>Other Feed...</option>" +
+                            "<option disabled='disabled'>Friend's Feed...</option>" +
+                        "</select>" +
+                    "<br/><br/></label>" +
 
-                //"<label class='label-recipients show-section-on-value'>Choose which subscribers may view this post:<br/>" +
-                //    "<select name='recipients'>" +
-                //        "<option value='*'>Everybody</option>" +
-                //        "<option disabled='disabled'>My friends</option>" +
-                //        "<option disabled='disabled'>Friends of Friends</option>" +
-                //        "<option disabled='disabled'>Specific Recipients</option>" +
-                //    "</select>" +
-                //"<br/><br/></label>" +
+                    //"<label class='label-recipients show-section-on-value'>Choose which subscribers may view this post:<br/>" +
+                    //    "<select name='recipients'>" +
+                    //        "<option value='*'>Everybody</option>" +
+                    //        "<option disabled='disabled'>My friends</option>" +
+                    //        "<option disabled='disabled'>Friends of Friends</option>" +
+                    //        "<option disabled='disabled'>Specific Recipients</option>" +
+                    //    "</select>" +
+                    //"<br/><br/></label>" +
 
-                "<label class='label-passphrase' style='display: none'>PGP Passphrase (if required):<br/>" +
-                    "<input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>" +
-                "<br/><br/></label>" +
+                    "<label class='label-passphrase' style='display: none'>PGP Passphrase (if required):<br/>" +
+                        "<input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>" +
+                    "<br/><br/></label>" +
 
-                "<label class='label-submit'><hr/>Submit your post:<br/>" +
-                    "<input type='submit' value='Post' name='submit-feed-post-form' />" +
-                "</label>" +
-            "</div>" +
-        "</form>" +
-        "<fieldset class='preview-container' style='display: none'>" +
-            "<legend>Preview</legend>" +
-            "<div class='preview'></div>" +
-        "</fieldset>";
+                    "<label class='label-submit'><hr/>Submit your post:<br/>" +
+                        "<input type='submit' value='Post' name='submit-feed-post-form' />" +
+                    "</label>" +
+                "</div>" +
+            "</form>" +
+            "<fieldset class='preview-container' style='display: none'>" +
+                "<legend>Preview</legend>" +
+                "<div class='preview'></div>" +
+            "</fieldset>" +
+        "</article>";
 
 
     var FEED_TEMPLATE =
-        "<script src='command/feed/feed-form.js'></script>" +
-        "<link rel='stylesheet' href='command/feed/feed.css' type='text/css'>" +
-        "<legend>{$title}</legend>" +
-        "<div class='feed-container channel-content' onscroll='scrollFeed.apply(this, [event]);'>" +
-            "<fieldset class='feed-post-form-container'>" +
-                FEED_POST_FORM_TEMPLATE +
-            "</fieldset>" +
-        "</div>";
+        "<article class='{$attr_class}'>" +
+            "<script src='command/feed/feed-form.js'></script>" +
+            "<link rel='stylesheet' href='command/feed/feed.css' type='text/css'>" +
+            "<header>{$title}</header>" +
+            "{$html_header_commands}" +
+            "<div class='feed-container channel-content' onscroll='scrollFeed.apply(this, [event]);'>" +
+                "<fieldset class='feed-post-form-container'>" +
+                    FEED_POST_FORM_TEMPLATE +
+                "</fieldset>" +
+            "</div>" +
+        "</article>";
 
 
     var FEED_TEMPLATE_ENTRY =
         "<fieldset class='feed-post-container unsorted'>" +
-            "<legend>Feed Post</legend>" +
+            "<header>Feed Post</header>" +
+            "{$html_header_commands}" +
             "<div class='feed-post-author'>" +
                 "<img class='user_icon' src='command/feed/img/user_icon_default.png' alt='UI' />" +
                 "<a href='{$user_home}' class='user'>{$user_id}</a>" +
@@ -128,7 +135,7 @@
                 .replace(/{\$row_n}/gi, (postFormNCounter++).toString())
                 .replace(/{\$title}/gi, "Viewing Feed for " + fixedChannelPath)
                 .replace(/{\$channel}/gi, fixedChannelPath)
-                .replace(/{\$[^}]+}/gi, '')
+                //.replace(/{\$[^}]+}/gi, '')
         );
 
         getPGPDB(function (db, PGPDB) {
@@ -163,7 +170,7 @@
                                             .replace(/{\$timestamp_formatted}/gi, timeSince(data.timestamp) + ' ago')
                                             //.replace(/{\$content}/gi, data.content)
                                             .replace(/{\$content_verified}/gi, contentProtected)
-                                            .replace(/{\$[^}]+}/gi, '')
+                                            //.replace(/{\$[^}]+}/gi, '')
                                     );
 
                                 } catch (e) {

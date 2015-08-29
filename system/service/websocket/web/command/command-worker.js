@@ -8,13 +8,23 @@
     var PATH_PREFIX_SOCKET = 'socket:';
     var CLASS_SOCKET_CONTENT = 'socket-content';
 
+    var HEADER_COMMANDS_TEMPLATE =
+        "<div class='header-commands'>" +
+            "<a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a>" +
+            "<a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a>" +
+            "<a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>" +
+        "</div>";
+
     var SOCKET_TEMPLATE =
-        "<link rel='stylesheet' href='command/socket/socket.css' type='text/css'>" +
-        "<legend>Socket IO: {$socket_host}</legend>" +
-        "<fieldset class='" + CLASS_SOCKET_CONTENT + "'></fieldset>" +
-        //"<input name='message' type='text' placeholder='Send a message directly the socket [hit enter]'/>" +
-        //"<input type='submit' value='Send' name='submit-send-socket' />" +
-        "</form>";
+        "<article class='{$attr_class}'>" +
+            "<link rel='stylesheet' href='command/socket/socket.css' type='text/css'>" +
+            "<header>Socket IO: {$socket_host}</header>" +
+            "{$html_header_commands}" +
+            "<fieldset class='" + CLASS_SOCKET_CONTENT + "'></fieldset>" +
+            //"<input name='message' type='text' placeholder='Send a message directly the socket [hit enter]'/>" +
+            //"<input type='submit' value='Send' name='submit-send-socket' />" +
+            "</form>" +
+        "</article>";
 
     var SOCKET_TEMPLATE_LOG_ENTRY = '<div class="socket-log">' +
         '<span class="direction">{$DIR}</span>' +
@@ -152,7 +162,9 @@
 
 
     self.routeResponseToClient = function(commandResponse) {
-        self.postMessage(commandResponse);
+        self.postMessage(commandResponse
+            .replace(/{\$html_header_commands}/gi, HEADER_COMMANDS_TEMPLATE)
+        );
     };
 
     self.executeWorkerCommand = function(commandString, e) {

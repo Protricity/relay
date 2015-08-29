@@ -70,12 +70,15 @@
         if(!args)
             throw new Error("Invalid Log: " + commandString);
         var subCommand = args[1] ? args[1].toLowerCase() : 'append';
-        var path = args[2];
+        var channelPath = args[2];
+        //var channelPathClass = CLASS_CHANNEL + ':' + channelPath;
         var channelSelector = args[3];
         var content = args[4];
 
         content = content
-            .replace(/{\$path}/gi, path);
+            .replace(/{\$attr_class}/gi, CLASS_CHANNEL + ' ' + channelPath)
+            .replace(/{\$channel_class}/gi, channelPath)
+            .replace(/{\$path}/gi, channelPath);
 
         var match;
         while(match = /<script([^>]*)><\/script>/gi.exec(content)) {
@@ -100,45 +103,54 @@
         var channelContainers = document.getElementsByClassName(CLASS_CHANNEL_CONTAINER);
         for(var i=0; i<channelContainers.length; i++) {
             var channelContainer = channelContainers[i];
-            var channelOutputs = channelContainer.getElementsByClassName(path);
+            var channelOutputs = channelContainer.getElementsByClassName(channelPath);
+            var channelOutput;
             if(channelOutputs.length === 0) {
-                var newChannel = document.createElement('fieldset');
-                newChannel.setAttribute('class', CLASS_CHANNEL + ' ' + path);
-                newChannel.setAttribute('data-path', path);
-                newChannel.setAttribute('style', 'display: inline-block');
+                var oldContent = channelContainer.innerHTML;
+                channelContainer.innerHTML = content + "\n" + oldContent;
+                if(channelOutputs.length === 0) {
+                    channelContainer.innerHTML = oldContent;
+                    throw new Error("Invalid content. Missing class='" + channelPath + "'", content);
+                }
+                channelOutput = channelOutputs[0];
+                //var newChannel = document.createElement('article');
+                //newChannel.setAttribute('class', CLASS_CHANNEL + ' ' + channelPathClass);
+                //newChannel.setAttribute('data-path', channelPath);
+                //newChannel.setAttribute('style', 'display: inline-block');
+                //
+                //if(channelContainer.firstChild)
+                //    channelContainer.insertBefore(newChannel, channelContainer.firstChild);
+                //else
+                //    channelContainer.appendChild(newChannel);
 
-                if(channelContainer.firstChild)
-                    channelContainer.insertBefore(newChannel, channelContainer.firstChild);
-                else
-                    channelContainer.appendChild(newChannel);
-            }
+            } else {
+                channelOutput = channelOutputs[0];
+                var contentTarget = channelOutput;
+                if(channelSelector && channelSelector !== '*') {
+                    contentTarget = channelOutput.querySelector(channelSelector);
+                    if(!contentTarget)
+                        throw new Error("Could not find selector: " + channelSelector);
+                }
 
-            var channelOutput = channelOutputs[0];
-            var contentTarget = channelOutput;
-            if(channelSelector && channelSelector !== '*') {
-                contentTarget = channelOutput.querySelector(channelSelector);
-                if(!contentTarget)
-                    throw new Error("Could not find selector: " + channelSelector);
-            }
+                switch(subCommand) {
+                    case 'replace':
+                        contentTarget.outerHTML = content;
+                        //contentTarget.scrollTop = 0;
+                        break;
 
-            switch(subCommand) {
-                case 'replace':
-                    contentTarget.innerHTML = content;
-                    contentTarget.scrollTop = 0;
-                    break;
+                    case 'prepend':
+                        contentTarget.innerHTML = content + contentTarget.innerHTML;
+                        contentTarget.scrollTop = 0;
+                        break;
 
-                case 'prepend':
-                    contentTarget.innerHTML = content + contentTarget.innerHTML;
-                    contentTarget.scrollTop = 0;
-                    break;
+                    case 'append':
+                        contentTarget.innerHTML += content;
+                        contentTarget.scrollTop = contentTarget.scrollHeight;
+                        break;
 
-                case 'append':
-                    contentTarget.innerHTML += content;
-                    contentTarget.scrollTop = contentTarget.scrollHeight;
-                    break;
-
-                default:
-                    throw new Error("Unknown subcommand: " + subCommand);
+                    default:
+                        throw new Error("Unknown subcommand: " + subCommand);
+                }
             }
 
             var contentEvent = new CustomEvent('log', {

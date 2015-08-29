@@ -73,8 +73,11 @@
 
             var abort = false;
             dbStore.openCursor().onsuccess = function (evt) {
-                if(abort)
+                if(abort) {
+                    if(onComplete)
+                        onComplete();
                     return false;
+                }
                 var cursor = evt.target.result;
                 if (cursor) {
                     dbStore.get(cursor.key).onsuccess = function (evt) {

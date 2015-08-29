@@ -11,34 +11,37 @@
     var CLASS_CHANNEL_CONTENT = 'channel-content';
 
     var CHANNEL_TEMPLATE =
-        "<script src='command/chat/chat-form.js'></script>" +
-        "<link rel='stylesheet' href='command/chat/chat.css' type='text/css'>" +
-        "<legend>Channel: {$channel}</legend>" +
-        "<form name='chat-form' action='#' onsubmit='return submitChatForm(event);'>" +
-            "<table>" +
-                "<tbody>" +
-                    "<tr>" +
-                        "<td style='vertical-align: top'>" +
-                            "<select multiple='multiple' name='user-list' size='15'>" +
-                                "<optgroup class='" + CLASS_ACTIVE_USERS + "' label='Active Users (0)'></optgroup>" +
-                                "<optgroup class='" + CLASS_INACTIVE_USERS + "' label='Inactive Users (0)'></optgroup>" +
-                            "</select>" +
-                        "</td>" +
-                        "<td style='vertical-align: top'>" +
-                            "<fieldset class='" + CLASS_CHANNEL_CONTENT + "'>Joining {$channel}...</fieldset>" +
-                        "</td>" +
-                    "</tr>" +
-                    "<tr>" +
-                        "<td colspan='2'>" +
-                            "<input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' />" +
-                            "<input type='submit' value='Send' name='submit-send-chat' />" +
-                            "<input type='hidden' value='{$channel}' name='channel' />" +
-                        "</td>" +
-                    "</tr>" +
-                "</tbody>" +
-            "</table>" +
+        "<article class='{$attr_class}'>" +
+            "<script src='command/chat/chat-form.js'></script>" +
+            "<link rel='stylesheet' href='command/chat/chat.css' type='text/css'>" +
+            "<header>Channel: {$channel}</header>" +
+            "{$html_header_commands}" +
+            "<form name='chat-form' action='#' onsubmit='return submitChatForm(event);'>" +
+                "<table>" +
+                    "<tbody>" +
+                        "<tr>" +
+                            "<td style='vertical-align: top'>" +
+                                "<select multiple='multiple' name='user-list' size='15'>" +
+                                    "<optgroup class='" + CLASS_ACTIVE_USERS + "' label='Active Users (0)'></optgroup>" +
+                                    "<optgroup class='" + CLASS_INACTIVE_USERS + "' label='Inactive Users (0)'></optgroup>" +
+                                "</select>" +
+                            "</td>" +
+                            "<td style='vertical-align: top'>" +
+                                "<fieldset class='" + CLASS_CHANNEL_CONTENT + "'>Joining {$channel}...</fieldset>" +
+                            "</td>" +
+                        "</tr>" +
+                        "<tr>" +
+                            "<td colspan='2'>" +
+                                "<input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' />" +
+                                "<input type='submit' value='Send' name='submit-send-chat' />" +
+                                "<input type='hidden' value='{$channel}' name='channel' />" +
+                            "</td>" +
+                        "</tr>" +
+                    "</tbody>" +
+                "</table>" +
 
-        "</form>";
+            "</form>" +
+        "</article>";
 
     var CHAT_TEMPLATE = '<div class="channel-log">' +
         '<span class="username" data-session-uid="{$session_uid}">{$username}</span>' +
@@ -115,6 +118,10 @@
 
         })(sigIDList[ui]);
         checkChannel(channelPath);
+        optionHTML =
+            "<optgroup class='" + CLASS_ACTIVE_USERS + "' label='Active Users (" + sigIDList.length + ")'>" +
+                optionHTML +
+            "</optgroup>";
         self.routeResponseToClient('LOG.REPLACE ' + PATH_PREFIX_CHAT + channelPath + ' .' + CLASS_ACTIVE_USERS + ' ' + optionHTML);
 
 //         console.log([channelPath, sigIDList, optionHTML]);

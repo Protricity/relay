@@ -317,7 +317,7 @@
     }
     // For PGP Decryption in chat rooms
     var openPGPScriptPath = 'command/pgp/lib/openpgpjs/openpgp.js';
-    includeScript(openPGPScriptPath, function(openPGPScriptPath) {
+    includeScript(openPGPScriptPath, function() {
 
         var timeout = setInterval(function() {
             var src = openPGPScriptPath.replace('/openpgp.', '/openpgp.worker.');

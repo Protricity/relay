@@ -13,24 +13,52 @@
 
 }
 
-.template-minimal .channel-container legend {
-    font-weight: bold;
-    color: #111;
-}
 
 .template-minimal .channel {
     animation: fadein 0.5s;
+    position: relative;
     transition: opacity 0.4s ease-in-out;
+    display: inline-block;
+    border: 2px groove threedface;
+    margin: 0 2px 0 2px;
+    padding: 1em 0.75em 0.625em 0.75em;
 }
 
 .template-minimal .channel:hover {
-/*     cursor: pointer; */
+    /*     cursor: pointer; */
     border-color: red;
+}
+
+.template-minimal .channel header {
+    font-weight: bold;
+    color: #111;
+    background-color: white;
+    position: absolute;
+    top: -10px;
+    /* margin: 0 2px; */
+    padding: 0 2px;
+}
+
+.template-minimal .channel .header-commands {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    background-color: white;
+}
+
+
+.template-minimal .channel .header-commands a {
+    color: black;
+    font-weight: bold;
+}
+.template-minimal .channel .header-commands a:hover {
+    color: darkblue;
+    background-color: lightgreen;
+    box-shadow: 1px 4px 30px #333;
 }
 
 .template-minimal span.username {
     color: darkblue;
-                                
     text-overflow: ellipsis;
 }
 
@@ -90,6 +118,10 @@
     display: none;
 }
 
+.template-minimal .status-box > * {
+    animation: fadein 0.5s;
+}
+
 .template-minimal span.path {
     color: darkblue;
     text-decoration: underline;
@@ -105,6 +137,9 @@
     border-radius: 0.4em;
 }
 
+.template-minimal input[type=submit] {
+    animation: fadein 2s;
+}
 
 /* Animation */
 
@@ -126,7 +161,8 @@
         opacity:1;
     }
 }
-@-webkit-keyframes fadein { /* Safari and Chrome */
+
+@keyframes fadein { /* Safari and Chrome */
     from {
         opacity:0;
     }
