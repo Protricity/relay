@@ -15,22 +15,22 @@
     height: 24px;
 }
 
-form[name=feed-post-form] label {
+form[name=post-form] label {
 }
 
 
-form[name=feed-post-form] textarea[name=content] {
+form[name=post-form] textarea[name=content] {
     min-height: 5em;
     font-family: monospace;
     display: block;
 }
 
-form[name=feed-post-form] input[name=channel] {
+form[name=post-form] input[name=channel] {
     width: 42%;
     font-family: monospace;
 }
 
-form[name=feed-post-form] input[type=submit] {
+form[name=post-form] input[type=submit] {
     padding: 0.5em 1em;
     margin: 0.5em;
 }

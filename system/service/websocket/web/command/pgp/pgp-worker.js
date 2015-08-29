@@ -2,7 +2,7 @@
  * Ari 7/2/2015.
  */
 (function() {
-
+    var CONFIG_ID = 'pgp';
 
     var PATH_PREFIX = 'pgp:';
     var PATH_MAIN = PATH_PREFIX + 'main';
@@ -36,10 +36,10 @@
     +"-----END PGP PUBLIC KEY BLOCK-----";
 
     var GENERATE_TEMPLATE =
-        "<script src='command/pgp/pgp-form.js'></script>" +
+        "<script src='command/pgp/pgp-listener.js'></script>" +
         "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
         "<legend>Generate a new PGP Key Pair</legend>" +
-        "<form name='pgp-keygen-form' action='#' method='post' onsubmit='return submitPGPKeyGenForm(event);'>" +
+        "<form name='pgp-keygen-form' action='#' method='post'>" +
             "<code class='status-box' style='display: none'></code>" +
             "Select key strength: </br><i>or: your fear level for getting hacked on a scale from 512 to 4096</i><br/>" +
             "<select name='bits'>" +
@@ -63,13 +63,13 @@
         "</form>";
 
     var REGISTER_TEMPLATE =
-        "<script src='command/pgp/pgp-form.js'></script>" +
+        "<script src='command/pgp/pgp-listener.js'></script>" +
         "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
         "<legend>Register a new PGP Key Pair</legend>" +
-        "<form name='pgp-register-form' action='#' method='post' onsubmit='return submitPGPRegisterForm(event);'>" +
+        "<form name='pgp-register-form' action='#' method='post' >" +
             "<code class='status-box'>{$status_content}</code>" +
             "<label>Paste or <a href='#KEYGEN'>generate</a> a PGP Private key and <br/>enter it into the box below to register:<br/>" +
-                "<textarea onchange='changePGPRegisterForm(event);' name='private_key' required='required' placeholder='" + EXAMPLE_PUBLIC_KEY + "' rows='12' cols='68'>{$private_key}</textarea>" +
+                "<textarea name='private_key' required='required' placeholder='" + EXAMPLE_PUBLIC_KEY + "' rows='12' cols='68'>{$private_key}</textarea>" +
             "</label>" +
             "<br/><br/>Register:<br/>" +
             "<input type='submit' name='submit-register' value='Register'/>" +
@@ -84,14 +84,14 @@
 
 
     var IDENTIFY_TEMPLATE =
-        "<script src='command/pgp/pgp-form.js'></script>" +
+        "<script src='command/pgp/pgp-listener.js'></script>" +
         "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
         "<legend>Identify yourself to the network [{$socket_host}]</legend>" +
-        "<form name='pgp-identify-form' action='#' method='post' onsubmit='return submitPGPIdentifyForm(event);'>" +
+        "<form class='pgp-auto-submit-form' name='pgp-identify-form' action='#' method='post'>" +
             "<code class='status-box'>{$status_content}</code>" +
 
             "<label class='label-pgp-id'>Identify using PGP Identity:<br/>" +
-                "<select name='pgp_id_public' required='required' onfocus='focusPGPIdentifyForm(event)' onselect='focusPGPIdentifyForm(event)' oninput='focusPGPIdentifyForm(event)'>" +
+                "<select name='pgp_id_public' required='required'>" +
                     "<optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>" +
                         "{$pgp_id_public_options}" +
                     "</optgroup>" +
@@ -101,12 +101,12 @@
                 "</select>" +
             "<br/><br/></label>" +
 
-            "<label class='label-passphrase' oninput='focusPGPIdentifyForm(event)' style='{$password_style}'>PGP Passphrase (if required):<br/>" +
+            "<label class='label-passphrase' style='{$password_style}'>PGP Passphrase (if required):<br/>" +
                 "<input type='password' name='passphrase' required='{$password_required}' placeholder='Enter your PGP Passphrase'/>" +
             "<br/><br/></label>" +
 
 
-            "<label class='label-username' oninput='focusPGPIdentifyForm(event)'>Your <strong>Session Username</strong>:<br/>(how you appear to others while connected)<br/>" +
+            "<label class='label-username'>Your <strong>Session Username</strong>:<br/>(how you appear to others while connected)<br/>" +
                 "<input type='text' name='username' required='required' placeholder='Enter a user name' value='{$username}'/>" +
             "<br/><br/></label>" +
 
@@ -119,19 +119,20 @@
             //"<br/><br/></label>" +
 
             "<label class='label-visibility'>How should other users be allowed to interact<br/>with your client while connected?<br/>" +
-                "<select multiple='multiple' name='visibility' style='max-width:20em' size='6'  onselect='focusPGPIdentifyForm(event)' oninput='focusPGPIdentifyForm(event)'>" +
+                "<select multiple='multiple' name='visibility' style='max-width:20em' size='6'>" +
                     "<optgroup label='Visibility Options'>" +
                         "<option selected='selected' value='M'>[MESSAGE] Accept private messages from other users</option>" +
                         "<option selected='selected' value='G'>[GET] Accept Content requests (like feed posts)</option>" +
-                        "<option value='P'>[POST] Content Hosting with form submission (allow others to post to your feed)</option>" +
-                        "<option value='D'>[DELETE] Content Hosting with delete requests (allow others to help manage your feed)</option>" +
+                        "<option value='P'>[POST] Content Hosting with form submission (allow others to make HTTP POST requests to your client)</option>" +
+                        "<option value='U'>[PUT] Content Hosting with content submission (allow others to post content your feed)</option>" +
+                        "<option value='D'>[DELETE] Content Hosting with delete requests (allow others to delete content from your feed)</option>" +
                     "</optgroup>" +
                     "<optgroup label='Visibility Combos'>" +
                         "<option value='_'>[] No Visibility (No one can tell you're on a server until you join a channel)</option>" +
                         "<option value='_M'>[M] Accept private messages from other users (no one can see your feed)</option>" +
                         "<option value='_MG'>[MG] Accept Content requests (like feed posts) and private messages</option>" +
                         "<option value='_MGP'>[MGP] Content Hosting with form submission (allow others to post to your feed)</option>" +
-                        "<option value='_MGPD'>[MGPD] Content Hosting with delete requests (allow others to help manage your feed)</option>" +
+                        "<option value='_MGPUD'>[MGPUD] Content Hosting with POST/PUT/DELETE requests (allow others to help manage your feed)</option>" +
                     "</optgroup>" +
                 "</select>" +
             "<br/><br/></label>" +
@@ -160,22 +161,23 @@
                 "<br/></label>" +
 
                 "<hr/>Submit Identification Signature:<br/>" +
-                //"<input type='button' name='submit-sign' value='Sign' onclick='focusPGPIdentifyForm(event)'/>" +
+                //"<input type='button' name='submit-sign' value='Sign' />" +
                 "<input type='submit' name='submit-identify' value='Identify'/>" +
 
-                "<select name='auto_identify' style='width:16em;' oninput='savePGPIdentitySettings(event)'>" +
+                "<select name='auto_identify' style='width:16em;'>" +
                     "<option value='ask'>Ask me every time</option>" +
-                    "<option value='auto-host'>Auto-Identify to {$socket_host} (passphrase may be required)</option>" +
-                    "<option value='auto-all'>Auto-Identify to all hosts (passphrase may be required)</option>" +
+                    "<option {$auto_identify_host_attr}value='auto-host'>Auto-Identify to {$socket_host} (passphrase may be required)</option>" +
+                    "<option {$auto_identify_all_attr}value='auto-all'>Auto-Identify to all hosts (passphrase may be required)</option>" +
                 "</select>" +
 
                 "<input type='hidden' name='session_uid' value='{$session_uid}'/>" +
+                "<input type='hidden' name='socket_host' value='{$socket_host}'/>" +
             "</div>" +
 
         "</form>";
 
     var IDENTIFY_TEMPLATE_SUCCESS =
-        "<script src='command/pgp/pgp-form.js'></script>" +
+        "<script src='command/pgp/pgp-listener.js'></script>" +
         "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
         "<legend>IDSIG Successful to [{$socket_host}]</legend>" +
         "<form name='pgp-identify-success-form' action='#' method='post'>" +
@@ -184,29 +186,30 @@
             "Options for next time:<hr/>" +
 
             "<input type='submit' name='submit-close' value='Close'/>" +
-            "<select name='auto_identify' style='width:16em;' oninput='savePGPIdentitySettings(event)'>" +
+            "<select name='auto_identify' style='width:16em;'>" +
                 "<option value='ask'>Ask me every time</option>" +
-                "<option value='auto-host'>Auto-Identify to {$socket_host} (passphrase may be required)</option>" +
-                "<option value='auto-all'>Auto-Identify to all hosts (passphrase may be required)</option>" +
+                "<option {$auto_identify_host_attr}value='auto-host'>Auto-Identify to {$socket_host} (passphrase may be required)</option>" +
+                "<option {$auto_identify_all_attr}value='auto-all'>Auto-Identify to all hosts (passphrase may be required)</option>" +
             "</select>" +
 
             "<input type='hidden' name='session_uid' value='{$session_uid}'/>" +
+            "<input type='hidden' name='socket_host' value='{$socket_host}'/>" +
         "</div>" +
 
         "</form>";
 
 
     var MANAGE_TEMPLATE =
-        "<script src='command/pgp/pgp-form.js'></script>" +
+        "<script src='command/pgp/pgp-listener.js'></script>" +
         "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
         "<legend>Manage PGP Identities</legend>" +
-        "<form name='pgp-manage-form' action='#' onsubmit='return submitPGPManageForm(event);'>" +
+        "<form name='pgp-manage-form' action='#'>" +
             "<code class='status-box'>{$status_content}</code>" +
             "<div class='pgp-id-box-container channel-content'>{$pgp_id_public_box_content}</div>" +
         "</form>";
 
     var MANAGE_TEMPLATE_ENTRY =
-        "<script src='command/pgp/pgp-form.js'></script>" +
+        "<script src='command/pgp/pgp-listener.js'></script>" +
         "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
         "<fieldset class='pgp-id-box pgp-id-box:{$id_private}{$class}'>" +
             "<legend class='user'>{$user_id}</legend>" +
@@ -217,17 +220,19 @@
             "<label><strong>Passphrase:</strong> {$passphrase_required}</label><br/>" +
             "<label><strong>Is Default:</strong> {$is_default}</label><br/>" +
             "<label><strong>Actions:&nbsp;&nbsp;&nbsp;</strong> " +
-                "<select name='actions' onselect='window[this.value](event, \"{$id_private}\"); ' oninput='window[this.value](event, \"{$id_private}\"); '>" +
-                    "<option selected='selected'>Select action</option>" +
-                    "<option disabled='disabled'>Make Default Identity</option>" +
-                    "<option value='changePGPManageFormKeyPassphrase'>Change Password</option>" +
+                "<select name='action'>" +
+                    "<option value=''>Select action</option>" +
+                    "<option value='default'>Make Default Identity</option>" +
+                    "<option value='change'>Change Password</option>" +
                     //"<option value='changePGPManageFormKeyPassphrase'>Add Password</option>" +
 
-                    "<option disabled='disabled'>Sign/Encrypt Text</option>" +
-                    "<option disabled='disabled'>Decrypt Message</option>" +
-                    "<option disabled='disabled'>Export Public Key Block</option>" +
-                    "<option disabled='disabled'>Export Private Key Block</option>" +
-                    "<option value='deletePGPManageFormKey'>Delete Private Key</option>" +
+                    "<option value='sign'>Sign Message</option>" +
+                    "<option value='verify'>Verify Message</option>" +
+                    "<option value='encrypt'>Encrypt Message</option>" +
+                    "<option value='decrypt'>Decrypt Message</option>" +
+                    "<option value='export-public'>Export Public Key Block</option>" +
+                    "<option value='export'>Export Private Key Block</option>" +
+                    "<option value='delete'>Delete Private Key</option>" +
                 "</select>" +
             "</label><br/>" +
         "</fieldset>";
@@ -458,146 +463,143 @@
 
     var identifyRequests = [];
     /**
-     * @param commandData IDENTIFY --session [session-uid] --id [pgp-key-id] --username [username] --visibility [visibility]
+     * @param commandData IDENTIFY --session [session-uid] --id [pgp-key-id] --username [username] --visibility [visibility] --auto-identify [0,1]
      */
     socketCommands.identify = function (commandData, e) {
-        if(typeof commandData === 'string')
-            commandData = {message: commandData, passphrase: null};
-        var commandString = commandData.message;
+        var ConfigDB = getConfigDB();
+        ConfigDB.getConfig(CONFIG_ID, function(CONFIG) {
 
-        if(identifyRequests.length === 0) {
-            throw new Error("No IDENTIFY REQUESTS received");
-        }
+            if(typeof commandData === 'string')
+                commandData = {message: commandData, passphrase: null};
+            var commandString = commandData.message;
 
-        var match = /^identify\s?([\s\S]*)$/im
-            .exec(commandString);
-        if(!match)
-            throw new Error("Could not match identify command");
-        var identifyContent = match[1] || '';
+            if(identifyRequests.length === 0) {
+                throw new Error("No IDENTIFY REQUESTS received");
+            }
 
-        var session_uid = null; // match[1];
-        var selectedPGPKeyID = null; // match[2];
-        var selectedPrivateKeyData = null; // null;
-        var username = null; // match[3];
-        var visibility = null; // match[4];
-        //var cacheTime = match[5];
 
-        identifyContent = identifyContent.replace(/--session (\S+)/i, function(match, contents, offset, s) {
-            session_uid = contents; return '';
-        });
-        identifyContent = identifyContent.replace(/--id (\S+)/i, function(match, contents, offset, s) {
-            selectedPGPKeyID = contents; return '';
-        });
-        identifyContent = identifyContent.replace(/--username (\S+)/i, function(match, contents, offset, s) {
-            username = contents; return '';
-        });
-        identifyContent = identifyContent.replace(/--visibility (\S+)/i, function(match, contents, offset, s) {
-            visibility = contents; return '';
-        });
+            var match = /^identify\s?([\s\S]*)$/im
+                .exec(commandString);
+            if(!match)
+                throw new Error("Could not match identify command");
+            var identifyContent = match[1] || '';
 
-        match = /IDSIG\s+(\S+)\s+(\S+)\s+(\S+)/i.exec(identifyContent);
-        if(match && match[1]) {
-            //throw new Error("Could not find challenge string");
-            if(match[1]) selectedPGPKeyID = match[1];
-            if(match[2]) session_uid = match[2];
-            if(match[3]) username = match[3];
+            var session_uid = null; // match[1];
+            var selectedPGPKeyID = null; // match[2];
+            var selectedPrivateKeyData = null; // null;
+            var username = null; // match[3];
+            var visibility = null; // match[4];
+            var auto_identify = null; // match[4];
 
-            var foundRequest = null;
-            for (var j = 0; j < identifyRequests.length; j++) (function(identifyRequest) {
-                if (identifyRequest[0].indexOf("IDENTIFY " + session_uid) !== -1) {
-                    foundRequest = identifyRequest;
-                }
-            })(identifyRequests[j]);
+            identifyContent = identifyContent.replace(/--session (\S+)/i, function(match, contents, offset, s) {
+                session_uid = contents; return '';
+            });
+            identifyContent = identifyContent.replace(/--id (\S+)/i, function(match, contents, offset, s) {
+                selectedPGPKeyID = contents; return '';
+            });
+            identifyContent = identifyContent.replace(/--username (\S+)/i, function(match, contents, offset, s) {
+                username = contents; return '';
+            });
+            identifyContent = identifyContent.replace(/--visibility (\S+)/i, function(match, contents, offset, s) {
+                visibility = contents; return '';
+            });
+            identifyContent = identifyContent.replace(/(?:-y|--auto-identify) (\S+)/i, function(match, contents, offset, s) {
+                auto_identify = contents ? true : false; return '';
+            });
 
-            if(!foundRequest)
-                throw new Error("Could not find IDENTITY request: " + session_uid);
 
-            var sendSocket = foundRequest[1];
-            sendSocket.send(commandString);
-            console.log("SOCKET OUT (" + sendSocket.url + "): " + commandString);
+            getPGPDB(function(db, PGPDB) {
+                var pgp_id_public_options_html = '';
+                //var id_signature = null;
+                var password_style = 'display: none';
+                var password_required = '';
+                var username = '';
+                var pgpIDCount = 0;
 
-            return;
-        }
-            //throw new Error("Could not find original IDENTIFY request socket: " + challengeString);
+                var status_content = '';
 
-        getPGPDB(function(db, PGPDB) {
-            var pgp_id_public_options_html = '';
-            //var id_signature = null;
-            var password_style = 'display: none';
-            var password_required = '';
-            var auto_identify_checked_attr = '';
-            var username = '';
-            var pgpIDCount = 0;
+                PGPDB.queryPrivateKeys(function(privateKeyData) {
 
-            var status_content = '';
+                    var publicKeyID = privateKeyData.id_public;
+                    pgpIDCount++;
 
-            PGPDB.queryPrivateKeys(function(privateKeyData) {
+                    if(privateKeyData.default === '1') {
+                        if(!selectedPGPKeyID)
+                            selectedPGPKeyID = privateKeyData.id_private;
+                    }
 
-                var publicKeyID = privateKeyData.id_public;
-                pgpIDCount++;
+                    var defaultUsername = privateKeyData.user_name || privateKeyData.user_id;
+                    defaultUsername = defaultUsername.trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
 
-                if(privateKeyData.default === '1') {
-                    if(!selectedPGPKeyID)
-                        selectedPGPKeyID = privateKeyData.id_private;
-                }
+                    if(privateKeyData.id_private === selectedPGPKeyID) {
+                        selectedPrivateKeyData = privateKeyData;
+                        username = defaultUsername;
+                    }
 
-                var defaultUsername = privateKeyData.user_name || privateKeyData.user_id;
-                defaultUsername = defaultUsername.trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
+                    pgp_id_public_options_html +=
+                        '<option ' + (privateKeyData.default === '1' ? 'selected="selected"' : '') + ' value="' + publicKeyID + '">' +
+                        (privateKeyData.passphrase_required ? '(*) ' : '') + privateKeyData.user_id.replace(/</, '&lt;') +
+                        '</option>';
 
-                if(privateKeyData.id_private === selectedPGPKeyID) {
-                    selectedPrivateKeyData = privateKeyData;
-                    username = defaultUsername;
-                }
-
-                pgp_id_public_options_html +=
-                    '<option ' + (privateKeyData.default === '1' ? 'selected="selected"' : '') + ' value="' + publicKeyID + '">' +
-                    (privateKeyData.passphrase_required ? '(*) ' : '') + privateKeyData.user_id.replace(/</, '&lt;') +
-                    '</option>';
-
-                if(privateKeyData.default === '1' && privateKeyData.passphrase_required) {
-                    password_style = '';
-                    password_required = 'required';
-                }
+                    if(privateKeyData.default === '1' && privateKeyData.passphrase_required) {
+                        password_style = '';
+                        password_required = 'required';
+                    }
 
 
 
 
-            }, function() {
+                }, function() {
 
-                for(var i=0; i<identifyRequests.length; i++) (function(identifyRequest) {
-                    var responseString = identifyRequest[0];
-                    var socket = identifyRequest[1];
-                    match = /^identify\s+(\S*)/im.exec(responseString);
-                    if(!match)
-                        throw new Error("Invalid IDENTIFY: " + responseString);
-                    var session_uid = match[1];
+                    for(var i=0; i<identifyRequests.length; i++) (function(identifyRequest) {
+                        var responseString = identifyRequest[0];
+                        var socket = identifyRequest[1];
+                        var socket_host = socket.url.split('/')[2];
 
-                    var status_content = "<span class='info'>IDENTIFY request received from</br>[" + socket.url + "]</span>";
+                        match = /^identify\s+(\S*)/im.exec(responseString);
+                        if(!match)
+                            throw new Error("Invalid IDENTIFY: " + responseString);
+                        var session_uid = match[1];
 
-                    if(pgpIDCount === 0)
-                        status_content += "<br/><span class='error'>No PGP Private Keys found on the client. Please import or <a href='#KEYGEN' onclick='send(\"KEYGEN\");'>generate</a> a new PGP Key and re-<a href='#IDENTIFY' onclick='send(\"IDENTIFY\");'>identify</a>.</span>";
+                        var status_content = "<span class='info'>IDENTIFY request received from</br>[" + socket.url + "]</span>";
 
-                    //signWithPrivateKey(identityString, selectedPrivateKeyData.block_private, commandData.passphrase,
-                    //    function(err, signedIdentityString) {
+                        if(pgpIDCount === 0)
+                            status_content += "<br/><span class='error'>No PGP Private Keys found on the client. Please import or <a href='#KEYGEN' onclick='send(\"KEYGEN\");'>generate</a> a new PGP Key and re-<a href='#IDENTIFY' onclick='send(\"IDENTIFY\");'>identify</a>.</span>";
 
-                            self.routeResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE
-                                    .replace(/{\$status_content}/gi, status_content || '')
-                                    //.replace(/{\$id_signature}/gi, signedIdentityString || '')
-                                    .replace(/{\$socket_url}/gi, socket.url || '')
-                                    .replace(/{\$socket_host}/gi, socket.url.split('/')[2] || '')
-                                    .replace(/{\$pgp_id_public_options}/gi, pgp_id_public_options_html || '')
-                                    .replace(/{\$session_uid}/gi, session_uid || '')
-                                    .replace(/{\$password_style}/gi, password_style || '')
-                                    .replace(/{\$password_required}/gi, password_required || '')
-                                    .replace(/{\$auto_identify_checked_attr}/gi, auto_identify_checked_attr || '')
-                                    //.replace(/{\$username}/gi, username.replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_') || '')
-                                    .replace(/{\$[^}]+}/gi, '')
-                            );
-                        //});
 
-                })(identifyRequests[i]);
+                        var auto_identify_host_attr = '';
+                        var auto_identify_all_attr = '';
+                        var autoIdentify = false;
+                        if(CONFIG) {
+                            autoIdentify = CONFIG.autoIdentify || CONFIG['autoIdentifyHost:' + socket_host] || false;
+                            if(CONFIG.autoIdentify)
+                                auto_identify_host_attr = "selected='selected'";
+                            else if(CONFIG['autoIdentifyHost:' + socket_host])
+                                auto_identify_all_attr = "selected='selected'";
+                        }
+
+                        self.routeResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE
+                                .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
+                                .replace(/{\$id_public_short}/gi, data.id_public.substr(data.id_public.length - 8))
+                                .replace(/{\$status_content}/gi, status_content || '')
+                                //.replace(/{\$id_signature}/gi, signedIdentityString || '')
+                                .replace(/{\$socket_url}/gi, socket.url || '')
+                                .replace(/{\$socket_host}/gi, socket.url.split('/')[2] || '')
+                                .replace(/{\$pgp_id_public_options}/gi, pgp_id_public_options_html || '')
+                                .replace(/{\$session_uid}/gi, session_uid || '')
+                                .replace(/{\$password_style}/gi, password_style || '')
+                                .replace(/{\$password_required}/gi, password_required || '')
+                                .replace(/{\$auto_identify_host_attr}/gi, auto_identify_host_attr || '')
+                                .replace(/{\$auto_identify_all_attr}/gi, auto_identify_all_attr || '')
+                                //.replace(/{\$username}/gi, username.replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_') || '')
+                                .replace(/{\$[^}]+}/gi, '')
+                        );
+
+                    })(identifyRequests[i]);
+                });
             });
         });
+
     };
 
 
@@ -609,7 +611,53 @@
         var socket = e.target;
         identifyRequests.push([responseString, socket]);
         socketCommands.identify("IDENTIFY", e);
+
+        //ConfigDB.getConfig(CONFIG_ID, function(CONFIG) {
+        //    var socket_host = socket.url.split('/')[2];
+            //var autoIdentify = CONFIG.autoIdentify || CONFIG['autoIdentifyHost:' + socket_host] || false;
+        //});
     };
+
+    /**
+     * @param commandData IDSIG [idsig and public key content]
+     */
+    socketCommands.idsig = function (commandData, e) {
+        if(typeof commandData === 'string')
+            commandData = {message: commandData, passphrase: null};
+        var commandString = commandData.message;
+
+        if(identifyRequests.length === 0)
+            throw new Error("No IDENTIFY REQUESTS received");
+
+        var match = /^idsig\s?([\s\S]*)$/im
+            .exec(commandString);
+        if(!match)
+            throw new Error("Could not match idsig content");
+        var identifyContent = match[1] || '';
+
+        match = /IDSIG\s+(\S+)\s+(\S+)/i.exec(identifyContent);
+        if(!match || !match[1] || !match[2])
+            throw new Error("Could not find challenge string");
+
+        //var selectedPGPKeyID = match[1];
+        var session_uid = match[2];
+
+        var foundRequest = null;
+        for (var j = 0; j < identifyRequests.length; j++) (function(identifyRequest) {
+            if (identifyRequest[0].indexOf("IDENTIFY " + session_uid) !== -1) {
+                foundRequest = identifyRequest;
+            }
+        })(identifyRequests[j]);
+
+        if(!foundRequest)
+            throw new Error("Could not find IDENTITY request: " + session_uid);
+
+        var sendSocket = foundRequest[1];
+        sendSocket.send(commandString);
+        console.log("SOCKET OUT (" + sendSocket.url + "): " + commandString);
+
+    };
+
 
     /**
      * @param commandData IDSIG [challenge-string] [session-id] [pgp-key-id] [username] [visibility]
@@ -631,32 +679,50 @@
             "<label><strong>Visibility:&nbsp;&nbsp;&nbsp;</strong> <span class='visibility'>" + visibility + "</span><br/></label>" +
             "<div class='idsig' style='padding: 1em'>" + commandData + "</div>";
 
-        for (var j = 0; j < identifyRequests.length; j++) (function(identifyRequest) {
-            if (identifyRequest[0].indexOf("IDENTIFY " + session_uid) !== -1) {
-                var socket = identifyRequest[1];
+        var ConfigDB = getConfigDB();
+        ConfigDB.getConfig(CONFIG_ID, function(CONFIG) {
 
-                self.routeResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE_SUCCESS
-                        .replace(/{\$status_content}/gi, status_content || '')
-                        .replace(/{\$socket_url}/gi, socket.url || '')
-                        .replace(/{\$socket_host}/gi, socket.url.split('/')[2] || '')
-                        .replace(/{\#session_uid}/gi, session_uid || '')
-                        .replace(/{\$[^}]+}/gi, '')
-                );
+            for (var j = 0; j < identifyRequests.length; j++) (function(identifyRequest) {
+                if (identifyRequest[0].indexOf("IDENTIFY " + session_uid) !== -1) {
+                    var socket = identifyRequest[1];
+                    var socket_host = socket.url.split('/')[2];
 
-                console.info("Removing IDENTIFY request: ", identifyRequest);
-                identifyRequests.splice(j, 1);
-                j--;
-            }
-        })(identifyRequests[j]);
+                    var auto_identify_host_attr = '';
+                    var auto_identify_all_attr = '';
+                    var autoIdentify = false;
+                    if(CONFIG) {
+                        autoIdentify = CONFIG.autoIdentify || CONFIG['autoIdentifyHost:' + socket_host] || false;
+                        if(CONFIG.autoIdentify)
+                            auto_identify_host_attr = "selected='selected' ";
+                        else if(CONFIG['autoIdentifyHost:' + socket_host.value])
+                            auto_identify_all_attr = "selected='selected' ";
+                    }
+
+                    self.routeResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE_SUCCESS
+                            .replace(/{\$status_content}/gi, status_content || '')
+                            .replace(/{\$socket_url}/gi, socket.url || '')
+                            .replace(/{\$socket_host}/gi, socket.url.split('/')[2] || '')
+                            .replace(/{\#session_uid}/gi, session_uid || '')
+                            .replace(/{\$auto_identify_host_attr}/gi, auto_identify_host_attr || '')
+                            .replace(/{\$auto_identify_all_attr}/gi, auto_identify_all_attr || '')
+                            .replace(/{\$[^}]+}/gi, '')
+                    );
+
+                    console.info("Removing IDENTIFY request: ", identifyRequest);
+                    identifyRequests.splice(j, 1);
+                    j--;
+                }
+            })(identifyRequests[j]);
 
 
-        getPGPDB(function(db, PGPDB) {
-           PGPDB.addIDSIGToDatabase(commandData, function(err, sessionData) {
-                if(err)
-                    throw new Error(err);
+            getPGPDB(function(db, PGPDB) {
+               PGPDB.addIDSIGToDatabase(commandData, function(err, sessionData) {
+                    if(err)
+                        throw new Error(err);
 
 
-           }) ;
+               }) ;
+            });
         });
     };
 
@@ -740,6 +806,15 @@
             importScripts('pgp/pgp-db.js');
 
         self.PGPDB(callback);
+    }
+
+    function getConfigDB(callback) {
+        if(typeof ConfigDB !== 'function')
+            importScripts('config/config-db.js');
+
+        if(callback)
+            ConfigDB(callback);
+        return ConfigDB;
     }
 
 })();

@@ -78,6 +78,7 @@ public class PGPCommands implements ISocketCommand {
     public boolean executeCommand(String data, Session session) throws Exception {
         String[] args = data.split("\\s+", 2);
         switch(args[0].toLowerCase()) {
+            case "idsig":
             case "identify":
                 identifySession(session, data);
                 return true;

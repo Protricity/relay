@@ -31,8 +31,8 @@ socketAutoLoaders['http/http-worker.js'] = ['get', 'post', 'put', 'delete', 'pat
 
 // Chat Commands
 socketAutoLoaders['chat/chat-worker.js'] = ['join', 'leave', 'message', 'chat', 'nick'];
-
-// Feed Commands
+//
+//// Feed Commands
 socketAutoLoaders['feed/feed-worker.js'] = ['feed'];
 
 // PGP Commands

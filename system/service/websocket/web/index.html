@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Relay Client - Alpha</title>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="template/minimal/minimal.css" type="text/css" />
@@ -16,8 +16,8 @@
                 return socketEvent.defaultPrevented;
             }
             setTimeout(function() {
-//            send('feed');
                 send('JOIN /home');
+                send('put');
 //            send('keygen');
 //            send('manage');
 
@@ -26,12 +26,13 @@
     </head>
     <body class="template-minimal">
         <ul class="command-list">
-            <li><a href="#" onclick="send('JOIN /home');">JOIN /home</a></li>
-            <li><a href="#" onclick="send('POST');">POST to feed</a></li>
-            <li><a href="#" onclick="send('KEYGEN');">KEYGEN a new Identity</a></li>
-            <li><a href="#" onclick="send('MANAGE');">MANAGE Identities</a></li>
-            <li><a href="#" onclick="send('FEED /home');">All User FEEDs</a></li>
-            <li><a href="#" onclick="send('FEED ~');">My FEED</a></li>
+            <li><a href="#" onclick="send('JOIN ~');"><span class='command'>Join</span> <strong>~</strong> <span class='info'>(Your channel)</span></a></li>
+            <li><a href="#" onclick="send('JOIN /home');"><span class='command'>Join</span> <strong>/home</strong></a></li>
+            <li><a href="#" onclick="send('KEYGEN');"><span class='command'>KeyGen</span> a new <strong>PGP Identity</strong></a></li>
+            <li><a href="#" onclick="send('MANAGE');"><span class='command'>Manage</span> your <strong>PGP Identities</strong></a></li>
+            <li><a href="#" onclick="send('FEED /home/*');">View all user <span class='command'>feed</span>s</a></li>
+            <li><a href="#" onclick="send('FEED ~');">View your <span class='command'>feed</span></a></li>
+            <li><a href="#" onclick="send('PUT');"><span class='command'>Put</span> new content in your web space</a></li>
         </ul>
         <!--<ul class="channel-list">-->
         <!--</ul>-->

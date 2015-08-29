@@ -12,12 +12,12 @@
     var PREFIX_FEED_POSTS_BY_KEY = 'feed-posts-by-key';
     var PREFIX_REPLIES_POSTS_BY_KEY = 'feed-replies-by-key';
 
-    var postFormUninitiatedElms = document.getElementsByClassName('feed-post-form:uninitiated');
+    var postFormUninitiatedElms = document.getElementsByClassName('post-form:uninitiated');
 
     document.addEventListener('log', function(e) {
         for(var i=postFormUninitiatedElms.length-1; i>=0; i--)
             (function(postFormUninitiatedElm) {
-                postFormUninitiatedElm.classList.remove('feed-post-form:uninitiated');
+                postFormUninitiatedElm.classList.remove('post-form:uninitiated');
                 doFocus(e, postFormUninitiatedElm);
             })(postFormUninitiatedElms[i]);
     });
@@ -57,7 +57,7 @@
         formElm = formElm || (e.target.form ? e.target.form : e.target);
         if(formElm.nodeName.toLowerCase() !== 'form')
             throw new Error("Invalid Form: " + formElm);
-        if(formElm.getAttribute('name') !== 'feed-post-form')
+        if(formElm.getAttribute('name') !== 'post-form')
             throw new Error("Wrong Form name: " + formElm.getAttribute('name'));
 
         var optGroupPGPIdentities = formElm.getElementsByClassName('pgp-identities')[0];
@@ -115,8 +115,8 @@
         if(!postContentElm)
             throw new Error("No content field found");
 
-        var pathElm = formElm.querySelector('*[name=path]');
-        if(!pathElm)
+        var channelElm = formElm.querySelector('*[name=channel]');
+        if(!channelElm)
             throw new Error("No channel field found");
 
         var selectPGPIDElm = formElm.querySelector('*[name=pgp-id]');
@@ -158,12 +158,12 @@
             var publicKeyID = privateKeyData.id_public;
             publicKeyID = publicKeyID.substr(publicKeyID.length - 8);
 
-            var postPath = pathElm.value;
-            var fixedPostPath = fixHomePath(postPath, publicKeyID);
+            var postChannel = channelElm.value;
+            var fixedPostChannel = fixHomePath(postChannel, publicKeyID);
             var homeChannel = fixHomePath('~', publicKeyID);
             var timestamp = Date.now();
 
-            postContent = "<div class='" + CLASS_FEED_POST + "' data-path='" + fixedPostPath + "' data-timestamp='" + timestamp + "'>" + postContent + "</div>";
+            postContent = "<div class='" + CLASS_FEED_POST + "' data-path='" + fixedPostChannel + "' data-timestamp='" + timestamp + "'>" + postContent + "</div>";
             try {
                 protectHTMLContent(postContent);
             } catch (e) {
@@ -196,7 +196,7 @@
                         setStatus(formElm, "Feed Post Successful");
                         postContentElm.value = '';
 
-                        commandString = "FEED " + postPath;
+                        commandString = "FEED " + postChannel;
                         socketEvent = new CustomEvent('socket', {
                             detail: commandString,
                             cancelable:true,
@@ -303,14 +303,6 @@
         })(statusElms[i]);
     }
 
-    var SCRIPT_PATH = 'command/pgp/pgp-listener.js';
-    var head = document.getElementsByTagName('head')[0];
-    if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
-        var newScript = document.createElement('script');
-        newScript.setAttribute('src', SCRIPT_PATH);
-        head.appendChild(newScript);
-    }
-
     // Includes
 
     function includeScript(scriptPath, onInsert) {
@@ -345,7 +337,7 @@
     includeScript('command/pgp/pgp-listener.js');
 
     // For Content Database access
-    includeScript('command/http/http-db.js');
+    includeScript('command/feed/feed-db.js');
 
     // For Content Events
     includeScript('command/feed/feed-listener.js');

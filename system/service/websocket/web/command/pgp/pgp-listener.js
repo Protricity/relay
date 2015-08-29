@@ -3,141 +3,496 @@
  */
 (function() {
 
-    var decryptionRequiredElms = document.getElementsByClassName('decryption-required');
-    var verificationRequiredElms = document.getElementsByClassName('verification-required');
-    document.addEventListener('log', function(e) {
-        var htmlContainer = e.target;
-        //console.log("Needs decryption: ", htmlContainer, verificationRequiredElms);
+    var PATH_PREFIX = 'pgp:';
+    var CONFIG_ID = 'pgp';
+    var AUTO_IDENTIFY_TIMEOUT = 10;
 
-        for(var i=decryptionRequiredElms.length-1; i>=0; i--) {
-            var decryptionRequiredElm = decryptionRequiredElms[i];
-            var htmlDecodedPGPContent = decodeURIComponent(decryptionRequiredElm.innerHTML);
+    self.addEventListener('submit', onFormEvent);
+    self.addEventListener('input', onFormEvent);
+    self.addEventListener('log', onLog);
 
-            var pgpMessage = openpgp.message.readArmored(htmlDecodedPGPContent);
+    function onFormEvent(e, formElm) {
+        if(!formElm) formElm = e.target.form ? e.target.form : e.target;
+        if(formElm.nodeName.toLowerCase() !== 'form')
+            throw new Error("Not a Form: " + formElm.nodeName);
 
-            (function(pgpMessage) {
+        if(e.type === 'submit')
+            e.preventDefault();
 
-                var encIDs = pgpMessage.getSigningKeyIds();
-                var encFP = encIDs[0].toHex().toUpperCase();
-                self.PGPDB.getPublicKeyData(encFP, function (err, pkData) {
+        switch(formElm.getAttribute('name')) {
+            case 'pgp-keygen-form':
+                if(e.type === 'submit')
+                    submitPGPKeyGenForm(e, formElm);
 
-                    var publicKey = openpgp.key.readArmored(pkData.block_public);
+                break;
 
-    //                 openpgp._worker_init = false;
-                    openpgp.decryptMessage(publicKey.keys, pgpMessage)
-                        .then(function(verifiedContent) {
-                            console.log("DECRYPTED", verifiedContent.text, verifiedContent);
-                        });
-                });
-            })(pgpMessage);
+            case 'pgp-register-form':
+                focusPGPRegisterForm(e, formElm);
+                break;
 
+            case 'pgp-manage-form':
+                if(e.type === 'submit')
+                    submitPGPManageForm(e, formElm);
+                break;
+
+            case 'pgp-identify-form':
+                saveAutoIdentify(e, formElm);
+                generateIDSIG(e, formElm);
+                if(e.type === 'submit')
+                    submitPGPIdentifyForm(e, formElm);
+
+                break;
+
+            case 'pgp-identify-success-form':
+                saveAutoIdentify(e, formElm);
+                //if(e.type === 'submit') { TODO:
+                break;
+
+            default:
+                throw new Error("Invalid settings form: " + formElm.getAttribute('name'));
         }
-
-
-        for(i=verificationRequiredElms.length-1; i>=0; i--) {
-            (function(verificationRequiredElm) {
-                var htmlDecodedSignedPGPContent = decodeURIComponent(verificationRequiredElm.innerHTML);
-                var pgpSignedMessage = openpgp.cleartext.readArmored(htmlDecodedSignedPGPContent);
-                verificationRequiredElm.classList.remove('verification-required');
-                verificationRequiredElm.classList.add('verification-pending');
-
-                (function(pgpSignedMessage) {
-                    var signIDs = pgpSignedMessage.getSigningKeyIds();
-                    var signFP = signIDs[0].toHex().toUpperCase();
-
-
-
-                    self.PGPDB.getPublicKeyData(signFP, function (err, pkData) {
-
-                        var publicKey = openpgp.key.readArmored(pkData.block_public);
-                        var feedKeyID = publicKey.keys[0].primaryKey.getKeyId().toHex();
-
-                        //                 openpgp._worker_init = false;
-                        openpgp.verifyClearSignedMessage(publicKey.keys, pgpSignedMessage)
-                            .then(function(verifiedContent) {
-                                var verifiedText = verifiedContent.text;
-                                for(var i=0; i<verifiedContent.signatures.length; i++)
-                                    if(!verifiedContent.signatures[i].valid)
-                                        throw new Error("Invalid Signature: " + verifiedContent.signatures[i].keyid.toHex().toUpperCase());
-
-                                verificationRequiredElm.classList.add('verified');
-                                verificationRequiredElm.classList.remove('verification-pending');
-
-                                var decryptedContentElm = document.createElement('span');
-                                decryptedContentElm.classList.add('pgp-verified-content');
-
-                                decryptedContentElm.innerHTML = protectHTMLContent(verifiedText);
-                                verificationRequiredElm.parentNode.insertBefore(decryptedContentElm, verificationRequiredElm);
-
-                                console.log("VERIFIED", verificationRequiredElm, decryptedContentElm, verifiedContent.text, verifiedContent);
-
-
-                                var contentEvent = new CustomEvent('pgp:verified', {
-                                    bubbles: true
-                                });
-                                decryptedContentElm.dispatchEvent(contentEvent);
-
-
-                            }).catch(function(err) {
-                                console.log(err);
-                            });
-                    });
-                })(pgpSignedMessage);
-
-            })(verificationRequiredElms[i]);
-
-        }
-
-
-
-    });
-
-    function protectHTMLContent(htmlContent) {
-        var tagsToReplace = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;'
-        };
-
-        htmlContent = htmlContent.replace(/[&<>]/g, function(tag) {
-            return tagsToReplace[tag] || tag;
-        });
-
-        htmlContent = htmlContent.replace(/&lt;(a|p|span|div)(?:\s+(class|data-channel|data-timestamp)=[^=&]+\s*)*&gt;/g, function(tag) {
-            tag = tag.replace('&lt;', '<');
-            return tag;
-        });
-
-        htmlContent = htmlContent.replace(/&lt;\//i, '</');
-        htmlContent = htmlContent.replace(/&gt;/ig, '>');
-
-        var match = /<[^>]+on\w+=/i.exec(htmlContent);
-        if(match)
-            throw new Error("Dangerous HTML: " + match[0]);
-
-        return htmlContent;
     }
 
-})();
+
+    // Auto focus
+
+    var pgpAutoSubmitElms = document.getElementsByClassName('pgp-auto-submit-form');
+    var onLog = function(e) {
+        for(var i=pgpAutoSubmitElms.length-1; i>=0; i--) (function(pgpAutoSubmitElm) {
+            pgpAutoSubmitElm.classList.remove('pgp-auto-submit-form');
+            var form = typeof pgpAutoSubmitElm.form !== 'undefined' ? pgpAutoSubmitElm.form : pgpAutoSubmitElm;
+            onFormEvent(e, form);
+        })(pgpAutoSubmitElms[i]);
+    };
+    setTimeout(function() {
+        var e = new CustomEvent('load');
+        onLog(e);
+    }, 500);
+
+    // Event Handlers
+
+    function submitPGPKeyGenForm(e, formElm) {
+        var bits = formElm.querySelector('*[name=bits]').value;
+        var userID = formElm.querySelector('*[name=user_id]').value;
+        var passphrase = formElm.querySelector('*[name=passphrase]').value;
+        var send_as_socket_command = parseInt(formElm.querySelector('*[name=send_as_socket_command]').value);
+
+        formElm.querySelector('*[type=submit]').setAttribute('disabled', 'disabled');
+//0 &&
+        if(send_as_socket_command) {
+            setStatus(formElm, "Generating new PGP Key via socket command...");
+            var commandString = 'KEYGEN --bits ' + bits;
+            if(passphrase)
+                commandString += ' --passphrase ' + passphrase;
+            commandString += ' --user ' + userID;
+
+            var messageEvent = new CustomEvent('socket', {
+                detail: commandString
+            });
+            document.dispatchEvent(messageEvent);
+
+        } else {
+            setStatus(formElm, "Generating new PGP Key via client...");
 
 
 
-(function() {
-    var SCRIPT_PATH = 'command/pgp/lib/openpgpjs/openpgp.js';
-    var head = document.getElementsByTagName('head')[0];
-    if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
-        var newScript = document.createElement('script');
-        newScript.setAttribute('src', SCRIPT_PATH);
-        head.appendChild(newScript);
+            openpgp.generateKeyPair({
+                keyType:1,
+                numBits:bits,
+                userId:userID,
+                passphrase:passphrase
+
+            }).then(function(NewKey) {
+                var newKeyID = NewKey.key.getKeyIds()[0].toHex();
+                console.log("New PGP Key Generated: " + newKeyID);
+
+                var messageEvent = new CustomEvent('socket', {
+                    detail: "REGISTER --show-form " + NewKey.privateKeyArmored,
+                    cancelable:true
+                });
+                document.dispatchEvent(messageEvent);
+
+            });
+        }
+
+    }
+
+    function focusPGPRegisterForm(e, formElm) {
+        var privateKeyElm = formElm.querySelector('*[name=private_key]');
+        var privateKeyValue = privateKeyElm.value;
+        var submitElm = formElm.querySelector('input[type=submit]');
+
+        if(privateKeyValue.indexOf("-----BEGIN PGP PRIVATE KEY BLOCK-----") === -1) {
+            submitElm.setAttribute('disabled', 'disabled');
+        } else {
+            submitElm.removeAttribute('disabled');
+        }
+
+        return formElm;
+    }
+
+    function submitPGPRegisterForm(e, formElm) {
+        var privateKeyElm = formElm.querySelector('*[name=private_key]');
+        var privateKeyValue = privateKeyElm.value;
+
+        if(privateKeyValue.indexOf("-----BEGIN PGP PRIVATE KEY BLOCK-----") === -1)
+            throw new Error("PGP PRIVATE KEY BLOCK not found");
+
+        var privateKey = window.openpgp.key.readArmored(privateKeyValue).keys[0];
+
+        var messageEvent = new CustomEvent('socket', {
+            detail: "REGISTER " + privateKey.armor(),
+            cancelable:true
+        });
+        document.dispatchEvent(messageEvent);
+    }
+
+
+    function submitPGPManageForm(e, formElm) {
+        var actionElm = formElm.querySelector('[name=action]');
+        console.info("ACTION: " + actionElm.value);
+        switch(actionElm.value) {
+            case 'default':
+            case 'change':
+            case 'sign':
+            case 'verify':
+            case 'encrypt':
+            case 'decrypt':
+            case 'export-public':
+            case 'export':
+            case 'delete':
+            default:
+                break;
+        }
+        //var deleteKeyID = "WUT";
+        //var messageEvent = new CustomEvent('socket', {
+        //    detail: "UNREGISTER " + deleteKeyID,
+        //    cancelable:true
+        //});
+        //formElm.dispatchEvent(messageEvent);
+    }
+
+
+
+    var lastIDSIG = null;
+
+    var cancelReceived = false;
+    function generateIDSIG(e, formElm) {
+        ConfigDB.getConfig(CONFIG_ID, function(err, CONFIG) {
+            if(err)
+                throw new Error(err);
+
+            var passphraseElm = formElm.querySelector('[name=passphrase]');
+            if(typeof passphraseElm.parentNode._original_display === 'undefined')
+                passphraseElm.parentNode._original_display = passphraseElm.parentNode.style.display;
+            var idSignatureElm = formElm.querySelector('[name=id_signature]');
+            var submitSectionElm = formElm.getElementsByClassName('submit-section')[0];
+            var visibilityElm = formElm.querySelector('[name=visibility]');
+            var socketHostElm = formElm.querySelector('[name=socket_host]');
+            var selectedPGPPublicKeyIDElm = formElm.querySelector('[name=pgp_id_public]');
+            var autoIdentifyElm = formElm.querySelector('[name=auto_identify]');
+
+            var usernameElm = formElm.querySelector('[name=username]');
+            var username = usernameElm.value;
+
+            var visibility = '';
+            for(var vi=0; vi<visibilityElm.length; vi++)
+                if(visibilityElm[vi].selected)
+                    visibility = (visibilityElm[vi].value[0] !== '_' ? visibility : '') + visibilityElm[vi].value.replace('_', '');
+            var session_uid = formElm.querySelector('[name=session_uid]').value;
+            //var autoIdentify = formElm.querySelector('[name=auto_identify]').value;
+
+            var autoIdentify = false;
+            if(CONFIG) {
+                autoIdentify = CONFIG.autoIdentify || CONFIG['autoIdentifyHost:' + socketHostElm.value] || false;
+                if(autoIdentify) {
+                    selectedPGPPublicKeyIDElm.value = autoIdentify;
+                }
+                if(CONFIG.autoIdentify)
+                    autoIdentifyElm.value = 'auto-all';
+                if(CONFIG['autoIdentifyHost:' + socketHostElm.value])
+                    autoIdentifyElm.value = 'auto-host';
+            }
+            var selectedPGPPublicKeyID = selectedPGPPublicKeyIDElm.value;
+
+            if(/\s/.test(username)) {
+                setStatus(formElm, "<span class='error'>Username may not contain spaces. Bummer :(</span>");
+                return;
+            }
+
+
+            selectedPGPPublicKeyID = selectedPGPPublicKeyID.substr(selectedPGPPublicKeyID.length - 16);
+
+            self.PGPDB(function (db, PGPDB) {
+                var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readonly");
+                var privateKeyDBStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
+
+                var index = privateKeyDBStore.index('id_public');
+                var req = index.get(selectedPGPPublicKeyID);
+                req.onerror = function(err) {
+                    throw new Error(err);
+                };
+                req.onsuccess = function (evt) {
+                    var privateKeyData = evt.target.result;
+                    if(!privateKeyData)
+                        throw new Error("Private Key Not Found: " + selectedPGPPublicKeyID);
+
+                    var privateKey = openpgp.key.readArmored(privateKeyData.block_private).keys[0];
+
+                    if(!username || username.default === username) {
+                        username = privateKey.getUserIds()[0].trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
+                        usernameElm.value = username;
+                        usernameElm.default = username;
+                    }
+
+                    var identityString = "IDSIG" +
+                        " " + selectedPGPPublicKeyID +
+                        " " + session_uid +
+                        " " + username +
+                        " " + visibility;
+
+                    if(!lastIDSIG || identityString !== lastIDSIG) {
+                        lastIDSIG = identityString;
+                        idSignatureElm.innerHTML = '';
+                        submitSectionElm.style.display = 'none';
+                        //setStatus(formElm, "");
+                    }
+
+
+                    if(privateKey.primaryKey.isDecrypted) {
+                        passphraseElm.parentNode.style.display = 'none';
+                        passphraseElm.removeAttribute('required');
+
+                    } else {
+                        passphraseElm.parentNode.style.display = passphraseElm.parentNode._original_display || 'block';
+                        passphraseElm.setAttribute('required', 'required');
+                    }
+
+//             var publicKey = openpgp.key.readArmored(privateKeyData.block_pubic).keys[0];
+                    if(!privateKey.primaryKey.isDecrypted) {
+                        if (passphraseElm.value) {
+                            privateKey.primaryKey.decrypt(passphraseElm.value);
+                        } else {
+                            setStatus(formElm, "<span class='passphrase'>PGP Passphrase required</span>", true);
+                        }
+                    }
+
+                    if(privateKey.primaryKey.isDecrypted) {
+
+                        if(!idSignatureElm.innerHTML) {
+                            setStatus(formElm, "Signing Identity...", true);
+                            openpgp.signClearMessage(privateKey, identityString)
+                                .then(function (signedIDString) {
+
+                                    setStatus(formElm, "<span class='success'>" + "Signature successful. Ready to IDENTIFY!" + "</span>");
+                                    idSignatureElm.innerHTML = signedIDString.trim();
+                                    //idSignatureElm.innerHTML += "\n" + privateKeyData.user_profile_signed;
+                                    idSignatureElm.innerHTML += "\n" + privateKeyData.block_public;
+                                    submitSectionElm.style.display = 'block';
+
+                                    if(autoIdentify) {
+                                        var startTime = new Date().getTime() / 1000;
+                                        var interval = setInterval(function () {
+                                            if(cancelReceived) {
+                                                clearInterval(interval);
+                                                setStatus(formElm, "<span class='error'>" + "Auto-Identify Canceled" + "</span>", true);
+                                                return;
+                                            }
+                                            var elapsedSeconds = parseInt(new Date().getTime() / 1000 - startTime);
+                                            var secondsLeft = AUTO_IDENTIFY_TIMEOUT - elapsedSeconds;
+                                            setStatus(formElm, "<span class='pending'>" + "Auto-Identifying in " + (secondsLeft) + " second" + (secondsLeft === 1 ? "" : "s") + "...</span>");
+
+                                            if(elapsedSeconds <= AUTO_IDENTIFY_TIMEOUT)
+                                                return;
+
+                                            clearInterval(interval);
+                                            submitPGPIdentifyForm(e, formElm);
+
+                                        }, 1000);
+                                    }
+                                    //if(autoIdentify) {
+                                    //    console.info("Auto-submitting form: ", formElm);
+                                    //    submitPGPIdentifyForm(e);
+                                    //}
+                                });
+                        }
+
+                    } else {
+                        idSignatureElm.innerHTML = '';
+                        submitSectionElm.style.display = 'none';
+
+                    }
+                };
+            });
+        });
+
+
+        return formElm;
+    }
+
+    function saveAutoIdentify(e, formElm) {
+        var autoIdentifyElm = formElm.querySelector('[name=auto_identify]');
+        var autoIdentifyLastValue = autoIdentifyElm.getAttribute('data-last-value');
+        autoIdentifyElm.setAttribute('data-last-value', autoIdentifyElm.value);
+        if(!autoIdentifyLastValue || autoIdentifyLastValue === autoIdentifyElm.value)
+            return false;
+
+        var pgpPublicIDElm = formElm.querySelector('[name=pgp_id_public]');
+        var socketHostElm = formElm.querySelector('[name=socket_host]');
+
+        var newConfigData = {'id': CONFIG_ID};
+        newConfigData['autoIdentify'] = null;
+        newConfigData['autoIdentifyHost:' + socketHostElm.value] = null;
+
+        if(!pgpPublicIDElm.value)
+            throw new Error("Invalid Socket Host in form field 'pgp_id_public'");
+        switch(autoIdentifyElm.value) {
+            case 'ask':
+                break;
+
+            case 'auto-host':
+                if(!socketHostElm.value)
+                    throw new Error("Invalid Socket Host in form field 'socket_host'");
+
+                newConfigData['autoIdentifyHost:' + socketHostElm.value] = pgpPublicIDElm.value;
+                break;
+
+            case 'auto-all':
+                newConfigData['autoIdentify'] = pgpPublicIDElm.value;
+                break;
+
+            default:
+                throw new Error("Invalid auto_identify option: " + autoIdentifyElm.value);
+        }
+
+        ConfigDB.addConfigToDatabase(newConfigData);
+        return true;
+    }
+
+    function submitPGPIdentifyForm(e, formElm) {
+        var idSignatureElm = formElm.querySelector('*[name=id_signature]');
+        var passphraseElm = formElm.querySelector('[name=passphrase]');
+
+
+        var pgp_id_public = formElm.querySelector('[name=pgp_id_public]').value;
+        var username = formElm.querySelector('[name=username]').value;
+        //var challenge_string = formElm.querySelector('[name=challenge_string]').value;
+        var visibilityElm = formElm.querySelector('[name=visibility]');
+        var visibility = '';
+        for(var vi=0; vi<visibilityElm.length; vi++)
+            if(visibilityElm[vi].selected)
+                visibility = (visibilityElm[vi].value[0] !== '_' ? visibility : '') + visibilityElm[vi].value.replace('_', '');
+        var idSigString = idSignatureElm.value;
+        var submitSectionElm = formElm.getElementsByClassName('submit-section')[0];
+
+        if(idSigString.indexOf("-----BEGIN PGP SIGNED MESSAGE-----") === -1)
+            throw new Error("BEGIN PGP SIGNED MESSAGE not found");
+
+        //var commandString = "IDENTIFY --challenge " + challenge_string + " --id " + pgp_id + " --username " + username + " --visibility " + visibility;
+
+        var messageEvent = new CustomEvent('socket', {
+            detail: {
+                message:  "IDSIG " + idSigString, // commandString, //
+                passphrase: passphraseElm.value
+            },
+            cancelable:true
+        });
+        document.dispatchEvent(messageEvent);
+        idSignatureElm.innerHTML = '';
+        submitSectionElm.style.display = 'none';
+        formElm.classList.add('form-success');
+        passphraseElm.value = '';
+        //setStatus(formElm, "<span class='success'>IDSIG Sent Successfully</span>");
+
+    }
+
+    function setStatus(formElm, statusText, append) {
+        var statusElms = formElm.getElementsByClassName('status-box');
+        for(var i=0; i<statusElms.length; i++) (function(statusElm) {
+            if(append)
+                statusElm.innerHTML += (statusElm.innerHTML ? '<br/>' : '') + statusText;
+            else
+                statusElm.innerHTML = statusText;
+        })(statusElms[i]);
+    }
+
+
+
+    // IE Fix
+    if(typeof CustomEvent === 'undefined')
+        (function () {
+            function CustomEvent ( event, params ) {
+                params = params || { bubbles: false, cancelable: false, detail: undefined };
+                var evt = document.createEvent( 'CustomEvent' );
+                evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+                return evt;
+            }
+
+            CustomEvent.prototype = window.Event.prototype;
+
+            window.CustomEvent = CustomEvent;
+        })();
+
+
+    // Includes
+
+    function includeScript(scriptPath, onInsert) {
+        var head = document.getElementsByTagName('head')[0];
+        if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+            var newScript = document.createElement('script');
+            newScript.setAttribute('src', scriptPath);
+            head.appendChild(newScript);
+            if(onInsert)
+                onInsert();
+        }
+    }
+
+    // For Config Access
+    includeScript('command/config/config-db.js');
+
+    // For Public/Private Key Database access
+    includeScript('command/pgp/pgp-db.js');
+
+    // For PGP Decryption in chat rooms
+    var openPGPScriptPath = 'command/pgp/lib/openpgpjs/openpgp.js';
+    includeScript(openPGPScriptPath, function() {
 
         var timeout = setInterval(function() {
-            var src = SCRIPT_PATH.replace('/openpgp.', '/openpgp.worker.');
+            var src = openPGPScriptPath.replace('/openpgp.', '/openpgp.worker.');
             if(!window.openpgp || window.openpgp._worker_init)
                 return;
             window.openpgp.initWorker(src);
             window.openpgp._worker_init = true;
             clearInterval(timeout);
-//             console.info("OpenPGP Worker Loaded: " + src);
+             //console.info("OpenPGP Worker Loaded: " + src);
         }, 500);
-    }
+    });
+
+//
+//    var SCRIPT_PATH = 'command/pgp/lib/openpgpjs/openpgp.js';
+//    var head = document.getElementsByTagName('head')[0];
+//    if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+//        var newScript = document.createElement('script');
+//        newScript.setAttribute('src', SCRIPT_PATH);
+//        head.appendChild(newScript);
+//
+//        var timeout = setInterval(function() {
+//            var src = SCRIPT_PATH.replace('/openpgp.', '/openpgp.worker.');
+//            if(!window.openpgp || window.openpgp._worker_init)
+//                return;
+//            window.openpgp.initWorker(src);
+//            window.openpgp._worker_init = true;
+//            clearInterval(timeout);
+////             console.info("OpenPGP Worker Loaded: " + src);
+//        }, 500);
+//    }
+
+
 })();
+
+
+//var keys = (new openpgp.Keyring.localstore()).loadPrivate();
+
+
+//var pgpMessage = openpgp.message.readArmored(encryptedMessage);
+//var encIDs = pgpMessage.getEncryptionKeyIds();

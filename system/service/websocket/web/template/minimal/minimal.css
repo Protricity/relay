@@ -1,3 +1,11 @@
+.template-minimal a {
+    text-decoration: none;
+}
+
+.template-minimal fieldset {
+    vertical-align: top;
+}
+
 .template-minimal .channel-container {
     font-family: monospace;
     color: #333;
@@ -33,10 +41,14 @@
     word-break: break-all;
 }
 
+.template-minimal span.command{
+    color: green;
+    text-transform: uppercase;
+    font-family: monospace;
+}
 
 .template-minimal span.action {
     color: green;
-
     font-style: italic;
 }
 

@@ -81,8 +81,10 @@ public class ChannelCommands implements ISocketCommand {
         ArrayList<Session> channelUsers;
         if(mChannelUsers.containsKey(channel)) {
             channelUsers = mChannelUsers.get(channel);
-            if(channelUsers.contains(userSession)) 
-                throw new IllegalArgumentException("User already joined channel: " + channel);
+            if(channelUsers.contains(userSession)) {
+                sendText(userSession, "ERROR User already joined channel: " + channel);
+                return;
+            }
         } else {
             channelUsers = new ArrayList<>();
             mChannelUsers.put(channel, channelUsers);
@@ -92,8 +94,10 @@ public class ChannelCommands implements ISocketCommand {
         ArrayList<String> userChannels;
         if(mUserChannels.containsKey(userSession)) {
             userChannels = mUserChannels.get(userSession);
-            if(userChannels.contains(channel)) 
-                throw new IllegalArgumentException("User already joined channel: " + channel);
+            if(userChannels.contains(channel)) {
+                sendText(userSession, "ERROR User already joined channel: " + channel);
+                return;
+            }
         } else {
             userChannels = new ArrayList<>();
             mUserChannels.put(userSession, userChannels);

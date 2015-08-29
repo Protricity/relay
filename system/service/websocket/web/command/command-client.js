@@ -70,12 +70,12 @@
         if(!args)
             throw new Error("Invalid Log: " + commandString);
         var subCommand = args[1] ? args[1].toLowerCase() : 'append';
-        var channelPath = args[2];
+        var path = args[2];
         var channelSelector = args[3];
         var content = args[4];
 
         content = content
-            .replace(/{\$channel}/gi, channelPath);
+            .replace(/{\$path}/gi, path);
 
         var match;
         while(match = /<script([^>]*)><\/script>/gi.exec(content)) {
@@ -100,11 +100,11 @@
         var channelContainers = document.getElementsByClassName(CLASS_CHANNEL_CONTAINER);
         for(var i=0; i<channelContainers.length; i++) {
             var channelContainer = channelContainers[i];
-            var channelOutputs = channelContainer.getElementsByClassName(channelPath);
+            var channelOutputs = channelContainer.getElementsByClassName(path);
             if(channelOutputs.length === 0) {
                 var newChannel = document.createElement('fieldset');
-                newChannel.setAttribute('class', CLASS_CHANNEL + ' ' + channelPath);
-                newChannel.setAttribute('data-channel', channelPath);
+                newChannel.setAttribute('class', CLASS_CHANNEL + ' ' + path);
+                newChannel.setAttribute('data-path', path);
                 newChannel.setAttribute('style', 'display: inline-block');
 
                 if(channelContainer.firstChild)
@@ -160,7 +160,7 @@
     //        switch(channelList.nodeName.toLowerCase()) {
     //            case 'select':
     //                for(j=0; j<channelElements.length; j++) {
-    //                    path = channelElements[j].getAttribute('data-channel');
+    //                    path = channelElements[j].getAttribute('data-path');
     //                    selectContent += '<option><a href="#JOIN ' + path + '">' + path + '</a></option>';
     //                }
     //                channelList.innerHTML = selectContent;
@@ -168,7 +168,7 @@
     //
     //            case 'ul':
     //                for(j=0; j<channelElements.length; j++) {
-    //                    path = channelElements[j].getAttribute('data-channel');
+    //                    path = channelElements[j].getAttribute('data-path');
     //                    selectContent += '<li><a href="#JOIN ' + path + '">' + path + '</a></li>';
     //                }
     //                channelList.innerHTML = selectContent;
