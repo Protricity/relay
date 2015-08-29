@@ -14,7 +14,7 @@
         "<article class='{$attr_class}'>" +
             "<script src='command/chat/chat-form.js'></script>" +
             "<link rel='stylesheet' href='command/chat/chat.css' type='text/css'>" +
-            "<header>Channel: {$channel}</header>" +
+            "<header><span class='command'>Join</span> {$channel}</header>" +
             "{$html_header_commands}" +
             "<form name='chat-form' action='#' onsubmit='return submitChatForm(event);'>" +
                 "<table>" +

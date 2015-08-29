@@ -66,7 +66,7 @@
     }
 
     function logToChannel(commandString) {
-        var args = /^log(?:.(\w+))?\s+(\S+)\s+(\S+)\s+([\s\S]*)$/mi.exec(commandString);
+        var args = /^log(?:.(\w+))?\s+(\S+)\s*(\S*)\s*([\s\S]*)$/mi.exec(commandString);
         if(!args)
             throw new Error("Invalid Log: " + commandString);
         var subCommand = args[1] ? args[1].toLowerCase() : 'append';
@@ -133,6 +133,20 @@
                 }
 
                 switch(subCommand) {
+                    case 'minimize':
+                    case 'maximize':
+                    case 'close':
+                        if(contentTarget.classList.contains(subCommand + 'd')) {
+                            contentTarget.classList.remove(subCommand + 'd');
+                        } else {
+                            contentTarget.classList.remove('minimized');
+                            contentTarget.classList.remove('maximized');
+                            contentTarget.classList.remove('closed');
+                            contentTarget.classList.add(subCommand + 'd');
+                        }
+                        break;
+
+
                     case 'replace':
                         contentTarget.outerHTML = content;
                         //contentTarget.scrollTop = 0;

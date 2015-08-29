@@ -22,6 +22,9 @@
     border: 2px groove threedface;
     margin: 0 2px 0 2px;
     padding: 1em 0.75em 0.625em 0.75em;
+     
+    min-width: 15em;
+    vertical-align: top;
 }
 
 .template-minimal .channel:hover {
@@ -55,6 +58,23 @@
     color: darkblue;
     background-color: lightgreen;
     box-shadow: 1px 4px 30px #333;
+}
+
+.template-minimal .channel.minimized {
+}
+.template-minimal .channel.minimized > * {
+    display: none;
+    /* visibility: hidden; */
+}
+
+.template-minimal .channel.minimized .channel-header,
+.template-minimal .channel.minimized header {
+    display: inherit;
+    color: grey;
+    /* visibility: inherit; */
+}
+.template-minimal .channel.minimized .header-commands {
+    display: inherit;
 }
 
 .template-minimal span.username {

@@ -39,7 +39,7 @@
         "<article class='{$attr_class}'>" +
             "<script src='command/pgp/pgp-listener.js'></script>" +
             "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
-            "<header>Generate a new PGP Key Pair <a href='#' >(X)</a></header>" +
+            "<header><span class='command'>Generate</span> a new Identity</header>" +
             "{$html_header_commands}" +
             "<form name='pgp-keygen-form' action='#' method='post'>" +
                 "<code class='status-box' style='display: none'></code>" +
@@ -69,7 +69,7 @@
         "<article class='{$attr_class}'>" +
             "<script src='command/pgp/pgp-listener.js'></script>" +
             "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
-            "<header>Register a new PGP Key Pair</header>" +
+            "<header><span class='command'>Register</span> a new PGP Key Pair</header>" +
             "{$html_header_commands}" +
             "<form name='pgp-register-form' action='#' method='post' >" +
                 "<code class='status-box'>{$status_content}</code>" +
@@ -94,7 +94,7 @@
         "<article class='{$attr_class}'>" +
             "<script src='command/pgp/pgp-listener.js'></script>" +
             "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
-            "<header>Identify yourself to the network [{$socket_host}]</header>" +
+            "<header><span class='command'>Identify</span> yourself to the network</header>" +
             "{$html_header_commands}" +
             "<form class='pgp-auto-submit-form' name='pgp-identify-form' action='#' method='post'>" +
                 "<code class='status-box'>{$status_content}</code>" +
@@ -190,7 +190,7 @@
         "<article class='{$attr_class}'>" +
             "<script src='command/pgp/pgp-listener.js'></script>" +
             "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
-            "<header>IDSIG Successful to [{$socket_host}]</header>" +
+            "<header><span class='command'>IDSIG</span> <span class='success'>Successful</span></header>" +
             "{$html_header_commands}" +
             "<form name='pgp-identify-success-form' action='#' method='post'>" +
                 "<code class='status-box'>{$status_content}</code>" +
@@ -215,7 +215,7 @@
         "<article class='{$attr_class}'>" +
             "<script src='command/pgp/pgp-listener.js'></script>" +
             "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
-            "<header>Manage PGP Identities</header>" +
+            "<header><span class='command'>Manage</span> PGP Identities</header>" +
             "{$html_header_commands}" +
             "<form name='pgp-manage-form' action='#'>" +
                 "<code class='status-box'>{$status_content}</code>" +

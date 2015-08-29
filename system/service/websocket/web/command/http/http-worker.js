@@ -14,20 +14,19 @@
     var ARTICLE_PLACEHOLDER =
         //"<article>\n" +
         "<header>Optional Topic Header</header>\n" +
-        "{$html_header_commands}" +
         "Post about <i>any</i> <strong>topic</strong>\n" +
         "<img src=\"path/to/topic/picture\" alt=\"my picture\" />\n";
     //"</article>";
 
-    var FEED_POST_FORM_TEMPLATE =
+    var PUT_FORM_TEMPLATE =
         "<article class='{$attr_class}'>" +
-            "<script src='command/feed/feed-form.js'></script>" +
-            "<link rel='stylesheet' href='command/feed/feed.css' type='text/css'>" +
-            "<header>Post to your feed</header>" +
+            "<script src='command/http/http-form.js'></script>" +
+            "<link rel='stylesheet' href='command/http/http.css' type='text/css'>" +
+            "<header><span class='command'>Put</span> content in your web space</header>" +
             "{$html_header_commands}" +
 
             "<form name='post-form' class='post-form:uninitiated' action='#' onsubmit='return submitPostForm(event);'>" +
-                "<label class='label-content'>Use this text box to create a new feed post:<br/>" +
+                "<label class='label-content'>Use this text box to create new content for your <strong>web space</strong>:<br/>" +
                     "<textarea cols='56' rows='8' onfocus='focusPostForm(event)' oninput='focusPostForm(event)' class='focus' name='content' required='required' placeholder='" + ARTICLE_PLACEHOLDER + "'>{$content}</textarea>" +
                 "<br/></label>" +
 
@@ -45,9 +44,9 @@
 
                     "<label class='label-path'>Post to:<br/>" +
                         "<select name='path'>" +
-                            "<option value='~'>My Feed</option>" +
-                            "<option disabled='disabled'>Other Feed...</option>" +
-                            "<option disabled='disabled'>Friend's Feed...</option>" +
+                            "<option value='~'>My Home Page</option>" +
+                            "<option disabled='disabled'>Friend's Web Space...</option>" +
+                            "<option disabled='disabled'>Other Web Space...</option>" +
                         "</select>" +
                     "<br/><br/></label>" +
 
@@ -100,7 +99,7 @@
 
         } else {
             self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_PUT + ' * ' +
-                FEED_POST_FORM_TEMPLATE
+                PUT_FORM_TEMPLATE
                     .replace(/{\$row_n}/gi, (postFormNCounter++).toString())
                     .replace(/{\$content}/gi, content || '')
                     .replace(/{\$path}/gi, path)

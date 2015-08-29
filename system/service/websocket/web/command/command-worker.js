@@ -16,9 +16,9 @@
         "</div>";
 
     var SOCKET_TEMPLATE =
-        "<article class='{$attr_class}'>" +
+        "<article class='{$attr_class} minimized'>" +
             "<link rel='stylesheet' href='command/socket/socket.css' type='text/css'>" +
-            "<header>Socket IO: {$socket_host}</header>" +
+            "<header><a href='#MINIMIZE {$channel_class}'><span class='command'>Socket</span> {$socket_host}</a></header>" +
             "{$html_header_commands}" +
             "<fieldset class='" + CLASS_SOCKET_CONTENT + "'></fieldset>" +
             //"<input name='message' type='text' placeholder='Send a message directly the socket [hit enter]'/>" +

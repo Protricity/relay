@@ -24,7 +24,13 @@ socketResponses.info = function(commandResponse) { return self.routeResponseToCl
 socketCommands.error = function(commandString) { return self.sendWithFastestSocket(commandString); };
 socketResponses.error = function(commandResponse) { return self.routeResponseToClient(commandResponse); };
 
+// Window Commands
 
+socketCommands.minimize =
+socketCommands.maximize =
+socketCommands.close = function(commandResponse) {
+    return self.routeResponseToClient("LOG." + commandResponse);
+};
 
 // HTTP Commands
 socketAutoLoaders['http/http-worker.js'] = ['get', 'post', 'put', 'delete', 'patch', 'head'];
