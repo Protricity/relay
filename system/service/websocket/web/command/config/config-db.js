@@ -47,7 +47,7 @@ function ConfigDB(dbReadyCallback) {
     ConfigDB.addCallback(dbReadyCallback);
 }
 
-    // Database Methods
+// Database Methods
 
 ConfigDB.getConfig = function(id, callback) {
 

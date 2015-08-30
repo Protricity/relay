@@ -4,6 +4,7 @@
       <w>idsig</w>
       <w>kbpgp</w>
       <w>passphrase</w>
+      <w>pgpdb</w>
     </words>
   </dictionary>
 </component>

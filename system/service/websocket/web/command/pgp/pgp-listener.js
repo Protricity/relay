@@ -7,6 +7,8 @@
     var CONFIG_ID = 'pgp';
     var AUTO_IDENTIFY_TIMEOUT = 10;
 
+    // Events
+
     self.addEventListener('submit', onFormEvent);
     self.addEventListener('change', onFormEvent);
     self.addEventListener('log', onLog);
@@ -15,8 +17,6 @@
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
         if(formElm.nodeName.toLowerCase() !== 'form')
             return false;
-        if(e.type === 'submit')
-            e.preventDefault();
 
         switch(formElm.getAttribute('name')) {
             case 'pgp-keygen-form':
@@ -72,6 +72,7 @@
     // Event Handlers
 
     function submitPGPKeyGenForm(e, formElm) {
+        e.preventDefault();
         var bits = formElm.querySelector('*[name=bits]').value;
         var userID = formElm.querySelector('*[name=user_id]').value;
         var passphrase = formElm.querySelector('*[name=passphrase]').value;
@@ -132,6 +133,7 @@
     }
 
     function submitPGPRegisterForm(e, formElm) {
+        e.preventDefault();
         var privateKeyElm = formElm.querySelector('*[name=private_key]');
         var privateKeyValue = privateKeyElm.value;
 
@@ -149,6 +151,7 @@
 
 
     function submitPGPManageForm(e, formElm) {
+        e.preventDefault();
         var actionElm = formElm.querySelector('[name=action]');
         console.info("ACTION: " + actionElm.value);
         switch(actionElm.value) {
@@ -231,7 +234,7 @@
 
             selectedPGPPublicKeyID = selectedPGPPublicKeyID.substr(selectedPGPPublicKeyID.length - 16);
 
-            self.PGPDB(function (db, PGPDB) {
+            PGPDB(function (db) {
                 var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readonly");
                 var privateKeyDBStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
 
@@ -378,6 +381,7 @@
     }
 
     function submitPGPIdentifyForm(e, formElm) {
+        e.preventDefault();
         var idSignatureElm = formElm.querySelector('*[name=id_signature]');
         var passphraseElm = formElm.querySelector('[name=passphrase]');
 

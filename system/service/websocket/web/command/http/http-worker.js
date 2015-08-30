@@ -3,10 +3,7 @@
  */
 (function() {
 
-    var MS_DAY = 24 * 60 * 60 * 1000;
-
     var PATH_PREFIX_PUT = 'put:';
-
     var db = null;
 
 
@@ -20,20 +17,20 @@
 
     var PUT_FORM_TEMPLATE =
         "<article class='{$attr_class}'>" +
-            "<script src='command/http/http-form.js'></script>" +
+            "<script src='command/http/http-listener.js'></script>" +
             "<link rel='stylesheet' href='command/http/http.css' type='text/css'>" +
             "<header><span class='command'>Put</span> content in your web space</header>" +
             "{$html_header_commands}" +
 
-            "<form name='post-form' class='post-form:uninitiated' action='#' onsubmit='return submitPostForm(event);'>" +
+            "<form name='http-put-form' class='compact'>" +
                 "<label class='label-content'>Use this text box to create new content for your <strong>web space</strong>:<br/>" +
-                    "<textarea cols='56' rows='8' onfocus='focusPostForm(event)' oninput='focusPostForm(event)' class='focus' name='content' required='required' placeholder='" + ARTICLE_PLACEHOLDER + "'>{$content}</textarea>" +
+                    "<textarea cols='56' rows='8' class='focus' name='content' required='required' placeholder='" + ARTICLE_PLACEHOLDER + "'>{$content}</textarea>" +
                 "<br/></label>" +
 
-                "<div class='show-section-on-value hide-section-on-no-value'>" +
+                //"<div class='>" +
 
-                    "<label class='label-pgp-id'>Post with (PGP Identity):<br/>" +
-                        "<select name='pgp-id' required='required' onfocus='focusPostForm(event)' onselect='focusPostForm(event)' oninput='focusPostForm(event)'>" +
+                    "<label class='label-pgp-id-private hide-on-compact'>Post with (PGP Identity):<br/>" +
+                        "<select name='pgp_id_private' required='required'>" +
                             "<optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>" +
                             "</optgroup>" +
                             "<optgroup disabled='disabled' label='Other options'>" +
@@ -42,7 +39,7 @@
                         "</select>" +
                     "<br/><br/></label>" +
 
-                    "<label class='label-path'>Post to:<br/>" +
+                    "<label class='label-path hide-on-compact'>Post to:<br/>" +
                         "<select name='path'>" +
                             "<option value='~'>My Home Page</option>" +
                             "<option disabled='disabled'>Friend's Web Space...</option>" +
@@ -59,14 +56,14 @@
                     //    "</select>" +
                     //"<br/><br/></label>" +
 
-                    "<label class='label-passphrase' style='display: none'>PGP Passphrase (if required):<br/>" +
+                    "<label class='label-passphrase hide-on-compact show-on-passphrase-required'>PGP Passphrase (if required):<br/>" +
                         "<input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>" +
                     "<br/><br/></label>" +
 
-                    "<label class='label-submit'><hr/>Submit your post:<br/>" +
+                    "<label class='label-submit hide-on-compact'><hr/>Submit your post:<br/>" +
                         "<input type='submit' value='Post' name='submit-post-form' />" +
                     "</label>" +
-                "</div>" +
+                //"</div>" +
             "</form>" +
             "<fieldset class='preview-container' style='display: none'>" +
                 "<legend>Preview</legend>" +

@@ -3,65 +3,236 @@
  */
 (function() {
 
-    var verifiedContentElms = document.getElementsByClassName('pgp-verified-content');
-    var unsortedFeedPostElms = document.getElementsByClassName('feed-post-container unsorted');
+    var REFRESH_TIMEOUT = 200;
 
-    document.addEventListener('pgp:verified', function(e) {
-        //var htmlContainer = e.target;
+    // Events
 
-        for(var i=verifiedContentElms.length-1; i>=0; i--) {
-            var verifiedContentElm = verifiedContentElms[i];
+    self.addEventListener('submit', onFormEvent);
+    self.addEventListener('input', onFormEvent);
 
-            var feedPostElm = verifiedContentElm.getElementsByClassName('feed-post')[0];
-            var channel = feedPostElm.getAttribute('data-path');
-            var timestamp = feedPostElm.getAttribute('data-timestamp');
+    function onFormEvent(e, formElm) {
+        if(!formElm) formElm = e.target.form ? e.target.form : e.target;
+        if(formElm.nodeName.toLowerCase() !== 'form')
+            return false;
 
-            var chatMessageElm = document.createElement('span');
-            chatMessageElm.innerHTML =
-                '<strong>Feed Post:</strong> <a href="">' +
-                channel +
-                "</a>";
+        switch(formElm.getAttribute('name')) {
+            case 'http-put-form':
+                refreshHTTPPutForm(e, formElm);
+                if(e.type === 'submit')
+                    submitHTTPPutForm(e, formElm);
+                return true;
 
-            chatMessageElm.classList.add('feed-link');
-            verifiedContentElm.parentNode.insertBefore(chatMessageElm, verifiedContentElm);
+            default:
+                if(e.type === 'submit')
+                    e.preventDefault();
+                return false;
         }
-    });
+    }
+
+    var refreshTimeout = null;
+    function refreshHTTPPutForm(e, formElm) {
+        var passphraseElm = formElm.querySelector('*[name=passphrase][type=password], [type=password]');
+        var postContentElm = formElm.querySelector('textarea[name=content]');
+        var pgpIDPrivateElm = formElm.querySelector('*[name=pgp_id_private]');
+
+        if(pgpIDPrivateElm.value) {
+            var optionSplit = pgpIDPrivateElm.value.split(',');
+            var selectedPrivateKeyID = optionSplit[0];
+            var selectedPrivateKeyRequiresPassphrase = optionSplit.length > 1 && optionSplit[1] === '1';
+            formElm.classList[selectedPrivateKeyRequiresPassphrase ? 'add' : 'remove']('passphrase-required');
+            passphraseElm[(selectedPrivateKeyRequiresPassphrase ? 'set' : 'remove') + 'Attribute']('required', 'required');
+        }
+
+        clearTimeout(refreshTimeout);
+        refreshTimeout = setTimeout(function() {
+            formElm.classList[postContentElm.value.length === 0 ? 'add' : 'remove']('compact');
+
+            var newOptionHTML = '';
+            self.PGPDB.queryPrivateKeys(function(pkData) {
+                var privateKeyID = pkData.id_private;
+                var optionValue = privateKeyID + (pkData.passphrase_required ? ',1' : '');
+
+                if(!pgpIDPrivateElm.value)
+                    pgpIDPrivateElm.value = optionValue;
+                var userID = pkData.user_id;
+
+                newOptionHTML +=
+                    '<option ' + (privateKeyID === selectedPrivateKeyID ? 'selected="selected"' : '') + ' value="' + optionValue + '">' +
+                        (pkData.passphrase_required ? '(*) ' : '') + userID.replace(/</, '&lt;') +
+                    '</option>';
+
+            }, function() {
+                var optGroupPGPIdentities = formElm.getElementsByClassName('pgp-identities')[0];
+                optGroupPGPIdentities.innerHTML = newOptionHTML;
+
+            });
+        }, REFRESH_TIMEOUT);
+    }
+
+    function submitHTTPPutForm(e, formElm) {
+        e.preventDefault();
+
+        var passphraseElm = formElm.querySelector('*[name=passphrase][type=password], [type=password]');
+        var postContentElm = formElm.querySelector('textarea[name=content]');
+        var pgpIDPrivateElm = formElm.querySelector('*[name=pgp_id_private]');
+
+        if(!pgpIDPrivateElm.value)
+            throw new Error("Invalid Private Key ID");
+        var optionSplit = pgpIDPrivateElm.value.split(',');
+        var selectedPrivateKeyID = optionSplit[0];
+
+        self.PGPDB.getPrivateKeyData(selectedPrivateKeyID, function(err, privateKeyData) {
+            if(err)
+                throw new Error(err);
+
+            if(!privateKeyData)
+                throw new Error("Private key not found: " + selectedPrivateKeyID);
+
+            var passphrase = passphraseElm.value || '';
+            var privateKey = openpgp.key.readArmored(privateKeyData.block_private).keys[0];
+            if(!privateKey.primaryKey.isDecrypted)
+                if (passphrase)
+                    privateKey.primaryKey.decrypt(passphrase);
+
+            if(!privateKey.primaryKey.isDecrypted) {
+                var errMSG = passphrase === ''
+                    ? 'PGP key pair requires a passphrase'
+                    : 'Invalid PGP passphrase';
+                setStatus(formElm, "<span class='error'>" + errMSG + "</span>", 2, true);
+                passphraseElm.focus();
+                throw new Error(errMSG);
+            }
 
 
-    document.addEventListener('log', function(e) {
-        //var htmlContainer = e.target;
+            var publicKeyID = privateKeyData.id_public;
+            publicKeyID = publicKeyID.substr(publicKeyID.length - 8);
 
-        var lastElm = null;
-        while(unsortedFeedPostElms.length > 0)
-            (function(unsortedFeedPostElm) {
-                if(unsortedFeedPostElm === lastElm)
-                    throw new Error("Duplicate sort elm");
+            var pathElm = formElm.querySelector('*[name=path]');
+            if(!pathElm)
+                throw new Error("No channel field found");
+            //var postPath = pathElm.value;
+            var fixedPostPath = pathElm.value; // fixHomePath(postPath, publicKeyID);
+            var homeChannel = '~'; // fixHomePath('~', publicKeyID);
+            var timestamp = Date.now();
 
-                lastElm = unsortedFeedPostElm;
-//                 console.log("Sort: ", unsortedFeedPostElm);
+            var postContent = postContentElm.value.trim();
+            if(!postContent.length)
+                throw new Error ("Empty post content");
+            var contentDiv = document.createElement('div');
+            contentDiv.innerHTML = postContent;
+            var articleElm = contentDiv.querySelector('article');
+            if(!articleElm) {
+                contentDiv.innerHTML = "<article>" + contentDiv.innerHTML + "</article>";
+                articleElm = contentDiv.querySelector('article');
+            }
+            articleElm.setAttribute('data-path', fixedPostPath);
+            articleElm.setAttribute('data-timestamp', timestamp.toString());
+            postContent = articleElm.outerHTML;
 
-                var newTimeStamp = parseInt(unsortedFeedPostElm.getElementsByClassName('feed-post')[0].getAttribute('data-timestamp'));
+            postContent = protectHTMLContent(postContent, formElm);
 
-                var parent = unsortedFeedPostElm.parentNode;
-                var children = parent.getElementsByClassName('feed-post-container sorted');
-                for(var j=0; j<children.length; j++) {
-                    var child = children[j];
-                    var feedPostElm = child.getElementsByClassName('feed-post')[0];
-                    var existingTimeStamp = parseInt(feedPostElm.getAttribute('data-timestamp'));
+            setStatus(formElm, "<span class='command'>Sign</span>ing content...");
+            openpgp.signClearMessage(privateKey, postContent)
+                .then(function(pgpSignedContent) {
 
-                    if(existingTimeStamp < newTimeStamp) {
-                        parent.insertBefore(unsortedFeedPostElm, child);
-                        unsortedFeedPostElm.classList.remove('unsorted');
-                        unsortedFeedPostElm.classList.add('sorted');
-                        return;
-                    }
-                }
+                    setStatus(formElm, "Adding post to database...");
+                    HttpDB.verifyAndAddContentToDB(pgpSignedContent, function() {
+                        //setStatus(formElm, "<span class='command'>Message</span>ing channel [" + homeChannel + "]");
 
-//                 console.log("not sorted: ", unsortedFeedPostElm);
-                unsortedFeedPostElm.classList.remove('unsorted');
-                unsortedFeedPostElm.classList.add('sorted');
+                        var commandString = "MESSAGE " + homeChannel + " " + pgpSignedContent;
 
-            })(unsortedFeedPostElms[0]);
-    });
+                        var socketEvent = new CustomEvent('socket', {
+                            detail: commandString,
+                            cancelable:true,
+                            bubbles:true
+                        });
+                        formElm.dispatchEvent(socketEvent);
+
+                        if(!socketEvent.defaultPrevented)
+                            throw new Error("Socket event for new post was not handled");
+
+                        setStatus(formElm, "<span class='command'>Put</span> <span class='success'>Successful</span>");
+                        postContentElm.value = '';
+                    });
+                });
+
+        });
+    }
+
+    function protectHTMLContent(htmlContent, formElm) {
+        var tagsToReplace = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;'
+        };
+
+        htmlContent = htmlContent.replace(/[&<>]/g, function(tag) {
+            return tagsToReplace[tag] || tag;
+        });
+
+        htmlContent = htmlContent.replace(/&lt;(a|p|span|article|header|footer|section)(?:\s+(class|data-path|data-timestamp)=[^=&]+\s*)*&gt;/g, function(tag) {
+            tag = tag.replace('&lt;', '<');
+            return tag;
+        });
+
+        htmlContent = htmlContent.replace(/&lt;\//i, '</');
+        htmlContent = htmlContent.replace(/&gt;/ig, '>');
+
+        var match = /(lt;|<)[^>]+(on\w+)=/ig.exec(htmlContent);
+        if(match) {
+            var err = "Dangerous HTML: " + match[2];
+            if(formElm)
+                setStatus(formElm, err);
+            throw new Error(err);
+        }
+
+        return htmlContent;
+    }
+
+    function setStatus(formElm, statusText, prependTimeout, unique) {
+        var statusElms = formElm.getElementsByClassName('status-box');
+        for(var i=0; i<statusElms.length; i++) (function(statusElm) {
+            var textDiv = document.createElement('div');
+            textDiv.innerHTML = statusText;
+
+            if(unique && statusElm.innerHTML.indexOf(textDiv.innerHTML) !== -1)
+                return;
+
+            if(prependTimeout) {
+                statusElm.firstChild
+                    ? statusElm.insertBefore(textDiv, statusElm.firstChild)
+                    : statusElm.appendChild(textDiv);
+                if(typeof prependTimeout === 'number')
+                    setTimeout(function () {
+                        if(textDiv && textDiv.parentNode)
+                            textDiv.parentNode.removeChild(textDiv);
+                    }, prependTimeout * 1000);
+            } else {
+                statusElm.innerHTML = statusText;
+            }
+        })(statusElms[i]);
+    }
+
+    // Includes
+
+    function includeScript(scriptPath, onInsert) {
+        var head = document.getElementsByTagName('head')[0];
+        if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+            var newScript = document.createElement('script');
+            newScript.setAttribute('src', scriptPath);
+            head.appendChild(newScript);
+            if(onInsert)
+                onInsert();
+        }
+    }
+
+    // For Config Access
+    includeScript('command/config/config-db.js');
+
+    // For Public/Private Key Database access
+    includeScript('command/pgp/pgp-db.js');
+
+    // For HTTP Content Database access
+    includeScript('command/http/http-db.js');
 
 })();
