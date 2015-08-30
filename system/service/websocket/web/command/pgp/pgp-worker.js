@@ -81,13 +81,6 @@
                 " or <a href='#KEYGEN'>Generate a new PGP Key pair</a>" +
             "</form>" +
         "</article>";
-    var REGISTER_TEMPLATE_COMPLETE =
-        "<article class='{$attr_class}'>" +
-            "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
-            "<header>Registration Successful</header>" +
-            "{$html_header_commands}" +
-            "<code class='status-box'>{$status_content}</code>" +
-            "<a href='#HIDE'>Close Window</a>";
 
 
     var IDENTIFY_TEMPLATE =
@@ -219,7 +212,7 @@
             "{$html_header_commands}" +
             "<form name='pgp-manage-form' action='#'>" +
                 "<code class='status-box'>{$status_content}</code>" +
-                "<div class='pgp-id-box-container channel-content'>{$pgp_id_public_box_content}</div>" +
+                "<div class='pgp-id-box-container channel-content'></div>" +
             "</form>" +
         "</article>";
 
@@ -227,10 +220,10 @@
         //"<script src='command/pgp/pgp-listener.js'></script>" +
         //"<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
         "<fieldset class='pgp-id-box pgp-id-box:{$id_private}{$class}'>" +
-            "<header class='user'>{$user_id}</header>" +
+            "<legend class='user'>{$user_id}</legend>" +
             "{$html_header_commands}" +
             "<label><strong>ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='fingerprint'>{$id_private}</span></label><br/>" +
-            "<label><strong>Sub ID:&nbsp;&nbsp;&nbsp;&nbsp;</strong> {$id_public}</label><br/>" +
+            "<label><strong>Public ID:&nbsp;</strong> {$id_public}</label><br/>" +
             "<label><strong>User ID:&nbsp;&nbsp;&nbsp;</strong> <span class='user'>{$user_id}</span></label><br/>" +
             "<label><strong>Email:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='email'>{$user_email}</span></label><br/>" +
             "<label><strong>Passphrase:</strong> {$passphrase_required}</label><br/>" +
@@ -287,6 +280,7 @@
 
         if(!userID || !send_as_socket_command) {
             self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + GENERATE_TEMPLATE
+                    .replace(/{\$user_id}/gi, userID.replace(/</, '&lt;'))
                     .replace(/{\$send_as_socket_command}/gi, send_as_socket_command ? '1' : '0')
                     //.replace(/{\$[^}]+}/gi, '')
             );
@@ -329,7 +323,8 @@
                         console.log("private key: ", err, pgp_private);
 
                         self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + REGISTER_TEMPLATE
-                                .replace(/{\$private_key}/gi, pgp_private)
+                            .replace(/{\$status_content}/gi, '')
+                            .replace(/{\$private_key}/gi, pgp_private)
                                 //.replace(/{\$[^}]+}/gi, '')
                         );
 
@@ -372,25 +367,25 @@
         if(showForm) {
             //routeResponseToClient("LOG.REPLACE " + PATH_MARKER + " " + KEYGEN_CLOSED_TEMPLATE);
             self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + REGISTER_TEMPLATE
+                    .replace(/{\$status_content}/gi, '')
                     .replace(/{\$private_key}/gi, privateKeyBlock)
                     //.replace(/{\$[^}]+}/gi, '')
             );
             return;
         }
 
-        getPGPDB(function(db, PGPDB) {
-            PGPDB.addPrivateKeyBlock(privateKeyBlock, function(err, data) {
-                if(err) {
-                    self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + REGISTER_TEMPLATE
-                            .replace(/{\$status_content}/gi, err)
-                            .replace(/{\$private_key}/gi, privateKeyBlock)
-                            //.replace(/{\$[^}]+}/gi, '')
-                    );
-                } else {
-                    socketCommands.manage("MANAGE");
+        var PGPDB = getPGPDB();
+        PGPDB.addPrivateKeyBlock(privateKeyBlock, function(err, data) {
+            if(err) {
+                self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + REGISTER_TEMPLATE
+                        .replace(/{\$status_content}/gi, err)
+                        .replace(/{\$private_key}/gi, privateKeyBlock)
+                        //.replace(/{\$[^}]+}/gi, '')
+                );
+            } else {
+                socketCommands.manage("MANAGE");
 
-                }
-            });
+            }
         });
 
     };
@@ -407,7 +402,7 @@
         var privateKeyFingerprint = match[1].trim();
         var privateKeyID = privateKeyFingerprint.substr(privateKeyFingerprint.length - 16);
 
-        getPGPDB(function (db, PGPDB) {
+        var PGPDB = getPGPDB(function (db) {
             var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readwrite");
             var privateKeyStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
 
@@ -446,26 +441,25 @@
                 //.replace(/{\$[^}]+}/gi, '')
         );
 
-        getPGPDB(function(db, PGPDB) {
-            PGPDB.queryPrivateKeys(function(data) {
-                self.routeResponseToClient("LOG " + PATH_MAIN + " * " + MANAGE_TEMPLATE_ENTRY
-                        .replace(/{\$id_private}/gi, data.id_private)
-                        .replace(/{\$id_public}/gi, data.id_public)
-                        .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
-                        .replace(/{\$id_public_short}/gi, data.id_public.substr(data.id_public.length - 8))
-                        .replace(/{\$block_private}/gi, data.block_private)
-                        .replace(/{\$block_public}/gi, data.block_public)
-                        .replace(/{\$user_id}/gi, data.user_id.replace(/</, '&lt;'))
-                        .replace(/{\$user_name}/gi, data.user_name || '')
-                        .replace(/{\$user_email}/gi, data.user_email || '')
-                        .replace(/{\$user_comment}/gi, data.user_comment || '')
-                        .replace(/{\$passphrase_required}/gi, data.passphrase_required ? "Yes" : "No")
-                        .replace(/{\$is_default}/gi, data.default === '1' ? "<strong>Yes</strong>" : "No")
-                        .replace(/{\$class}/gi, data.default === '1' ? " pgp-id-box-default" : "")
-                        .replace(/{\$default}/gi, data.default)
-                        //.replace(/{\$[^}]+}/gi, '')
-                );
-            });
+        var PGPDB = getPGPDB();
+        PGPDB.queryPrivateKeys(function(data) {
+            self.routeResponseToClient("LOG " + PATH_MAIN + " * " + MANAGE_TEMPLATE_ENTRY
+                    .replace(/{\$id_private}/gi, data.id_private)
+                    .replace(/{\$id_public}/gi, data.id_public)
+                    .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
+                    .replace(/{\$id_public_short}/gi, data.id_public.substr(data.id_public.length - 8))
+                    .replace(/{\$block_private}/gi, data.block_private)
+                    .replace(/{\$block_public}/gi, data.block_public)
+                    .replace(/{\$user_id}/gi, data.user_id.replace(/</, '&lt;'))
+                    .replace(/{\$user_name}/gi, data.user_name || '')
+                    .replace(/{\$user_email}/gi, data.user_email || '')
+                    .replace(/{\$user_comment}/gi, data.user_comment || '')
+                    .replace(/{\$passphrase_required}/gi, data.passphrase_required ? "Yes" : "No")
+                    .replace(/{\$is_default}/gi, data.default === '1' ? "<strong>Yes</strong>" : "No")
+                    .replace(/{\$class}/gi, data.default === '1' ? " pgp-id-box-default" : "")
+                    .replace(/{\$default}/gi, data.default)
+                    //.replace(/{\$[^}]+}/gi, '')
+            );
         });
 
     };
@@ -505,7 +499,7 @@
             var session_uid = null; // match[1];
             var selectedPrivateKeyID = null; // match[2];
             var selectedPrivateKeyData = null; // null;
-            var username = null; // match[3];
+            var username = ''; // match[3];
             var visibility = null; // match[4];
             var auto_identify = null; // match[4];
 
@@ -526,98 +520,96 @@
             });
 
 
-            getPGPDB(function(db, PGPDB) {
-                var pgp_id_public_options_html = '';
-                //var id_signature = null;
-                var password_style = 'display: none';
-                var password_required = '';
-                var username = '';
-                var pgpIDCount = 0;
+            var PGPDB = getPGPDB();
+            var pgp_id_public_options_html = '';
+            //var id_signature = null;
+            var password_style = 'display: none';
+            var password_required = '';
+            var pgpIDCount = 0;
 
-                var status_content = '';
+            var status_content = '';
 
-                PGPDB.queryPrivateKeys(function(privateKeyData) {
+            PGPDB.queryPrivateKeys(function(privateKeyData) {
 
-                    var publicKeyID = privateKeyData.id_public;
-                    pgpIDCount++;
+                var publicKeyID = privateKeyData.id_public;
+                pgpIDCount++;
 
-                    if(privateKeyData.default === '1') {
-                        if(!selectedPrivateKeyID)
-                            selectedPrivateKeyID = privateKeyData.id_private;
+                if(privateKeyData.default === '1') {
+                    if(!selectedPrivateKeyID)
+                        selectedPrivateKeyID = privateKeyData.id_private;
+                }
+
+                var defaultUsername = privateKeyData.user_name || privateKeyData.user_id;
+                defaultUsername = defaultUsername.trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
+
+                if(privateKeyData.id_private === selectedPrivateKeyID) {
+                    selectedPrivateKeyData = privateKeyData;
+                    username = defaultUsername;
+                }
+
+                pgp_id_public_options_html +=
+                    '<option ' + (privateKeyData.default === '1' ? 'selected="selected"' : '') + ' value="' + publicKeyID + '">' +
+                    (privateKeyData.passphrase_required ? '(*) ' : '') + privateKeyData.user_id.replace(/</, '&lt;') +
+                    '</option>';
+
+                if(privateKeyData.default === '1' && privateKeyData.passphrase_required) {
+                    password_style = '';
+                    password_required = 'required';
+                }
+
+
+
+
+            }, function() {
+
+                for(var i=0; i<identifyRequests.length; i++) (function(identifyRequest) {
+                    var responseString = identifyRequest[0];
+                    var socket = identifyRequest[1];
+                    var socket_host = socket.url.split('/')[2];
+
+                    match = /^identify\s+(\S*)/im.exec(responseString);
+                    if(!match)
+                        throw new Error("Invalid IDENTIFY: " + responseString);
+                    var session_uid = match[1];
+
+                    var status_content = "<span class='info'>IDENTIFY request received from</br>[" + socket.url + "]</span>";
+
+                    if(pgpIDCount === 0)
+                        status_content += "<br/><span class='error'>No PGP Private Keys found on the client. Please import or <a href='#KEYGEN' onclick='send(\"KEYGEN\");'>generate</a> a new PGP Key and re-<a href='#IDENTIFY' onclick='send(\"IDENTIFY\");'>identify</a>.</span>";
+
+
+                    var auto_identify_host_attr = '';
+                    var auto_identify_all_attr = '';
+                    var autoIdentify = false;
+                    if(CONFIG) {
+                        autoIdentify = CONFIG.autoIdentify || CONFIG['autoIdentifyHost:' + socket_host] || false;
+                        if(CONFIG['autoIdentifyHost:' + socket_host])
+                            auto_identify_host_attr = "selected='selected'";
+                        else if(CONFIG['autoIdentify'])
+                            auto_identify_all_attr = "selected='selected'";
                     }
 
-                    var defaultUsername = privateKeyData.user_name || privateKeyData.user_id;
-                    defaultUsername = defaultUsername.trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
-
-                    if(privateKeyData.id_private === selectedPrivateKeyID) {
-                        selectedPrivateKeyData = privateKeyData;
-                        username = defaultUsername;
-                    }
-
-                    pgp_id_public_options_html +=
-                        '<option ' + (privateKeyData.default === '1' ? 'selected="selected"' : '') + ' value="' + publicKeyID + '">' +
-                        (privateKeyData.passphrase_required ? '(*) ' : '') + privateKeyData.user_id.replace(/</, '&lt;') +
-                        '</option>';
-
-                    if(privateKeyData.default === '1' && privateKeyData.passphrase_required) {
-                        password_style = '';
-                        password_required = 'required';
-                    }
-
-
-
-
-                }, function() {
-
-                    for(var i=0; i<identifyRequests.length; i++) (function(identifyRequest) {
-                        var responseString = identifyRequest[0];
-                        var socket = identifyRequest[1];
-                        var socket_host = socket.url.split('/')[2];
-
-                        match = /^identify\s+(\S*)/im.exec(responseString);
-                        if(!match)
-                            throw new Error("Invalid IDENTIFY: " + responseString);
-                        var session_uid = match[1];
-
-                        var status_content = "<span class='info'>IDENTIFY request received from</br>[" + socket.url + "]</span>";
-
-                        if(pgpIDCount === 0)
-                            status_content += "<br/><span class='error'>No PGP Private Keys found on the client. Please import or <a href='#KEYGEN' onclick='send(\"KEYGEN\");'>generate</a> a new PGP Key and re-<a href='#IDENTIFY' onclick='send(\"IDENTIFY\");'>identify</a>.</span>";
-
-
-                        var auto_identify_host_attr = '';
-                        var auto_identify_all_attr = '';
-                        var autoIdentify = false;
-                        if(CONFIG) {
-                            autoIdentify = CONFIG.autoIdentify || CONFIG['autoIdentifyHost:' + socket_host] || false;
-                            if(CONFIG['autoIdentifyHost:' + socket_host])
-                                auto_identify_host_attr = "selected='selected'";
-                            else if(CONFIG['autoIdentify'])
-                                auto_identify_all_attr = "selected='selected'";
-                        }
-
-                        self.routeResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE
+                    self.routeResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE
 //                                 .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
-                                .replace(/{\$pgp_id_private}/gi, selectedPrivateKeyID)
-                                //.replace(/{\$pgp_id_public}/gi, selectedPrivateKeyData.id_public)
-                                .replace(/{\$pgp_id_private_short}/gi, selectedPrivateKeyID ? selectedPrivateKeyID.substr(selectedPrivateKeyID.length - 8) : '')
-                                //.replace(/{\$pgp_id_public_short}/gi, selectedPrivateKeyData.id_public.substr(selectedPrivateKeyData.id_public.length - 8))
-                                .replace(/{\$status_content}/gi, status_content || '')
-                                //.replace(/{\$id_signature}/gi, signedIdentityString || '')
-                                .replace(/{\$socket_url}/gi, socket.url || '')
-                                .replace(/{\$socket_host}/gi, socket.url.split('/')[2] || '')
-                                .replace(/{\$pgp_id_public_options}/gi, pgp_id_public_options_html || '')
-                                .replace(/{\$session_uid}/gi, session_uid || '')
-                                .replace(/{\$password_style}/gi, password_style || '')
-                                .replace(/{\$password_required}/gi, password_required || '')
-                                .replace(/{\$auto_identify_host_attr}/gi, auto_identify_host_attr || '')
-                                .replace(/{\$auto_identify_all_attr}/gi, auto_identify_all_attr || '')
-                                .replace(/{\$username}/gi, username.replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_') || '')
-                                //.replace(/{\$[^}]+}/gi, '')
-                        );
+                            .replace(/{\$pgp_id_private}/gi, selectedPrivateKeyID)
+                            //.replace(/{\$pgp_id_public}/gi, selectedPrivateKeyData.id_public)
+                            .replace(/{\$pgp_id_private_short}/gi, selectedPrivateKeyID ? selectedPrivateKeyID.substr(selectedPrivateKeyID.length - 8) : '')
+                            //.replace(/{\$pgp_id_public_short}/gi, selectedPrivateKeyData.id_public.substr(selectedPrivateKeyData.id_public.length - 8))
+                            .replace(/{\$status_content}/gi, status_content || '')
+                            //.replace(/{\$id_signature}/gi, signedIdentityString || '')
+                            .replace(/{\$socket_url}/gi, socket.url || '')
+                            .replace(/{\$socket_host}/gi, socket.url.split('/')[2] || '')
+                            .replace(/{\$pgp_id_public_options}/gi, pgp_id_public_options_html || '')
+                            .replace(/{\$session_uid}/gi, session_uid || '')
+                            .replace(/{\$password_style}/gi, password_style || '')
+                            .replace(/{\$password_required}/gi, password_required || '')
+                            .replace(/{\$auto_identify_host_attr}/gi, auto_identify_host_attr || '')
+                            .replace(/{\$auto_identify_all_attr}/gi, auto_identify_all_attr || '')
+                            .replace(/{\$username}/gi, username.replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_') || '')
+                            //.replace(/{\$[^}]+}/gi, '')
+                    );
 
-                    })(identifyRequests[i]);
-                });
+                })(identifyRequests[i]);
             });
         });
 
@@ -740,7 +732,7 @@
             })(identifyRequests[j]);
 
 
-            getPGPDB(function(db, PGPDB) {
+            getPGPDB(function(db) {
                PGPDB.addIDSIGToDatabase(commandData, function(err, sessionData) {
                     if(err)
                         throw new Error(err);
@@ -827,10 +819,13 @@
     // Database
 
     function getPGPDB(callback) {
-        if(typeof self.PGPDB !== 'function')
+        if(typeof PGPDB !== 'function')
             importScripts('pgp/pgp-db.js');
 
-        self.PGPDB(callback);
+        if(callback)
+            PGPDB(callback);
+
+        return PGPDB;
     }
 
     function getConfigDB(callback) {

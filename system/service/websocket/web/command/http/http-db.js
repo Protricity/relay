@@ -65,8 +65,9 @@ HttpDB.verifySignedContent = function(pgpMessageContent, callback) {
     var encIDs = pgpSignedMessage.getSigningKeyIds();
     var feedKeyID = encIDs[0].toHex().toUpperCase();
 
-    self.PGPDB.getPublicKeyData(feedKeyID, function (err, pkData) {
-
+    PGPDB.getPublicKeyData(feedKeyID, function (err, pkData) {
+        if(!pkData)
+            throw new Error("Public Key Block not found for: " + feedKeyID);
         var publicKey = openpgp.key.readArmored(pkData.block_public);
 
         openpgp.verifyClearSignedMessage(publicKey.keys, pgpSignedMessage)

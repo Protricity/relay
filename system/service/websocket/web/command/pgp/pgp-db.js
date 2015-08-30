@@ -121,7 +121,7 @@ PGPDB.getPGPKeyIDs = function(pgpMessageContent, callback) {
 
 PGPDB.getDefaultPrivateKeyData = function (callback) {
 
-    PGPDB(function (db, PGPDB) {
+    PGPDB(function (db) {
         var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readonly");
         var privateKeyStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
 
@@ -258,7 +258,7 @@ PGPDB.addPrivateKeyBlock = function(privateKeyBlock, callback) {
             alice.export_pgp_public({}, function(err, publicKeyBlock) {
                 console.log("public key: ", publicKeyBlock);
 
-                PGPDB(function(db, PGPDB) {
+                PGPDB(function(db) {
                     var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readwrite");
                     var privateKeyStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
 
@@ -333,7 +333,7 @@ PGPDB.addPublicKeyBlock = function(publicKeyBlock, callback) {
     if(publicKeyBlock.indexOf("-----BEGIN PGP PUBLIC KEY BLOCK-----") === -1)
         throw new Error("PGP PUBLIC KEY BLOCK not found");
 
-    PGPDB(function (db, PGPDB) {
+    PGPDB(function (db) {
 
         var kbpgp = PGPDB.getKBPGP();
         kbpgp.KeyManager.import_from_armored_pgp({
@@ -393,7 +393,7 @@ PGPDB.addIDSIGToDatabase = function(idsigString, callback) {
     var visibility = split[4];
 
 
-    PGPDB(function (db, PGPDB) {
+    PGPDB(function (db) {
 
 
         var transaction = db.transaction([PGPDB.DB_TABLE_SESSIONS], "readwrite");

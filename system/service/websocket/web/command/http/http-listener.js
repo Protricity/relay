@@ -139,7 +139,7 @@
                     HttpDB.verifyAndAddContentToDB(pgpSignedContent, function() {
                         //setStatus(formElm, "<span class='command'>Message</span>ing channel [" + homeChannel + "]");
 
-                        var commandString = "MESSAGE " + homeChannel + " " + pgpSignedContent;
+                        var commandString = "CHAT " + homeChannel + " " + pgpSignedContent;
 
                         var socketEvent = new CustomEvent('socket', {
                             detail: commandString,
@@ -235,4 +235,18 @@
     // For HTTP Content Database access
     includeScript('command/http/http-db.js');
 
+    // For PGP Decryption in chat rooms
+    var openPGPScriptPath = 'command/pgp/lib/openpgpjs/openpgp.js';
+    includeScript(openPGPScriptPath, function() {
+
+        var timeout = setInterval(function() {
+            var src = openPGPScriptPath.replace('/openpgp.', '/openpgp.worker.');
+            if(!window.openpgp || window.openpgp._worker_init)
+                return;
+            window.openpgp.initWorker(src);
+            window.openpgp._worker_init = true;
+            clearInterval(timeout);
+            //console.info("OpenPGP Worker Loaded: " + src);
+        }, 500);
+    });
 })();
