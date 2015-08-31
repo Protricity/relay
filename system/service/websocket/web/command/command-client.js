@@ -32,8 +32,6 @@
         e.preventDefault();
     });
 
-    window.addEventListener('hashchange', onHashChange);
-
     function receiveMessage(responseString) {
         var args = /^\w+/.exec(responseString);
         if(!args)
@@ -191,23 +189,23 @@
     //        }
     //    }
     //}
-
-
-    function onHashChange(e) {
-        var hashCommand = document.location.hash.replace(/^#/, '');
-        if(!hashCommand)
-            return false;
-
-        var commandEvent = new CustomEvent('command', {
-            detail: hashCommand,
-            cancelable:true,
-            bubbles:true
-        });
-        document.dispatchEvent(commandEvent);
-        if(!commandEvent.defaultPrevented)
-            socketWorker.postMessage(hashCommand);
-
-        document.location.hash = '';
-//         document.location.href = document.location.origin + document.location.pathname;
-    }
+//
+//    window.addEventListener('hashchange', onHashChange);
+//    function onHashChange(e) {
+//        var hashCommand = document.location.hash.replace(/^#/, '');
+//        if(!hashCommand)
+//            return false;
+//
+//        var commandEvent = new CustomEvent('command', {
+//            detail: hashCommand,
+//            cancelable:true,
+//            bubbles:true
+//        });
+//        document.dispatchEvent(commandEvent);
+//        if(!commandEvent.defaultPrevented)
+//            socketWorker.postMessage(hashCommand);
+//
+//        document.location.hash = '';
+////         document.location.href = document.location.origin + document.location.pathname;
+//    }
 })();

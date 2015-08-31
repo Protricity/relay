@@ -7,6 +7,14 @@
         <link rel="stylesheet" href="template/minimal/minimal.css" type="text/css" />
         <script src="command/command-client.js"></script>
         <script>
+            window.addEventListener('hashchange', onHashChange);
+            function onHashChange(e) {
+                var hashCommand = document.location.hash.replace(/^#/, '');
+                if(!hashCommand)
+                    return false;
+                send(hashCommand);
+            }
+
             function send(commandString) {
                 var socketEvent = new CustomEvent('command', {
                     detail: commandString,
@@ -15,29 +23,62 @@
                 document.dispatchEvent(socketEvent);
                 return socketEvent.defaultPrevented;
             }
+
             setTimeout(function() {
+
                 send('JOIN /home');
                 send('manage');
 //            send('keygen');
 //            send('manage');
 
             }, 200);
+
+            function freegeoip(result) {
+                console.log(result);
+                var channelList = document.getElementsByClassName('command-list-channels')[0];
+                channelList.innerHTML+= "<li><a href='#JOIN /country/" + result.country_code + "'><span class='command'>Join</span> <strong>" + result.country_name + "</strong></a></li>";
+                channelList.innerHTML+= "<li><a href='#JOIN /region/" + result.region_code + "'><span class='command'>Join</span> <strong>[" + result.region_name + "]</strong></a></li>";
+                channelList.innerHTML+= "<li><a href='#JOIN /city/" + result.city + "'><span class='command'>Join</span> <strong>" + result.city + "</strong></a></li>";
+                channelList.innerHTML+= "<li><a href='#JOIN /zipcode/" + result.zip_code + "'><span class='command'>Join</span> <strong>" + result.zip_code + "</strong></a></li>";
+                channelList.innerHTML+= "<li><a href='#JOIN /timezone/" + result.time_zone + "'><span class='command'>Join</span> <strong>" + result.time_zone + "</strong></a></li>";
+                channelList.innerHTML+= "<li><a href='#JOIN /ip/" + result.ip + "'><span class='command'>Join</span> <strong>" + result.ip + "</strong></a></li>";
+
+                //            if(navigator.geolocation)
+                //                navigator.geolocation.getCurrentPosition(function(position) {
+                //                    console.log(position);
+                //                });
+            }
+
+            function toggleNavigationCommandMenu() {
+                var menuElms = document.getElementsByClassName('navigation-commands');
+                var show = menuElms[0].classList.contains('closed');
+                for(var i=0; i<menuElms.length; i++) {
+                    menuElms[i].classList.remove(!show ? 'open' : 'closed');
+                    menuElms[i].classList.add(show ? 'open' : 'closed');
+                }
+            }
         </script>
+        <script src="https://freegeoip.net/json/?callback=freegeoip" defer="defer"></script>
     </head>
     <body class="template-minimal">
-        <ul class="command-list">
-            <li><a href="#" onclick="send('JOIN ~');"><span class='command'>Join</span> <strong>~</strong> <span class='info'>(Your channel)</span></a></li>
-            <li><a href="#" onclick="send('JOIN /home');"><span class='command'>Join</span> <strong>/home</strong></a></li>
-            <li><a href="#" onclick="send('KEYGEN');"><span class='command'>KeyGen</span> a new <strong>PGP Identity</strong></a></li>
-            <li><a href="#" onclick="send('MANAGE');"><span class='command'>Manage</span> your <strong>PGP Identities</strong></a></li>
-            <li><a href="#" onclick="send('FEED /home/*');">View all user <span class='command'>feed</span>s</a></li>
-            <li><a href="#" onclick="send('FEED ~');">View your <span class='command'>feed</span></a></li>
-            <li><a href="#" onclick="send('PUT');"><span class='command'>Put</span> new content in your web space</a></li>
-        </ul>
+        <nav class="navigation-commands">
+            <label><button onclick="toggleNavigationCommandMenu()">&#9776;</button> Relay</label>
+            <ul class="command-list-channels">
+                <li><a href="#JOIN ~"       ><span class='command'>Join ~</span> <span class='info'>(Your channel)</span></a></li>
+                <li><a href="#JOIN /home"   ><span class='command'>Join /home</span></a></li>
+            </ul>
+            <ul class="command-list-identity">
+                <li><a href="#KEYGEN"       ><span class='command'>KeyGen</span> a new <strong>PGP Identity</strong></a></li>
+                <li><a href="#MANAGE"       ><span class='command'>Manage</span> your <strong>PGP Identities</strong></a></li>
+                <li><a href="#FEED /home/*" >View all user <span class='command'>feed</span>s</a></li>
+                <li><a href="#FEED ~"       >View your <span class='command'>feed</span></a></li>
+                <li><a href="#PUT"          ><span class='command'>Put</span> new content in your web space</a></li>
+            </ul>
+        </nav>
         <!--<ul class="channel-list">-->
         <!--</ul>-->
-        <div class="channel-container">
+        <span class="channel-container">
 
-        </div>
+        </span>
     </body>
 </html>

@@ -317,12 +317,15 @@
 
                             if (formElm.classList.contains('auto-identify')) {
                                 formElm.classList.remove('auto-identify');
+                                formElm.classList.add('auto-identifying');
                                 autoIdentifyStartTime = new Date().getTime() / 1000;
                                 var interval = setInterval(function () {
                                     if (cancelReceived) {
                                         clearInterval(interval);
                                         setStatus("<span class='error'>" + "Auto-Identify Canceled" + "</span>");
                                         formElm.classList.add('auto-identify-attempted');
+                                        formElm.classList.remove('auto-identifying');
+                                        cancelReceived = false;
                                         return;
                                     }
                                     var elapsedSeconds = parseInt(new Date().getTime() / 1000 - autoIdentifyStartTime);
@@ -332,6 +335,8 @@
                                     if (elapsedSeconds < AUTO_IDENTIFY_TIMEOUT)
                                         return;
 
+                                    formElm.classList.remove('auto-identifying');
+                                    formElm.classList.add('auto-identify-attempted');
                                     clearInterval(interval);
                                     submitPGPIdentifyForm();
 

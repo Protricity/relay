@@ -52,6 +52,8 @@
     };
 
     self.getSocket = function(socketURL) {
+        if(!socketURL)
+            throw new Error("Invalid socket url");
         for(var j=0; j<activeSockets.length; j++)
             if (activeSockets[j].url === socketURL)
                 return activeSockets[j];

@@ -53,7 +53,7 @@ form[name=pgp-manage-form] legend.user {
     text-decoration: underline;
 }
 
-
+form.auto-identifying .hide-on-compact,
 form.compact .hide-on-compact,
 form .show-on-passphrase-required {
     display: none;

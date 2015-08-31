@@ -162,6 +162,37 @@
     animation: fadein 2s;
 }
 
+/* Menu */
+
+.navigation-commands {
+    display: inline-block;
+    background-color: lightgrey;
+    padding: 0.5em;
+    margin-bottom:
+    0.5em;
+    animation: fadein;
+}
+.navigation-commands ul {
+    list-style: none;
+    padding-left: 0;
+}
+.navigation-commands ul li {
+    background-color: aliceblue;
+    border-radius: 0.3em;
+    padding: 0.05em 0.5em;
+    margin-bottom: 1px;
+}
+.navigation-commands ul li:hover {
+    background-color: #EEEEAA;
+}
+
+.navigation-commands.closed ul {
+    display: none;
+}
+.navigation-commands.closed:hover ul {
+    display: block;
+}
+
 /* Animation */
 
 
