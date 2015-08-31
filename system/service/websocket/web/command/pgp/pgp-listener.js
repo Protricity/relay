@@ -27,6 +27,8 @@
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
         if(formElm.nodeName.toLowerCase() !== 'form')
             return false;
+        if(e.type === 'submit')
+            e.preventDefault();
 
         switch(formElm.getAttribute('name')) {
             case 'pgp-keygen-form':
@@ -68,7 +70,6 @@
         // Event Handlers
 
         function submitPGPKeyGenForm() {
-            e.preventDefault();
             var bits = val('bits');
             var userID = val('user_id');
             var passphrase = val('passphrase');
@@ -116,7 +117,7 @@
 
         function refreshPGPRegisterForm() {
             var submitElm = formElm.querySelector('input[type=submit]');
-            if(input('private_key').indexOf("-----BEGIN PGP PRIVATE KEY BLOCK-----") === -1) {
+            if(val('private_key').indexOf("-----BEGIN PGP PRIVATE KEY BLOCK-----") === -1) {
                 submitElm.setAttribute('disabled', 'disabled');
             } else {
                 submitElm.removeAttribute('disabled');
@@ -124,7 +125,6 @@
         }
 
         function submitPGPRegisterForm() {
-            e.preventDefault();
             var privateKeyValue = val('private_key');
 
             if(privateKeyValue.indexOf("-----BEGIN PGP PRIVATE KEY BLOCK-----") === -1)
@@ -177,7 +177,6 @@
         }
 
         function submitPGPManageForm() {
-            e.preventDefault();
             var commandString = val('action');
             if(!commandString)
                 return;
@@ -322,13 +321,13 @@
                                 var interval = setInterval(function () {
                                     if (cancelReceived) {
                                         clearInterval(interval);
-                                        setStatus("<span class='error'>" + "Auto-Identify Canceled" + "</span>", 5);
+                                        setStatus("<span class='error'>" + "Auto-Identify Canceled" + "</span>");
                                         formElm.classList.add('auto-identify-attempted');
                                         return;
                                     }
                                     var elapsedSeconds = parseInt(new Date().getTime() / 1000 - autoIdentifyStartTime);
                                     var secondsLeft = AUTO_IDENTIFY_TIMEOUT - elapsedSeconds;
-                                    setStatus("<span class='pending'>" + "Auto-Identifying in " + (secondsLeft) + " second" + (secondsLeft === 1 ? "" : "s") + "...</span>", 1);
+                                    setStatus("<span class='pending'>" + "Auto-Identifying in " + (secondsLeft) + " second" + (secondsLeft === 1 ? "" : "s") + "...</span>");
 
                                     if (elapsedSeconds < AUTO_IDENTIFY_TIMEOUT)
                                         return;
@@ -431,7 +430,6 @@
 
         function submitPGPIdentifyForm() {
             cancelReceived = true;
-            e.preventDefault();
             var idSignatureElm = input('id_signature');
             var passphraseElm = input('passphrase');
 

@@ -227,7 +227,8 @@
                         "<option value='decrypt {$id_private_list}'>Decrypt Message</option>" +
                         "<option value='@export.public {$id_private}'>Export Public Key Block</option>" +
                         "<option value='@export.private {$id_private}'>Export Private Key Block</option>" +
-                        "<option value='@unregister {$id_private}'>Delete Private Key</option>" +
+                        "<option value='@unregister {$id_private}'>Unregister Private Key Identity</option>" +
+                        "<option value='keygen'>Generate a new Identity</option>" +
                     "</select>" +
                 "</label><br/>" +
                 "<label><strong>Submit:&nbsp;&nbsp;</strong> <input type='submit' /><br/>" +
@@ -237,18 +238,60 @@
     var MANAGE_TEMPLATE_ENTRY =
         "<label>" +
             "<fieldset class='pgp-id-box pgp-id-box:{$id_private}{$class}'>" +
-                "<legend class='user'>" +
-                    "<input type='checkbox' value='{$id_private}' name='selected:{$id_private}'/> {$user_id}" +
+                "<legend>" +
+                    "<input type='checkbox' value='{$id_private}' name='selected:{$id_private}'/> <span class='user'>{$user_id}</span>" +
                 "</legend>" +
                 "{$html_header_commands}" +
-                "<strong>ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='fingerprint'>{$id_private}</span><br/>" +
-                "<strong>Public ID:&nbsp;</strong> {$id_public}<br/>" +
+                "<strong>ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='fingerprint'>{$id_private_short}</span><br/>" +
+                "<strong>Public ID:&nbsp;</strong> {$id_public_short}<br/>" +
                 "<strong>User ID:&nbsp;&nbsp;&nbsp;</strong> <span class='user'>{$user_id}</span><br/>" +
                 "<strong>Email:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='email'>{$user_email}</span><br/>" +
                 "<strong>Passphrase:</strong> {$passphrase_required}<br/>" +
                 "<strong>Is Default:</strong> {$is_default}<br/>" +
             "</fieldset>" +
         "</label>";
+
+
+    /**
+     * @param commandString
+     * @param status_content
+     */
+    socketCommands.manage = function (commandString, e, status_content) {
+        //var match = /^manage$/im.exec(commandString);
+
+        self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + MANAGE_TEMPLATE
+                .replace(/{\$status_content}/gi, status_content || '')
+            //.replace(/{\$[^}]+}/gi, '')
+        );
+
+        var PGPDB = getPGPDB();
+        PGPDB.queryPrivateKeys(function(data) {
+            self.routeResponseToClient("LOG " + PATH_MAIN + " .channel-content " + MANAGE_TEMPLATE_ENTRY
+                    .replace(/{\$id_private}/gi, data.id_private)
+                    .replace(/{\$id_public}/gi, data.id_public)
+                    .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
+                    .replace(/{\$id_public_short}/gi, data.id_public.substr(data.id_public.length - 8))
+                    .replace(/{\$block_private}/gi, data.block_private)
+                    .replace(/{\$block_public}/gi, data.block_public)
+                    .replace(/{\$user_id}/gi, data.user_id.replace(/</, '&lt;'))
+                    .replace(/{\$user_name}/gi, data.user_name || '')
+                    .replace(/{\$user_email}/gi, data.user_email || '')
+                    .replace(/{\$user_comment}/gi, data.user_comment || '')
+                    .replace(/{\$passphrase_required}/gi, data.passphrase_required ? "Yes" : "No")
+                    .replace(/{\$is_default}/gi, data.default === '1' ? "<strong>Yes</strong>" : "No")
+                    .replace(/{\$class}/gi, data.default === '1' ? " pgp-id-box-default" : "")
+                    .replace(/{\$default}/gi, data.default)
+                //.replace(/{\$[^}]+}/gi, '')
+            );
+        });
+
+    };
+
+    socketResponses.manage = function(e) {
+        throw new Error("manage response is not implemented");
+    };
+
+
 
 
     /**
@@ -437,45 +480,50 @@
     };
 
 
-    /**
-     * @param commandString
-     * @param status_content
-     */
-    socketCommands.manage = function (commandString, e, status_content) {
-        //var match = /^manage$/im.exec(commandString);
 
-        self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + MANAGE_TEMPLATE
-                .replace(/{\$status_content}/gi, status_content || '')
-                //.replace(/{\$[^}]+}/gi, '')
-        );
+    /**
+     * @param commandString DEFAULT [PGP Private Key Fingerprint]
+     */
+    socketCommands['default'] = function (commandString, e) {
+        var match = /^default\s+(.*)$/im.exec(commandString);
+        var privateKeyFingerprint = match[1].trim().split(/\W+/g)[0];
+        var privateKeyID = privateKeyFingerprint.substr(privateKeyFingerprint.length - 16);
 
         var PGPDB = getPGPDB();
-        PGPDB.queryPrivateKeys(function(data) {
-            self.routeResponseToClient("LOG " + PATH_MAIN + " .channel-content " + MANAGE_TEMPLATE_ENTRY
-                    .replace(/{\$id_private}/gi, data.id_private)
-                    .replace(/{\$id_public}/gi, data.id_public)
-                    .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
-                    .replace(/{\$id_public_short}/gi, data.id_public.substr(data.id_public.length - 8))
-                    .replace(/{\$block_private}/gi, data.block_private)
-                    .replace(/{\$block_public}/gi, data.block_public)
-                    .replace(/{\$user_id}/gi, data.user_id.replace(/</, '&lt;'))
-                    .replace(/{\$user_name}/gi, data.user_name || '')
-                    .replace(/{\$user_email}/gi, data.user_email || '')
-                    .replace(/{\$user_comment}/gi, data.user_comment || '')
-                    .replace(/{\$passphrase_required}/gi, data.passphrase_required ? "Yes" : "No")
-                    .replace(/{\$is_default}/gi, data.default === '1' ? "<strong>Yes</strong>" : "No")
-                    .replace(/{\$class}/gi, data.default === '1' ? " pgp-id-box-default" : "")
-                    .replace(/{\$default}/gi, data.default)
-                    //.replace(/{\$[^}]+}/gi, '')
-            );
+        PGPDB(function (db) {
+            var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readwrite");
+            var privateKeyStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
+
+            var req = privateKeyStore.get(privateKeyID);
+            req.onsuccess = function (evt) {
+                var privateKeyData = evt.target.result;
+                if(!privateKeyData)
+                    throw new Error("Could not find private key: " + privateKeyID);
+
+                var index = privateKeyStore.index('default');
+                var getRequest = index.get('1');
+                getRequest.onsuccess = function (evt) {
+                    var oldDefaultPrivateKeyData = evt.target.result;
+
+                    if(oldDefaultPrivateKeyData) {
+                        console.log("Resetting Default PK: ", oldDefaultPrivateKeyData);
+                        oldDefaultPrivateKeyData.default = '0';
+                        privateKeyStore.put(oldDefaultPrivateKeyData);
+                    }
+
+                    privateKeyData.default = '1';
+                    var updateRequest = privateKeyStore.put(privateKeyData);
+                    updateRequest.onsuccess = function(event) {
+                        socketCommands.manage("MANAGE", e, "Private Key ID set to default: " + privateKeyFingerprint);
+                    };
+                };
+            };
         });
-
     };
 
-    socketResponses.manage = function(e) {
-        throw new Error("manage response is not implemented");
+    socketResponses['default'] = function(responseString, e) {
+        throw new Error("default response is not implemented");
     };
-
 
 
 

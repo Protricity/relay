@@ -48,6 +48,11 @@ form[name=pgp-manage-form] legend.user {
     border-width: 4px !important;
 }
 
+.pgp-id-box legend :checked + span.user {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
 
 form.compact .hide-on-compact,
 form .show-on-passphrase-required {

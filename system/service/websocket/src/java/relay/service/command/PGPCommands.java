@@ -53,8 +53,7 @@ public class PGPCommands implements ISocketCommand {
     private final HashMap<Session, PGPUserInfo> mUserInfo = new HashMap<>();
     
     private PGPCommands() {
-                Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     }
     
     public PGPUserInfo getSessionPGPInfo(Session session) {

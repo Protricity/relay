@@ -3,13 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="f1a3609b-05f2-4e93-b5c1-0f477f2ec236" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/src/java/relay/service/command/PGPCommands.java" afterPath="$PROJECT_DIR$/system/service/websocket/src/java/relay/service/command/PGPCommands.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/command/command-client.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/command-client.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/command/command-defaults.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/command-defaults.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/command/command-worker.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/command-worker.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/command/http/http-listener.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/http/http-listener.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/index.html" afterPath="$PROJECT_DIR$/system/service/websocket/web/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/template/minimal/minimal.css" afterPath="$PROJECT_DIR$/system/service/websocket/web/template/minimal/minimal.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp-db.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp-db.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp-listener.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp-listener.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp-worker.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp-worker.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp.css" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp.css" />
@@ -48,8 +41,8 @@
       <file leaf-file-name="pgp-listener.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp-listener.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-28.48" vertical-offset="2382" max-vertical-offset="9826">
-              <caret line="182" column="23" selection-start-line="182" selection-start-column="23" selection-end-line="182" selection-end-column="23" />
+            <state vertical-scroll-proportion="-20.32" vertical-offset="4983" max-vertical-offset="9792">
+              <caret line="323" column="111" selection-start-line="323" selection-start-column="111" selection-end-line="323" selection-end-column="111" />
               <folding />
             </state>
           </provider>
@@ -58,14 +51,14 @@
       <file leaf-file-name="pgp-worker.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp-worker.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.49056605" vertical-offset="6545" max-vertical-offset="14297">
-              <caret line="411" column="34" selection-start-line="411" selection-start-column="34" selection-end-line="411" selection-end-column="34" />
+            <state vertical-scroll-proportion="0.48390678" vertical-offset="3457" max-vertical-offset="15113">
+              <caret line="229" column="24" selection-start-line="229" selection-start-column="24" selection-end-line="229" selection-end-column="24" />
               <folding>
-                <marker date="1440988509130" expanded="true" signature="1951:1964" placeholder="..." />
-                <marker date="1440988509130" expanded="false" signature="7263:7277" placeholder="..." />
-                <marker date="1440988509130" expanded="false" signature="10561:10572" placeholder="..." />
-                <marker date="1440988509130" expanded="false" signature="12264:12275" placeholder="..." />
-                <marker date="1440988509130" expanded="false" signature="34710:34722" placeholder="..." />
+                <marker date="1440992841211" expanded="true" signature="1951:1964" placeholder="..." />
+                <marker date="1440992841211" expanded="false" signature="7263:7277" placeholder="..." />
+                <marker date="1440992841211" expanded="false" signature="10561:10572" placeholder="..." />
+                <marker date="1440992841211" expanded="false" signature="12264:12275" placeholder="..." />
+                <marker date="1440992841211" expanded="false" signature="36774:36786" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -74,8 +67,8 @@
       <file leaf-file-name="pgp-db.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp-db.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="6259" max-vertical-offset="7667">
-              <caret line="411" column="73" selection-start-line="411" selection-start-column="73" selection-end-line="411" selection-end-column="73" />
+            <state vertical-scroll-proportion="-24.32" vertical-offset="4390" max-vertical-offset="7667">
+              <caret line="294" column="34" selection-start-line="293" selection-start-column="0" selection-end-line="307" selection-end-column="22" />
               <folding />
             </state>
           </provider>
@@ -104,9 +97,11 @@
       <file leaf-file-name="pgp.css" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="376" max-vertical-offset="1105">
-              <caret line="32" column="31" selection-start-line="32" selection-start-column="31" selection-end-line="32" selection-end-column="31" />
-              <folding />
+            <state vertical-scroll-proportion="0.0" vertical-offset="81" max-vertical-offset="1190">
+              <caret line="51" column="11" selection-start-line="51" selection-start-column="11" selection-end-line="51" selection-end-column="11" />
+              <folding>
+                <marker date="1440991510839" expanded="true" signature="1050:1066" placeholder="{...}" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -819,6 +814,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="884">
           <caret line="5" column="86" selection-start-line="5" selection-start-column="86" selection-end-line="5" selection-end-column="86" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -856,14 +852,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="376" max-vertical-offset="1105">
-          <caret line="32" column="31" selection-start-line="32" selection-start-column="31" selection-end-line="32" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/command-worker.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="74.8" vertical-offset="2550" max-vertical-offset="4199">
@@ -880,32 +868,42 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp-listener.js">
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-28.48" vertical-offset="2382" max-vertical-offset="9826">
-          <caret line="182" column="23" selection-start-line="182" selection-start-column="23" selection-end-line="182" selection-end-column="23" />
-          <folding />
+        <state vertical-scroll-proportion="0.0" vertical-offset="81" max-vertical-offset="1190">
+          <caret line="51" column="11" selection-start-line="51" selection-start-column="11" selection-end-line="51" selection-end-column="11" />
+          <folding>
+            <marker date="1440991510839" expanded="true" signature="1050:1066" placeholder="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp-db.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="6565" max-vertical-offset="7667">
-          <caret line="411" column="73" selection-start-line="411" selection-start-column="73" selection-end-line="411" selection-end-column="73" />
+        <state vertical-scroll-proportion="-24.32" vertical-offset="4390" max-vertical-offset="7667">
+          <caret line="294" column="34" selection-start-line="293" selection-start-column="0" selection-end-line="307" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp-listener.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-20.32" vertical-offset="4983" max-vertical-offset="9792">
+          <caret line="323" column="111" selection-start-line="323" selection-start-column="111" selection-end-line="323" selection-end-column="111" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp-worker.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.49056605" vertical-offset="6545" max-vertical-offset="14297">
-          <caret line="411" column="34" selection-start-line="411" selection-start-column="34" selection-end-line="411" selection-end-column="34" />
+        <state vertical-scroll-proportion="0.48390678" vertical-offset="3457" max-vertical-offset="15113">
+          <caret line="229" column="24" selection-start-line="229" selection-start-column="24" selection-end-line="229" selection-end-column="24" />
           <folding>
-            <marker date="1440988509130" expanded="true" signature="1951:1964" placeholder="..." />
-            <marker date="1440988509130" expanded="false" signature="7263:7277" placeholder="..." />
-            <marker date="1440988509130" expanded="false" signature="10561:10572" placeholder="..." />
-            <marker date="1440988509130" expanded="false" signature="12264:12275" placeholder="..." />
-            <marker date="1440988509130" expanded="false" signature="34710:34722" placeholder="..." />
+            <marker date="1440992841211" expanded="true" signature="1951:1964" placeholder="..." />
+            <marker date="1440992841211" expanded="false" signature="7263:7277" placeholder="..." />
+            <marker date="1440992841211" expanded="false" signature="10561:10572" placeholder="..." />
+            <marker date="1440992841211" expanded="false" signature="12264:12275" placeholder="..." />
+            <marker date="1440992841211" expanded="false" signature="36774:36786" placeholder="..." />
           </folding>
         </state>
       </provider>
