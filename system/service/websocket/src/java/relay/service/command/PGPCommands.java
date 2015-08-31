@@ -53,7 +53,8 @@ public class PGPCommands implements ISocketCommand {
     private final HashMap<Session, PGPUserInfo> mUserInfo = new HashMap<>();
     
     private PGPCommands() {
-        
+                Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+
     }
     
     public PGPUserInfo getSessionPGPInfo(Session session) {
@@ -144,7 +145,6 @@ public class PGPCommands implements ISocketCommand {
     
     
     public ArrayList<String> verifySignedContent(Session session, String data, PGPPublicKey publicKey) throws PGPException {
-        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         
         ArrayList<String> verifiedContent = new ArrayList<>();
         int sPos, mPos, fPos = 0;

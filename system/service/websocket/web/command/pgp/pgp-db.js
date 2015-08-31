@@ -409,7 +409,7 @@ PGPDB.addIDSIGToDatabase = function(idsigString, callback) {
 
         var insertRequest = sessionDBStore.add(sessionInsertData);
         insertRequest.onsuccess = function(event) {
-            console.log("Added session IDSIG to database: " + idsigString, sessionInsertData);
+            console.log("Added session IDSIG to database: " + idsigString);
             callback(null, sessionInsertData);
         };
         insertRequest.onerror = function(event) {

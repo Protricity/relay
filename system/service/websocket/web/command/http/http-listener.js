@@ -48,7 +48,7 @@
             formElm.classList[postContentElm.value.length === 0 ? 'add' : 'remove']('compact');
 
             var newOptionHTML = '';
-            self.PGPDB.queryPrivateKeys(function(pkData) {
+            PGPDB.queryPrivateKeys(function(pkData) {
                 var privateKeyID = pkData.id_private;
                 var optionValue = privateKeyID + (pkData.passphrase_required ? ',1' : '');
 

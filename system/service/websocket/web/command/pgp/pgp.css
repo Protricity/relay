@@ -30,6 +30,10 @@ form[name=pgp-identify-success-form] input[type=submit] {
     margin: 0.5em;
 }
 
+form[name=pgp-manage-form] input {
+    vertical-align: bottom;
+    margin: 0;
+}
 
 form[name=pgp-manage-form] legend.user {
     overflow: hidden;
@@ -43,3 +47,13 @@ form[name=pgp-manage-form] legend.user {
 .pgp-id-box-default {
     border-width: 4px !important;
 }
+
+
+form.compact .hide-on-compact,
+form .show-on-passphrase-required {
+    display: none;
+}
+form.passphrase-required .show-on-passphrase-required {
+    display: inherit;
+}
+

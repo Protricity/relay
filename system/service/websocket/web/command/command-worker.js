@@ -3,6 +3,7 @@
  */
 
 (function() {
+    var NEXT_SOCKET_INTERVAL = 5000;
     var SOCKET_RECONNECT_INTERVAL = 5000;
 
     var PATH_PREFIX_SOCKET = 'socket:';
@@ -60,7 +61,7 @@
             if(newSocket.readyState != WebSocket.OPEN)
                 return;
             newSocket.removeEventListener('open', onOpen);
-            self.postMessage("SOCKET OPEN " + socketURL);
+            //self.postMessage("SOCKET OPEN " + socketURL);
 
             for(var i=0; i<onNewSocketOpenCallbacks.length; i++)
                 onNewSocketOpenCallbacks[i](newSocket);
@@ -71,17 +72,22 @@
         }
         function onClose(e) {
             console.log("SOCKET CLOSED: ", e.currentTarget, e.reason, e);
-            self.postMessage("SOCKET CLOSED " + socketURL);
+            //self.postMessage("SOCKET CLOSED " + socketURL);
 
             newSocket.removeEventListener('close', onClose);
-            for(var j=0; j<activeSockets.length; j++)
+            var activeSockets = 0;
+            for(var j=0; j<activeSockets.length; j++) {
+                activeSockets += newSocket.readyState === WebSocket.OPEN ? 1 : 0;
                 if (activeSockets[j].url === socketURL)
                     activeSockets.splice(j, 1);
+            }
 
-            setTimeout(function() {
-                console.info("Reconnecting to: " + socketURL);
-                self.getSocket(socketURL);
-            }, SOCKET_RECONNECT_INTERVAL);
+            if(activeSockets === 0) {
+                setTimeout(function () {
+                    console.info("Reconnecting to: " + socketURL);
+                    self.getSocket(socketURL);
+                }, SOCKET_RECONNECT_INTERVAL);
+            }
 
             self.routeResponseToClient('LOG ' + PATH_PREFIX_SOCKET + newSocket.url + ' .' + CLASS_SOCKET_CONTENT + ' ' + SOCKET_TEMPLATE_ACTION_ENTRY
                 .replace(/{\$content}/gi, "SOCKET CLOSED: " + newSocket.url)
@@ -106,32 +112,39 @@
         return newSocket;
     };
 
+    var nextSocketInterval = null;
     self.selectFastestSocket = function(onSelected, socketList) {
         if(typeof socketList === 'undefined')
             socketList = socketDefaultList.slice();
 
-        var i, socket;
-        var sockets = [];
-        for(i=0; i<socketList.length; i++) {
-            socket = self.getSocket(socketList[i]);
-            sockets.push(socket);
+        var i=0;
+        var openSocket = false;
+        nextSocketInterval = setInterval(nextSocket, NEXT_SOCKET_INTERVAL);
+        nextSocket();
+
+        function nextSocket() {
+            if(openSocket) {
+                clearInterval(nextSocketInterval);
+                return;
+            }
+
+            var socket = self.getSocket(socketList[i++]);
             if(socket.readyState === WebSocket.OPEN) {
+                openSocket = socket;
                 onSelected(socket);
                 return;
             }
-        }
-        var selected = false;
-        function onOpen(e) {
-            this.removeEventListener('open', onOpen);
-            if(!selected) {
-                selected = true;
-                onSelected(this);
+
+            socket.addEventListener('open', onOpen);
+            function onOpen(e) {
+                this.removeEventListener('open', onOpen);
+                if(!openSocket) {
+                    openSocket = socket;
+                    onSelected(socket);
+                }
             }
         }
-        for(i=0; i<sockets.length; i++) {
-            socket = sockets[i];
-            socket.addEventListener('open', onOpen);
-        }
+
     };
 
 

@@ -3,8 +3,8 @@
 
 
 var socketDefaultList = [
-    'ws://' + location.host + (location.port ? '' : ':8080') + '/relay-server/socket'
-    //'ws://relay.co.il:8080/relay-server/socket'
+    'ws://' + location.host + (location.port ? '' : ':8080') + '/relay-server/socket',
+    'ws://relay.co.il:8080/relay-server/socket'
     //'ws://localhost:8080/relay-server/socket'
 ];
 
@@ -19,10 +19,12 @@ var socketAutoLoaders = {};
 // Socket Commands
 
 
-socketCommands.info = function(commandString) { return self.sendWithFastestSocket(commandString); };
-socketResponses.info = function(commandResponse) { return self.routeResponseToClient(commandResponse); };
-socketCommands.error = function(commandString) { return self.sendWithFastestSocket(commandString); };
-socketResponses.error = function(commandResponse) { return self.routeResponseToClient(commandResponse); };
+//socketCommands.info = function(commandString) { return self.sendWithFastestSocket(commandString); };
+//socketCommands.error = function(commandString) { return self.sendWithFastestSocket(commandString); };
+socketResponses.info = function(commandResponse) { console.info(commandResponse); };
+socketResponses.error = function(commandResponse) { console.error(commandResponse); };
+socketResponses.assert = function(commandResponse) { console.assert(commandResponse); };
+socketResponses.warn = function(commandResponse) { console.warn(commandResponse); };
 
 // Window Commands
 

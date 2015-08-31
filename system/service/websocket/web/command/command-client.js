@@ -35,32 +35,18 @@
     window.addEventListener('hashchange', onHashChange);
 
     function receiveMessage(responseString) {
-        var args = /^([\w.]+)\s+([\s\S]*)$/mi.exec(responseString);
+        var args = /^\w+/.exec(responseString);
         if(!args)
             throw new Error("Invalid Command: " + responseString);
-            
-        var command = args[1]
-            .split('.', 2)[0]
-            .toLowerCase();
 
+        var command = args[0].toLowerCase();
         switch(command) {
             case 'log':
                 logToChannel(responseString);
                 break;
 
             default:
-                console.error("Unhandled command: " + responseString);
-                break;
-
-            case 'socket':
-                console.info('SOCKET ' + responseString);
-                break;
-
-            case 'error':
-            case 'warn':
-            case 'info':
-            case 'assert':
-                console[command](responseString);
+                console.error("Unhandled client-side command: " + responseString);
                 break;
         }
     }
