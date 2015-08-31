@@ -1,3 +1,7 @@
+body.template-minimal {
+    font-family: monospace, serif;
+}
+
 .template-minimal a {
     text-decoration: none;
 }
@@ -20,7 +24,7 @@
     transition: opacity 0.4s ease-in-out;
     display: inline-block;
     border: 2px groove threedface;
-    margin: 0 2px 0 2px;
+    margin: 1px;
     padding: 1em 0.75em 0.625em 0.75em;
      
     min-width: 15em;
@@ -60,18 +64,15 @@
     box-shadow: 1px 4px 30px #333;
 }
 
-.template-minimal .channel.minimized {
-}
+.template-minimal .channel.closed,
 .template-minimal .channel.minimized > * {
     display: none;
-    /* visibility: hidden; */
 }
 
 .template-minimal .channel.minimized .channel-header,
 .template-minimal .channel.minimized header {
     display: inherit;
     color: grey;
-    /* visibility: inherit; */
 }
 .template-minimal .channel.minimized .header-commands {
     display: inherit;
@@ -92,6 +93,7 @@
 .template-minimal span.command{
     color: green;
     text-transform: uppercase;
+    font-size: smaller;
     font-family: monospace;
 }
 
@@ -171,17 +173,26 @@
     margin-bottom:
     0.5em;
     animation: fadein;
+    /* border: 2px groove threedface; */
+    vertical-align: top;
+}
+.navigation-commands header {
+    font-weight: bold;
 }
 .navigation-commands ul {
     list-style: none;
     padding: 0;
     margin: 0.5em 0 0 0;
 }
+.navigation-commands ul lh,
+.navigation-commands ul li.header,
 .navigation-commands ul li {
     background-color: #EEE;
     border-radius: 0.3em;
     padding: 0.05em 0.5em;
     margin-bottom: 2px;
+    display: list-item;
+    font-family: monospace;
 }
 .navigation-commands ul li:hover {
     background-color: #EEEEAA;
@@ -190,17 +201,14 @@
 .navigation-commands.closed {
     border-radius: 0.5em;
 }
-.navigation-commands.open {
-    /* border: 1px solid #111111; */
-    transition: opacity 0.4s ease-in-out;
-    border: 2px groove threedface;
-    vertical-align: top;
-}
-.navigation-commands.closed ul {
+.navigation-commands.closed .hide-on-close {
     display: none;
 }
-.navigation-commands.closed:hover ul {
+.navigation-commands.closed:hover .hide-on-close {
     display: block;
+}
+.navigation-commands.closed:hover span.hide-on-close {
+    display: inline;
 }
 
 /* Animation */

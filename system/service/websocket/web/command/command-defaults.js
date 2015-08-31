@@ -31,6 +31,7 @@ socketResponses.warn = function(commandResponse) { console.warn(commandResponse)
 socketCommands.minimize =
 socketCommands.maximize =
 socketCommands.close = function(commandResponse) {
+    // TODO: custom logic per window
     return self.routeResponseToClient("LOG." + commandResponse);
 };
 

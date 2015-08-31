@@ -185,12 +185,14 @@
             "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
             "<header><span class='command'>IDSIG</span> Successful</header>" +
             "{$html_header_commands}" +
-            "<form name='pgp-identify-success-form' action='#' method='post'>" +
+            "<form name='pgp-identify-success-form' action='#CLOSE {$channel_class}' onsubmit=''>" +
                 "<code class='status-box'>{$status_content}</code><br/>" +
 
                 "Options for next time:<hr/>" +
 
-                "<input type='submit' name='submit-close' value='Close'/>" +
+                "<button type='submit' name='submit-close'>" +
+                    "<a class='header-command-close' href='#CLOSE {$channel_class}'>Close</a>" +
+                "</button>" +
                 "<select name='auto_identify' style='width:16em;'>" +
                     "<option value='ask'>Ask me every time</option>" +
                     "<option {$auto_identify_host_attr}value='auto-host'>Auto-Identify to {$socket_host} (passphrase may be required)</option>" +
@@ -711,7 +713,7 @@
             throw new Error("Could not find IDENTITY request: " + session_uid);
 
         var sendSocket = foundRequest[1];
-        sendSocket.send(commandString);
+        sendSocket.send(commandString); // TODO: socket out
         //console.log("SOCKET OUT (" + sendSocket.url + "): " + commandString);
 
     };

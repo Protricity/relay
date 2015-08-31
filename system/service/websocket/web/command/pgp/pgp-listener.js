@@ -58,7 +58,8 @@
                 return true;
 
             case 'pgp-identify-success-form':
-                saveAutoIdentify();
+                if(e.type === 'change')
+                    saveAutoIdentify();
                 //if(e.type === 'submit') { TODO:
                 return true;
 

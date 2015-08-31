@@ -8,16 +8,17 @@
         <script src="command/command-client.js"></script>
         <script>
             window.addEventListener('hashchange', onHashChange);
-            window.addEventListener('beforeunload', onUnload);
-            window.onbeforeunload = onUnload;
+//            window.onbeforeunload = onUnload;
 
             function onUnload(e) {
                 return "Relay client will disconnect";
             }
             function onHashChange(e) {
-                var hashCommand = document.location.hash.replace(/^#/, '');
+                var hashCommand = document.location.hash.replace(/^#/, '').trim();
+                document.location.hash = '';
                 if(!hashCommand)
                     return false;
+                console.log("Hash Command: ", hashCommand);
                 send(hashCommand);
             }
 
@@ -58,23 +59,26 @@
 
             function toggleNavigationCommandMenu() {
                 var menuElms = document.getElementsByClassName('navigation-commands');
-                var show = menuElms[0].classList.contains('closed');
-                for(var i=0; i<menuElms.length; i++) {
-                    menuElms[i].classList.remove(!show ? 'open' : 'closed');
-                    menuElms[i].classList.add(show ? 'open' : 'closed');
-                }
+                var show = !menuElms[0].classList.contains('closed');
+                for(var i=0; i<menuElms.length; i++)
+                    menuElms[i].classList[show ? 'add' : 'remove']('closed');
             }
         </script>
-        <script src="https://freegeoip.net/json/?callback=freegeoip" defer="defer"></script>
+        <script src="https://freegeoip.net/json/?callback=freegeoip" async="async" defer="defer"></script>
     </head>
     <body class="template-minimal">
         <nav class="navigation-commands closed">
-            <label><button onclick="toggleNavigationCommandMenu()">&#9776;</button> Relay</label>
-            <ul class="command-list-channels">
+            <header>
+                <button onclick="toggleNavigationCommandMenu()">&#9776;</button>
+                Relay <span class="hide-on-close">Commands</span>
+            </header>
+            <ul class="command-list-channels hide-on-close">
+                <lh>Channels</lh>
                 <li><a href="#JOIN ~"       ><span class='command'>Join ~</span> <span class='info'>(Your channel)</span></a></li>
                 <li><a href="#JOIN /home"   ><span class='command'>Join /home</span></a></li>
             </ul>
-            <ul class="command-list-identity">
+            <ul class="command-list-identity hide-on-close">
+                <lh>Commands</lh>
                 <li><a href="#KEYGEN"       ><span class='command'>KeyGen</span> a new <strong>PGP Identity</strong></a></li>
                 <li><a href="#MANAGE"       ><span class='command'>Manage</span> your <strong>PGP Identities</strong></a></li>
                 <li><a href="#FEED /home/*" >View all user <span class='command'>feed</span>s</a></li>
@@ -82,8 +86,6 @@
                 <li><a href="#PUT"          ><span class='command'>Put</span> new content in your web space</a></li>
             </ul>
         </nav>
-        <!--<ul class="channel-list">-->
-        <!--</ul>-->
         <span class="channel-container">
 
         </span>

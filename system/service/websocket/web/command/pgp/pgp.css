@@ -22,10 +22,10 @@ form[name=pgp-manage-form] select[name=actions] {
 }
 
 form[name=pgp-manage-form] .load-pgp-btn,
-form[name=pgp-register-form] input[type=submit],
-form[name=pgp-keygen-form] input[type=submit],
-form[name=pgp-identify-form] input[type=submit],
-form[name=pgp-identify-success-form] input[type=submit] {
+form[name=pgp-register-form] [type=submit],
+form[name=pgp-keygen-form] [type=submit],
+form[name=pgp-identify-form] [type=submit],
+form[name=pgp-identify-success-form] [type=submit] {
     padding: 0.5em 1em;
     margin: 0.5em;
 }

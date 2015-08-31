@@ -53,7 +53,9 @@ form[name=chat-form] .pgp-message:hover {
 form[name=chat-form] .channel-content {
     overflow: auto;
     max-height: 18em;
-    width: 42em;
+    width: 45vw;
+    max-width: 45em;
+    min-width: 25em;
 }
 
 

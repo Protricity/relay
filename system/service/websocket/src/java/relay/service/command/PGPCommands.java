@@ -51,9 +51,12 @@ public class PGPCommands implements ISocketCommand {
     }
     
     private final HashMap<Session, PGPUserInfo> mUserInfo = new HashMap<>();
+    private JcaPGPContentVerifierBuilderProvider mProvider = null;
     
     private PGPCommands() {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        if(mProvider == null)
+            mProvider = new JcaPGPContentVerifierBuilderProvider().setProvider("BC");
     }
     
     public PGPUserInfo getSessionPGPInfo(Session session) {
@@ -187,7 +190,7 @@ public class PGPCommands implements ISocketCommand {
                             InputStream unverifiedContentIn = new ByteArrayInputStream(unverifiedContent.getBytes());
 
                             PGPSignature sig = it.next();
-                            sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider("BC"), publicKey);
+                            sig.init(mProvider, publicKey);
                             int ch;
                             while ((ch = unverifiedContentIn.read()) >= 0) {
                                 sig.update((byte)ch);
@@ -247,8 +250,6 @@ public class PGPCommands implements ISocketCommand {
             Logger.getLogger(PGPCommands.class.getName()).log(Level.SEVERE, null, ex);
             throw new PGPException(ex.getMessage(), ex);
         }
-
-
     }
     
     private void sendText(Session session, String text) {
