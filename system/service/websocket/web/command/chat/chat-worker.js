@@ -21,7 +21,7 @@
                     "<tbody>" +
                         "<tr>" +
                             "<td style='vertical-align: top'>" +
-                                "<select multiple='multiple' name='user-list' size='15'>" +
+                                "<select multiple='multiple' name='user-list' size='5'>" +
                                     "<optgroup class='" + CLASS_ACTIVE_USERS + "' label='Active Users (0)'></optgroup>" +
                                     "<optgroup class='" + CLASS_INACTIVE_USERS + "' label='Inactive Users (0)'></optgroup>" +
                                 "</select>" +
@@ -309,7 +309,7 @@
     function fixChannelPath(path) {
         //if(!/#?[~:./a-z_-]+/i.test(path))
         //    throw new Error("Invalid Path: " + path);
-        return path;
+        return path.toLowerCase();
     }
 
     console.log("Loaded Command: join");

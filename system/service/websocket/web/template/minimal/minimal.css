@@ -174,18 +174,28 @@
 }
 .navigation-commands ul {
     list-style: none;
-    padding-left: 0;
+    padding: 0;
+    margin: 0.5em 0 0 0;
 }
 .navigation-commands ul li {
-    background-color: aliceblue;
+    background-color: #EEE;
     border-radius: 0.3em;
     padding: 0.05em 0.5em;
-    margin-bottom: 1px;
+    margin-bottom: 2px;
 }
 .navigation-commands ul li:hover {
     background-color: #EEEEAA;
 }
 
+.navigation-commands.closed {
+    border-radius: 0.5em;
+}
+.navigation-commands.open {
+    /* border: 1px solid #111111; */
+    transition: opacity 0.4s ease-in-out;
+    border: 2px groove threedface;
+    vertical-align: top;
+}
 .navigation-commands.closed ul {
     display: none;
 }
