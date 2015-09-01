@@ -72,7 +72,7 @@
         "</article>";
 
 
-    var postFormNCounter = 0;
+    var putFormCounterN = 0;
     /**
      *
      * @param commandString PUT [path] [content]
@@ -97,10 +97,10 @@
         } else {
             self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_PUT + ' * ' +
                 PUT_FORM_TEMPLATE
-                    .replace(/{\$row_n}/gi, (postFormNCounter++).toString())
+                    .replace(/{\$row_n}/gi, (putFormCounterN++).toString())
                     .replace(/{\$content}/gi, content || '')
                     .replace(/{\$path}/gi, path)
-                    //.replace(/{\$[^}]+}/gi, '')
+                //.replace(/{\$[^}]+}/gi, '')
             );
 
         }
@@ -109,6 +109,37 @@
     };
 
     socketResponses.put = function(commandString) { return self.routeResponseToClient(commandString); };
+
+    /**
+     *
+     * @param commandString GET [URL]
+     */
+    socketCommands.get = function (commandString) {
+        var match = /^get\s*(.*)$/i.exec(commandString);
+        var path = match[1];
+        var url = parseUrl(path);
+
+        var isLocal = true;
+
+        if(isLocal) {
+
+            socketResponses.get(commandString);
+        } else {
+
+            self.sendWithFastestSocket(commandString);
+        }
+
+
+    };
+
+    socketResponses.get = function(responseString) {
+        var match = /^get\s*(.*)$/i.exec(responseString);
+        var path = match[1];
+        var url = parseUrl(path);
+        console.log(responseString, url);
+
+        // TODO: search by keyid and path
+    };
 
     function protectHTMLContent(htmlContent) {
         var tagsToReplace = {
@@ -134,6 +165,19 @@
             throw new Error("Dangerous HTML: " + match[2]);
 
         return htmlContent;
+    }
+
+
+    function parseUrl(url) {
+        var pattern = new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
+        var matches = url.match(pattern);
+        return {
+            scheme: matches[2],
+            authority: matches[4],
+            path: matches[5],
+            query: matches[7],
+            fragment: matches[9]
+        };
     }
 
     function getKBPGP() {

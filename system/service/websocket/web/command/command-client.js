@@ -156,6 +156,11 @@
                 detail: content
             });
             channelOutput.dispatchEvent(contentEvent);
+            contentEvent = new CustomEvent('log.' + subCommand, {
+                bubbles: true,
+                detail: content
+            });
+            channelOutput.dispatchEvent(contentEvent);
         }
 
     }

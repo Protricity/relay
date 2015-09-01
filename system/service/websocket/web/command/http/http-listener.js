@@ -111,7 +111,7 @@
             if(!pathElm)
                 throw new Error("No channel field found");
             //var postPath = pathElm.value;
-            var fixedPostPath = pathElm.value; // fixHomePath(postPath, publicKeyID);
+            var fixedPostPath = fixHomePath(pathElm.value, publicKeyID);
             var homeChannel = '~'; // fixHomePath('~', publicKeyID);
             var timestamp = Date.now();
 
@@ -211,6 +211,18 @@
                 statusElm.innerHTML = statusText;
             }
         })(statusElms[i]);
+    }
+
+
+    function fixHomePath(channelPath, keyID) {
+        keyID = keyID.substr(keyID.length - 8);
+        if(channelPath[0] === '~') {
+            channelPath = channelPath.substr(1);
+            if(!channelPath || channelPath[0] !== '/')
+                channelPath = '/' + channelPath;
+            channelPath = '/home/' + keyID + channelPath;
+        }
+        return channelPath;
     }
 
     // Includes

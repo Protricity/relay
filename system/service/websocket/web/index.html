@@ -5,7 +5,8 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="template/minimal/minimal.css" type="text/css" />
-        <script src="command/command-client.js"></script>
+        <script src="template/minimal/minimal.js" async="async" defer="defer"></script>
+        <script src="command/command-client.js" async="async" defer="defer"></script>
         <script>
             window.addEventListener('hashchange', onHashChange);
 //            window.onbeforeunload = onUnload;
@@ -33,10 +34,14 @@
 
             setTimeout(function() {
 
-                send('JOIN /test');
+//                send('JOIN /test');
 //                send('manage');
 //            send('keygen');
 //            send('manage');
+                send('get');
+                send('get /path1/path2/?query=wut#hash');
+                send('get socket://host/path1/path2/?query=wut#hash');
+                send('put');
 
             }, 200);
 

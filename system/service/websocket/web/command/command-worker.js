@@ -17,7 +17,7 @@
         "</div>";
 
     var SOCKET_TEMPLATE =
-        "<article class='{$attr_class} minimized'>" +
+        "<article class='{$attr_class} closed' data-sort='z'>" +
             "<link rel='stylesheet' href='command/socket/socket.css' type='text/css'>" +
             "<header><a href='#MINIMIZE {$channel_class}'><span class='command'>Socket</span> {$socket_host}</a></header>" +
             "{$html_header_commands}" +

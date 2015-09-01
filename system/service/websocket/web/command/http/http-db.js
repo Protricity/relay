@@ -111,7 +111,7 @@ HttpDB.addVerifiedContentToDB = function(verifiedContent, callback) {
 
         var insertRequest = httpContentStore.add(insertData);
         insertRequest.onsuccess = function(event) {
-            console.log("Added http content to database: " + path, insertRequest);
+            console.log("Added http content to database: " + path, insertData);
             if(callback)
                 callback(null, insertData, insertRequest);
         };
