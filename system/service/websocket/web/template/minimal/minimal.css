@@ -197,7 +197,7 @@ body.template-minimal {
 
 .navigation-commands ul lh,
 .navigation-commands ul li.header {
-    background-color: #BBA;
+    background-color: #999;
     /* border: 1px solid #AAA; */
 }
 .navigation-commands ul li:hover {

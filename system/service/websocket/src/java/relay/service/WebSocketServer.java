@@ -95,7 +95,7 @@ public class WebSocketServer {
                     continue;
                 
             } catch (Exception ex) {
-                session.getBasicRemote().sendText("ERROR WebSocketServer.onMessage() " + ex.getStackTrace()[0]);
+                session.getBasicRemote().sendText("ERROR WebSocketServer.onMessage() " + ex + ex.getStackTrace()[0]);
                 ex.printStackTrace();
             }
         }

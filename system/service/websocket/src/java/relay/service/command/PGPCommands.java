@@ -101,7 +101,7 @@ public class PGPCommands implements ISocketCommand {
         return false;
     }
     
-    private void identifySession(Session session, String data) throws PGPException {
+    private void identifySession(Session session, String data) throws PGPException, IOException {
 
         PGPUserInfo userInfo = mUserInfo.get(session);
         
@@ -145,7 +145,7 @@ public class PGPCommands implements ISocketCommand {
     }
     
     
-    public ArrayList<String> verifySignedContent(Session session, String data, PGPPublicKey publicKey) throws PGPException {
+    public ArrayList<String> verifySignedContent(Session session, String data, PGPPublicKey publicKey) throws PGPException, IOException {
         
         ArrayList<String> verifiedContent = new ArrayList<>();
         int sPos, mPos, fPos = 0;
@@ -173,49 +173,49 @@ public class PGPCommands implements ISocketCommand {
 
             String unverifiedContent = data.substring(textSPos, mPos-1);
             String signatureArmored = data.substring(mPos, fPos);
-            try {
-                InputStream in=new ByteArrayInputStream(signatureArmored.getBytes());
-                in = PGPUtil.getDecoderStream(in);
-                PGPObjectFactory pgpF = new PGPObjectFactory(in, new JcaKeyFingerprintCalculator());
+//            try {
+            InputStream in=new ByteArrayInputStream(signatureArmored.getBytes());
+            in = PGPUtil.getDecoderStream(in);
+            PGPObjectFactory pgpF = new PGPObjectFactory(in, new JcaKeyFingerprintCalculator());
 
-                PGPEncryptedDataList enc;
-                Object o;
-                while((o = pgpF.nextObject()) != null) {
+            PGPEncryptedDataList enc;
+            Object o;
+            while((o = pgpF.nextObject()) != null) {
 
-                    if(o instanceof PGPSignatureList) {
-                        PGPSignatureList list = (PGPSignatureList) o;
-                        Iterator<PGPSignature> it = list.iterator();
-                        while(it.hasNext()) {
-                            InputStream unverifiedContentIn = new ByteArrayInputStream(unverifiedContent.getBytes());
+                if(o instanceof PGPSignatureList) {
+                    PGPSignatureList list = (PGPSignatureList) o;
+                    Iterator<PGPSignature> it = list.iterator();
+                    while(it.hasNext()) {
+                        InputStream unverifiedContentIn = new ByteArrayInputStream(unverifiedContent.getBytes());
 
-                            PGPSignature sig = it.next();
-                            sig.init(mProvider, publicKey);
-                            int ch;
-                            while ((ch = unverifiedContentIn.read()) >= 0) {
-                                sig.update((byte)ch);
-                            }
-
-                            if (sig.verify()) {
-                                sendText(session, "INFO Verified Signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
-                                verifiedContent.add(unverifiedContent);
-                            }
-                            else {
-                                sendText(session, "ERROR Could not verify signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
-                                throw new IOException("Could not verify signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
-                            }
-    //                        sig.(publicKey);
+                        PGPSignature sig = it.next();
+                        sig.init(mProvider, publicKey);
+                        int ch;
+                        while ((ch = unverifiedContentIn.read()) >= 0) {
+                            sig.update((byte)ch);
                         }
-                    } else {
-                        sendText(session, "ERROR Unrecognized Object: " + o.getClass());
 
+                        if (sig.verify()) {
+                            sendText(session, "INFO Verified Signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
+                            verifiedContent.add(unverifiedContent);
+                        }
+                        else {
+                            sendText(session, "ERROR Could not verify signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
+                            throw new PGPException("Could not verify signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
+                        }
+//                        sig.(publicKey);
                     }
-                }
+                } else {
+                    sendText(session, "ERROR Unrecognized Object: " + o.getClass());
 
-            } catch (IOException ex) {
-                sendText(session, "ERROR " + ex);
-                Logger.getLogger(PGPCommands.class.getName()).log(Level.SEVERE, null, ex);
-                throw new PGPException(ex.getMessage(), ex);
+                }
             }
+
+//            } catch (IOException ex) {
+//                sendText(session, "ERROR " + ex);
+//                Logger.getLogger(PGPCommands.class.getName()).log(Level.SEVERE, null, ex);
+//                throw new PGPException(ex.getMessage(), ex);
+//            }
 
         }
         

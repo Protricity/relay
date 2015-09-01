@@ -77,18 +77,28 @@
     };
 
 
-    socketCommands.chat = function(commandString) { return self.sendWithFastestSocket(commandString); };
+    socketCommands.chat = function(commandString) {
+        var match = /^chat\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandString);
+        if(!match)
+            throw new Error("Invalid Chat Command: " + commandString);
+        var channelPath = fixChannelPath(match[1]);
+        var channelMessage = match[2];
+        commandString = "CHAT " + channelPath + " " + Date.now() + " " + channelMessage;
+        return self.sendWithFastestSocket(commandString);
+    };
 
     socketResponses.chat = function(commandResponse, e) {
-        var match = /^(chat)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandResponse);
+        var match = /^(chat)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandResponse);
         if(!match)
             throw new Error("Invalid Chat Response: " + commandResponse);
         var channelPath = fixChannelPath(match[2]);
-        var session_uid = match[3];
-        var username = match[4];
-        var content = fixPGPMessage(match[5]);
+        var timestamp = parseInt(match[3]);
+        var session_uid = match[4];
+        var username = match[5];
+        var content = fixPGPMessage(match[6]);
         checkChannel(channelPath);
         self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath + ' .' + CLASS_CHANNEL_CONTENT + ' ' + CHAT_TEMPLATE
+                .replace(/{\$timestamp}/gi, timestamp.toString())
                 .replace(/{\$channel}/gi, channelPath)
                 .replace(/{\$session_uid}/gi, session_uid)
                 .replace(/{\$username}/gi, username)

@@ -53,10 +53,10 @@ public class ChannelCommands implements ISocketCommand {
                 return true;
                 
             case "chat":
-                String[] chatArgs = args[1].split("\\s+", 2);
+                String[] chatArgs = args[1].split("\\s+", 3);
                 if(chatArgs.length == 1) 
                     throw new IllegalArgumentException("Missing path");
-                chatChannel(session, chatArgs[0], chatArgs[1]);
+                chatChannel(session, chatArgs[0], Long.parseLong(chatArgs[1]), chatArgs[2]);
                 return true;
                       
             case "msg":
@@ -183,7 +183,7 @@ public class ChannelCommands implements ISocketCommand {
         sendText(userSession, "ERROR could not find user " + getSessionChatID(userSession));
     }
 
-    public void chatChannel(Session userSession, String channel, String message) throws IllegalArgumentException {
+    public void chatChannel(Session userSession, String channel, long timestamp, String message) throws IllegalArgumentException {
         PGPCommands PC = PGPCommands.getStatic();
         PGPCommands.PGPUserInfo userInfo = PC.getSessionPGPInfo(userSession);
         
@@ -202,7 +202,7 @@ public class ChannelCommands implements ISocketCommand {
         
         for(Session session : users)
             if(session.isOpen()) 
-               sendText(session, "CHAT " + channel + " " + userInfo.SessionUID + " " + userInfo.UserName + " " + message);
+               sendText(session, "CHAT " + channel + " " + timestamp + " " + userInfo.SessionUID + " " + userInfo.UserName + " " + message);
 
 //        String[] parts = channel.replaceAll("\\/$|^\\/", "").split("\\/");
 //        String wildCardPath = "*";
