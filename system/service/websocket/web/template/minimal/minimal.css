@@ -194,6 +194,12 @@ body.template-minimal {
     display: list-item;
     font-family: monospace;
 }
+
+.navigation-commands ul lh,
+.navigation-commands ul li.header {
+    background-color: #BBA;
+    /* border: 1px solid #AAA; */
+}
 .navigation-commands ul li:hover {
     background-color: #EEEEAA;
 }

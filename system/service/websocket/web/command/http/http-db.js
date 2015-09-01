@@ -34,6 +34,7 @@ function HttpDB(dbReadyCallback) {
             if(!upgradeDB.objectStoreNames.contains(HttpDB.DB_TABLE_HTTP_CONTENT)) {
                 var postStore = upgradeDB.createObjectStore(HttpDB.DB_TABLE_HTTP_CONTENT, { keyPath: 'uid' });
                 postStore.createIndex("path", "path", { unique: false });
+                postStore.createIndex("id_path", ["path", "pgp_id_public"], { unique: false });
                 postStore.createIndex("pgp_id_public", "pgp_id_public", { unique: false });
                 postStore.createIndex("timestamp", "timestamp", { unique: false });
 
@@ -133,4 +134,40 @@ HttpDB.verifyAndAddContentToDB = function(pgpSignedPost, callback) {
             HttpDB.addVerifiedContentToDB(verifiedContent, callback);
         }
     );
+};
+
+HttpDB.getContent = function(path, callback) {
+    HttpDB(function(db) {
+        var transaction = db.transaction([HttpDB.DB_TABLE_HTTP_CONTENT], "readonly");
+        var httpContentStore = transaction.objectStore(HttpDB.DB_TABLE_HTTP_CONTENT);
+
+        var pathIndex = httpContentStore.index('path');
+        var getRequest = pathIndex.get(path);
+        getRequest.onsuccess = function (e) {
+            var httpContentData = e.target.result;
+            callback(null, httpContentData);
+        };
+        getRequest.onerror = function (e) {
+            var err = event.currentTarget.error;
+            callback(err, null);
+        };
+    });
+};
+
+HttpDB.getContentByPublicKeyID = function(path, publicKeyID, callback) {
+    HttpDB(function(db) {
+        var transaction = db.transaction([HttpDB.DB_TABLE_HTTP_CONTENT], "readonly");
+        var httpContentStore = transaction.objectStore(HttpDB.DB_TABLE_HTTP_CONTENT);
+
+        var pathIndex = httpContentStore.index('id_path');
+        var getRequest = pathIndex.get([path, publicKeyID]);
+        getRequest.onsuccess = function(e) {
+            var httpContentData = e.target.result;
+            callback(null, httpContentData);
+        };
+        getRequest.onerror = function(e) {
+            var err = event.currentTarget.error;
+            callback(err, null);
+        };
+    });
 };

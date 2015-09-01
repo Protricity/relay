@@ -38,9 +38,7 @@
 //                send('manage');
 //            send('keygen');
 //            send('manage');
-                send('get');
-                send('get /path1/path2/?query=wut#hash');
-                send('get socket://host/path1/path2/?query=wut#hash');
+                send('get ~');
                 send('put');
 
             }, 200);
@@ -73,9 +71,11 @@
     </head>
     <body class="template-minimal">
         <nav class="navigation-commands closed">
-            <header>
-                <button onclick="toggleNavigationCommandMenu()">&#9776;</button>
-                Relay <span class="hide-on-close">Commands</span>
+            <header onclick="toggleNavigationCommandMenu()">
+                <label>
+                    <button onclick="toggleNavigationCommandMenu()">&#9776;</button>
+                    Relay <span class="hide-on-close">Commands</span>
+                </label>
             </header>
             <ul class="command-list-channels hide-on-close">
                 <lh>Channels</lh>

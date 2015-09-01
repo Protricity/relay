@@ -7,7 +7,6 @@
     var db = null;
 
 
-
     var ARTICLE_PLACEHOLDER =
         //"<article>\n" +
         "<header>Optional Topic Header</header>\n" +
@@ -122,24 +121,51 @@
         var isLocal = true;
 
         if(isLocal) {
+            // If local, output content to client
+            var responseText = getResponseText(commandString, function(responseText) {
+                console.log("Serving local content: " + commandString, responseText);
+            });
 
-            socketResponses.get(commandString);
         } else {
-
+            // If remote, request content from server
             self.sendWithFastestSocket(commandString);
+
         }
-
-
     };
 
     socketResponses.get = function(responseString) {
-        var match = /^get\s*(.*)$/i.exec(responseString);
+        var responseText = getResponseText(responseString, function(responseText) {
+            console.log(responseString, responseText);
+        });
+    };
+
+    function getResponseText(commandString, callback) {
+        var match = /^get\s*(.*)$/i.exec(commandString);
         var path = match[1];
         var url = parseUrl(path);
-        console.log(responseString, url);
 
-        // TODO: search by keyid and path
-    };
+        getHttpDB().getContent(path, function(err, contentData) {
+            if(err)
+                throw new Error(err);
+            if(contentData) {
+                var responseText200 =
+                    "HTTP/1.1 200\n" +
+                    "Content-type: text/html\n" +
+                    "Content-length: " + contentData.length + "\n" +
+                    "\n" +
+                    contentData;
+
+                callback(responseText200);
+
+            } else {
+                var responseText404 =
+                    "HTTP/1.1 404 Not Found\n" +
+                    "Content-type: text/html\n";
+
+                callback(responseText404);
+            }
+        });
+    }
 
     function protectHTMLContent(htmlContent) {
         var tagsToReplace = {
@@ -189,6 +215,16 @@
     }
 
     // Database
+
+    function getHttpDB(callback) {
+        if(typeof self.HttpDB !== 'function')
+            importScripts('http/http-db.js');
+
+        if(callback)
+            self.HttpDB(callback);
+
+        return self.HttpDB;
+    }
 
     function getPGPDB(callback) {
         if(typeof self.PGPDB !== 'function')
