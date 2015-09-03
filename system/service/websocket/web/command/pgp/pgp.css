@@ -58,6 +58,8 @@ form.compact .hide-on-compact,
 form .show-on-passphrase-required {
     display: none;
 }
+form.auto-identifying:hover .hide-on-compact,
+form.compact:hover .hide-on-compact,
 form.passphrase-required .show-on-passphrase-required {
     display: inherit;
 }

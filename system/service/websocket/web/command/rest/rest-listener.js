@@ -136,7 +136,7 @@
                 .then(function(pgpSignedContent) {
 
                     setStatus(formElm, "Adding post to database...");
-                    HttpDB.verifyAndAddContentToDB(pgpSignedContent, function() {
+                    RestDB.verifyAndAddContentToDB(pgpSignedContent, function() {
                         //setStatus(formElm, "<span class='command'>Message</span>ing channel [" + homeChannel + "]");
 
                         var commandString = "CHAT " + homeChannel + " " + pgpSignedContent;
@@ -214,13 +214,13 @@
     }
 
 
-    function fixHomePath(channelPath, keyID) {
-        keyID = keyID.substr(keyID.length - 8);
+    function fixHomePath(channelPath, publicKeyID) {
+        publicKeyID = publicKeyID.substr(publicKeyID.length - 8);
         if(channelPath[0] === '~') {
             channelPath = channelPath.substr(1);
             if(!channelPath || channelPath[0] !== '/')
                 channelPath = '/' + channelPath;
-            channelPath = '/home/' + keyID + channelPath;
+            channelPath = '/home/' + publicKeyID + channelPath;
         }
         return channelPath;
     }
@@ -245,7 +245,7 @@
     includeScript('command/pgp/pgp-db.js');
 
     // For HTTP Content Database access
-    includeScript('command/http/http-db.js');
+    includeScript('command/rest/rest-db.js');
 
     // For PGP Decryption in chat rooms
     var openPGPScriptPath = 'command/pgp/lib/openpgpjs/openpgp.js';

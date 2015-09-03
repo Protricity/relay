@@ -2,19 +2,19 @@
  * Created by ari on 7/2/2015.
  */
 
-HttpDB.DB_NAME                  = 'http';
-HttpDB.DB_TABLE_HTTP_CONTENT    = 'content';
+RestDB.DB_NAME                  = 'http';
+RestDB.DB_TABLE_HTTP_CONTENT    = 'content';
 
 // Config Database
-function HttpDB(dbReadyCallback) {
+function RestDB(dbReadyCallback) {
 
-    if (typeof HttpDB.getDBRequest === 'undefined') {
+    if (typeof RestDB.getDBRequest === 'undefined') {
         // First Time
-        var openRequest = indexedDB.open(HttpDB.DB_NAME, 2);
+        var openRequest = indexedDB.open(RestDB.DB_NAME, 2);
         var onDBCallbacks = [];
-        HttpDB.getDBRequest = function() { return openRequest; };
-        HttpDB.getCallbacks = function () { return onDBCallbacks; };
-        HttpDB.addCallback = function (callback) { onDBCallbacks.push(callback); };
+        RestDB.getDBRequest = function() { return openRequest; };
+        RestDB.getCallbacks = function () { return onDBCallbacks; };
+        RestDB.addCallback = function (callback) { onDBCallbacks.push(callback); };
 
         openRequest.onsuccess = function (e) {
             //console.log('DB Opened: ', openRequest.result);
@@ -31,30 +31,30 @@ function HttpDB(dbReadyCallback) {
         openRequest.onupgradeneeded = function (e) {
             var upgradeDB = e.currentTarget.result;
 
-            if(!upgradeDB.objectStoreNames.contains(HttpDB.DB_TABLE_HTTP_CONTENT)) {
-                var postStore = upgradeDB.createObjectStore(HttpDB.DB_TABLE_HTTP_CONTENT, { keyPath: 'uid' });
+            if(!upgradeDB.objectStoreNames.contains(RestDB.DB_TABLE_HTTP_CONTENT)) {
+                var postStore = upgradeDB.createObjectStore(RestDB.DB_TABLE_HTTP_CONTENT, { keyPath: 'uid' });
                 postStore.createIndex("path", "path", { unique: false });
                 postStore.createIndex("id_path", ["path", "pgp_id_public"], { unique: false });
                 postStore.createIndex("pgp_id_public", "pgp_id_public", { unique: false });
                 postStore.createIndex("timestamp", "timestamp", { unique: false });
 
-                console.log('Upgraded Table: ', HttpDB.DB_TABLE_HTTP_CONTENT, postStore);
+                console.log('Upgraded Table: ', RestDB.DB_TABLE_HTTP_CONTENT, postStore);
             }
 
         };
     }
 
-    var dbRequest = HttpDB.getDBRequest();
+    var dbRequest = RestDB.getDBRequest();
     if (dbRequest.readyState === "done") {
         dbReadyCallback(dbRequest.result);
         return;
     }
-    HttpDB.addCallback(dbReadyCallback);
+    RestDB.addCallback(dbReadyCallback);
 }
 
 // Database Methods
 
-HttpDB.verifySignedContent = function(pgpMessageContent, callback) {
+RestDB.verifySignedContent = function(pgpMessageContent, callback) {
 
     if(typeof self.openpgp === 'undefined') {
         importScripts('pgp/lib/support/polycrypt.js');
@@ -85,7 +85,7 @@ HttpDB.verifySignedContent = function(pgpMessageContent, callback) {
 
 };
 
-HttpDB.addVerifiedContentToDB = function(verifiedContent, callback) {
+RestDB.addVerifiedContentToDB = function(verifiedContent, callback) {
     var verifiedText = verifiedContent.text;
     var pgpSignedContent = verifiedContent.encrypted;
     var pgp_id_public = verifiedContent.signingKeyId;
@@ -96,17 +96,21 @@ HttpDB.addVerifiedContentToDB = function(verifiedContent, callback) {
     if(!timestamp)
         throw new Error("Invalid Timestamp");
 
-    HttpDB(function(db) {
+    //var pathLevel = -1;
+    //path.replace(/\/+/g, function() { pathLevel++; });
 
-        var transaction = db.transaction([HttpDB.DB_TABLE_HTTP_CONTENT], "readwrite");
-        var httpContentStore = transaction.objectStore(HttpDB.DB_TABLE_HTTP_CONTENT);
+    RestDB(function(db) {
+
+        var transaction = db.transaction([RestDB.DB_TABLE_HTTP_CONTENT], "readwrite");
+        var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_CONTENT);
 
         var insertData = {
             'uid': pgp_id_public + '-' + timestamp,
             'pgp_id_public': pgp_id_public,
             'path': path,
+            //'path_level': pathLevel,
             'timestamp': timestamp,
-            'content': pgpSignedContent,
+            'content_signed': pgpSignedContent,
             'content_verified': verifiedText
         };
 
@@ -126,20 +130,20 @@ HttpDB.addVerifiedContentToDB = function(verifiedContent, callback) {
     });
 };
 
-HttpDB.verifyAndAddContentToDB = function(pgpSignedPost, callback) {
-    HttpDB.verifySignedContent(pgpSignedPost,
+RestDB.verifyAndAddContentToDB = function(pgpSignedPost, callback) {
+    RestDB.verifySignedContent(pgpSignedPost,
         function(err, verifiedContent) {
             if(err)
                 throw new Error(err);
-            HttpDB.addVerifiedContentToDB(verifiedContent, callback);
+            RestDB.addVerifiedContentToDB(verifiedContent, callback);
         }
     );
 };
 
-HttpDB.getContent = function(path, callback) {
-    HttpDB(function(db) {
-        var transaction = db.transaction([HttpDB.DB_TABLE_HTTP_CONTENT], "readonly");
-        var httpContentStore = transaction.objectStore(HttpDB.DB_TABLE_HTTP_CONTENT);
+RestDB.getContent = function(path, callback) {
+    RestDB(function(db) {
+        var transaction = db.transaction([RestDB.DB_TABLE_HTTP_CONTENT], "readonly");
+        var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_CONTENT);
 
         var pathIndex = httpContentStore.index('path');
         var getRequest = pathIndex.get(path);
@@ -154,10 +158,10 @@ HttpDB.getContent = function(path, callback) {
     });
 };
 
-HttpDB.getContentByPublicKeyID = function(path, publicKeyID, callback) {
-    HttpDB(function(db) {
-        var transaction = db.transaction([HttpDB.DB_TABLE_HTTP_CONTENT], "readonly");
-        var httpContentStore = transaction.objectStore(HttpDB.DB_TABLE_HTTP_CONTENT);
+RestDB.getContentByPublicKeyID = function(path, publicKeyID, callback) {
+    RestDB(function(db) {
+        var transaction = db.transaction([RestDB.DB_TABLE_HTTP_CONTENT], "readonly");
+        var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_CONTENT);
 
         var pathIndex = httpContentStore.index('id_path');
         var getRequest = pathIndex.get([path, publicKeyID]);

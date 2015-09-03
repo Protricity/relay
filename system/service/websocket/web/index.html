@@ -38,48 +38,78 @@
 //                send('manage');
 //            send('keygen');
 //            send('manage');
-                send('get ~');
-                send('put');
+                if (document.location.host === 'localhost') {
+                    send('get ~');
+                    send('get /');
+                    send('get socket://ABCD1234/~/');
+                    send('get /missing/');
+                }
+//                send('put');
 
             }, 200);
 
-            function freegeoip(result) {
+            function geoipcallback(result) {
+                if(result.country_name)
+                    result.country = result.country_name;
+                if(result.region_name)
+                    result.region = result.region_name;
+                if(result.zip_code)
+                    result.postal_code = result.zip_code;
+                if(result.timezone)
+                    result.time_zone = result.timezone;
                 console.log(result);
                 var channelList = document.getElementsByClassName('command-list-channels')[0];
-                channelList.innerHTML+= "<li><a href='#JOIN /country/" + result.country_code + "'><span class='command'>Join</span> <strong>" + result.country_name + "</strong></a></li>";
-                channelList.innerHTML+= "<li><a href='#JOIN /region/" + result.region_code + "'><span class='command'>Join</span> <strong>" + result.region_name + "</strong></a></li>";
+                channelList.innerHTML+= "<li><a href='#JOIN /country/" + result.country_code + "'><span class='command'>Join</span> <strong>" + result.country + "</strong></a></li>";
+                channelList.innerHTML+= "<li><a href='#JOIN /region/" + result.region_code + "'><span class='command'>Join</span> <strong>" + result.region + "</strong></a></li>";
                 channelList.innerHTML+= "<li><a href='#JOIN /city/" + result.city + "'><span class='command'>Join</span> <strong>" + result.city + "</strong></a></li>";
-                channelList.innerHTML+= "<li><a href='#JOIN /zipcode/" + result.zip_code + "'><span class='command'>Join</span> <strong>" + result.zip_code + "</strong></a></li>";
+                channelList.innerHTML+= "<li><a href='#JOIN /zipcode/" + result.postal_code + "'><span class='command'>Join</span> <strong>" + result.postal_code + "</strong></a></li>";
                 channelList.innerHTML+= "<li><a href='#JOIN /timezone/" + result.time_zone + "'><span class='command'>Join</span> <strong>" + result.time_zone + "</strong></a></li>";
                 channelList.innerHTML+= "<li><a href='#JOIN /ip/" + result.ip + "'><span class='command'>Join</span> <strong>" + result.ip + "</strong></a></li>";
 
-                send("JOIN /timezone/" + result.time_zone);
-                //            if(navigator.geolocation)
-                //                navigator.geolocation.getCurrentPosition(function(position) {
-                //                    console.log(position);
-                //                });
+                if(document.location.host !== 'localhost')
+                    send("JOIN /timezone/" + result.time_zone);
+                geoipcallback = function(result) {
+                    console.log("Ignoring new geoip result: ", result);
+                }
             }
 
-            function toggleNavigationCommandMenu() {
+            if(navigator.geolocation)
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    console.log(position);
+                    var latInt = parseInt(position.coords.latitude / 1);
+                    var longInt = parseInt(position.coords.longitude / 1);
+                    var channelList = document.getElementsByClassName('command-list-channels')[0];
+                    var channelName = "/long/" + longInt + "/lat/" + latInt;
+                    channelList.innerHTML+= "<li><a href='#JOIN " + channelName + "'><span class='command'>Join</span> <strong>" + channelName + "</strong></a></li>";
+                });
+
+            function toggleNavigationCommandMenu(e) {
+                if(e.defaultPrevented)
+                    return;
+                e.preventDefault();
+                e.stopPropagation();
                 var menuElms = document.getElementsByClassName('navigation-commands');
-                var show = !menuElms[0].classList.contains('closed');
+                var show = menuElms[0].classList.contains('closed');
+                console.log(show);
                 for(var i=0; i<menuElms.length; i++)
-                    menuElms[i].classList[show ? 'add' : 'remove']('closed');
+                    menuElms[i].classList[show ? 'remove' : 'add']('closed');
             }
         </script>
-        <script src="https://freegeoip.net/json/?callback=freegeoip" async="async" defer="defer"></script>
+
+        <script src="http://www.telize.com/geoip?callback=geoipcallback" async="async" defer="defer"></script>
+        <script src="https://freegeoip.net/json/?callback=geoipcallback" async="async" defer="defer"></script>
     </head>
     <body class="template-minimal">
         <nav class="navigation-commands closed">
-            <header onclick="toggleNavigationCommandMenu()">
+            <header onclick="toggleNavigationCommandMenu(event)">
                 <label>
-                    <button onclick="toggleNavigationCommandMenu()">&#9776;</button>
+                    <button onclick="toggleNavigationCommandMenu(event)">&#9776;</button>
                     Relay <span class="hide-on-close">Commands</span>
                 </label>
             </header>
             <ul class="command-list-channels hide-on-close">
                 <lh>Channels</lh>
-                <li><a href="#JOIN ~"       ><span class='command'>Join ~</span> <span class='info'>(Your channel)</span></a></li>
+                <!--<li><a href="#JOIN ~"       ><span class='command'>Join ~</span> <span class='info'>(Your channel)</span></a></li>-->
                 <li><a href="#JOIN /home"   ><span class='command'>Join /home</span></a></li>
             </ul>
             <ul class="command-list-identity hide-on-close">

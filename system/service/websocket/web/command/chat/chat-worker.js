@@ -44,7 +44,7 @@
         "</article>";
 
     var CHAT_TEMPLATE = '<div class="channel-log">' +
-        '<span class="username" data-session-uid="{$session_uid}">{$username}</span>' +
+        '<span class="username" data-session-uid="{$session_uid}" data-timestamp="{$timestamp}">{$username}</span>' +
         ': <span class="message">{$content}</span>' +
         '</div>';
 

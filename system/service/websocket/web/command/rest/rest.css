@@ -1,0 +1,47 @@
+
+form[name=http-put-form] input[type=submit] {
+    padding: 0.5em 1em;
+    margin: 0.5em;
+}
+
+form[name=http-put-form].compact .hide-on-compact{
+    display: none;
+}
+
+form[name=http-put-form] .show-on-passphrase-required {
+    display: none;
+}
+form[name=http-put-form].passphrase-required .show-on-passphrase-required {
+    display: inherit;
+}
+
+.channel.http-response {
+}
+
+.channel.http-response-400 {
+    border: 1px solid red;
+}
+
+.channel.http-response nav {
+    background-color: lightgray;
+    border: 1px outset;
+}
+
+.channel.http-response input[name=url] {
+    width: 21em;
+}
+
+.channel.http-response nav input[name=url] {
+    padding: 1px 5px;
+}
+
+.channel.http-response nav button {
+    /* height: 24px; */
+    /* vertical-align: top; */
+    margin: 1px;
+    border: 0;
+    font-size: larger;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px #999;
+    background-color: transparent;
+}

@@ -8,6 +8,8 @@ package relay.service;
 
 import relay.service.command.ISocketCommand;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
  
 import javax.websocket.OnClose;
@@ -18,6 +20,7 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import relay.service.command.ChannelCommands;
 import relay.service.command.PGPCommands;
+import relay.service.command.RESTCommands;
  
 /** 
  * @ServerEndpoint gives the relative name for the end point
@@ -32,10 +35,9 @@ public class WebSocketServer {
     private final ArrayList<ISocketCommand> callbacks = new ArrayList<>();
     
     public WebSocketServer() {
-        addCommand(ChannelCommands.getStatic());
-        addCommand(PGPCommands.getStatic());
-//        addCommand(new PostCommands());
-
+        callbacks.add(ChannelCommands.getStatic());
+        callbacks.add(PGPCommands.getStatic());
+        callbacks.add(RESTCommands.getStatic());
     }
     
     public final void addCommand(ISocketCommand command) {
@@ -95,7 +97,12 @@ public class WebSocketServer {
                     continue;
                 
             } catch (Exception ex) {
-                session.getBasicRemote().sendText("ERROR WebSocketServer.onMessage() " + ex + ex.getStackTrace()[0]);
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                ex.printStackTrace(pw);
+                String stackTrace = sw.toString(); // stack trace as a string
+
+                session.getBasicRemote().sendText("ERROR WebSocketServer.onMessage() " + ex + stackTrace);
                 ex.printStackTrace();
             }
         }

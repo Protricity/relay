@@ -50,12 +50,12 @@ public class PGPCommands implements ISocketCommand {
     }
     
     private final HashMap<Session, PGPUserInfo> mUserInfo = new HashMap<>();
-    private JcaPGPContentVerifierBuilderProvider mProvider = null;
+//    private JcaPGPContentVerifierBuilderProvider mProvider = null;
     
     private PGPCommands() {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-        if(mProvider == null)
-            mProvider = new JcaPGPContentVerifierBuilderProvider().setProvider("BC");
+//        if(mProvider == null)
+//            mProvider = new JcaPGPContentVerifierBuilderProvider().setProvider("BC");
     }
     
     public PGPUserInfo getSessionPGPInfo(Session session) {
@@ -174,7 +174,7 @@ public class PGPCommands implements ISocketCommand {
             String unverifiedContent = data.substring(textSPos, mPos-1);
             String signatureArmored = data.substring(mPos, fPos);
 //            try {
-            InputStream in=new ByteArrayInputStream(signatureArmored.getBytes());
+            InputStream in=new ByteArrayInputStream(data.getBytes());
             in = PGPUtil.getDecoderStream(in);
             PGPObjectFactory pgpF = new PGPObjectFactory(in, new JcaKeyFingerprintCalculator());
 
@@ -189,7 +189,9 @@ public class PGPCommands implements ISocketCommand {
                         InputStream unverifiedContentIn = new ByteArrayInputStream(unverifiedContent.getBytes());
 
                         PGPSignature sig = it.next();
-                        sig.init(mProvider, publicKey);
+                        JcaPGPContentVerifierBuilderProvider provider = new JcaPGPContentVerifierBuilderProvider().setProvider("BC");
+                        sig.init(provider, publicKey);
+                        
                         int ch;
                         while ((ch = unverifiedContentIn.read()) >= 0) {
                             sig.update((byte)ch);

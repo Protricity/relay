@@ -84,28 +84,28 @@
             }
         }
 
+        var contentParent = document.createElement('div');
+        contentParent.innerHTML = content;
+        var contentElement = contentParent.firstChild;
+        if(!contentElement) {
+            if(content)
+                throw new Error("First child missing");
+            contentElement = document.createTextNode('');
+        }
+
         var channelContainers = document.getElementsByClassName(CLASS_CHANNEL_CONTAINER);
         for(var i=0; i<channelContainers.length; i++) {
             var channelContainer = channelContainers[i];
             var channelOutputs = channelContainer.getElementsByClassName(channelPath);
             var channelOutput;
             if(channelOutputs.length === 0) {
-                var oldContent = channelContainer.innerHTML;
-                channelContainer.innerHTML = content + "\n" + oldContent;
+                channelContainer[channelContainer.firstChild ? 'insertBefore' : 'appendChild'](contentElement, channelContainer.firstChild);
+                //channelContainer.innerHTML = content + "\n" + oldContent;
                 if(channelOutputs.length === 0) {
-                    channelContainer.innerHTML = oldContent;
+                    contentElement.parentNode.removeChild(contentElement);
                     throw new Error("Invalid content. Missing class='" + channelPath + "'", content);
                 }
                 channelOutput = channelOutputs[0];
-                //var newChannel = document.createElement('article');
-                //newChannel.setAttribute('class', CLASS_CHANNEL + ' ' + channelPathClass);
-                //newChannel.setAttribute('data-path', channelPath);
-                //newChannel.setAttribute('style', 'display: inline-block');
-                //
-                //if(channelContainer.firstChild)
-                //    channelContainer.insertBefore(newChannel, channelContainer.firstChild);
-                //else
-                //    channelContainer.appendChild(newChannel);
 
             } else {
                 channelOutput = channelOutputs[0];
@@ -115,6 +115,7 @@
                     if(!contentTarget)
                         throw new Error("Could not find selector: " + channelSelector);
                 }
+
 
                 switch(subCommand) {
                     case 'minimize':
@@ -132,17 +133,19 @@
 
 
                     case 'replace':
-                        contentTarget.outerHTML = content;
+                        contentTarget.parentNode.insertBefore(contentElement, contentTarget);
+                        contentTarget.parentNode.removeChild(contentTarget);
+                        //contentTarget.outerHTML = content;
                         //contentTarget.scrollTop = 0;
                         break;
 
                     case 'prepend':
-                        contentTarget.innerHTML = content + contentTarget.innerHTML;
+                        contentTarget[contentTarget.firstChild ? 'insertBefore' : 'appendChild'](contentElement, contentTarget.firstChild);
                         contentTarget.scrollTop = 0;
                         break;
 
                     case 'append':
-                        contentTarget.innerHTML += content;
+                        contentTarget.appendChild(contentElement);
                         contentTarget.scrollTop = contentTarget.scrollHeight;
                         break;
 
@@ -155,12 +158,12 @@
                 bubbles: true,
                 detail: content
             });
-            channelOutput.dispatchEvent(contentEvent);
+            contentElement.dispatchEvent(contentEvent);
             contentEvent = new CustomEvent('log.' + subCommand, {
                 bubbles: true,
                 detail: content
             });
-            channelOutput.dispatchEvent(contentEvent);
+            contentElement.dispatchEvent(contentEvent);
         }
 
     }

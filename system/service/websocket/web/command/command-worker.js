@@ -17,7 +17,7 @@
         "</div>";
 
     var SOCKET_TEMPLATE =
-        "<article class='{$attr_class} closed' data-sort='z'>" +
+        "<article class='{$attr_class} minimized' data-sort='z'>" +
             "<link rel='stylesheet' href='command/socket/socket.css' type='text/css'>" +
             "<header><a href='#MINIMIZE {$channel_class}'><span class='command'>Socket</span> {$socket_host}</a></header>" +
             "{$html_header_commands}" +
@@ -130,6 +130,8 @@
                 return;
             }
 
+            if(socketList.length <= i)
+                throw new Error("No more sockets");
             var socket = self.getSocket(socketList[i++]);
             if(socket.readyState === WebSocket.OPEN) {
                 openSocket = socket;
@@ -165,14 +167,17 @@
         }
 
         self.selectFastestSocket(function(selectedSocket) {
-//             console.log("SOCKET OUT (" + selectedSocket.url + "): " + commandString);
-            self.routeResponseToClient('LOG ' + PATH_PREFIX_SOCKET + selectedSocket.url + ' .' + CLASS_SOCKET_CONTENT + ' ' + SOCKET_TEMPLATE_LOG_ENTRY
-                    .replace(/{\$DIR}/g, "O")
-                    .replace(/{\$content}/gi, commandString)
-            );
-
-            selectedSocket.send(commandString);
+            self.sendWithSocket(selectedSocket, commandString);
         }, socketList);
+    };
+
+    self.sendWithSocket = function(socket, commandString) {
+        self.routeResponseToClient('LOG ' + PATH_PREFIX_SOCKET + socket.url + ' .' + CLASS_SOCKET_CONTENT + ' ' + SOCKET_TEMPLATE_LOG_ENTRY
+                .replace(/{\$DIR}/g, "O")
+                .replace(/{\$content}/gi, commandString)
+        );
+        socket.send(commandString);
+        //             console.log("SOCKET OUT (" + selectedSocket.url + "): " + commandString);
     };
 
 
@@ -212,7 +217,7 @@
 
     self.executeWorkerResponse = function(commandResponse, e) {
         var socket = e.target;
-        var cmd = commandResponse.split(/\s+/, 1)[0].toLowerCase();
+        var cmd = /^\w+/.exec(commandResponse)[0].toLowerCase();
 
         if(typeof socketResponses[cmd] === 'undefined') {
             for(var scriptPath in socketAutoLoaders) {
@@ -232,8 +237,8 @@
 
         if(socket instanceof WebSocket) {
             self.routeResponseToClient('LOG ' + PATH_PREFIX_SOCKET + socket.url + ' .' + CLASS_SOCKET_CONTENT + ' ' + SOCKET_TEMPLATE_LOG_ENTRY
-                    .replace(/{\$DIR}/g, "I")
-                    .replace(/{\$content}/gi, commandResponse)
+                .replace(/{\$DIR}/g, "I")
+                .replace(/{\$content}/gi, commandResponse)
             );
         }
 

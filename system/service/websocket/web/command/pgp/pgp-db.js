@@ -129,10 +129,7 @@ PGPDB.getDefaultPrivateKeyData = function (callback) {
         var req = index.get('1');
         req.onsuccess = function (evt) {
             var privateKeyData = evt.target.result;
-            if(!privateKeyData)
-                callback("Default Private Key Not Found", null);
-            else
-                callback(null, privateKeyData);
+                callback(privateKeyData);
         };
     });
 };

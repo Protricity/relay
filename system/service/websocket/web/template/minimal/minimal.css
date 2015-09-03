@@ -1,3 +1,14 @@
+/** Hover **/
+
+.template-minimal .navigation-commands:hover,
+.template-minimal .channel:hover {
+    /*     cursor: pointer; */
+    box-shadow: 1px 2px 6px #999;
+}
+
+
+/** General **/
+
 body.template-minimal {
     font-family: monospace, serif;
 }
@@ -31,18 +42,14 @@ body.template-minimal {
     vertical-align: top;
 }
 
-.template-minimal .channel:hover {
-    /*     cursor: pointer; */
-    border-color: red;
-}
-
 .template-minimal .channel header {
     font-weight: bold;
     color: #111;
     background-color: white;
+    border-radius: 6px;
     position: absolute;
     top: -10px;
-    /* margin: 0 2px; */
+    margin: 0 2px;
     padding: 0 2px;
 }
 
@@ -166,54 +173,77 @@ body.template-minimal {
 
 /* Menu */
 
-.navigation-commands {
+.template-minimal .navigation-commands {
+    position: relative;
+    z-index: 999;
+
     display: inline-block;
     background-color: lightgrey;
     padding: 0.5em;
-    margin-bottom:
-    0.5em;
-    animation: fadein;
+    margin-bottom: 0.5em;
+    animation: fade-in;
+    -webkit-transition:width 300ms ease-in-out, height 300ms ease-in-out;
+    -moz-transition:width 300ms ease-in-out, height 300ms ease-in-out;
+    -o-transition:width 300ms ease-in-out, height 300ms ease-in-out;
+    transition:width 300ms ease-in-out, height 300ms ease-in-out;
     /* border: 2px groove threedface; */
     vertical-align: top;
 }
-.navigation-commands header {
-    font-weight: bold;
+
+.template-minimal .navigation-commands header button {
+    border: 1px inset;
 }
-.navigation-commands ul {
+.template-minimal .navigation-commands.closed header button {
+    border-style: outset;
+}
+.template-minimal .navigation-commands header {
+    font-weight: bold;
+    text-shadow: 1px 1px 1px #AAA;
+}
+.template-minimal .navigation-commands ul {
     list-style: none;
     padding: 0;
     margin: 0.5em 0 0 0;
 }
-.navigation-commands ul lh,
-.navigation-commands ul li.header,
-.navigation-commands ul li {
+.template-minimal .navigation-commands ul lh,
+.template-minimal .navigation-commands ul li.header,
+.template-minimal .navigation-commands ul li {
     background-color: #EEE;
     border-radius: 0.3em;
     padding: 0.05em 0.5em;
     margin-bottom: 2px;
     display: list-item;
     font-family: monospace;
+    border: 1px inset;
 }
 
-.navigation-commands ul lh,
-.navigation-commands ul li.header {
-    background-color: #999;
-    /* border: 1px solid #AAA; */
+.template-minimal .navigation-commands ul lh,
+.template-minimal .navigation-commands ul li.header {
+    background-color: #BFBFBF;
+    border-style: outset;
+    font-weight: bold;
+    /* text-shadow: 1px 1px 1px #AAA; */
+    /* text-transform: lowercase; */
+    margin-top: 1em;
 }
-.navigation-commands ul li:hover {
+.template-minimal .navigation-commands ul li:hover {
     background-color: #EEEEAA;
 }
 
-.navigation-commands.closed {
-    border-radius: 0.5em;
+.template-minimal .navigation-commands {
+    border: 1px outset;
 }
-.navigation-commands.closed .hide-on-close {
+.template-minimal .navigation-commands.closed {
+    border-radius: 0.5em;
+    border-style: inherit;
+}
+.template-minimal .navigation-commands.closed .hide-on-close {
     display: none;
 }
-.navigation-commands.closed:hover .hide-on-close {
+.template-minimal .navigation-commands.closed:hover .hide-on-close {
     display: block;
 }
-.navigation-commands.closed:hover span.hide-on-close {
+.template-minimal .navigation-commands.closed:hover span.hide-on-close {
     display: inline;
 }
 
@@ -221,15 +251,7 @@ body.template-minimal {
 
 
 
-@keyframes fadein {
-    from {
-        opacity:0;
-    }
-    to {
-        opacity:1;
-    }
-}
-@-moz-keyframes fadein { /* Firefox */
+@keyframes fade-in {
     from {
         opacity:0;
     }
@@ -238,19 +260,12 @@ body.template-minimal {
     }
 }
 
-@keyframes fadein { /* Safari and Chrome */
+
+@keyframes fade-out {
     from {
-        opacity:0;
-    }
-    to {
         opacity:1;
     }
-}
-@-o-keyframes fadein { /* Opera */
-    from {
-        opacity:0;
-    }
     to {
-        opacity: 1;
+        opacity:0;
     }
 }

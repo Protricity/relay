@@ -4,6 +4,7 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/Dev/Server/WWW/relay/system/service/websocket/src/java/relay/service/command/ChannelCommands.java</file>
+            <file>file:/D:/Dev/Server/WWW/relay/system/service/websocket/src/java/relay/service/command/RESTCommands.java</file>
             <file>file:/D:/Dev/Server/WWW/relay/system/service/websocket/src/java/relay/service/command/PGPCommands.java</file>
             <file>file:/D:/Dev/Server/WWW/relay/system/service/websocket/src/java/relay/service/WebSocketServer.java</file>
         </group>

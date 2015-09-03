@@ -256,15 +256,6 @@ public class ChannelCommands implements ISocketCommand {
         return path;
     }
     
-    
-    private static ChannelCommands _inst = null;
-    public static ChannelCommands getStatic() {
-        if(_inst != null)
-            return _inst;
-        _inst = new ChannelCommands();
-        return _inst;
-    }
-    
 
     public void sendIDSIG(Session userSession, String IDSIG, String oldUsername) {
         String idSigFirstLine = IDSIG.split("\n")[0];
@@ -275,20 +266,28 @@ public class ChannelCommands implements ISocketCommand {
 
 //        ArrayList<Session> removeSessions = new ArrayList<>();
         // Get all channels user is in
-        for(String channel: mUserChannels.get(userSession)) {
-            
-            // Get all users in those channels
-            for(Session channelUserSession: mChannelUsers.get(channel)) {
-                if(channelUserSession.isOpen()) {
-                    if(!sendOnce.contains(channelUserSession)) {
-                        sendOnce.add(channelUserSession);
-                        sendText(channelUserSession, idSigFirstLine);
-                    }
-                    sendText(channelUserSession, "NICK " + channel + " " + oldUsername + " " + userInfo.PublicKeyID + " " + userInfo.SessionUID + " " + userInfo.UserName + " " + userInfo.Visibility);
+        ArrayList<String> channels = mUserChannels.get(userSession);
+        if(channels != null) {
+            for(String channel: channels) {
 
-//                } else {
-//                    removeSessions.add(channelUserSession);
+                // Get all users in those channels
+                for(Session channelUserSession: mChannelUsers.get(channel)) {
+                    if(channelUserSession.isOpen()) {
+                        if(!sendOnce.contains(channelUserSession)) {
+                            sendOnce.add(channelUserSession);
+                            sendText(channelUserSession, idSigFirstLine);
+                        }
+                        sendText(channelUserSession, "NICK " + channel + " " + oldUsername + " " + userInfo.PublicKeyID + " " + userInfo.SessionUID + " " + userInfo.UserName + " " + userInfo.Visibility);
+
+    //                } else {
+    //                    removeSessions.add(channelUserSession);
+                    }
                 }
+            }
+        } else {
+            if(!sendOnce.contains(userSession)) {
+                sendOnce.add(userSession);
+                sendText(userSession, idSigFirstLine);
             }
         }
         
@@ -296,5 +295,16 @@ public class ChannelCommands implements ISocketCommand {
 //            checkSession(removeSession);
                 
 //        sendText(userSession, idSigFirstLine);
+    }
+    
+    // Static
+    
+    
+    private static ChannelCommands _inst = null;
+    public static ChannelCommands getStatic() {
+        if(_inst != null)
+            return _inst;
+        _inst = new ChannelCommands();
+        return _inst;
     }
 }

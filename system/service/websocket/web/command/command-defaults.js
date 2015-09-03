@@ -36,7 +36,7 @@ socketCommands.close = function(commandResponse) {
 };
 
 // HTTP Commands
-socketAutoLoaders['http/http-worker.js'] = ['get', 'post', 'put', 'delete', 'patch', 'head'];
+socketAutoLoaders['rest/rest-worker.js'] = ['http', 'get', 'post', 'put', 'delete', 'patch', 'head'];
 
 // Chat Commands
 socketAutoLoaders['chat/chat-worker.js'] = ['join', 'leave', 'message', 'chat', 'nick'];

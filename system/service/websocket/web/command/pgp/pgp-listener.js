@@ -51,7 +51,7 @@
             case 'pgp-identify-form':
                 if(e.type === 'change')
                     saveAutoIdentify();
-                refreshAutoIdentifyForm();
+                refreshIdentifyForm();
                 if(e.type === 'submit')
                     submitPGPIdentifyForm();
 
@@ -228,7 +228,7 @@
         //clearTimeout(refreshTimeout);
         //refreshTimeout = setTimeout(function() {
 
-        function refreshAutoIdentifyForm() {
+        function refreshIdentifyForm() {
             if(autoIdentifyStartTime && ['change', 'input'].indexOf(e.type) !== -1) {
                 var elapsedSeconds = parseInt(new Date().getTime() / 1000 - autoIdentifyStartTime);
                 if(elapsedSeconds > 2) {
@@ -445,9 +445,9 @@
                 if(visibilityElm[vi].selected)
                     visibility = (visibilityElm[vi].value[0] !== '_' ? visibility : '') + visibilityElm[vi].value.replace('_', '');
 
-            var commandString = "IDSIG " + idSignatureElm.value;
-            if(commandString.indexOf("-----BEGIN PGP SIGNED MESSAGE-----") === -1)
+            if(idSignatureElm.value.indexOf("-----BEGIN PGP SIGNED MESSAGE-----") === -1)
                 throw new Error("BEGIN PGP SIGNED MESSAGE not found");
+            var commandString = "IDSIG " + idSignatureElm.value;
 
             var messageEvent = new CustomEvent('socket', {
                 detail: commandString,

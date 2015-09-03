@@ -285,7 +285,7 @@
 
     function getHTTPDB(callback) {
         if(typeof self.FeedDB !== 'function')
-            importScripts('http/http-db.js');
+            importScripts('rest/rest-db.js');
 
         self.FeedDB(callback);
     }
