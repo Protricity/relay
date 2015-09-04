@@ -73,15 +73,15 @@
                 }
             }
 
-            if(navigator.geolocation)
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    console.log(position);
-                    var latInt = parseInt(position.coords.latitude / 1);
-                    var longInt = parseInt(position.coords.longitude / 1);
-                    var channelList = document.getElementsByClassName('command-list-channels')[0];
-                    var channelName = "/long/" + longInt + "/lat/" + latInt;
-                    channelList.innerHTML+= "<li><a href='#JOIN " + channelName + "'><span class='command'>Join</span> <strong>" + channelName + "</strong></a></li>";
-                });
+//            if(navigator.geolocation)
+//                navigator.geolocation.getCurrentPosition(function(position) {
+//                    console.log(position);
+//                    var latInt = parseInt(position.coords.latitude / 1);
+//                    var longInt = parseInt(position.coords.longitude / 1);
+//                    var channelList = document.getElementsByClassName('command-list-channels')[0];
+//                    var channelName = "/long/" + longInt + "/lat/" + latInt;
+//                    channelList.innerHTML+= "<li><a href='#JOIN " + channelName + "'><span class='command'>Join</span> <strong>" + channelName + "</strong></a></li>";
+//                });
 
             function toggleNavigationCommandMenu(e) {
                 if(e.defaultPrevented)

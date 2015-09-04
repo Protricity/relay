@@ -110,19 +110,21 @@
                 "<br/><br/></label>" +
 
 
-                "<label class='label-username hide-on-compact2'>Your <strong>Session Username</strong>:<br/>(how you appear to others while connected)<br/>" +
+                "<label class='label-username hide-on-passphrase-required'>Your <strong>Session Username</strong>:<br/>(how you appear to others while connected)<br/>" +
                     "<input type='text' name='username' required='required' placeholder='Enter a user name' value='{$username}'/>" +
                 "<br/><br/></label>" +
 
-                "<hr/>Submit Identification Signature:<br/>" +
-                    //"<input type='button' name='submit-sign' value='Sign' />" +
-                "<input type='submit' name='submit-identify' value='Identify'/>" +
+                "<label class='show-on-passphrase-required'>" +
+                    "<hr/>Submit Identification Signature:<br/>" +
+                        //"<input type='button' name='submit-sign' value='Sign' />" +
+                    "<input type='submit' name='submit-identify' value='Identify'/>" +
 
-                "<select name='auto_identify' style='width:16em;'>" +
-                    "<option value='ask'>Ask me every time</option>" +
-                    "<option {$auto_identify_host_attr}value='auto-host'>Auto-Identify to {$socket_host} (passphrase may be required)</option>" +
-                    "<option {$auto_identify_all_attr}value='auto-all'>Auto-Identify to all hosts (passphrase may be required)</option>" +
-                "</select>" +
+                    "<select name='auto_identify' style='width:16em;'>" +
+                        "<option value='ask'>Ask me every time</option>" +
+                        "<option {$auto_identify_host_attr}value='auto-host'>Auto-Identify to {$socket_host} (passphrase may be required)</option>" +
+                        "<option {$auto_identify_all_attr}value='auto-all'>Auto-Identify to all hosts (passphrase may be required)</option>" +
+                    "</select>" +
+                "</label>" +
 
                 //"<label class='label-visibility'>Who should be able to request your <br/><strong>Identification Signature</strong> while you're online?<br/>" +
                 //    "<select name='visibility'>" +

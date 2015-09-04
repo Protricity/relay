@@ -7,5 +7,5 @@
 }
 
 .socket-content .socket-log {
-    /* white-space: nowrap; */
+    white-space: pre;
 }

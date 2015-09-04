@@ -9,6 +9,24 @@
 
     self.addEventListener('submit', onFormEvent);
     self.addEventListener('input', onFormEvent);
+    self.addEventListener('click', onClickEvent);
+
+    function onClickEvent(e) {
+        if(e.target.nodeName.toLowerCase() !== 'a')
+            return;
+        var anchorElement= e.target;
+        var match = anchorElement.href.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
+        var scheme = match[2];
+        if(scheme.substr(0, 6).toLowerCase() !== 'socket')
+            return;
+
+        var host = match[4];
+        var pathPrefix = match[5] || '';
+        var query = match[7];
+        var fragment = match[9];
+        // TODO: find parent browser or crate new browser wut lol
+        // TODO: grab latest timestamp from path via header
+    }
 
     function onFormEvent(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;

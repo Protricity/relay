@@ -238,9 +238,15 @@
         if(socket instanceof WebSocket) {
             self.routeResponseToClient('LOG ' + PATH_PREFIX_SOCKET + socket.url + ' .' + CLASS_SOCKET_CONTENT + ' ' + SOCKET_TEMPLATE_LOG_ENTRY
                 .replace(/{\$DIR}/g, "I")
-                .replace(/{\$content}/gi, commandResponse)
+                .replace(/{\$content}/gi, commandResponse
+                    .replace(/&/g, '&amp;')
+                    .replace(/&amp;amp;/, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                )
             );
         }
+
 
         return socketResponses[cmd](commandResponse, e);
     };

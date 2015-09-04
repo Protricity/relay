@@ -212,6 +212,7 @@ body.template-minimal {
     border-radius: 0.3em;
     padding: 0.05em 0.5em;
     margin-bottom: 2px;
+    margin-right: 2px;
     display: list-item;
     font-family: monospace;
     border: 1px inset;
@@ -232,6 +233,7 @@ body.template-minimal {
 
 .template-minimal .navigation-commands {
     border: 1px outset;
+    border-radius: 4px;
 }
 .template-minimal .navigation-commands.closed {
     border-radius: 0.5em;

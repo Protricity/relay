@@ -53,14 +53,12 @@ form[name=pgp-manage-form] legend.user {
     text-decoration: underline;
 }
 
-form.auto-identifying .hide-on-compact,
-form.compact .hide-on-compact,
-form .show-on-passphrase-required {
+form.compact .hide-on-compact {
     display: none;
 }
-form.auto-identifying:hover .hide-on-compact,
-form.compact:hover .hide-on-compact,
-form.passphrase-required .show-on-passphrase-required {
-    display: inherit;
-}
-
+/*form.auto-identifying:hover .hide-on-compact,*/
+/*form.compact:hover .hide-on-compact,*/
+form .show-on-passphrase-required { display: none; }
+form.passphrase-required .show-on-passphrase-required { display: inherit; }
+form .hide-on-passphrase-required { display: inherit; }
+form.passphrase-required .hide-on-passphrase-required { display: none; }

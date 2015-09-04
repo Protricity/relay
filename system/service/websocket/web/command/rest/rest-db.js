@@ -5,19 +5,23 @@
 RestDB.DB_NAME                  = 'http';
 RestDB.DB_TABLE_HTTP_CONTENT    = 'content';
 
+RestDB.DB_INDEX_PATH            = 'path';
+RestDB.DB_INDEX_ID_PATH         = 'id_path';
+//RestDB.DB_INDEX_PGP_ID_PUBLIC   = 'pgp_id_public';
+//RestDB.DB_INDEX_TIMESTAMP       = 'timestamp';
+
 // Config Database
 function RestDB(dbReadyCallback) {
 
     if (typeof RestDB.getDBRequest === 'undefined') {
         // First Time
-        var openRequest = indexedDB.open(RestDB.DB_NAME, 2);
+        var openRequest = indexedDB.open(RestDB.DB_NAME);
         var onDBCallbacks = [];
         RestDB.getDBRequest = function() { return openRequest; };
         RestDB.getCallbacks = function () { return onDBCallbacks; };
         RestDB.addCallback = function (callback) { onDBCallbacks.push(callback); };
 
         openRequest.onsuccess = function (e) {
-            //console.log('DB Opened: ', openRequest.result);
             for (var i = 0; i < onDBCallbacks.length; i++)
                 onDBCallbacks[i](openRequest.result);
             onDBCallbacks = [];
@@ -32,11 +36,11 @@ function RestDB(dbReadyCallback) {
             var upgradeDB = e.currentTarget.result;
 
             if(!upgradeDB.objectStoreNames.contains(RestDB.DB_TABLE_HTTP_CONTENT)) {
-                var postStore = upgradeDB.createObjectStore(RestDB.DB_TABLE_HTTP_CONTENT, { keyPath: 'uid' });
-                postStore.createIndex("path", "path", { unique: false });
-                postStore.createIndex("id_path", ["path", "pgp_id_public"], { unique: false });
-                postStore.createIndex("pgp_id_public", "pgp_id_public", { unique: false });
-                postStore.createIndex("timestamp", "timestamp", { unique: false });
+                var postStore = upgradeDB.createObjectStore(RestDB.DB_TABLE_HTTP_CONTENT, { keyPath: ["pgp_id_public_short", "timestamp"] });
+                postStore.createIndex(RestDB.DB_INDEX_PATH, "path", { unique: false });
+                postStore.createIndex(RestDB.DB_INDEX_ID_PATH, ["pgp_id_public_short", "path"], { unique: false });
+                //postStore.createIndex(RestDB.DB_INDEX_PGP_ID_PUBLIC, "pgp_id_public", { unique: false });
+                //postStore.createIndex(RestDB.DB_INDEX_TIMESTAMP, "timestamp", { unique: false });
 
                 console.log('Upgraded Table: ', RestDB.DB_TABLE_HTTP_CONTENT, postStore);
             }
@@ -105,8 +109,9 @@ RestDB.addVerifiedContentToDB = function(verifiedContent, callback) {
         var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_CONTENT);
 
         var insertData = {
-            'uid': pgp_id_public + '-' + timestamp,
+            //'uid': pgp_id_public + '-' + timestamp,
             'pgp_id_public': pgp_id_public,
+            'pgp_id_public_short': pgp_id_public.substr(pgp_id_public.length - 8),
             'path': path,
             //'path_level': pathLevel,
             'timestamp': timestamp,

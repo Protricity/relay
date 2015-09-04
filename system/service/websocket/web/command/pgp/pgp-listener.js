@@ -13,9 +13,9 @@
     self.addEventListener('submit', onFormEvent);
     self.addEventListener('change', onFormEvent);
     self.addEventListener('input', onFormEvent);
-    self.addEventListener('log', function(e) {
-        return onFormEvent(e, e.target.querySelector('form'));
-    });
+    //self.addEventListener('log', function(e) {
+    //    return onFormEvent(e, e.target.querySelector('form'));
+    //});
 
 
     var lastIDSIG = null;

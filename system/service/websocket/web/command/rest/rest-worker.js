@@ -17,34 +17,35 @@
 
     var GET_RESPONSE_TEMPLATE =
         "<script src='command/rest/rest-listener.js'></script>" +
-        "<article class='{$attr_class} http-response http-response-{$code}'>" +
+        "<article class='{$attr_class} http-response http-response-{$response_code}'>" +
             "<link rel='stylesheet' href='command/rest/rest.css' type='text/css'>" +
-            "<header><span class='command'>GET</span> <span class='url'>{$path}</span></header>" +
+            "<header><span class='command'>GET</span> <span class='url'>{$request_url}</span></header>" +
             "{$html_header_commands}" +
             "<nav>" +
                 "<button class='navigate-back' disabled='disabled'>&#8678;</button>" +
                 "<button class='navigate-forward' disabled='disabled'>&#8680;</button>" +
                 "<button class='navigate-home'>&#8962;</button>" +
-                "<input name='url' type='text' value='{$path}' />" +
+                "<input name='url' type='text' value='{$request_url}' />" +
                 "<button class='navigate-navigate'>&#8476;</button>" +
             "</nav>" +
             "<section class='body'>" +
-                "{$body}" +
+                "{$response_body}" +
             "</section>" +
         "</article>";
 
     var RESPONSE_BODY_TEMPLATE =
-        "HTTP/1.1 {$code} {$text}\n" +
+        "HTTP/1.1 {$response_code} {$response_text}\n" +
         "Content-type: text/html\n" +
-        "Content-length: {$length}\n" +
-        "Request-url: {$url}\n" +
-        "{$headers}" +
+        "Content-length: {$response_length}\n" +
+        "Request-url: {$request_url}\n" +
+        "{$response_headers}" +
         "\n\n" +
-        "{$body}";
+        "{$response_body}";
 
     var RESPONSE_BODY_404 =
         "<h2>404 Not Found</h2>" +
-        "<p>Sorry, an error has occurred; the requested page not found</p>";
+        "<p>Try these pages instead:</p>" +
+        "{$html_ul_index}";
 
     var RESPONSE_BODY_PENDING =
         "<p>Request sent...</p>";
@@ -165,11 +166,11 @@
 
                 // Show something, sheesh
                 var pendingResponseText = RESPONSE_BODY_TEMPLATE
-                    .replace(/{\$code}/gi, "200")
-                    .replace(/{\$text}/gi, "Request Sent")
-                    .replace(/{\$url}/gi, urlData.url)
-                    .replace(/{\$length}/gi, RESPONSE_BODY_PENDING.length)
-                    .replace(/{\$body}/gi, RESPONSE_BODY_PENDING);
+                    .replace(/{\$response_code}/gi, "200")
+                    .replace(/{\$response_text}/gi, "Request Sent")
+                    .replace(/{\$request_url}/gi, urlData.url)
+                    .replace(/{\$response_length}/gi, RESPONSE_BODY_PENDING.length)
+                    .replace(/{\$response_body}/gi, RESPONSE_BODY_PENDING);
 
                 renderResponseText(pendingResponseText, urlData.url);
             }
@@ -199,48 +200,57 @@
                 if(contentData) {
                     var signedBody = protectHTMLContent(contentData.content_verified);
                     var responseText200 = RESPONSE_BODY_TEMPLATE
-                        .replace(/{\$code}/gi, "200")
-                        .replace(/{\$text}/gi, "OK")
-                        .replace(/{\$url}/gi, urlData.url)
-                        .replace(/{\$length}/gi, signedBody.length)
-                        .replace(/{\$body}/gi, signedBody);
+                        .replace(/{\$response_headers}/gi, "")
+                        .replace(/{\$response_code}/gi, "200")
+                        .replace(/{\$response_text}/gi, "OK")
+                        .replace(/{\$request_url}/gi, urlData.url)
+                        .replace(/{\$response_length}/gi, signedBody.length)
+                        .replace(/{\$response_body}/gi, signedBody);
 
                     callback(responseText200);
 
                 } else {
                     var responseText404 = RESPONSE_BODY_TEMPLATE
-                        .replace(/{\$code}/gi, "404")
-                        .replace(/{\$text}/gi, "Not Found")
-                        .replace(/{\$url}/gi, urlData.url)
-                        .replace(/{\$length}/gi, RESPONSE_BODY_404.length)
-                        .replace(/{\$body}/gi, RESPONSE_BODY_404);
-
+                        .replace(/{\$response_headers}/gi, "")
+                        .replace(/{\$response_code}/gi, "404")
+                        .replace(/{\$response_text}/gi, "Not Found")
+                        .replace(/{\$request_url}/gi, urlData.url)
+                        .replace(/{\$response_length}/gi, RESPONSE_BODY_404.length)
+                        .replace(/{\$response_body}/gi, RESPONSE_BODY_404);
+console.log(responseText404);
                     callback(responseText404);
-                    getPathIterator(urlPath, function(path) {
-
-console.log(path);
-                    });
                 }
             }
         });
     }
 
-    function getPathIterator(pathPrefix, callback) {
+    function getPathIterator(urlPrefix, callback, onFinish) {
+        var match = urlPrefix.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
+        var scheme = match[2] || 'socket';
+        var host = match[4];
+        var pathPrefix = match[5] || '';
+        var query = match[7];
+        var fragment = match[9];
+
         RestDB(function(db) {
             var transaction = db.transaction([RestDB.DB_TABLE_HTTP_CONTENT], "readonly");
             var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_CONTENT);
 
-            var pathIndex = httpContentStore.index('path');
-            var boundKeyRange = pathPrefix ? IDBKeyRange.bound(pathPrefix, pathPrefix + 'uffff', false, false) : null;
+            var pgp_id_public = host;
+            var pathIndex = httpContentStore.index(RestDB.DB_INDEX_ID_PATH);
+            var boundKeyRange = IDBKeyRange.bound([pgp_id_public, pathPrefix], [pgp_id_public, pathPrefix + 'uffff'], false, false);
+            console.log(pathPrefix, urlPrefix, boundKeyRange);
+
             pathIndex.openKeyCursor(boundKeyRange)
                 .onsuccess = function (e) {
                     var cursor = e.target.result;
                     if(!cursor)
-                        return;
-                    console.log(cursor);
-                    var ret = callback(cursor.key);
-                    if(ret !== false)
-                        cursor.continue();
+                        return (onFinish ? onFinish() : null);
+                    var url = 'socket://' + cursor.key[0] + cursor.key[1];
+                    var ret = callback(url);
+                    if(ret === false)
+                        return (onFinish ? onFinish() : null);
+                    cursor.continue();
                 };
         });
     }
@@ -280,18 +290,41 @@ console.log(path);
         if(!url)
             throw new Error("No Request-URL Detected");
 
-        var responsePath = response.headers['request-url'];
-        if(!responsePath)
+        var requestUrl = response.headers['request-url'];
+        if(!requestUrl)
             throw new Error("Unknown request-url for response: Header is missing");
 
-        self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_GET + url + ' * ' +
-            GET_RESPONSE_TEMPLATE
-                .replace(/{\$body}/gi, response.body)
-                .replace(/{\$code}/gi, response.code)
-                .replace(/{\$text}/gi, response.text)
-                .replace(/{\$path}/gi, responsePath)
-            //.replace(/{\$[^}]+}/gi, '')
-        );
+        parseHTMLBody(response.body, requestUrl, function(parsedResponseBody) {
+            self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_GET + url + ' * ' +
+                GET_RESPONSE_TEMPLATE
+                    .replace(/{\$response_body}/gi, parsedResponseBody)
+                    .replace(/{\$response_code}/gi, response.code)
+                    .replace(/{\$response_text}/gi, response.text)
+                    .replace(/{\$request_url}/gi, requestUrl)
+                //.replace(/{\$[^}]+}/gi, '')
+            );
+        });
+    }
+
+    function parseHTMLBody(htmlBody, urlPath, callback) {
+        if(htmlBody.indexOf("{$html_ul_index}") !== -1) {
+            var paths = [];
+            getPathIterator(urlPath, function(path) {
+                paths.push(path);
+                console.log(path);
+
+            }, function() {
+                var pathHTML = "<ul class='path-index'>";
+                for(var i=0; i<paths.length; i++)
+                    pathHTML += "\t<li><a href='" + paths[i] + "'>" + paths[i] + "</a></li>";
+                pathHTML += "</ul>";
+                htmlBody = htmlBody.replace(/{\$html_ul_index}/gi, pathHTML);
+                callback(htmlBody);
+            });
+
+        } else {
+            callback(htmlBody);
+        }
     }
 
     function protectHTMLContent(htmlContent, formElm) {
