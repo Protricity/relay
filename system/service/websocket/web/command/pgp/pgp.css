@@ -60,5 +60,7 @@ form.compact .hide-on-compact {
 /*form.compact:hover .hide-on-compact,*/
 form .show-on-passphrase-required { display: none; }
 form.passphrase-required .show-on-passphrase-required { display: inherit; }
-form .hide-on-passphrase-required { display: inherit; }
+
 form.passphrase-required .hide-on-passphrase-required { display: none; }
+
+form.idsig-required .hide-on-idsig-required { display: none; }

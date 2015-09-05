@@ -228,8 +228,6 @@ PGPDB.addPrivateKeyBlock = function(privateKeyBlock, callback) {
 
     var kbpgp = PGPDB.getKBPGP();
 
-    var alice_passphrase = 'uw';
-
     kbpgp.KeyManager.import_from_armored_pgp({
         armored: privateKeyBlock
     }, function(err, alice) {

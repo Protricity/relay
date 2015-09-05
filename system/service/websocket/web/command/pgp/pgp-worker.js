@@ -89,7 +89,7 @@
             "<link rel='stylesheet' href='command/pgp/pgp.css' type='text/css'>" +
             "<header><span class='command'>Identify</span> yourself to the network</header>" +
             "{$html_header_commands}" +
-            "<form class='compact {$form_class}' name='pgp-identify-form' action='#' method='post'>" +
+            "<form class='{$form_class}' name='pgp-identify-form' action='#' method='post'>" +
                 "<code class='status-box'>{$status_content}</code><br/>" +
 
                 "<label class='label-pgp-id'>Identify using PGP Identity:<br/>" +
@@ -110,16 +110,16 @@
                 "<br/><br/></label>" +
 
 
-                "<label class='label-username hide-on-passphrase-required'>Your <strong>Session Username</strong>:<br/>(how you appear to others while connected)<br/>" +
+                "<label class='label-username hide-on-idsig-required'>Your <strong>Session Username</strong>:<br/>(how you appear to others while connected)<br/>" +
                     "<input type='text' name='username' required='required' placeholder='Enter a user name' value='{$username}'/>" +
                 "<br/><br/></label>" +
 
-                "<label class='show-on-passphrase-required'>" +
+                "<label class='hide-on-idsig-required'>" +
                     "<hr/>Submit Identification Signature:<br/>" +
                         //"<input type='button' name='submit-sign' value='Sign' />" +
                     "<input type='submit' name='submit-identify' value='Identify'/>" +
 
-                    "<select name='auto_identify' style='width:16em;'>" +
+                    "<select name='auto_identify' class='show-on-succes' style='width:16em;'>" +
                         "<option value='ask'>Ask me every time</option>" +
                         "<option {$auto_identify_host_attr}value='auto-host'>Auto-Identify to {$socket_host} (passphrase may be required)</option>" +
                         "<option {$auto_identify_all_attr}value='auto-all'>Auto-Identify to all hosts (passphrase may be required)</option>" +
@@ -134,7 +134,7 @@
                 //    "</select>" +
                 //"<br/><br/></label>" +
 
-                "<label class='label-visibility hide-on-compact'>How should other users be allowed to interact<br/>with your client while connected?<br/>" +
+                "<label class='label-visibility hide-on-passphrase-required'>How should other users be allowed to interact<br/>with your client while connected?<br/>" +
                     "<select multiple='multiple' name='visibility' style='max-width:20em' size='6'>" +
                         "<optgroup label='Visibility Options'>" +
                             "<option selected='selected' value='M'>[MESSAGE] Accept private messages from other users</option>" +
@@ -171,8 +171,8 @@
                 //    "</select>" +
                 //"<br/><br/></label>" +
 
-                "<label class='hide-on-compact'><hr/>This is your <strong>Identification Signature</strong> for this session<br/>(What others see when they request your <i>IDSIG</i>):<br/>" +
-                    "<textarea class='pgp-idsig-required' required='required' name='id_signature' rows='12' cols='68'>{$id_signature}</textarea>" +
+                "<label class='hide-on-idsig-required'><hr/>This is your <strong>Identification Signature</strong> for this session<br/>(What others see when they request your <i>IDSIG</i>):<br/>" +
+                    "<textarea required='required' name='id_signature' rows='12' cols='68'>{$id_signature}</textarea>" +
                 "<br/></label>" +
 
                 "<input type='hidden' name='session_uid' value='{$session_uid}'/>" +
@@ -401,6 +401,7 @@
      */
     socketCommands.register = function (commandString, e) {
         var privateKeyBlock = '';
+        var status_content = '';
         var match = /^register\s*([\s\S]*)$/im.exec(commandString);
         if(match && match[1])
             privateKeyBlock = match[1].replace(/(\r\n|\r|\n)/g, '\r\n');
@@ -416,28 +417,60 @@
         }
 
         if(showForm) {
-            //routeResponseToClient("LOG.REPLACE " + PATH_MARKER + " " + KEYGEN_CLOSED_TEMPLATE);
-            self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + REGISTER_TEMPLATE
-                    .replace(/{\$status_content}/gi, '')
-                    .replace(/{\$private_key}/gi, privateKeyBlock)
-                    //.replace(/{\$[^}]+}/gi, '')
-            );
-            return;
-        }
+            if(privateKeyBlock) {
+                var kbpgp = getKBPGP();
 
-        var PGPDB = getPGPDB();
-        PGPDB.addPrivateKeyBlock(privateKeyBlock, function(err, data) {
-            if(err) {
-                self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + REGISTER_TEMPLATE
-                        .replace(/{\$status_content}/gi, err)
-                        .replace(/{\$private_key}/gi, privateKeyBlock)
-                        //.replace(/{\$[^}]+}/gi, '')
-                );
+                kbpgp.KeyManager.import_from_armored_pgp({
+                    armored: privateKeyBlock
+                }, function(err, alice) {
+                    if (err)
+                        throw new Error(err);
+
+                    var privateKey = alice.find_crypt_pgp_key();
+                    var privateKeyFingerprint = privateKey.get_fingerprint().toString('hex').toUpperCase();
+                    var publicKey = alice.find_signing_pgp_key();
+                    var publicKeyFingerprint = publicKey.get_fingerprint().toString('hex').toUpperCase();
+                    var userID = alice.userids[0];
+                    var userIDString = "" + userID.get_username()
+                        + (userID.get_comment() ? ' ' + userID.get_comment() : '')
+                        + (userID.get_email() ? " <" + userID.get_email() + ">" : '');
+
+                    status_content =
+                        "Ready to <span class='command'>register</span> new PGP Identity:<br/>\n" +
+                        "User ID: " + userIDString + "<br/>\n" +
+                        "Private Key ID: " + privateKeyFingerprint + "<br/>\n" +
+                        "Public Key ID:  " + publicKeyFingerprint + "<br/>\n";
+
+                    self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + REGISTER_TEMPLATE
+                            .replace(/{\$status_content}/gi, status_content)
+                            .replace(/{\$private_key}/gi, privateKeyBlock)
+                    );
+                });
+
             } else {
-                socketCommands.manage("MANAGE");
-
+                status_content = "<span class='info'>Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually</span>";
+                self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + REGISTER_TEMPLATE
+                    .replace(/{\$status_content}/gi, status_content)
+                    .replace(/{\$private_key}/gi, privateKeyBlock)
+                );
             }
-        });
+        } else {
+
+            var PGPDB = getPGPDB();
+            PGPDB.addPrivateKeyBlock(privateKeyBlock, function(err, data) {
+                console.log(data);
+                if(err) {
+                    self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + REGISTER_TEMPLATE
+                            .replace(/{\$status_content}/gi, err)
+                            .replace(/{\$private_key}/gi, privateKeyBlock)
+                            //.replace(/{\$[^}]+}/gi, '')
+                    );
+                } else {
+                    socketCommands.manage("MANAGE");
+
+                }
+            });
+        }
 
     };
 
@@ -587,7 +620,7 @@
             var pgp_id_private_options_html = '';
             //var id_signature = null;
             var pgpIDCount = 0;
-            var form_class = '';
+            var form_classes = ['idsig-required'];
             var status_content = '';
 
             PGPDB.queryPrivateKeys(function(privateKeyData) {
@@ -604,13 +637,13 @@
                     selectedPrivateKeyData = privateKeyData;
                     if(!username)
                         username = defaultUsername;
-                    if(privateKeyData.passphrase_required)
-                        form_class += ' passphrase-required';
 
                 }
 
                 pgp_id_private_options_html +=
-                    '<option ' + (privateKeyData.id_private === selectedPrivateKeyID ? 'selected="selected"' : '') + ' value="' + privateKeyData.id_private + '">' +
+                    '<option ' + (privateKeyData.id_private === selectedPrivateKeyID ? 'selected="selected"' : '') +
+                    ' value="' + privateKeyData.id_private + "," + privateKeyData.id_public + "," + defaultUsername + (privateKeyData.passphrase_required ? ',1' : ',0') +
+                    '">' +
                         (privateKeyData.passphrase_required ? '(*) ' : '') + privateKeyData.user_id.replace(/</, '&lt;') +
                     '</option>';
 
@@ -632,18 +665,25 @@
                 var signedIdentityString = '';
                 var auto_identify_host_attr = '';
                 var auto_identify_all_attr = '';
-                if(CONFIG) {
-                    var autoIdentify = CONFIG.autoIdentify || CONFIG['autoIdentifyHost:' + socket_host] || false;
-                    if(autoIdentify)
-                        form_class += ' auto-identify';
-                    if(CONFIG['autoIdentifyHost:' + socket_host])
-                        auto_identify_host_attr = "selected='selected'";
-                    else if(CONFIG['autoIdentify'])
-                        auto_identify_all_attr = "selected='selected'";
+
+                if(!selectedPrivateKeyData.passphrase_required) {
+                    if(CONFIG) {
+                        var autoIdentify = CONFIG.autoIdentify || CONFIG['autoIdentifyHost:' + socket_host] || false;
+                        if (autoIdentify)
+                            form_classes.push('auto-identify');
+                        if (CONFIG['autoIdentifyHost:' + socket_host])
+                            auto_identify_host_attr = "selected='selected'";
+                        else if (CONFIG['autoIdentify'])
+                            auto_identify_all_attr = "selected='selected'";
+                    }
+
+                } else {
+                    if(selectedPrivateKeyData.passphrase_required)
+                        form_classes.push('passphrase-required');
                 }
 
                 self.routeResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE
-                    .replace(/{\$form_class}/gi, form_class)
+                    .replace(/{\$form_class}/gi, form_classes.join(' '))
 //                                 .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
                     .replace(/{\$pgp_id_private}/gi, selectedPrivateKeyID)
                     .replace(/{\$pgp_id_private_short}/gi, selectedPrivateKeyID ? selectedPrivateKeyID.substr(selectedPrivateKeyID.length - 8) : '')

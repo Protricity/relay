@@ -50,7 +50,7 @@ function ConfigDB(dbReadyCallback) {
 // Database Methods
 
 ConfigDB.getConfig = function(id, callback) {
-        // TODO: move to http content /home/userpath/.config/.pgp etc
+        // TODO: make virtual file in webspace
     ConfigDB(function (db) {
         var transaction = db.transaction([ConfigDB.DB_TABLE_CONFIG_CLIENT], "readonly");
         var clientConfigStore = transaction.objectStore(ConfigDB.DB_TABLE_CONFIG_CLIENT);

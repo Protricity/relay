@@ -22,7 +22,8 @@
 
     var cancelReceived = false;
     var autoIdentifyStartTime = null;
-    var refreshTimeout = null;
+    var generatIDSigTimeout = null;
+    var autoIdentifyRefreshInterval = null;
     function onFormEvent(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
         if(formElm.nodeName.toLowerCase() !== 'form')
@@ -49,8 +50,8 @@
                 return true;
 
             case 'pgp-identify-form':
-                if(e.type === 'change')
-                    saveAutoIdentify();
+                //if(e.type === 'change')
+                //    saveAutoIdentify();
                 refreshIdentifyForm();
                 if(e.type === 'submit')
                     submitPGPIdentifyForm();
@@ -58,8 +59,8 @@
                 return true;
 
             case 'pgp-identify-success-form':
-                if(e.type === 'change')
-                    saveAutoIdentify();
+                //if(e.type === 'change')
+                //    saveAutoIdentify();
                 //if(e.type === 'submit') { TODO:
                 return true;
 
@@ -229,125 +230,164 @@
         //refreshTimeout = setTimeout(function() {
 
         function refreshIdentifyForm() {
-            if(autoIdentifyStartTime && ['change', 'input'].indexOf(e.type) !== -1) {
-                var elapsedSeconds = parseInt(new Date().getTime() / 1000 - autoIdentifyStartTime);
-                if(elapsedSeconds > 2) {
-                    cancelReceived = true;
+            //if(formElm.classList.contains('form-success'))
+            //    return;
+
+            var pgpIDElm = input('pgp_id_private');
+            if(!pgpIDElm.value) {
+                formElm.classList.add('id-required');
+                return;
+            }
+            formElm.classList.remove('id-required');
+            var split = pgpIDElm.value.split(',');
+            var pgp_id_private = split[0];
+            var pgp_id_public = split[1];
+            var defaultUsername = split[2];
+            var passphraseRequired = split[3] === '1';
+
+            var usernameElm = input('username');
+            if(!usernameElm.value || usernameElm.getAttribute('data-default') === usernameElm.value) {
+                usernameElm.value = defaultUsername;
+                usernameElm.setAttribute('data-default', defaultUsername);
+            }
+
+            if(passphraseRequired) {
+                formElm.classList.add('passphrase-required');
+                formElm.classList.remove('passphrase-success');
+                input('passphrase').setAttribute('required', 'required');
+
+            } else {
+                formElm.classList.remove('passphrase-required');
+                formElm.classList.add('passphrase-success');
+                input('passphrase').removeAttribute('required');
+            }
+
+            var visibility = (function() {
+                var visibility = '';
+                var visibilityElm = input('visibility');
+                for(var vi=0; vi<visibilityElm.length; vi++)
+                    if(visibilityElm[vi].selected)
+                        visibility = (visibilityElm[vi].value[0] !== '_' ? visibility : '') + visibilityElm[vi].value.replace('_', '');
+                return visibility;
+            })();
+            if(/\s/.test(usernameElm.value))
+                usernameElm.value = usernameElm.value.replace(/\s+/, '_');
+
+            var identityString = "IDSIG" +
+                " " + pgp_id_public +
+                " " + val('session_uid') +
+                " " + usernameElm.value +
+                " " + visibility;
+
+            if(!input('id_signature').innerHTML || !lastIDSIG || identityString !== lastIDSIG) {
+                lastIDSIG = identityString;
+                setStatus("<span class='info'>Clearing signed data...</span>");
+                input('id_signature').innerHTML = '';
+                formElm.classList.add('idsig-required');
+
+                clearTimeout(generatIDSigTimeout);
+                generatIDSigTimeout = setTimeout(gen, REFRESH_TIMEOUT);
+
+                if(autoIdentifyRefreshInterval) {
+                    clearTimeout(autoIdentifyRefreshInterval);
+                    autoIdentifyRefreshInterval = null;
                     console.info("Cancel received by ", e.target);
+                    setStatus("<span class='error'>" + "Auto-Identify Canceled" + "</span>");
+                    formElm.classList.add('auto-identify-attempted');
+                    formElm.classList.remove('auto-identifying');
                 }
             }
 
-            var compact = val('username').length + val('pgp_id_private').length === 0;
-            formElm.classList[compact ? 'add' : 'remove']('compact');
 
-            clearTimeout(refreshTimeout);
-            if(val('pgp_id_private')) {
-                refreshTimeout = setTimeout(function () {
-                    getPrivateKeyDataFromForm(function (err, privateKeyData, pgp_id) {
-                        if (err)
-                            throw new Error(err);
-                        if (!privateKeyData)
-                            throw new Error("Private Key Not Found: " + pgp_id);
-                        gen(privateKeyData);
-                    });
-                }, REFRESH_TIMEOUT);
-            }
+            function gen() {
+                PGPDB(function (db) {
+                    var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readonly");
+                    var privateKeyDBStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
+                    pgp_id_private = pgp_id_private.substr(pgp_id_private.length - 16);
+                    var req = privateKeyDBStore.get(pgp_id_private);
+                    req.onsuccess = function (evt) {
+                        var privateKeyData = evt.target.result;
+                        if(!privateKeyData)
+                            throw new Error("Private Key not found: " + pgp_id_private);
 
-            function gen(privateKeyData) {
-                var privateKey = openpgp.key.readArmored(privateKeyData.block_private).keys[0];
+                        var privateKey = openpgp.key.readArmored(privateKeyData.block_private).keys[0];
 
-                var usernameElm = input('username');
-                if(!usernameElm.value || usernameElm.getAttribute('data-default') === usernameElm.value) {
-                    var defaultUsername = privateKey.getUserIds()[0].trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
-                    usernameElm.value = defaultUsername;
-                    usernameElm.setAttribute('data-default', defaultUsername);
-                }
+                        if(!privateKey.primaryKey.isDecrypted)
+                                privateKey.primaryKey.decrypt(val('passphrase'));
 
-                var pgp_id_public = privateKeyData.id_public;
-                var visibility = (function() {
-                    var visibility = '';
-                    var visibilityElm = input('visibility');
-                    for(var vi=0; vi<visibilityElm.length; vi++)
-                        if(visibilityElm[vi].selected)
-                            visibility = (visibilityElm[vi].value[0] !== '_' ? visibility : '') + visibilityElm[vi].value.replace('_', '');
-                    return visibility;
-                })();
-                var session_uid = val('session_uid');
-                var username = val('username');
-                if(/\s/.test(username))
-                    input('username').value = username = username.replace(/\s+/, '_');
+                        if(!privateKey.primaryKey.isDecrypted) {
+                            setStatus("<span class='passphrase'>PGP Passphrase required</span>", true);
+                            formElm.classList.remove('passphrase-success');
 
-                var identityString = "IDSIG" +
-                    " " + pgp_id_public +
-                    " " + session_uid +
-                    " " + username +
-                    " " + visibility;
+                        } else {
+                            formElm.classList.add('passphrase-success');
+                            setStatus("Signing Identity...", true);
+                            openpgp.signClearMessage(privateKey, identityString)
+                                .then(function (signedIDString) {
 
-                var doSign = false;
-                if(!input('id_signature').innerHTML || !lastIDSIG || identityString !== lastIDSIG) {
-                    lastIDSIG = identityString;
-                    doSign = true;
-                    setStatus("<span class='info'>Clearing signed data...</span>");
-                }
+                                    setStatus("<span class='success'>" + "Signature successful. Ready to IDENTIFY!" + "</span>");
+                                    input('id_signature').innerHTML = signedIDString.trim() +
+                                        "\n" + privateKeyData.block_public;
+                                    formElm.classList.remove('idsig-required');
 
+                                    if (formElm.classList.contains('auto-identify')) {
+                                        formElm.classList.remove('auto-identify');
+                                        formElm.classList.add('auto-identifying');
+                                        autoIdentifyStartTime = new Date().getTime() / 1000;
+                                        clearInterval(autoIdentifyRefreshInterval);
+                                        autoIdentifyRefreshInterval = setInterval(function () {
+                                            var elapsedSeconds = parseInt(new Date().getTime() / 1000 - autoIdentifyStartTime);
+                                            var secondsLeft = AUTO_IDENTIFY_TIMEOUT - elapsedSeconds;
+                                            setStatus("<span class='pending'>" + "Auto-Identifying in " + (secondsLeft) + " second" + (secondsLeft === 1 ? "" : "s") + "...</span>");
 
-                formElm.classList[privateKey.primaryKey.isDecrypted ? 'remove' : 'add']('passphrase-required');
-                input('passphrase')[(privateKey.primaryKey.isDecrypted ? 'remove' : 'set') + 'Attribute']('required', 'required');
+                                            if (elapsedSeconds < AUTO_IDENTIFY_TIMEOUT)
+                                                return;
 
-                if(!privateKey.primaryKey.isDecrypted) {
-                    var passphrase = val('passphrase');
-                    if (passphrase) {
-                        privateKey.primaryKey.decrypt(passphrase);
-                    }
-                }
+                                            formElm.classList.remove('auto-identifying');
+                                            formElm.classList.add('auto-identify-attempted');
+                                            clearInterval(autoIdentifyRefreshInterval);
 
-                if(!privateKey.primaryKey.isDecrypted)
-                    doSign = false;
+                                            if(input('id_signature').innerHTML)
+                                                submitPGPIdentifyForm();
+                                            else
+                                                console.error("IDSIG was empty. Skipped Submit");
 
-                if(!doSign) {
-                    setStatus("<span class='passphrase'>PGP Passphrase required</span>", true);
-
-                } else {
-                    setStatus("Signing Identity...", true);
-                    openpgp.signClearMessage(privateKey, identityString)
-                        .then(function (signedIDString) {
-
-                            setStatus("<span class='success'>" + "Signature successful. Ready to IDENTIFY!" + "</span>");
-                            input('id_signature').innerHTML = signedIDString.trim() +
-                            "\n" + privateKeyData.block_public;
-
-                            if (formElm.classList.contains('auto-identify')) {
-                                formElm.classList.remove('auto-identify');
-                                formElm.classList.add('auto-identifying');
-                                autoIdentifyStartTime = new Date().getTime() / 1000;
-                                var interval = setInterval(function () {
-                                    if (cancelReceived) {
-                                        clearInterval(interval);
-                                        setStatus("<span class='error'>" + "Auto-Identify Canceled" + "</span>");
-                                        formElm.classList.add('auto-identify-attempted');
-                                        formElm.classList.remove('auto-identifying');
-                                        cancelReceived = false;
-                                        return;
+                                        }, 1000);
                                     }
-                                    var elapsedSeconds = parseInt(new Date().getTime() / 1000 - autoIdentifyStartTime);
-                                    var secondsLeft = AUTO_IDENTIFY_TIMEOUT - elapsedSeconds;
-                                    setStatus("<span class='pending'>" + "Auto-Identifying in " + (secondsLeft) + " second" + (secondsLeft === 1 ? "" : "s") + "...</span>");
+                                });
+                        }
+                    }
 
-                                    if (elapsedSeconds < AUTO_IDENTIFY_TIMEOUT)
-                                        return;
-
-                                    formElm.classList.remove('auto-identifying');
-                                    formElm.classList.add('auto-identify-attempted');
-                                    clearInterval(interval);
-                                    submitPGPIdentifyForm();
-
-                                }, 1000);
-                            }
-                        });
-                }
+                });
             }
+        }
 
-            return formElm;
+        function submitPGPIdentifyForm() {
+            cancelReceived = true;
+            var idSignatureElm = input('id_signature');
+            var passphraseElm = input('passphrase');
+
+            var visibilityElm = formElm.querySelector('[name=visibility]');
+            var visibility = '';
+            for(var vi=0; vi<visibilityElm.length; vi++)
+                if(visibilityElm[vi].selected)
+                    visibility = (visibilityElm[vi].value[0] !== '_' ? visibility : '') + visibilityElm[vi].value.replace('_', '');
+
+            if(idSignatureElm.value.indexOf("-----BEGIN PGP SIGNED MESSAGE-----") === -1)
+                throw new Error("BEGIN PGP SIGNED MESSAGE not found");
+            var commandString = "IDSIG " + idSignatureElm.value;
+
+            var messageEvent = new CustomEvent('socket', {
+                detail: commandString,
+                cancelable:true
+            });
+            document.dispatchEvent(messageEvent);
+            formElm.classList.add('form-success');
+            formElm.classList.add('idsig-required');
+            idSignatureElm.innerHTML = '';
+            passphraseElm.value = '';
+            setStatus("<span class='success'>IDSIG Sent Successfully</span>");
+
         }
 
         function getPrivateKeyDataFromForm(callback) {
@@ -432,33 +472,6 @@
                saveWithKeyID(privateKeyData.id_private);
             });
             return true;
-        }
-
-        function submitPGPIdentifyForm() {
-            cancelReceived = true;
-            var idSignatureElm = input('id_signature');
-            var passphraseElm = input('passphrase');
-
-            var visibilityElm = formElm.querySelector('[name=visibility]');
-            var visibility = '';
-            for(var vi=0; vi<visibilityElm.length; vi++)
-                if(visibilityElm[vi].selected)
-                    visibility = (visibilityElm[vi].value[0] !== '_' ? visibility : '') + visibilityElm[vi].value.replace('_', '');
-
-            if(idSignatureElm.value.indexOf("-----BEGIN PGP SIGNED MESSAGE-----") === -1)
-                throw new Error("BEGIN PGP SIGNED MESSAGE not found");
-            var commandString = "IDSIG " + idSignatureElm.value;
-
-            var messageEvent = new CustomEvent('socket', {
-                detail: commandString,
-                cancelable:true
-            });
-            document.dispatchEvent(messageEvent);
-            formElm.classList.add('form-success');
-            idSignatureElm.innerHTML = '';
-            passphraseElm.value = '';
-            setStatus("<span class='success'>IDSIG Sent Successfully</span>");
-
         }
 
         function setStatus(statusText, prepend, unique) {
