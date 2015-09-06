@@ -20,12 +20,28 @@
         if(scheme.substr(0, 6).toLowerCase() !== 'socket')
             return;
 
-        var host = match[4];
-        var pathPrefix = match[5] || '';
-        var query = match[7];
-        var fragment = match[9];
-        // TODO: find parent browser or crate new browser wut lol
+        e.preventDefault();
+
+        var browserID = null;
+        var targetElm = e.target;
+        while(!browserID && (targetElm = targetElm.parentNode))
+            browserID = targetElm.getAttribute('data-browser-id');
+
+        var commandString = "GET " + anchorElement.href;
+        if(browserID)
+            commandString += "\nBrowser-ID: " + browserID;
+        // TODO: header with .http-browser id
         // TODO: grab latest timestamp from path via header
+
+        var commandEvent = new CustomEvent('command', {
+            detail: commandString,
+            cancelable: true,
+            bubbles: true
+        });
+        e.target.dispatchEvent(commandEvent);
+
+        // TODO: pending action status with .http-browser
+
     }
 
     function onFormEvent(e, formElm) {
@@ -38,6 +54,11 @@
                 refreshHTTPPutForm(e, formElm);
                 if(e.type === 'submit')
                     submitHTTPPutForm(e, formElm);
+                return true;
+
+            case 'http-browser-navigation-form':
+                if(e.type === 'submit')
+                    submitHTTPBrowserNavigationForm(e, formElm);
                 return true;
 
             default:

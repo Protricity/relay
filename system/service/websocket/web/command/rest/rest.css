@@ -15,27 +15,28 @@ form[name=http-put-form].passphrase-required .show-on-passphrase-required {
     display: inherit;
 }
 
-.channel.http-response {
-}
-
 .channel.http-response-400 {
     border: 1px solid red;
 }
 
-.channel.http-response nav {
+.channel.http-browser {
+    min-height: 15em;
+}
+
+.channel.http-browser nav {
     background-color: lightgray;
     border: 1px outset;
 }
 
-.channel.http-response input[name=url] {
+.channel.http-browser input[name=url] {
     width: 21em;
 }
 
-.channel.http-response nav input[name=url] {
+.channel.http-browser nav input[name=url] {
     padding: 1px 5px;
 }
 
-.channel.http-response nav button {
+.channel.http-browser nav button {
     /* height: 24px; */
     /* vertical-align: top; */
     margin: 1px;
@@ -44,4 +45,16 @@ form[name=http-put-form].passphrase-required .show-on-passphrase-required {
     font-weight: bold;
     text-shadow: 1px 1px 1px #999;
     background-color: transparent;
+}
+
+.channel.http-browser .http-body {
+    min-height: 11em;
+}
+
+.channel.http-browser .http-status {
+    background-color: lightgrey;
+    padding: 0 0.5em;
+    color: #666;
+    font-style: italic;
+    border: 1px outset;
 }

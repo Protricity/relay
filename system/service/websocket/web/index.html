@@ -3,9 +3,10 @@
     <head>
         <title>Relay Client - Alpha</title>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="template/minimal/minimal.css" type="text/css" />
-        <script src="template/minimal/minimal.js" async="async" defer="defer"></script>
+
+        <link rel="stylesheet" href="command/template/base/base.css" type="text/css" />
+        <link rel="stylesheet" href="command/template/minimal/minimal.css" type="text/css" />
+
         <script src="command/command-client.js" async="async" defer="defer"></script>
         <script>
             window.addEventListener('hashchange', onHashChange);
@@ -40,7 +41,7 @@
 //            send('manage');
                 if (document.location.host === 'localhost') {
                     send('get ~');
-                    send('get /');
+                    send('get home');
                     send('get socket://ABCD1234/~/');
                     send('get /missing/');
                 }
@@ -57,7 +58,7 @@
                     result.postal_code = result.zip_code;
                 if(result.timezone)
                     result.time_zone = result.timezone;
-                console.log(result);
+//                console.log(result);
                 var channelList = document.getElementsByClassName('command-list-channels')[0];
                 channelList.innerHTML+= "<li><a href='#JOIN /country/" + result.country_code + "'><span class='command'>Join</span> <strong>" + result.country + "</strong></a></li>";
                 channelList.innerHTML+= "<li><a href='#JOIN /region/" + result.region_code + "'><span class='command'>Join</span> <strong>" + result.region + "</strong></a></li>";
@@ -69,7 +70,7 @@
                 if(document.location.host !== 'localhost')
                     send("JOIN /timezone/" + result.time_zone);
                 geoipcallback = function(result) {
-                    console.log("Ignoring new geoip result: ", result);
+//                    console.log("Ignoring new geoip result: ", result);
                 }
             }
 

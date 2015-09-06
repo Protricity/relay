@@ -3,7 +3,7 @@
  */
 (function() {
 
-    var REFRESH_TIMEOUT = 200;
+    var REFRESH_TIMEOUT = 500;
     var PATH_PREFIX = 'pgp:';
     var CONFIG_ID = 'pgp';
     var AUTO_IDENTIFY_TIMEOUT = 10;
@@ -14,15 +14,21 @@
     self.addEventListener('change', onFormEvent);
     self.addEventListener('input', onFormEvent);
     //self.addEventListener('log', function(e) {
+    //    console.log(e.type, e.target.querySelector('form'), e.target);
     //    return onFormEvent(e, e.target.querySelector('form'));
     //});
+    setTimeout(function() {
+        var forms = document.querySelectorAll('form[name=pgp-identify-form]');
+        for(var i=forms.length-1; i>=0 ;i--)
+            onFormEvent({}, forms[i]);
+    }, 400);
 
 
     var lastIDSIG = null;
 
     var cancelReceived = false;
     var autoIdentifyStartTime = null;
-    var generatIDSigTimeout = null;
+    var generateIDSigTimeout = null;
     var autoIdentifyRefreshInterval = null;
     function onFormEvent(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
@@ -50,8 +56,8 @@
                 return true;
 
             case 'pgp-identify-form':
-                //if(e.type === 'change')
-                //    saveAutoIdentify();
+                if(e.type === 'change')
+                    saveAutoIdentify();
                 refreshIdentifyForm();
                 if(e.type === 'submit')
                     submitPGPIdentifyForm();
@@ -59,8 +65,8 @@
                 return true;
 
             case 'pgp-identify-success-form':
-                //if(e.type === 'change')
-                //    saveAutoIdentify();
+                if(e.type === 'change')
+                    saveAutoIdentify();
                 //if(e.type === 'submit') { TODO:
                 return true;
 
@@ -279,14 +285,16 @@
                 " " + usernameElm.value +
                 " " + visibility;
 
-            if(!input('id_signature').innerHTML || !lastIDSIG || identityString !== lastIDSIG) {
+            if(identityString !== lastIDSIG) {
                 lastIDSIG = identityString;
                 setStatus("<span class='info'>Clearing signed data...</span>");
                 input('id_signature').innerHTML = '';
-                formElm.classList.add('idsig-required');
+            }
 
-                clearTimeout(generatIDSigTimeout);
-                generatIDSigTimeout = setTimeout(gen, REFRESH_TIMEOUT);
+            if(!input('id_signature').innerHTML) {
+
+                clearTimeout(generateIDSigTimeout);
+                generateIDSigTimeout = setTimeout(gen, REFRESH_TIMEOUT);
 
                 if(autoIdentifyRefreshInterval) {
                     clearTimeout(autoIdentifyRefreshInterval);
@@ -316,7 +324,7 @@
                                 privateKey.primaryKey.decrypt(val('passphrase'));
 
                         if(!privateKey.primaryKey.isDecrypted) {
-                            setStatus("<span class='passphrase'>PGP Passphrase required</span>", true);
+                            //setStatus("<span class='passphrase'>PGP Passphrase required</span>", true);
                             formElm.classList.remove('passphrase-success');
 
                         } else {
@@ -383,7 +391,7 @@
             });
             document.dispatchEvent(messageEvent);
             formElm.classList.add('form-success');
-            formElm.classList.add('idsig-required');
+            //formElm.classList.add('idsig-required');
             idSignatureElm.innerHTML = '';
             passphraseElm.value = '';
             setStatus("<span class='success'>IDSIG Sent Successfully</span>");
@@ -424,53 +432,53 @@
         }
 
         function saveAutoIdentify() {
+
+            var pgpIDElm = input('pgp_id_private');
+            if(!pgpIDElm.value)
+                return;
+
+            var split = pgpIDElm.value.split(',');
+            var pgp_id_private = split[0];
+            var pgp_id_public = split[1];
+            var defaultUsername = split[2];
+            var passphraseRequired = split[3] === '1';
+
             var autoIdentifyElm = input('auto_identify');
-            var autoIdentifyLastValue = autoIdentifyElm.getAttribute('data-last-value');
-            autoIdentifyElm.setAttribute('data-last-value', autoIdentifyElm.value);
-            if(!autoIdentifyElm.value || autoIdentifyLastValue === autoIdentifyElm.value)
+            if(!autoIdentifyElm.value || autoIdentifyElm.getAttribute('data-last-value') === autoIdentifyElm.value)
                 return false;
+            autoIdentifyElm.setAttribute('data-last-value', autoIdentifyElm.value);
 
-            function saveWithKeyID(pgp_id_private) {
-                var socket_host = val('socket_host');
-                if(!socket_host)
-                    throw new Error("Invalid Socket Host in form field 'socket_host'");
+            var socket_host = val('socket_host');
+            if(!socket_host)
+                throw new Error("Invalid Socket Host in form field 'socket_host'");
 
-                var newConfigData = {'id': CONFIG_ID};
-                newConfigData['autoIdentify'] = null;
-                newConfigData['autoIdentifyHost:' + socket_host] = null;
+            var newConfigData = {'id': CONFIG_ID};
+            newConfigData['autoIdentify'] = null;
+            newConfigData['autoIdentifyHost:' + socket_host] = null;
 
-                var status = '';
-                switch(autoIdentifyElm.value) {
-                    case 'ask':
-                        status = 'Auto Identify disabled';
-                        break;
+            var status = '';
+            switch(autoIdentifyElm.value) {
+                case 'ask':
+                    status = 'Auto Identify disabled';
+                    break;
 
-                    case 'auto-host':
-                        status = 'Auto Identify set for host [' + socket_host + '] using private key [' + pgp_id_private + ']';
-                        newConfigData['autoIdentifyHost:' + socket_host] = pgp_id_private;
-                        break;
+                case 'auto-host':
+                    status = 'Auto Identify set for host [' + socket_host + '] using private key [' + pgp_id_private + ']';
+                    newConfigData['autoIdentifyHost:' + socket_host] = pgp_id_private;
+                    break;
 
-                    case 'auto-all':
-                        status = 'Auto Identify set for all hosts using private key [' + pgp_id_private + ']';
-                        newConfigData['autoIdentify'] = pgp_id_private;
-                        break;
+                case 'auto-all':
+                    status = 'Auto Identify set for all hosts using private key [' + pgp_id_private + ']';
+                    newConfigData['autoIdentify'] = pgp_id_private;
+                    break;
 
-                    default:
-                        throw new Error("Invalid auto_identify option: " + autoIdentifyElm.value);
-                }
-
-                ConfigDB.addConfigToDatabase(newConfigData);
-                setStatus("<span class='info'>" + status + "</span>", 5, true);
-                console.info(status);
+                default:
+                    throw new Error("Invalid auto_identify option: " + autoIdentifyElm.value);
             }
 
-            getPrivateKeyDataFromForm(function(err, privateKeyData, pgp_id) {
-                if(err)
-                    throw new Error(err);
-                if(!privateKeyData)
-                    throw new Error("Could not find private key: " + pgp_id);
-               saveWithKeyID(privateKeyData.id_private);
-            });
+            ConfigDB.addConfigToDatabase(newConfigData);
+            setStatus("<span class='info'>" + status + "</span>", 5, true);
+            console.info(status);
             return true;
         }
 

@@ -100,6 +100,8 @@ RestDB.addVerifiedContentToDB = function(verifiedContent, callback) {
     if(!timestamp)
         throw new Error("Invalid Timestamp");
 
+    var pgpSignedMessage = openpgp.cleartext.readArmored(pgpSignedContent);
+    console.log(pgpSignedMessage);
     //var pathLevel = -1;
     //path.replace(/\/+/g, function() { pathLevel++; });
 

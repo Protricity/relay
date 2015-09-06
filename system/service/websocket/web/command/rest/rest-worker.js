@@ -5,8 +5,6 @@
 
     var PATH_PREFIX_PUT = 'put:';
     var PATH_PREFIX_GET = 'get:';
-    var db = null;
-
 
     var ARTICLE_PLACEHOLDER =
         //"<article>\n" +
@@ -15,22 +13,29 @@
         "<img src=\"path/to/topic/picture\" alt=\"my picture\" />\n";
     //"</article>";
 
-    var GET_RESPONSE_TEMPLATE =
+    var HTTP_BROWSER_TEMPLATE =
         "<script src='command/rest/rest-listener.js'></script>" +
-        "<article class='{$attr_class} http-response http-response-{$response_code}'>" +
+        "<article class='{$attr_class} http-browser http-response-{$response_code}' data-browser-id='{$browser_id}'>" +
             "<link rel='stylesheet' href='command/rest/rest.css' type='text/css'>" +
-            "<header><span class='command'>GET</span> <span class='url'>{$request_url}</span></header>" +
-            "{$html_header_commands}" +
+            "<header>" +
+                "<span class='command'>GET</span> <span class='url'>{$request_url}</span>" +
+            "</header>" +
+                "{$html_header_commands}" +
             "<nav>" +
-                "<button class='navigate-back' disabled='disabled'>&#8678;</button>" +
-                "<button class='navigate-forward' disabled='disabled'>&#8680;</button>" +
-                "<button class='navigate-home'>&#8962;</button>" +
-                "<input name='url' type='text' value='{$request_url}' />" +
-                "<button class='navigate-navigate'>&#8476;</button>" +
+                "<form name='http-browser-navigation-form'>" +
+                    "<button type='submit' name='back'>&#8678;</button>" +
+                    "<button type='submit' name='forward'>&#8680;</button>" +
+                    "<button type='submit' name='home'>&#8962;</button>" +
+                    "<input name='url' type='text' value='{$request_url}' />" +
+                    "<button type='submit' name='navigate'>&#8476;</button>" +
+                "</form>" +
             "</nav>" +
-            "<section class='body'>" +
+            "<section class='http-body'>" +
                 "{$response_body}" +
             "</section>" +
+            "<footer class='http-status'>" +
+                "{$response_code} {$response_text}" +
+            "</footer>" +
         "</article>";
 
     var RESPONSE_BODY_TEMPLATE =
@@ -107,6 +112,7 @@
         "</article>";
 
 
+    var httpBrowserID = 1;
     var putFormCounterN = 0;
     /**
      *
@@ -150,14 +156,18 @@
      * @param commandString GET [URL]
      */
     socketCommands.get = function (commandString) {
-        var match = /^get\s*(.*)$/i.exec(commandString);
+        var headers = commandString.split(/\n/);
+        var firstLine = headers.shift();
+        var match = /^get\s*(\S*)(\s+HTTP\/1.1)?$/i.exec(firstLine);
+        if(!match)
+            throw new Error("Invalid GET Request: " + firstLine);
         var path = match[1];
         parseUrl(path, function(urlData) {
 
             if(urlData.is_local) {
                 // If local, output content to client
-                executeLocalGETRequest(urlData.url, function(responseText) {
-                    renderResponseText(responseText, urlData.url);
+                executeLocalGETRequest(commandString, function(responseText) {
+                    renderResponseText(responseText);
                 });
 
             } else {
@@ -170,15 +180,17 @@
                     .replace(/{\$response_text}/gi, "Request Sent")
                     .replace(/{\$request_url}/gi, urlData.url)
                     .replace(/{\$response_length}/gi, RESPONSE_BODY_PENDING.length)
-                    .replace(/{\$response_body}/gi, RESPONSE_BODY_PENDING);
+                    .replace(/{\$response_body}/gi, RESPONSE_BODY_PENDING)
+                    //.replace(/{\$response_headers}/gi, response_headers)
+                    ;
 
-                renderResponseText(pendingResponseText, urlData.url);
+                renderResponseText(pendingResponseText);
             }
         });
     };
 
     socketResponses.get = function(responseString) {
-        var match = /^get\s*(.*)$/i.exec(commandString);
+        var match = /^get\s*(.*)$/i.exec(responseString);
         var path = match[1];
         executeLocalGETRequest(path, function(responseText) {
             self.sendWithFastestSocket(responseText);
@@ -189,8 +201,15 @@
         renderResponseText(httpResponseBody);
     };
 
-    function executeLocalGETRequest(urlPath, callback) {
-        parseUrl(urlPath, function (urlData) {
+    function executeLocalGETRequest(commandString, callback) {
+        var requestHeaders = commandString.split(/\n/);
+        var firstLine = requestHeaders.shift();
+        var match = /^get\s*(.*)$/i.exec(firstLine);
+        if(!match)
+            throw new Error("Invalid GET Request: " + commandString);
+        var contentURL = match[1];
+        parseUrl(contentURL, function (urlData) {
+            var formattedCommandString = "GET " + urlData.url + "\n" + requestHeaders.join("\n");
             getRestDB().getContent(urlData.path, onContent);
 
             function onContent(err, contentData) {
@@ -198,9 +217,10 @@
                     throw new Error(err);
 
                 if(contentData) {
+
                     var signedBody = protectHTMLContent(contentData.content_verified);
                     var responseText200 = RESPONSE_BODY_TEMPLATE
-                        .replace(/{\$response_headers}/gi, "")
+                        .replace(/{\$response_headers}/gi, requestHeaders.join("\n"))
                         .replace(/{\$response_code}/gi, "200")
                         .replace(/{\$response_text}/gi, "OK")
                         .replace(/{\$request_url}/gi, urlData.url)
@@ -210,15 +230,23 @@
                     callback(responseText200);
 
                 } else {
-                    var responseText404 = RESPONSE_BODY_TEMPLATE
-                        .replace(/{\$response_headers}/gi, "")
-                        .replace(/{\$response_code}/gi, "404")
-                        .replace(/{\$response_text}/gi, "Not Found")
-                        .replace(/{\$request_url}/gi, urlData.url)
-                        .replace(/{\$response_length}/gi, RESPONSE_BODY_404.length)
-                        .replace(/{\$response_body}/gi, RESPONSE_BODY_404);
-console.log(responseText404);
-                    callback(responseText404);
+                    (function() {
+                        importScripts('template/template-defaults.js');
+                        getDefaultResponse(formattedCommandString, function(defaultResponseString, responseCode, responseText, responseHeaders) {
+                            responseHeaders = (responseHeaders ? responseHeaders + "\n" : "") + requestHeaders.join("\n");
+
+                            defaultResponseString = protectHTMLContent(defaultResponseString);
+                            var responseText404 = RESPONSE_BODY_TEMPLATE
+                                .replace(/{\$response_headers}/gi, responseHeaders)
+                                .replace(/{\$response_code}/gi, responseCode || '200')
+                                .replace(/{\$response_text}/gi, responseText || 'OK')
+                                .replace(/{\$request_url}/gi, urlData.url)
+                                .replace(/{\$response_length}/gi, defaultResponseString.length)
+                                .replace(/{\$response_body}/gi, defaultResponseString);
+
+                            callback(responseText404);
+                        });
+                    })();
                 }
             }
         });
@@ -228,7 +256,8 @@ console.log(responseText404);
         var match = urlPrefix.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
         var scheme = match[2] || 'socket';
         var host = match[4];
-        var pathPrefix = match[5] || '';
+        var pathPrefix = (match[5] || '')
+            .replace(/^\/~/, '/home/' + host);
         var query = match[7];
         var fragment = match[9];
 
@@ -239,7 +268,7 @@ console.log(responseText404);
             var pgp_id_public = host;
             var pathIndex = httpContentStore.index(RestDB.DB_INDEX_ID_PATH);
             var boundKeyRange = IDBKeyRange.bound([pgp_id_public, pathPrefix], [pgp_id_public, pathPrefix + 'uffff'], false, false);
-            console.log(pathPrefix, urlPrefix, boundKeyRange);
+            //console.log(pathPrefix, urlPrefix, boundKeyRange);
 
             pathIndex.openKeyCursor(boundKeyRange)
                 .onsuccess = function (e) {
@@ -277,46 +306,58 @@ console.log(responseText404);
         var responseCodeText = match[2];
         return {
             body: responseBody,
-            code: match[1],
-            text: match[2],
+            code: responseCode,
+            text: responseCodeText,
             headers: headerValues
         }
     }
 
-    function renderResponseText(responseText, url) {
+    function renderResponseText(responseText) {
         var response = parseResponseText(responseText);
-        if(!url)
-            url = response.headers['request-url'];
-        if(!url)
-            throw new Error("No Request-URL Detected");
-
         var requestUrl = response.headers['request-url'];
         if(!requestUrl)
             throw new Error("Unknown request-url for response: Header is missing");
 
+        var browserID = response.headers['browser-id'] || httpBrowserID++;
+
         parseHTMLBody(response.body, requestUrl, function(parsedResponseBody) {
-            self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_GET + url + ' * ' +
-                GET_RESPONSE_TEMPLATE
+            self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_GET + browserID + ' * ' +
+                HTTP_BROWSER_TEMPLATE
                     .replace(/{\$response_body}/gi, parsedResponseBody)
                     .replace(/{\$response_code}/gi, response.code)
                     .replace(/{\$response_text}/gi, response.text)
+                    .replace(/{\$browser_id}/gi, browserID)
                     .replace(/{\$request_url}/gi, requestUrl)
+                    //.replace(/{\$response_headers}/gi, '')
                 //.replace(/{\$[^}]+}/gi, '')
             );
         });
     }
 
-    function parseHTMLBody(htmlBody, urlPath, callback) {
+    function parseHTMLBody(htmlBody, contentURL, callback) {
+        var match = contentURL.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
+        var contentURLHost = match[4];
+        var contentURLPath = (match[5] || '')
+            .replace(/^\/~/, '/home/' + contentURLHost);
+        var parentPath = contentURLPath.replace(/[^\/]+\/$/, '') || '/';
+
         if(htmlBody.indexOf("{$html_ul_index}") !== -1) {
-            var paths = [];
-            getPathIterator(urlPath, function(path) {
-                paths.push(path);
-                console.log(path);
+            var paths = [[contentURL, '.']];
+            var parentURL = 'socket://' + contentURLHost + parentPath;
+            if(contentURL !== parentURL)
+                paths.push([parentURL, '..']);
+            getPathIterator(contentURL, function(matchedPath) {
+                var match = matchedPath.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
+                var pathHost = match[4];
+                var pathPrefix = (match[5] || '')
+                    .replace(/^\/~/, '/home/' + pathHost);
+                paths.push([matchedPath, pathPrefix]);
 
             }, function() {
                 var pathHTML = "<ul class='path-index'>";
+
                 for(var i=0; i<paths.length; i++)
-                    pathHTML += "\t<li><a href='" + paths[i] + "'>" + paths[i] + "</a></li>";
+                    pathHTML += "\t<li><a href='" + paths[i][0] + "'>" + paths[i][1] + "</a></li>";
                 pathHTML += "</ul>";
                 htmlBody = htmlBody.replace(/{\$html_ul_index}/gi, pathHTML);
                 callback(htmlBody);
@@ -328,23 +369,23 @@ console.log(responseText404);
     }
 
     function protectHTMLContent(htmlContent, formElm) {
-        var tagsToReplace = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;'
-        };
-
-        htmlContent = htmlContent.replace(/[&<>]/g, function(tag) {
-            return tagsToReplace[tag] || tag;
-        });
-
-        htmlContent = htmlContent.replace(/&lt;(a|p|span|article|header|footer|section)(?:\s+(class|data-path|data-timestamp)=[^=&]+\s*)*&gt;/g, function(tag) {
-            tag = tag.replace('&lt;', '<');
-            return tag;
-        });
-
-        htmlContent = htmlContent.replace(/&lt;\//i, '</');
-        htmlContent = htmlContent.replace(/&gt;/ig, '>');
+        //var tagsToReplace = {
+        //    '&': '&amp;',
+        //    '<': '&lt;',
+        //    '>': '&gt;'
+        //};
+        //
+        //htmlContent = htmlContent.replace(/[&<>]/g, function(tag) {
+        //    return tagsToReplace[tag] || tag;
+        //});
+        //
+        //htmlContent = htmlContent.replace(/&lt;(a|p|span|article|header|h1|h2|h3|h4|h5|h6|footer|section)(?:\s+(class|data-path|data-timestamp)=[^=&]+\s*)*&gt;/g, function(tag) {
+        //    tag = tag.replace('&lt;', '<');
+        //    return tag;
+        //});
+        //
+        //htmlContent = htmlContent.replace(/&lt;\//i, '</');
+        //htmlContent = htmlContent.replace(/&gt;/ig, '>');
 
         var match = /(lt;|<)[^>]+(on\w+)=/ig.exec(htmlContent);
         if(match) {
@@ -367,34 +408,32 @@ console.log(responseText404);
             path: matches[5] || '',
             query: matches[7],
             fragment: matches[9],
-            is_local: null
+            is_local: false
         };
         if(data.path === '~')
             data.path = '~/';
-        if(!data.host) {
-            data.is_local = true;
-            getPGPDB(function (db) {
-                var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readonly");
-                var privateKeyStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
+        getPGPDB(function (db) {
+            var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readonly");
+            var privateKeyStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
 
-                var index = privateKeyStore.index('default');
-                var req = index.get('1');
-                req.onsuccess = function (evt) {
-                    var privateKeyData = evt.target.result;
-                    var id_public_short = privateKeyData.id_public.substr(privateKeyData.id_public.length-8);
+            var req = privateKeyStore.index('default').get('1');
+            req.onsuccess = function (evt) {
+                var privateKeyData = evt.target.result;
+                var id_public_short = privateKeyData.id_public.substr(privateKeyData.id_public.length-8);
+                if(!data.host) {
                     data.host = id_public_short;
-                    data.url = data.scheme + '://' + data.host +
-                        (data.path[0] === '/' ? '' : '/') + data.path +
-                        (data.query ? '?' + data.query : '') +
-                        (data.fragment ? '?' + data.fragment : '');
-                    data.path = data.path.replace('~',  "/home/" + id_public_short + "/");
-                    callback(data);
-                };
-            });
-        } else {
-            data.path = data.path.replace('~',  "/home/" + data.host + "/");
-            callback(data);
-        }
+                    data.is_local = true;
+                } else {
+                    data.is_local = data.host === id_public_short;
+                }
+                data.url = data.scheme + '://' + data.host +
+                    (data.path[0] === '/' ? '' : '/') + data.path +
+                    (data.query ? '?' + data.query : '') +
+                    (data.fragment ? '?' + data.fragment : '');
+                data.path = data.path.replace('~',  "/home/" + id_public_short + "/");
+                callback(data);
+            };
+        });
     }
 
     function getKBPGP() {

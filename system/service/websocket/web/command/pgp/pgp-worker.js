@@ -124,7 +124,7 @@
                         "<option {$auto_identify_host_attr}value='auto-host'>Auto-Identify to {$socket_host} (passphrase may be required)</option>" +
                         "<option {$auto_identify_all_attr}value='auto-all'>Auto-Identify to all hosts (passphrase may be required)</option>" +
                     "</select>" +
-                "</label>" +
+                "<br/><br/></label>" +
 
                 //"<label class='label-visibility'>Who should be able to request your <br/><strong>Identification Signature</strong> while you're online?<br/>" +
                 //    "<select name='visibility'>" +
@@ -172,7 +172,7 @@
                 //"<br/><br/></label>" +
 
                 "<label class='hide-on-idsig-required'><hr/>This is your <strong>Identification Signature</strong> for this session<br/>(What others see when they request your <i>IDSIG</i>):<br/>" +
-                    "<textarea required='required' name='id_signature' rows='12' cols='68'>{$id_signature}</textarea>" +
+                    "<textarea disabled='disabled' name='id_signature' rows='6' cols='68'>{$id_signature}</textarea>" +
                 "<br/></label>" +
 
                 "<input type='hidden' name='session_uid' value='{$session_uid}'/>" +
