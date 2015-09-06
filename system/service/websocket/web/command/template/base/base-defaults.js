@@ -1,7 +1,7 @@
 
 var responsePages = [
-    [/^\/?home\//i, function(commandString, callback) { importScripts('template/base/pages/home/index.js'); callback(TEMPLATE_HOME_INDEX); }],
-    [/^\//, function(commandString, callback) { importScripts('template/base/pages/index.js'); callback(TEMPLATE_INDEX);}]
+    [/^\/?home\//i, function(commandString, callback) { importScripts('template/base/pages/home/user-index.js'); getUserIndexTemplate(commandString, callback); }],
+    [/^\//, function(commandString, callback) { importScripts('template/base/pages/index.js'); getRootIndexTemplate(commandString, callback); }]
 ];
 
 var getDefaultResponse = function(commandString, callback) {
@@ -27,5 +27,5 @@ var getDefaultResponse = function(commandString, callback) {
     }
 
     importScripts('template/base/pages/404.js');
-    callback(TEMPLATE_404, '404', 'Not Found');
+    get404IndexTemplate(commandString, callback);
 };
