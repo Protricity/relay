@@ -2,11 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f1a3609b-05f2-4e93-b5c1-0f477f2ec236" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/home/user-index.js" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\system\service\websocket\web\command\template\base\pages\home\index.js" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/404.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/404.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/index.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/home/index.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/template/base/test.html" />
+      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\system\service\websocket\web\command\template\base\pages�home\user-index.js" afterPath="" />
+      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\system\service\websocket\web\command\template\base\pages�index.js" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/src/java/relay/service/command/RESTCommands.java" afterPath="$PROJECT_DIR$/system/service/websocket/src/java/relay/service/command/RESTCommands.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/command/template/base/base-defaults.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/template/base/base-defaults.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/index.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/index.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-listener.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-listener.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-worker.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-worker.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/home/user-index.js" afterPath="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/home/user-index.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="relay.iws" />
@@ -42,11 +48,21 @@
       <file leaf-file-name="rest-worker.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-worker.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-15.64" vertical-offset="3587" max-vertical-offset="8143">
-              <caret line="234" column="31" selection-start-line="234" selection-start-column="31" selection-end-line="234" selection-end-column="31" />
+            <state vertical-scroll-proportion="-7.92" vertical-offset="5718" max-vertical-offset="9690">
+              <caret line="348" column="23" selection-start-line="348" selection-start-column="23" selection-end-line="348" selection-end-column="23" />
               <folding>
-                <marker date="1441504510726" expanded="false" signature="5274:5287" placeholder="..." />
+                <marker date="1441587136552" expanded="false" signature="5272:5285" placeholder="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rest-listener.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-listener.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="5253">
+              <caret line="217" column="53" selection-start-line="217" selection-start-column="53" selection-end-line="217" selection-end-column="53" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -68,48 +84,17 @@
               <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
               <folding>
                 <element signature="e#0#38#0" expanded="false" />
+                <marker date="1441522686359" expanded="true" signature="100:282" placeholder="{...}" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="minimal-defaults.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/template/minimal/minimal-defaults.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1122">
-              <caret line="54" column="26" selection-start-line="54" selection-start-column="26" selection-end-line="54" selection-end-column="26" />
-              <folding>
-                <element signature="e#0#39#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/system/service/websocket/web/index.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="34.653847" vertical-offset="1020" max-vertical-offset="2295">
-              <caret line="7" column="45" selection-start-line="7" selection-start-column="45" selection-end-line="7" selection-end-column="45" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="base.css" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/template/base/base.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="102">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="base-defaults.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="base-defaults.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/template/base/base-defaults.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.03967328" vertical-offset="0" max-vertical-offset="857">
-              <caret line="2" column="101" selection-start-line="2" selection-start-column="101" selection-end-line="2" selection-end-column="101" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="629">
+              <caret line="3" column="11" selection-start-line="3" selection-start-column="11" selection-end-line="3" selection-end-column="11" />
               <folding />
             </state>
           </provider>
@@ -119,7 +104,7 @@
         <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/home/user-index.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="255">
-              <caret line="5" column="17" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
+              <caret line="3" column="24" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="24" />
               <folding />
             </state>
           </provider>
@@ -137,6 +122,36 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="test.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/template/base/test.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-0.0" vertical-offset="0" max-vertical-offset="255">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-5.230769" vertical-offset="0" max-vertical-offset="595">
+              <caret line="8" column="36" selection-start-line="8" selection-start-column="36" selection-end-line="8" selection-end-column="36" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/home/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.22037037" vertical-offset="0" max-vertical-offset="595">
+              <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
   </component>
   <component name="FindManager">
@@ -150,9 +165,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/pgp/pgp-form.js" />
-        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/chat/chat-form.js" />
-        <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/socket-worker.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/socket-client.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/command-worker.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/cmd/command-client.js" />
@@ -183,7 +195,6 @@
         <option value="$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-db.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/command/rest/rest.css" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp-listener.js" />
-        <option value="$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-listener.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp-worker.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/command/command-defaults.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-defaults.js" />
@@ -195,12 +206,16 @@
         <option value="$PROJECT_DIR$/system/service/websocket/web/template/template-defaults.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/index.html" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/index_root.js" />
-        <option value="$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-worker.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/index.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/home/index.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/404.js" />
-        <option value="$PROJECT_DIR$/system/service/websocket/web/command/template/base/base-defaults.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/home/user-index.js" />
+        <option value="$PROJECT_DIR$/system/service/websocket/web/command/template/base/base-defaults.js" />
+        <option value="$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-listener.js" />
+        <option value="$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-worker.js" />
+        <option value="$PROJECT_DIR$/system/service/websocket/web/command/template/base/index.html" />
+        <option value="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/index.html" />
+        <option value="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/home/index.html" />
       </list>
     </option>
   </component>
@@ -589,14 +604,15 @@
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth3" value="968" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder3" value="3" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="recentsLimit" value="5" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Dev\Server\WWW\relay\system\service\websocket\web\command\template\base\pages\home" />
+      <recent name="D:\Dev\Server\WWW\relay\system\service\websocket\web\command\template\base\pages" />
       <recent name="D:\Dev\Server\WWW\relay\system\service\websocket\web\template" />
       <recent name="D:\Dev\Server\WWW\relay\system\service\websocket\web\template\base" />
       <recent name="D:\Dev\Server\WWW\relay\system\service\websocket\web\command" />
-      <recent name="D:\Dev\Server\WWW\relay\system\service\websocket\web\command\pgp" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\Dev\Server\WWW\relay\system\service\websocket\web\command" />
@@ -606,7 +622,17 @@
       <recent name="D:\Dev\Server\WWW\relay\system\service\websocket\web\cmd\post" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JavaScript Debug.index.html (1)">
+    <configuration default="false" name="index.html" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/relay/system/service/websocket/web/command/template/base/pages/index.html">
+      <RunnerSettings RunnerId="JavascriptDebugRunner" />
+      <ConfigurationWrapper RunnerId="JavascriptDebugRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="index.html (1)" type="JavascriptDebugType" factoryName="JavaScript Debug" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/relay/system/service/websocket/web/command/template/base/pages/home/index.html">
+      <RunnerSettings RunnerId="JavascriptDebugRunner" />
+      <ConfigurationWrapper RunnerId="JavascriptDebugRunner" />
+      <method />
+    </configuration>
     <configuration default="true" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
       <TestRunner />
       <method />
@@ -632,7 +658,16 @@
       <envs />
       <method />
     </configuration>
-    <list size="0" />
+    <list size="2">
+      <item index="0" class="java.lang.String" itemvalue="JavaScript Debug.index.html" />
+      <item index="1" class="java.lang.String" itemvalue="JavaScript Debug.index.html (1)" />
+    </list>
+    <recent_temporary>
+      <list size="2">
+        <item index="0" class="java.lang.String" itemvalue="JavaScript Debug.index.html (1)" />
+        <item index="1" class="java.lang.String" itemvalue="JavaScript Debug.index.html" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
   <component name="SvnConfiguration">
@@ -674,22 +709,22 @@
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32988626" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3295583" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3295583" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33919063" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18370607" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32953367" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Command Line Tools Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32953367" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -716,27 +751,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/nbproject/project.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/nbproject/project.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
-          <caret line="1" column="37" selection-start-line="1" selection-start-column="37" selection-end-line="1" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/WEB-INF/glassfish-web.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/system/service/websocket/web/META-INF/context.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="0">
@@ -1026,14 +1040,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-listener.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-20.4" vertical-offset="510" max-vertical-offset="5253">
-          <caret line="60" column="37" selection-start-line="60" selection-start-column="37" selection-end-line="60" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/pgp/pgp-worker.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="2652" max-vertical-offset="15878">
@@ -1082,12 +1088,39 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/404.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="238">
+          <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#38#0" expanded="false" />
+            <marker date="1441522686359" expanded="true" signature="100:282" placeholder="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/template/template-defaults.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="119">
+          <caret line="1" column="31" selection-start-line="1" selection-start-column="31" selection-end-line="1" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-listener.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="5253">
+          <caret line="217" column="53" selection-start-line="217" selection-start-column="53" selection-end-line="217" selection-end-column="53" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-worker.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-15.64" vertical-offset="3587" max-vertical-offset="8143">
-          <caret line="234" column="31" selection-start-line="234" selection-start-column="31" selection-end-line="234" selection-end-column="31" />
+        <state vertical-scroll-proportion="-7.92" vertical-offset="5718" max-vertical-offset="9690">
+          <caret line="348" column="23" selection-start-line="348" selection-start-column="23" selection-end-line="348" selection-end-column="23" />
           <folding>
-            <marker date="1441504510726" expanded="false" signature="5274:5287" placeholder="..." />
+            <marker date="1441587136552" expanded="false" signature="5272:5285" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1102,20 +1135,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/404.js">
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/template/base/test.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="238">
-          <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#38#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/template/template-defaults.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="119">
-          <caret line="1" column="31" selection-start-line="1" selection-start-column="31" selection-end-line="1" selection-end-column="31" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="566">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1123,15 +1146,31 @@
     <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/home/user-index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="255">
-          <caret line="5" column="17" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
+          <caret line="3" column="24" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="24" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/template/base/base-defaults.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.03967328" vertical-offset="0" max-vertical-offset="857">
-          <caret line="2" column="101" selection-start-line="2" selection-start-column="101" selection-end-line="2" selection-end-column="101" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="629">
+          <caret line="3" column="11" selection-start-line="3" selection-start-column="11" selection-end-line="3" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.230769" vertical-offset="0" max-vertical-offset="595">
+          <caret line="8" column="36" selection-start-line="8" selection-start-column="36" selection-end-line="8" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/home/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.22037037" vertical-offset="0" max-vertical-offset="595">
+          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
           <folding />
         </state>
       </provider>

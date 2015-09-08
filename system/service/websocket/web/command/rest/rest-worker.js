@@ -42,7 +42,7 @@
         "HTTP/1.1 {$response_code} {$response_text}\n" +
         "Content-type: text/html\n" +
         "Content-length: {$response_length}\n" +
-        "Request-url: {$request_url}\n" +
+        "Request-url: {$request_url}" +
         "{$response_headers}" +
         "\n\n" +
         "{$response_body}";
@@ -156,100 +156,122 @@
      * @param commandString GET [URL]
      */
     socketCommands.get = function (commandString) {
-        var headers = commandString.split(/\n/);
-        var firstLine = headers.shift();
-        var match = /^get\s*(\S*)(\s+HTTP\/1.1)?$/i.exec(firstLine);
-        if(!match)
-            throw new Error("Invalid GET Request: " + firstLine);
-        var path = match[1];
-        parseUrl(path, function(urlData) {
+        var requestData = parseRequestBody(commandString);
+        if(!requestData.headers['browser-id'])
+            requestData.headers['browser-id'] = httpBrowserID++;
 
-            if(urlData.is_local) {
+        var formattedCommandString =  requestData.createRequestString(); // "GET " + urlData.url + "\n" + headers.join("\n");
+
+        parseURLWithDefaultHost(requestData.url, function(parsedUrlData) {
+            if(parsedUrlData.is_local) {
                 // If local, output content to client
-                executeLocalGETRequest(commandString, function(responseText) {
+                executeLocalGETRequest(formattedCommandString, function(responseText) {
                     renderResponseText(responseText);
                 });
 
             } else {
                 // If remote, request content from server
-                self.sendWithFastestSocket(commandString);
+                self.sendWithFastestSocket(formattedCommandString);
 
                 // Show something, sheesh
                 var pendingResponseText = RESPONSE_BODY_TEMPLATE
                     .replace(/{\$response_code}/gi, "200")
                     .replace(/{\$response_text}/gi, "Request Sent")
-                    .replace(/{\$request_url}/gi, urlData.url)
+                    .replace(/{\$request_url}/gi, requestData.url)
                     .replace(/{\$response_length}/gi, RESPONSE_BODY_PENDING.length)
                     .replace(/{\$response_body}/gi, RESPONSE_BODY_PENDING)
-                    //.replace(/{\$response_headers}/gi, response_headers)
+                    .replace(/{\$response_headers}/gi, requestData.createResponseHeaderString())
                     ;
 
                 renderResponseText(pendingResponseText);
             }
+        }, function(err) {
+            var errorResponseText = RESPONSE_BODY_TEMPLATE
+                .replace(/{\$response_code}/gi, "400")
+                .replace(/{\$response_text}/gi, err || "Missing Default PGP Identity")
+                .replace(/{\$request_url}/gi, requestData.url)
+                .replace(/{\$response_length}/gi, 0)
+                .replace(/{\$response_body}/gi, '')
+                .replace(/{\$response_headers}/gi, requestData.createResponseHeaderString())
+            ;
+
+            renderResponseText(errorResponseText);
         });
     };
 
     socketResponses.get = function(responseString) {
         var match = /^get\s*(.*)$/i.exec(responseString);
         var path = match[1];
-        executeLocalGETRequest(path, function(responseText) {
+        executeLocalGETRequest(responseString, function(responseText) {
             self.sendWithFastestSocket(responseText);
         });
     };
 
-    socketResponses.http = function(httpResponseBody) {
-        renderResponseText(httpResponseBody);
+    socketResponses.http = function(httpResponseText) {
+        var responseData = parseResponseText(httpResponseText);
+        var requestUrl = responseData.headers['request-url'];
+        if(!requestUrl)
+            throw new Error("Unknown request-url for response: Header is missing");
+        var browserID = responseData.headers['browser-id'];
+        if(!browserID)
+            throw new Error("Unknown browser-id for response:\n" + httpResponseText);
+        var commandString = "GET " + requestUrl + "\n" +
+            "Browser-ID: " + browserID + "\n";
+        if(responseData.code === 404) {
+            executeLocalGETRequest(commandString, function(responseText) {
+                console.log(responseText);
+                renderResponseText(responseText);
+            });
+
+        } else {
+            renderResponseText(httpResponseText);
+        }
+
     };
 
     function executeLocalGETRequest(commandString, callback) {
-        var requestHeaders = commandString.split(/\n/);
-        var firstLine = requestHeaders.shift();
-        var match = /^get\s*(.*)$/i.exec(firstLine);
-        if(!match)
-            throw new Error("Invalid GET Request: " + commandString);
-        var contentURL = match[1];
-        parseUrl(contentURL, function (urlData) {
-            var formattedCommandString = "GET " + urlData.url + "\n" + requestHeaders.join("\n");
-            getRestDB().getContent(urlData.path, onContent);
+        var requestData = parseRequestBody(commandString);
+        var urlData = parseURL(requestData.url);
+        var formattedCommandString = requestData.createRequestString(); // "GET " + urlData.url + "\n" + requestHeaders.join("\n");
+        getRestDB().getContent(urlData.path, onContent);
 
-            function onContent(err, contentData) {
-                if(err)
-                    throw new Error(err);
+        function onContent(err, contentData) {
+            if(err)
+                throw new Error(err);
 
-                if(contentData) {
+            if(contentData) {
 
-                    var signedBody = protectHTMLContent(contentData.content_verified);
-                    var responseText200 = RESPONSE_BODY_TEMPLATE
-                        .replace(/{\$response_headers}/gi, requestHeaders.join("\n"))
-                        .replace(/{\$response_code}/gi, "200")
-                        .replace(/{\$response_text}/gi, "OK")
-                        .replace(/{\$request_url}/gi, urlData.url)
-                        .replace(/{\$response_length}/gi, signedBody.length)
-                        .replace(/{\$response_body}/gi, signedBody);
+                var signedBody = protectHTMLContent(contentData.content_verified);
+                var responseText200 = RESPONSE_BODY_TEMPLATE
+                    .replace(/{\$response_headers}/gi, requestData.createResponseHeaderString())
+                    .replace(/{\$response_code}/gi, "200")
+                    .replace(/{\$response_text}/gi, "OK")
+                    .replace(/{\$request_url}/gi, urlData.url)
+                    .replace(/{\$response_length}/gi, signedBody.length)
+                    .replace(/{\$response_body}/gi, signedBody);
 
-                    callback(responseText200);
+                callback(responseText200);
 
-                } else {
-                    (function() {
-                        importScripts('template/template-defaults.js');
-                        getDefaultResponse(formattedCommandString, function(defaultResponseString, responseCode, responseText, responseHeaders) {
-                            responseHeaders = (responseHeaders ? responseHeaders + "\n" : "") + requestHeaders.join("\n");
+            } else {
+                (function() {
+                    importScripts('template/template-defaults.js');
+                    getDefaultResponse(formattedCommandString, function(defaultResponseString, responseCode, responseText, responseHeaders) {
+                        responseHeaders = (responseHeaders ? responseHeaders + "\n" : "") + requestData.createResponseHeaderString();
 
-                            defaultResponseString = protectHTMLContent(defaultResponseString);
-                            var responseText404 = RESPONSE_BODY_TEMPLATE
-                                .replace(/{\$response_headers}/gi, responseHeaders)
-                                .replace(/{\$response_code}/gi, responseCode || '200')
-                                .replace(/{\$response_text}/gi, responseText || 'OK')
-                                .replace(/{\$request_url}/gi, urlData.url)
-                                .replace(/{\$response_length}/gi, defaultResponseString.length)
-                                .replace(/{\$response_body}/gi, defaultResponseString);
+                        defaultResponseString = protectHTMLContent(defaultResponseString);
+                        var responseText404 = RESPONSE_BODY_TEMPLATE
+                            .replace(/{\$response_headers}/gi, responseHeaders)
+                            .replace(/{\$response_code}/gi, responseCode || '200')
+                            .replace(/{\$response_text}/gi, responseText || 'OK')
+                            .replace(/{\$request_url}/gi, urlData.url)
+                            .replace(/{\$response_length}/gi, defaultResponseString.length)
+                            .replace(/{\$response_body}/gi, defaultResponseString);
 
-                            callback(responseText404);
-                        });
-                    })();
-                }
+                        callback(responseText404);
+                    });
+                })();
             }
-        });
+        }
     }
 
     function getPathIterator(urlPrefix, callback, onFinish) {
@@ -267,6 +289,7 @@
 
             var pgp_id_public = host;
             var pathIndex = httpContentStore.index(RestDB.DB_INDEX_ID_PATH);
+            console.log(urlPrefix);
             var boundKeyRange = IDBKeyRange.bound([pgp_id_public, pathPrefix], [pgp_id_public, pathPrefix + 'uffff'], false, false);
             //console.log(pathPrefix, urlPrefix, boundKeyRange);
 
@@ -302,13 +325,14 @@
         var match = /^http\/1.1 (\d+) ?(.*)$/i.exec(headerFirstLine);
         if(!match)
             throw new Error("Invalid HTTP Response: " + headerFirstLine);
-        var responseCode = match[1];
+        var responseCode = parseInt(match[1]);
         var responseCodeText = match[2];
         return {
             body: responseBody,
             code: responseCode,
             text: responseCodeText,
-            headers: headerValues
+            headers: headerValues,
+            header_body: headerBody
         }
     }
 
@@ -318,20 +342,30 @@
         if(!requestUrl)
             throw new Error("Unknown request-url for response: Header is missing");
 
-        var browserID = response.headers['browser-id'] || httpBrowserID++;
+        var urlData = parseURL(requestUrl);
+        if(urlData.host) {
+            r(urlData);
+        } else {
+            parseURLWithDefaultHost(requestUrl, r);
+        }
 
-        parseHTMLBody(response.body, requestUrl, function(parsedResponseBody) {
-            self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_GET + browserID + ' * ' +
-                HTTP_BROWSER_TEMPLATE
-                    .replace(/{\$response_body}/gi, parsedResponseBody)
-                    .replace(/{\$response_code}/gi, response.code)
-                    .replace(/{\$response_text}/gi, response.text)
-                    .replace(/{\$browser_id}/gi, browserID)
-                    .replace(/{\$request_url}/gi, requestUrl)
-                    //.replace(/{\$response_headers}/gi, '')
-                //.replace(/{\$[^}]+}/gi, '')
-            );
-        });
+        function r(urlData) {
+            var browserID = response.headers['browser-id'] || httpBrowserID++;
+
+            parseHTMLBody(response.body, urlData.url, function(parsedResponseBody) {
+                self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_GET + browserID + ' * ' +
+                    HTTP_BROWSER_TEMPLATE
+                        .replace(/{\$response_body}/gi, parsedResponseBody)
+                        .replace(/{\$response_code}/gi, response.code)
+                        .replace(/{\$response_text}/gi, response.text)
+                        .replace(/{\$browser_id}/gi, browserID)
+                        .replace(/{\$request_url}/gi, urlData.url)
+                        //.replace(/{\$response_headers}/gi, '')
+                    //.replace(/{\$[^}]+}/gi, '')
+                );
+            });
+
+        }
     }
 
     function parseHTMLBody(htmlBody, contentURL, callback) {
@@ -398,12 +432,56 @@
         return htmlContent;
     }
 
-    function parseUrl(url, callback) {
+    function parseRequestBody(requestText) {
+        var headers = requestText.split(/\n/);
+        var firstLine = headers.shift();
+        var headerValues = {};
+        for(var i=0; i<headers.length; i++) {
+            var splitHeader = headers[i].split(': ');
+            headerValues[splitHeader[0].toLowerCase()] = splitHeader.length > 0 ? splitHeader[1] : true;
+        }
+        var match = /^get\s*(\S*)(\s+HTTP\/1.1)?$/i.exec(firstLine);
+        if(!match)
+            throw new Error("Invalid GET Request: " + requestText);
+        var data = {
+            url: match[1],
+            http_version: match[2] || 'HTTP/1.1',
+            headers: headerValues
+        };
+        data.createResponseHeaderString = function() {
+            var headers = '';
+            for (var header in data.headers) {
+                if (data.headers.hasOwnProperty(header)) {
+                    switch (header.toLowerCase()) {
+                        case 'browser-id':
+                            headers += "\n" + header + ": " + data.headers[header];
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            return headers;
+        };
+        data.createRequestHeaderString = function() {
+            var headers = '';
+            for(var header in data.headers)
+                if(data.headers.hasOwnProperty(header))
+                    headers += "\n" + header + ": " + data.headers[header];
+            return headers;
+        };
+        data.createRequestString = function() {
+            return "GET " + data.url + " " + data.http_version + data.createRequestHeaderString();
+        };
+        return data;
+    }
+
+    function parseURL(url) {
         var pattern = new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
         var matches = url.match(pattern);
         var data = {
             url: url,
-            scheme: matches[2] || 'socket',
+            scheme: matches[2],
             host: matches[4],
             path: matches[5] || '',
             query: matches[7],
@@ -412,6 +490,11 @@
         };
         if(data.path === '~')
             data.path = '~/';
+        return data;
+    }
+
+    function parseURLWithDefaultHost(url, callback, onError) {
+        var urlData = parseURL(url);
         getPGPDB(function (db) {
             var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readonly");
             var privateKeyStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
@@ -419,19 +502,27 @@
             var req = privateKeyStore.index('default').get('1');
             req.onsuccess = function (evt) {
                 var privateKeyData = evt.target.result;
-                var id_public_short = privateKeyData.id_public.substr(privateKeyData.id_public.length-8);
-                if(!data.host) {
-                    data.host = id_public_short;
-                    data.is_local = true;
-                } else {
-                    data.is_local = data.host === id_public_short;
+                if(!privateKeyData) {
+                    if(onError)
+                        onError("No default PGP Identity Found");
+                    throw new Error("No default PGP Identity Found");
                 }
-                data.url = data.scheme + '://' + data.host +
-                    (data.path[0] === '/' ? '' : '/') + data.path +
-                    (data.query ? '?' + data.query : '') +
-                    (data.fragment ? '?' + data.fragment : '');
-                data.path = data.path.replace('~',  "/home/" + id_public_short + "/");
-                callback(data);
+
+                var id_public_short = privateKeyData.id_public.substr(privateKeyData.id_public.length-8);
+                if(!urlData.host) {
+                    urlData.host = id_public_short;
+                    urlData.is_local = true;
+                } else {
+                    urlData.is_local = urlData.host === id_public_short;
+                }
+                //urlData.path = urlData.path
+                //    .replace(/^\/~/, '/home/' + urlData.host);
+                urlData.url = (urlData.scheme || 'socket') + '://' + urlData.host +
+                    (urlData.path[0] === '/' ? '' : '/') + urlData.path +
+                    (urlData.query ? '?' + urlData.query : '') +
+                    (urlData.fragment ? '?' + urlData.fragment : '');
+
+                callback(urlData);
             };
         });
     }

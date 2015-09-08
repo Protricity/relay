@@ -6,6 +6,8 @@
 package relay.service.command;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import javax.websocket.Session;
 
 /**
@@ -18,7 +20,7 @@ public class RESTCommands implements ISocketCommand {
         "HTTP/1.1 {$code} {$text}\n" +
         "Content-type: text/html\n" +
         "Content-length: {$length}\n" +
-        "Request-url: {$url}\n" +
+        "Request-Url: {$url}" +
         "{$headers}" +
         "\n\n" +
         "{$body}";
@@ -46,12 +48,14 @@ public class RESTCommands implements ISocketCommand {
     }
     
     public void getRequest(Session session, String data) {
-        String[] lines = data.split("\n");
-        String firstLine = lines[0];
+        ArrayList<String> headerLines = new ArrayList<String>(Arrays.asList(data.split("\n")));
+        String firstLine = headerLines.remove(0);
+        String browserID = null;
         int responseCode = 200;
         String responseText = "OK";
         String responseBody = "";
         String requestURL = "";
+        String headers = "";
         if(firstLine.substring(0, 4).compareToIgnoreCase("GET ") != 0) {
             responseText = "Invalid GET Request";
             responseCode = 404;
@@ -60,6 +64,17 @@ public class RESTCommands implements ISocketCommand {
             requestURL = firstLine.substring(4).trim();
 
         }
+        
+        
+        for(String headerLine: headerLines) {
+            String[] split = headerLine.split(": ");
+            switch(split[0].toLowerCase()) {
+                case "browser-id": 
+                    headers += "\nBrowser-ID: " + split[1]; 
+                    break;
+            }
+        }
+        
         
         if(responseCode == 200) {
             responseCode = 404;
@@ -70,8 +85,10 @@ public class RESTCommands implements ISocketCommand {
         sendText(session, RESPONSE_TEMPLATE
             .replace("{$code}", responseCode + "")
             .replace("{$text}", responseText)
-            .replace("{$url}", requestURL)
-            .replace("{$headers}", requestURL)
+            .replace("{$url}", requestURL)            
+//            .replace("{$browser_id}", browserID)
+//            .replace("{$url}", requestURL)
+            .replace("{$headers}", headers)
             .replace("{$length}", responseBody.length() + "")
             .replace("{$body}", responseBody)
         );

@@ -1,8 +1,9 @@
 
 var responsePages = [
-    [/^\/?home\//i, function(commandString, callback) { importScripts('template/base/pages/home/user-index.js'); getUserIndexTemplate(commandString, callback); }],
-    [/^\//, function(commandString, callback) { importScripts('template/base/pages/index.js'); getRootIndexTemplate(commandString, callback); }]
+    [/^\/?home\/?$/i, function(commandString, callback) { importScripts('template/base/pages/home/user-index.js'); getUserIndexTemplate(commandString, callback); }],
+    [/^\/?$/, function(commandString, callback) { importScripts('template/base/pages/index.js'); getRootIndexTemplate(commandString, callback); }]
 ];
+
 
 var getDefaultResponse = function(commandString, callback) {
     var headers = commandString.split(/\n/);
@@ -19,7 +20,7 @@ var getDefaultResponse = function(commandString, callback) {
         .toLowerCase();
 
     for(var i=0; i<responsePages.length; i++) {
-        console.log(responsePages[i], contentURLPath, contentURL);
+        //console.log(responsePages[i], contentURLPath, contentURL);
         if(responsePages[i][0].test(contentURLPath)) {
             responsePages[i][1](commandString, callback);
             return;
