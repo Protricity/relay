@@ -2,15 +2,15 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>User Index Template</title>
-    <link rel="stylesheet" href="../../../base/base.css" type="text/css" />
-    <link rel="stylesheet" href="../../../minimal/minimal.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../rest/rest.css" type="text/css">
-    <script src="../../../../rest/rest-db.js"></script>
-    <script src="user-index.js"></script>
+    <title>Test - Index Template</title>
+    <link rel="stylesheet" href="../../base/base.css" type="text/css" />
+    <link rel="stylesheet" href="../../minimal/minimal.css" type="text/css" />
+    <link rel="stylesheet" href="../../../rest/rest.css" type="text/css">
+    <script src="../../../rest/rest-db.js"></script>
+    <script src="index.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function(event) {
-            getUserIndexTemplate("GET socket://3110FF44/~/", function(responseHTML) {
+            getRootIndexTemplate("GET socket://3110FF44/~/", function(responseHTML) {
                 document.querySelector('.http-body').innerHTML = responseHTML;
             })
         });
