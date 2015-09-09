@@ -160,9 +160,9 @@
         if(!requestData.headers['browser-id'])
             requestData.headers['browser-id'] = httpBrowserID++;
 
-        var formattedCommandString =  requestData.createRequestString(); // "GET " + urlData.url + "\n" + headers.join("\n");
 
         parseURLWithDefaultHost(requestData.url, function(parsedUrlData) {
+            var formattedCommandString = "GET " + parsedUrlData.url + " " + requestData.http_version + requestData.createRequestHeaderString();
             if(parsedUrlData.is_local) {
                 // If local, output content to client
                 executeLocalGETRequest(formattedCommandString, function(responseText) {
@@ -199,15 +199,15 @@
         });
     };
 
-    socketResponses.get = function(responseString) {
-        var match = /^get\s*(.*)$/i.exec(responseString);
-        var path = match[1];
-        executeLocalGETRequest(responseString, function(responseText) {
+    socketResponses.get = function(requestResponseString) {
+
+        executeLocalGETRequest(requestResponseString, function(responseText) {
             self.sendWithFastestSocket(responseText);
         });
     };
 
     socketResponses.http = function(httpResponseText) {
+        parseResponseURLs(httpResponseText);
         var responseData = parseResponseText(httpResponseText);
         var requestURL = responseData.headers['request-url'];
         if(!requestURL)
@@ -218,7 +218,6 @@
         var commandString = "GET " + requestURL + "\n" +
             "Browser-ID: " + browserID + "\n";
         if(responseData.code === 404) {
-            parseResponseURLs(httpResponseText);
             executeLocalGETRequest(commandString, function(responseText) {
                 renderResponseText(responseText);
             });
@@ -238,12 +237,13 @@
         responseData.body.replace(/<a[^>]+href=['"]([^'">]+)['"][^>]*>([^<]+)<\/a>/gi, function(match, url, text, offset, theWholeThing) {
             getRestDB().addURLToDB(url, referrerURL);
         });
-
     }
 
     function executeLocalGETRequest(commandString, callback) {
         var requestData = parseRequestBody(commandString);
         var urlData = parseURL(requestData.url);
+        if(!urlData.host)
+            throw new Error("Invalid Host: " + commandString);
         var formattedCommandString = requestData.createRequestString(); // "GET " + urlData.url + "\n" + requestHeaders.join("\n");
         getRestDB().getContent(urlData.path, onContent);
 
@@ -388,6 +388,7 @@
             .replace(/^\/~/, '/home/' + contentURLHost);
         var parentPath = contentURLPath.replace(/[^\/]+\/$/, '') || '/';
 
+        // TODO: move to template system
         if(htmlBody.indexOf("{$html_ul_index}") !== -1) {
             var paths = [[contentURL, '.']];
             var parentURL = 'socket://' + contentURLHost + parentPath;
@@ -529,8 +530,8 @@
                 } else {
                     urlData.is_local = urlData.host === id_public_short;
                 }
-                //urlData.path = urlData.path
-                //    .replace(/^\/~/, '/home/' + urlData.host);
+                urlData.path = urlData.path
+                    .replace(/^\/~/, '/home/' + urlData.host);
                 urlData.url = (urlData.scheme || 'socket') + '://' + urlData.host +
                     (urlData.path[0] === '/' ? '' : '/') + urlData.path +
                     (urlData.query ? '?' + urlData.query : '') +

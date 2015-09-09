@@ -6,10 +6,11 @@
     <link rel="stylesheet" href="../../base/base.css" type="text/css" />
     <link rel="stylesheet" href="../../minimal/minimal.css" type="text/css" />
     <link rel="stylesheet" href="../../../rest/rest.css" type="text/css">
+    <script src="../../../rest/rest-db.js"></script>
     <script src="index.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function(event) {
-            getRootIndexTemplate("GET *", function(responseHTML) {
+            getRootIndexTemplate("GET socket://3110FF44/~/", function(responseHTML) {
                 document.querySelector('.http-body').innerHTML = responseHTML;
             })
         });

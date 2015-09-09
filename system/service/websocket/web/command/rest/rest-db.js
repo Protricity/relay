@@ -227,3 +227,46 @@ RestDB.addURLToDB = function(url, referrerURL, callback) {
         };
     });
 };
+
+RestDB.listURLIndex = function(currentURL, callback) {
+
+    var match = currentURL.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
+    var contentURLHost = match[4];
+    if(!contentURLHost)
+        throw new Error("Invalid Host: " + contentURLHost);
+    var contentURLPath = (match[5] || '')
+        .replace(/^\/~/, '/home/' + contentURLHost);
+    var contentURLParentPath = contentURLPath.replace(/[^\/]+\/$/, '') || '/';
+
+    var paths = [[currentURL, '.']];
+    var parentURL = 'socket://' + contentURLHost + contentURLParentPath;
+    if(currentURL !== parentURL)
+        paths.push([parentURL, '..']);
+
+    RestDB(function(db) {
+        var urlPrefix = currentURL.toLowerCase();
+        if(urlPrefix[urlPrefix.length-1] !== '/')
+            urlPrefix += '/';
+        var transaction = db.transaction([RestDB.DB_TABLE_HTTP_URL], "readonly");
+        var urlStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_URL);
+
+        var boundKeyRange = IDBKeyRange.bound(urlPrefix, urlPrefix + '\uffff', true, true);
+
+        urlStore.openCursor(boundKeyRange)
+            .onsuccess = function (e) {
+            var cursor = e.target.result;
+            if(cursor) {
+                cursor.continue();
+                var urlData = cursor.value;
+                var matchedURL = (urlData.url_original_case || urlData.url);
+                var match = matchedURL.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
+                var matchedURLHost = match[4];
+                var matchedURLPath = (match[5] || '')
+                    .replace(/^\/~/, '/home/' + matchedURLHost);
+                paths.push([matchedURL, matchedURLPath]);
+            } else {
+                callback(paths);
+            }
+        };
+    });
+}
