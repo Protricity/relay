@@ -2,8 +2,10 @@
  * Created by ari on 7/2/2015.
  */
 
+RestDB.DB_VERSION               = 2;
 RestDB.DB_NAME                  = 'http';
 RestDB.DB_TABLE_HTTP_CONTENT    = 'content';
+RestDB.DB_TABLE_HTTP_URL        = 'url';
 
 RestDB.DB_INDEX_PATH            = 'path';
 RestDB.DB_INDEX_ID_PATH         = 'id_path';
@@ -15,7 +17,7 @@ function RestDB(dbReadyCallback) {
 
     if (typeof RestDB.getDBRequest === 'undefined') {
         // First Time
-        var openRequest = indexedDB.open(RestDB.DB_NAME);
+        var openRequest = indexedDB.open(RestDB.DB_NAME, RestDB.DB_VERSION);
         var onDBCallbacks = [];
         RestDB.getDBRequest = function() { return openRequest; };
         RestDB.getCallbacks = function () { return onDBCallbacks; };
@@ -42,7 +44,13 @@ function RestDB(dbReadyCallback) {
                 //postStore.createIndex(RestDB.DB_INDEX_PGP_ID_PUBLIC, "pgp_id_public", { unique: false });
                 //postStore.createIndex(RestDB.DB_INDEX_TIMESTAMP, "timestamp", { unique: false });
 
-                console.log('Upgraded Table: ', RestDB.DB_TABLE_HTTP_CONTENT, postStore);
+                console.log('Upgraded Table: ', postStore.name, postStore);
+            }
+
+            if(!upgradeDB.objectStoreNames.contains(RestDB.DB_TABLE_HTTP_URL)) {
+                var urlStore = upgradeDB.createObjectStore(RestDB.DB_TABLE_HTTP_URL, { keyPath: "url"});
+
+                console.log('Upgraded Table: ', urlStore.name, urlStore);
             }
 
         };
@@ -93,6 +101,7 @@ RestDB.addVerifiedContentToDB = function(verifiedContent, callback) {
     var verifiedText = verifiedContent.text;
     var pgpSignedContent = verifiedContent.encrypted;
     var pgp_id_public = verifiedContent.signingKeyId;
+    var pgp_id_public_short = pgp_id_public.substr(pgp_id_public.length - 8);
     var path = /data-path=["'](\S+)["']/i.exec(verifiedText)[1];
     var timestamp = /data-timestamp=["'](\d+)["']/i.exec(verifiedText)[1];
     if(!path)
@@ -113,7 +122,7 @@ RestDB.addVerifiedContentToDB = function(verifiedContent, callback) {
         var insertData = {
             //'uid': pgp_id_public + '-' + timestamp,
             'pgp_id_public': pgp_id_public,
-            'pgp_id_public_short': pgp_id_public.substr(pgp_id_public.length - 8),
+            'pgp_id_public_short': pgp_id_public_short,
             'path': path,
             //'path_level': pathLevel,
             'timestamp': timestamp,
@@ -124,12 +133,15 @@ RestDB.addVerifiedContentToDB = function(verifiedContent, callback) {
         var insertRequest = httpContentStore.add(insertData);
         insertRequest.onsuccess = function(event) {
             console.log("Added http content to database: " + path, insertData);
+
+            var url = ('socket://' + pgp_id_public_short + path);
+            RestDB.addURLToDB(url, null);
             if(callback)
                 callback(null, insertData, insertRequest);
         };
         insertRequest.onerror = function(event) {
             var err = event.currentTarget.error;
-            var status_content = "Error adding feed post to database: " + err.message;
+            var status_content = "Error adding content post to database: " + err.message;
             console.error(status_content, event);
             if(callback)
                 callback(err, null);
@@ -177,6 +189,39 @@ RestDB.getContentByPublicKeyID = function(path, publicKeyID, callback) {
             callback(null, httpContentData);
         };
         getRequest.onerror = function(e) {
+            var err = event.currentTarget.error;
+            callback(err, null);
+        };
+    });
+};
+
+RestDB.addURLToDB = function(url, referrerURL, callback) {
+    if(!callback)
+        callback = function(err, insertData) {
+            if(err) {
+                if(err.name !== "ConstraintError")
+                    console.error("Error adding url to database: " + url, err);
+            } else {
+                console.info("Added http url to database: " + insertData.url);
+            }
+        };
+
+    RestDB(function(db) {
+        var transaction = db.transaction([RestDB.DB_TABLE_HTTP_URL], "readwrite");
+        var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_URL);
+
+        var insertData = {
+            'url': url.toLowerCase(),
+            'url_original_case': url,
+            'referrer ': referrerURL,
+            'added': Date.now()
+        };
+
+        var insertRequest = httpContentStore.add(insertData);
+        insertRequest.onsuccess = function(event) {
+            callback(null, insertData);
+        };
+        insertRequest.onerror = function(event) {
             var err = event.currentTarget.error;
             callback(err, null);
         };

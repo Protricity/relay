@@ -209,17 +209,17 @@
 
     socketResponses.http = function(httpResponseText) {
         var responseData = parseResponseText(httpResponseText);
-        var requestUrl = responseData.headers['request-url'];
-        if(!requestUrl)
+        var requestURL = responseData.headers['request-url'];
+        if(!requestURL)
             throw new Error("Unknown request-url for response: Header is missing");
         var browserID = responseData.headers['browser-id'];
         if(!browserID)
             throw new Error("Unknown browser-id for response:\n" + httpResponseText);
-        var commandString = "GET " + requestUrl + "\n" +
+        var commandString = "GET " + requestURL + "\n" +
             "Browser-ID: " + browserID + "\n";
         if(responseData.code === 404) {
+            parseResponseURLs(httpResponseText);
             executeLocalGETRequest(commandString, function(responseText) {
-                console.log(responseText);
                 renderResponseText(responseText);
             });
 
@@ -228,6 +228,18 @@
         }
 
     };
+
+    function parseResponseURLs(httpResponseText) {
+        var responseData = parseResponseText(httpResponseText);
+        var referrerURL = responseData.headers['request-url'];
+        if(!referrerURL)
+            throw new Error("Unknown request-url for response: Header is missing");
+
+        responseData.body.replace(/<a[^>]+href=['"]([^'">]+)['"][^>]*>([^<]+)<\/a>/gi, function(match, url, text, offset, theWholeThing) {
+            getRestDB().addURLToDB(url, referrerURL);
+        });
+
+    }
 
     function executeLocalGETRequest(commandString, callback) {
         var requestData = parseRequestBody(commandString);
@@ -280,26 +292,27 @@
         var host = match[4];
         var pathPrefix = (match[5] || '')
             .replace(/^\/~/, '/home/' + host);
+
         var query = match[7];
         var fragment = match[9];
 
         RestDB(function(db) {
-            var transaction = db.transaction([RestDB.DB_TABLE_HTTP_CONTENT], "readonly");
-            var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_CONTENT);
+            urlPrefix = (scheme + "://" + host + pathPrefix).toLowerCase();
+            if(urlPrefix[urlPrefix.length-1] !== '/')
+                urlPrefix += '/';
+            var transaction = db.transaction([RestDB.DB_TABLE_HTTP_URL], "readonly");
+            var urlStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_URL);
 
-            var pgp_id_public = host;
-            var pathIndex = httpContentStore.index(RestDB.DB_INDEX_ID_PATH);
-            console.log(urlPrefix);
-            var boundKeyRange = IDBKeyRange.bound([pgp_id_public, pathPrefix], [pgp_id_public, pathPrefix + 'uffff'], false, false);
-            //console.log(pathPrefix, urlPrefix, boundKeyRange);
+            var boundKeyRange = IDBKeyRange.bound(urlPrefix, urlPrefix + '\uffff', true, true);
+            //console.log(urlPrefix, boundKeyRange);
 
-            pathIndex.openKeyCursor(boundKeyRange)
+            urlStore.openCursor(boundKeyRange)
                 .onsuccess = function (e) {
                     var cursor = e.target.result;
                     if(!cursor)
                         return (onFinish ? onFinish() : null);
-                    var url = 'socket://' + cursor.key[0] + cursor.key[1];
-                    var ret = callback(url);
+
+                    var ret = callback(cursor.value);
                     if(ret === false)
                         return (onFinish ? onFinish() : null);
                     cursor.continue();
@@ -380,12 +393,13 @@
             var parentURL = 'socket://' + contentURLHost + parentPath;
             if(contentURL !== parentURL)
                 paths.push([parentURL, '..']);
-            getPathIterator(contentURL, function(matchedPath) {
-                var match = matchedPath.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
-                var pathHost = match[4];
-                var pathPrefix = (match[5] || '')
-                    .replace(/^\/~/, '/home/' + pathHost);
-                paths.push([matchedPath, pathPrefix]);
+            getPathIterator(contentURL, function(data) {
+                var matchedURL = (data.url_original_case || data.url);
+                var urlData = parseURL(matchedURL);
+                if(urlData.host)
+                    urlData.path = urlData.path
+                        .replace(/^\/~/, '/home/' + urlData.host);
+                paths.push([matchedURL, urlData.path]);
 
             }, function() {
                 var pathHTML = "<ul class='path-index'>";
