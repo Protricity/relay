@@ -1,0 +1,73 @@
+
+.pgp-signed-message {
+    white-space: pre;
+    font-style: italic;
+}
+.pgp-signed-message.verification-required {
+    color: red;
+    display: block;
+}
+.pgp-signed-message.verified {
+    color: inherit;
+    display: none;
+}
+
+.found-session-uid {
+    display: none;
+}
+
+form[name=chat-form] {
+    /* max-width: 37em; */
+    /* font-family: monospace; */
+}
+
+
+form[name=chat-form] input[name=message] {
+    width: 85%;
+    font-family: monospace;
+}
+
+form[name=chat-form] input[type=submit] {
+    float: right;
+}
+
+form[name=chat-form] .pgp-message {
+    white-space: pre;
+
+    width: 1em;
+    height: 1em;
+
+    border: 2px solid;
+    overflow: hidden;
+    background-color: #EEA;
+    color: #111;
+}
+
+form[name=chat-form] .pgp-message:hover {
+/*     max-height: 8em; */
+    width: 35em;
+    height: 21em;
+}
+
+
+form[name=chat-form] .channel-content {
+    overflow: auto;
+    max-height: 18em;
+    width: 45vw;
+    max-width: 45em;
+    min-width: 25em;
+}
+
+
+form[name=chat-form] .channel-log {
+    border: 1px solid transparent;
+    overflow: hidden;
+    max-height: 5em;
+}
+
+form[name=chat-form] .channel-log:hover {
+    border-radius: 0.2em;
+    border: 1px solid lightgrey;
+    overflow: hidden;
+    max-height: inherit;
+}
