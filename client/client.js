@@ -52,28 +52,24 @@
 
 
     self.geoipcallback = function(result) {
-        if(result.country_name)
+        if (result.country_name)
             result.country = result.country_name;
-        if(result.region_name)
+        if (result.region_name)
             result.region = result.region_name;
-        if(result.zip_code)
+        if (result.zip_code)
             result.postal_code = result.zip_code;
-        if(result.timezone)
+        if (result.timezone)
             result.time_zone = result.timezone;
 //                console.log(result);
         var channelList = document.getElementsByClassName('command-list-channels')[0];
-        channelList.innerHTML+= "<li><a href='#JOIN /country/" + result.country_code + "'><span class='command'>Join</span> <strong>" + result.country + "</strong></a></li>";
-        channelList.innerHTML+= "<li><a href='#JOIN /region/" + result.region_code + "'><span class='command'>Join</span> <strong>" + result.region + "</strong></a></li>";
-        channelList.innerHTML+= "<li><a href='#JOIN /city/" + result.city + "'><span class='command'>Join</span> <strong>" + result.city + "</strong></a></li>";
-        channelList.innerHTML+= "<li><a href='#JOIN /zipcode/" + result.postal_code + "'><span class='command'>Join</span> <strong>" + result.postal_code + "</strong></a></li>";
+        channelList.innerHTML += "<li><a href='#JOIN /country/" + result.country_code + "'><span class='command'>Join</span> <strong>" + result.country + "</strong></a></li>";
+        channelList.innerHTML += "<li><a href='#JOIN /region/" + result.region_code + "'><span class='command'>Join</span> <strong>" + result.region + "</strong></a></li>";
+        channelList.innerHTML += "<li><a href='#JOIN /city/" + result.city + "'><span class='command'>Join</span> <strong>" + result.city + "</strong></a></li>";
+        channelList.innerHTML += "<li><a href='#JOIN /zipcode/" + result.postal_code + "'><span class='command'>Join</span> <strong>" + result.postal_code + "</strong></a></li>";
 //                channelList.innerHTML+= "<li><a href='#JOIN /timezone/" + result.time_zone + "'><span class='command'>Join</span> <strong>" + result.time_zone + "</strong></a></li>";
-        channelList.innerHTML+= "<li><a href='#JOIN /ip/" + result.ip + "'><span class='command'>Join</span> <strong>" + result.ip + "</strong></a></li>";
+        channelList.innerHTML += "<li><a href='#JOIN /ip/" + result.ip + "'><span class='command'>Join</span> <strong>" + result.ip + "</strong></a></li>";
 
-        if(document.location.host !== 'localhost')
-//                    send("JOIN /timezone/" + result.time_zone);
-            geoipcallback = function(result) {
-//                    console.log("Ignoring new geoip result: ", result);
-            }
+        self.geoipcallback = function (result) {}
     };
 
 //            if(navigator.geolocation)

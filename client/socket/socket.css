@@ -6,6 +6,6 @@
     width: 38em;
 }
 
-.socket-content .socket-log {
-    white-space: pre;
+.socket-content .socket-log .message {
+    white-space: pre-wrap;
 }

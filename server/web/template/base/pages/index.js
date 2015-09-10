@@ -3,9 +3,10 @@
  */
 
 var getRootIndexTemplate = function(commandString, callback) {
-    var TEMPLATE_INDEX =
-        "<h2>Index</h2>" +
-        "{$html_ul_index}";
+    var TEMPLATE_INDEX = "\
+        <h2>Index</h2>\n\
+        {$html_ul_index}\n\
+    ";
 
 
     var match = /^get\s*(\S*)(\s+HTTP\/1.1)?$/i.exec(commandString);

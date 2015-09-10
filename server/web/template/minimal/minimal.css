@@ -92,7 +92,6 @@ body.template-minimal {
 
 
 .template-minimal span.message {
-    /* white-space: nowrap; */
     color: black;
     word-break: break-all;
 }

@@ -65,7 +65,6 @@ public class RESTCommands implements ISocketCommand {
 
         }
         
-        
         for(String headerLine: headerLines) {
             String[] split = headerLine.split(": ");
             switch(split[0].toLowerCase()) {
@@ -74,7 +73,6 @@ public class RESTCommands implements ISocketCommand {
                     break;
             }
         }
-        
         
         if(responseCode == 200) {
             responseCode = 404;
