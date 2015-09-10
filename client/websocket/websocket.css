@@ -1,0 +1,11 @@
+
+.websocket-content {
+    display: inline-block;
+    overflow: auto;      
+    max-height: 12vw;      
+    width: 38em;
+}
+
+.websocket-content .socket-log .message {
+    white-space: pre-wrap;
+}

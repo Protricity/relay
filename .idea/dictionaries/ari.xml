@@ -5,6 +5,7 @@
       <w>kbpgp</w>
       <w>passphrase</w>
       <w>pgpdb</w>
+      <w>websocket</w>
     </words>
   </dictionary>
 </component>
