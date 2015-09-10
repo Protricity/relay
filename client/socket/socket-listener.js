@@ -12,14 +12,21 @@
     var CLASS_CHANNEL_LIST = 'channel-list';
     var CLASS_CHANNEL_LIST_ENTRY = 'channel-list-entry';
 
-    var socketWorker = new Worker('command-worker.js');
-    socketWorker.addEventListener('message', function(e) {
-        receiveMessage(e.data || e.detail);
-    }, true);
+    function getSocketWorker() {
+        if(typeof getSocketWorker.socketWorker === 'undefined') {
+            var socketWorker = new Worker('worker.js');
+            socketWorker.addEventListener('message', function(e) {
+                receiveMessage(e.data || e.detail);
+            }, true);
+            getSocketWorker.socketWorker = socketWorker;
+        }
+        return getSocketWorker.socketWorker;
+    }
+
 
     document.addEventListener('socket', function(e) {
         var commandString = e.detail || e.data;
-        socketWorker.postMessage(commandString);
+        getSocketWorker().postMessage(commandString);
         e.preventDefault();
     });
     document.addEventListener('message', function(e) {
@@ -28,7 +35,7 @@
 
     document.addEventListener('command', function(e) {
         var commandString = e.detail || e.data;
-        socketWorker.postMessage(commandString);
+        getSocketWorker().postMessage(commandString);
         e.preventDefault();
     });
 
