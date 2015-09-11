@@ -14,7 +14,7 @@ var get404IndexTemplate = function(commandString, callback) {
         throw new Error("Invalid GET Request: " + commandString);
     var contentURL = match[1];
     RestDB.listURLIndex(contentURL, function(urls) {
-        console.log(contentURL, urls);
+//         console.log(contentURL, urls);
         var pathHTML = "<ul class='path-index'>";
 
         for(var i=0; i<urls.length; i++)

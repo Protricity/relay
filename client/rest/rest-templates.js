@@ -1,0 +1,152 @@
+/**
+ * Created by ari on 6/19/2015.
+ */
+
+var restHTTPBrowserTemplate = function(responseText, callback) {
+    // Template
+    var HTTP_BROWSER_TEMPLATE = "\
+        <script src='rest/rest-listener.js'></script>\n\
+        <article class='{$attr_class} http-browser http-response-{$response_code}' data-browser-id='{$browser_id}'>\n\
+            <link rel='stylesheet' href='rest/rest.css' type='text/css'>\n\
+            <header>\n\
+                <span class='command'>GET</span> <span class='url'>{$request_url}</span>\n\
+            </header>\n\
+            <div class='header-commands'>\n\
+                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\
+                     --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\
+                     --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
+            </div>\n\
+            <nav>\n\
+                <form name='http-browser-navigation-form'>\n\
+                    <button type='submit' name='back'>&#8678;</button>\n\
+                    <button type='submit' name='forward'>&#8680;</button>\n\
+                    <button type='submit' name='home'>&#8962;</button>\n\
+                    <input name='url' type='text' value='{$request_url}' />\n\
+                    <button type='submit' name='navigate'>&#8476;</button>\n\
+                </form>\n\
+            </nav>\n\
+            <section class='http-body'>{$response_body}</section>\n\
+            <footer class='http-status'>{$response_code} {$response_text}</footer>\n\
+        </article>";
+
+
+    var headerBody = responseText;
+    var responseBody = '';
+    var splitPos = headerBody.indexOf("\n\n");
+    if(splitPos !== -1) {
+        headerBody = responseText.substr(0, splitPos);
+        responseBody = responseText.substr(splitPos).trim();
+    }
+    var headers = headerBody.split(/\n/);
+    var headerFirstLine = headers.shift();
+    var headerValues = {};
+    for(var i=0; i<headers.length; i++) {
+        var splitHeader = headers[i].split(': ');
+        headerValues[splitHeader[0].toLowerCase()] = splitHeader.length > 0 ? splitHeader[1] : true;
+    }
+    var match = /^http\/1.1 (\d+) ?(.*)$/i.exec(headerFirstLine);
+    if(!match)
+        throw new Error("Invalid HTTP Response: " + headerFirstLine);
+    var responseCode = parseInt(match[1]);
+    var responseCodeText = match[2];
+    var requestURL = headerValues['request-url'];
+    if(!requestURL)
+        throw new Error("Unknown request-url for response: Header is missing");
+    var browserID = headerValues['browser-id'];
+    if(!browserID)
+        throw new Error("Unknown browser-id for response:\n" + responseText);
+
+    //RestDB.listURLIndex(contentURL, function(urls) {
+    //    var pathHTML = "<ul class='path-index'>";
+    //
+    //    for(var i=0; i<urls.length; i++)
+    //        pathHTML += "\t<li><a href='" + urls[i][0] + "'>" + urls[i][1] + "</a></li>";
+    //    pathHTML += "</ul>";
+    //    TEMPLATE_INDEX = TEMPLATE_INDEX.replace(/{\$html_ul_index}/gi, pathHTML);
+    //    callback(TEMPLATE_INDEX);
+    //});
+    //
+
+    // Callback
+    callback(HTTP_BROWSER_TEMPLATE
+        .replace(/{\$response_body}/gi, responseBody)
+        .replace(/{\$response_code}/gi, responseCode)
+        .replace(/{\$response_text}/gi, responseCodeText)
+        .replace(/{\$browser_id}/gi, browserID)
+        .replace(/{\$request_url}/gi, requestURL)
+    );
+
+};
+
+
+var templateRestResponseBody = function(body, url, code, text, headers, callback) {
+
+    var RESPONSE_BODY_TEMPLATE = "\
+HTTP/1.1 {$response_code} {$response_text}\n\
+Content-type: text/html\n\
+Content-length: {$response_length}\n\
+Request-url: {$request_url}\n\
+{$response_headers}\
+\n\n\
+{$response_body}";
+
+    callback(RESPONSE_BODY_TEMPLATE
+        .replace(/{\$response_headers}/gi, headers)
+        .replace(/{\$response_code}/gi, code || '200')
+        .replace(/{\$response_text}/gi, text || 'OK')
+        .replace(/{\$request_url}/gi, url)
+        .replace(/{\$response_length}/gi, body.length)
+        .replace(/{\$response_body}/gi, body)
+    );
+};
+
+var restPutFormTemplate = function(content, callback) {
+
+    var PUT_FORM_TEMPLATE = "\
+        <article class='{$attr_class}'>\n\
+            <script src='rest/rest-listener.js'></script>\n\
+            <link rel='stylesheet' href='rest/rest.css' type='text/css'>\n\
+            <header><span class='command'>Put</span> content in your web space</header>\n\
+            <div class='header-commands'>\n\
+                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\
+             --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\
+             --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
+            </div>\n\
+            <form name='http-put-form' class='compact'>\n\
+                <label class='label-content'>Use this text box to create new content for your <strong>web space</strong>:<br/>\n\
+                    <textarea cols='56' rows='8' class='focus' name='content' required='required' placeholder=''>{$content}</textarea>\n\
+                <br/></label>\n\
+                <label class='label-pgp-id-private hide-on-compact'>Post with (PGP Identity):<br/>\n\
+                    <select name='pgp_id_private' required='required'>\n\
+                        <optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>\n\
+                        </optgroup>\n\
+                        <optgroup disabled='disabled' label='Other options'>\n\
+                            <option value=''>Manage PGP Identities...</option>\n\
+                        </optgroup>\n\
+                    </select>\n\
+                <br/><br/></label>\n\
+                <label class='label-path hide-on-compact'>Post to:<br/>\n\
+                    <select name='path'>\n\
+                        <option value='~'>My Home Page</option>\n\
+                        <option disabled='disabled'>Friend's Web Space...</option>\n\
+                        <option disabled='disabled'>Other Web Space...</option>\n\
+                    </select>\n\
+                <br/><br/></label>\n\
+                <label class='label-passphrase hide-on-compact show-on-passphrase-required'>PGP Passphrase (if required):<br/>\n\
+                    <input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>\n\
+                <br/><br/></label>\n\
+                <label class='label-submit hide-on-compact'><hr/>Submit your post:<br/>\n\
+                    <input type='submit' value='Post' name='submit-post-form' />\n\
+                </label>\n\
+            </form>\n\
+            <fieldset class='preview-container' style='display: none'>\n\
+                <legend>Preview</legend>\n\
+                <div class='preview'></div>\n\
+            </fieldset>\n\
+        </article>";
+
+    // Callback
+    callback(PUT_FORM_TEMPLATE
+        .replace(/{\$content}/gi, content || '')
+    );
+};

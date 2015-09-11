@@ -78,7 +78,7 @@ public class RESTCommands implements ISocketCommand {
             responseCode = 404;
             responseText = "Found Nerfin'";
             responseBody = "<h1>404 Found Nerfin'</h1>";
-            responseBody += "<br/>Try these links:<br/>";
+//            responseBody += "<br/>Try these links:<br/>";
 //            responseBody += "<a href='socket://ABCD1234/path/#frag'>Demo link</a>";
 //            responseBody += "<a href='socket://1234ABCD/path/?query#frag'>Demo link #2</a>";
         }

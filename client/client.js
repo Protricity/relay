@@ -29,25 +29,26 @@
     }
 
     setTimeout(function() {
-        console.log('wut');
         //send('JOIN /test');
         //send('manage');
 
-        send('keygen');
-        send('manage');
+        //send('keygen');
+        send('put');
 
-        if (document.location.host === 'localhost') {
-            send('get ~');
-            send('get home');
-            send('get socket://ABCD1234/~/');
-            send('get /missing/');
-        }
         var timezone = jstz.determine().name();
         var channelList = document.getElementsByClassName('command-list-channels')[0];
         channelList.innerHTML+= "<li><a href='#JOIN /timezone/" + timezone + "'><span class='command'>Join</span> <strong>" + timezone + "</strong></a></li>";
-        send('JOIN /timezone/' + timezone);
 //                send('put');
 
+        if (document.location.host === 'localhost') {
+            //send('get ~');
+            //send('get home');
+            //send('get socket://ABCD1234/~/');
+            //send('get /missing/');
+        } else {
+            send('JOIN /timezone/' + timezone);
+
+        }
     }, 200);
 
 

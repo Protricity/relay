@@ -2,15 +2,6 @@
  * Created by ari on 6/19/2015.
  */
 
-// Template
-var HEADER_COMMANDS_TEMPLATE = "\
-    <div class='header-commands'>\n\
-        <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a>\n\
-        <a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a>\n\
-        <a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
-    </div>\
-    ";
-
 var templateSocketLog = function(url, callback) {
 
     // Template
@@ -22,7 +13,11 @@ var templateSocketLog = function(url, callback) {
                     <span class='command'>Socket</span> {$socket_host}\
                 </a>\
             </header>\n\
-            {$html_header_commands}\n\
+            <div class='header-commands'>\n\
+                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\
+             --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\
+             --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
+            </div>\n\
             <fieldset class='websocket-content'></fieldset>\n\
             </form>\n\
         </article>";

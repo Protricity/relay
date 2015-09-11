@@ -155,7 +155,7 @@
 
     self.routeResponseToClient = function(commandResponse) {
         self.postMessage(commandResponse
-            .replace(/{\$html_header_commands}/gi, HEADER_COMMANDS_TEMPLATE)
+            //.replace(/{\$html_header_commands}/gi, HEADER_COMMANDS_TEMPLATE)
         );
     };
 
@@ -172,7 +172,7 @@
                     var autoLoadMethods = socketAutoLoaders[scriptPath];
                     if(autoLoadMethods.indexOf(cmd) !== -1) {
                         importScripts(scriptPath);
-                        console.info("Loaded: " + scriptPath);
+//                         console.info("Loaded: " + scriptPath);
                         break;
                     }
                 }
@@ -197,7 +197,7 @@
                     var autoLoadMethods = socketAutoLoaders[scriptPath];
                     if(autoLoadMethods.indexOf(cmd) !== -1) {
                         importScripts(scriptPath);
-                        console.info("Loaded: " + scriptPath);
+//                         console.info("Loaded: " + scriptPath);
                         break;
                     }
                 }

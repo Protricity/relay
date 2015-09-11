@@ -6,111 +6,16 @@
     var PATH_PREFIX_PUT = 'put:';
     var PATH_PREFIX_GET = 'get:';
 
-    var ARTICLE_PLACEHOLDER =
-        //"<article>\n" +
-        "<header>Optional Topic Header</header>\n" +
-        "Post about <i>any</i> <strong>topic</strong>\n" +
-        "<img src=\"path/to/topic/picture\" alt=\"my picture\" />\n";
-    //"</article>";
+    importScripts("rest/rest-templates.js");
 
-    var HTTP_BROWSER_TEMPLATE =
-        "<script src='rest/rest-listener.js'></script>" +
-        "<article class='{$attr_class} http-browser http-response-{$response_code}' data-browser-id='{$browser_id}'>" +
-            "<link rel='stylesheet' href='rest/rest.css' type='text/css'>" +
-            "<header>" +
-                "<span class='command'>GET</span> <span class='url'>{$request_url}</span>" +
-            "</header>" +
-                "{$html_header_commands}" +
-            "<nav>" +
-                "<form name='http-browser-navigation-form'>" +
-                    "<button type='submit' name='back'>&#8678;</button>" +
-                    "<button type='submit' name='forward'>&#8680;</button>" +
-                    "<button type='submit' name='home'>&#8962;</button>" +
-                    "<input name='url' type='text' value='{$request_url}' />" +
-                    "<button type='submit' name='navigate'>&#8476;</button>" +
-                "</form>" +
-            "</nav>" +
-            "<section class='http-body'>" +
-                "{$response_body}" +
-            "</section>" +
-            "<footer class='http-status'>" +
-                "{$response_code} {$response_text}" +
-            "</footer>" +
-        "</article>";
-
-    var RESPONSE_BODY_TEMPLATE =
-        "HTTP/1.1 {$response_code} {$response_text}\n" +
-        "Content-type: text/html\n" +
-        "Content-length: {$response_length}\n" +
-        "Request-url: {$request_url}" +
-        "{$response_headers}" +
-        "\n\n" +
-        "{$response_body}";
-
-    var RESPONSE_BODY_404 =
-        "<h2>404 Not Found</h2>" +
-        "<p>Try these pages instead:</p>" +
-        "{$html_ul_index}";
-
-    var RESPONSE_BODY_PENDING =
-        "<p>Request sent...</p>";
-
-    var PUT_FORM_TEMPLATE =
-        "<article class='{$attr_class}'>" +
-            "<script src='rest/rest-listener.js'></script>" +
-            "<link rel='stylesheet' href='rest/rest.css' type='text/css'>" +
-            "<header><span class='command'>Put</span> content in your web space</header>" +
-            "{$html_header_commands}" +
-
-            "<form name='http-put-form' class='compact'>" +
-                "<label class='label-content'>Use this text box to create new content for your <strong>web space</strong>:<br/>" +
-                    "<textarea cols='56' rows='8' class='focus' name='content' required='required' placeholder='" + ARTICLE_PLACEHOLDER + "'>{$content}</textarea>" +
-                "<br/></label>" +
-
-                //"<div class='>" +
-
-                    "<label class='label-pgp-id-private hide-on-compact'>Post with (PGP Identity):<br/>" +
-                        "<select name='pgp_id_private' required='required'>" +
-                            "<optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>" +
-                            "</optgroup>" +
-                            "<optgroup disabled='disabled' label='Other options'>" +
-                                "<option value=''>Manage PGP Identities...</option>" +
-                            "</optgroup>" +
-                        "</select>" +
-                    "<br/><br/></label>" +
-
-                    "<label class='label-path hide-on-compact'>Post to:<br/>" +
-                        "<select name='path'>" +
-                            "<option value='~'>My Home Page</option>" +
-                            "<option disabled='disabled'>Friend's Web Space...</option>" +
-                            "<option disabled='disabled'>Other Web Space...</option>" +
-                        "</select>" +
-                    "<br/><br/></label>" +
-
-                    //"<label class='label-recipients show-section-on-value'>Choose which subscribers may view this post:<br/>" +
-                    //    "<select name='recipients'>" +
-                    //        "<option value='*'>Everybody</option>" +
-                    //        "<option disabled='disabled'>My friends</option>" +
-                    //        "<option disabled='disabled'>Friends of Friends</option>" +
-                    //        "<option disabled='disabled'>Specific Recipients</option>" +
-                    //    "</select>" +
-                    //"<br/><br/></label>" +
-
-                    "<label class='label-passphrase hide-on-compact show-on-passphrase-required'>PGP Passphrase (if required):<br/>" +
-                        "<input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>" +
-                    "<br/><br/></label>" +
-
-                    "<label class='label-submit hide-on-compact'><hr/>Submit your post:<br/>" +
-                        "<input type='submit' value='Post' name='submit-post-form' />" +
-                    "</label>" +
-                //"</div>" +
-            "</form>" +
-            "<fieldset class='preview-container' style='display: none'>" +
-                "<legend>Preview</legend>" +
-                "<div class='preview'></div>" +
-            "</fieldset>" +
-        "</article>";
-
+    //<label class='label-recipients show-section-on-value'>Choose which subscribers may view this post:<br/>\n\
+    //    <select name='recipients'>\n\
+    //        <option value='*'>Everybody</option>\n\
+    //        <option disabled='disabled'>My friends</option>\n\
+    //        <option disabled='disabled'>Friends of Friends</option>\n\
+    //        <option disabled='disabled'>Specific Recipients</option>\n\
+    //    </select>\n\
+    //<br/><br/></label>\n\
 
     var httpBrowserID = 1;
     var putFormCounterN = 0;
@@ -130,20 +35,11 @@
         if(content) {
             // todo http format
             self.sendWithFastestSocket(commandString);
-            //
-            //getFeedDB(function (db, FeedDB) {
-            //    FeedDB.addVerifiedPostContentToDB(content);
-            //});
 
         } else {
-            self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_PUT + ' * ' +
-                PUT_FORM_TEMPLATE
-                    .replace(/{\$row_n}/gi, (putFormCounterN++).toString())
-                    .replace(/{\$content}/gi, content || '')
-                    .replace(/{\$path}/gi, path)
-                //.replace(/{\$[^}]+}/gi, '')
-            );
-
+            restPutFormTemplate(content, function(html) {
+                self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_PUT + ' * ' + html);
+            });
         }
 
 
@@ -162,7 +58,7 @@
 
 
         parseURLWithDefaultHost(requestData.url, function(parsedUrlData) {
-            var formattedCommandString = "GET " + parsedUrlData.url + " " + requestData.http_version + requestData.createRequestHeaderString();
+            var formattedCommandString = "GET " + parsedUrlData.url_fixed + " " + requestData.http_version + requestData.createRequestHeaderString();
             if(parsedUrlData.is_local) {
                 // If local, output content to client
                 executeLocalGETRequest(formattedCommandString, function(responseText) {
@@ -174,28 +70,30 @@
                 self.sendWithFastestSocket(formattedCommandString);
 
                 // Show something, sheesh
-                var pendingResponseText = RESPONSE_BODY_TEMPLATE
-                    .replace(/{\$response_code}/gi, "200")
-                    .replace(/{\$response_text}/gi, "Request Sent")
-                    .replace(/{\$request_url}/gi, requestData.url)
-                    .replace(/{\$response_length}/gi, RESPONSE_BODY_PENDING.length)
-                    .replace(/{\$response_body}/gi, RESPONSE_BODY_PENDING)
-                    .replace(/{\$response_headers}/gi, requestData.createResponseHeaderString())
-                    ;
+                templateRestResponseBody(
+                    "<p>Request sent...</p>",
+                    requestData.url,
+                    200,
+                    "Request Sent",
+                    requestData.createResponseHeaderString(),
+                    function(html) {
+                        renderResponseText(html);
+                    }
+                );
 
-                renderResponseText(pendingResponseText);
             }
         }, function(err) {
-            var errorResponseText = RESPONSE_BODY_TEMPLATE
-                .replace(/{\$response_code}/gi, "400")
-                .replace(/{\$response_text}/gi, err || "Missing Default PGP Identity")
-                .replace(/{\$request_url}/gi, requestData.url)
-                .replace(/{\$response_length}/gi, 0)
-                .replace(/{\$response_body}/gi, '')
-                .replace(/{\$response_headers}/gi, requestData.createResponseHeaderString())
-            ;
+            templateRestResponseBody(
+                '',
+                requestData.url,
+                400,
+                "Missing Default PGP Identity: " + err,
+                requestData.createResponseHeaderString(),
+                function(html) {
+                    renderResponseText(html);
+                }
+            );
 
-            renderResponseText(errorResponseText);
         });
     };
 
@@ -241,49 +139,49 @@
 
     function executeLocalGETRequest(commandString, callback) {
         var requestData = parseRequestBody(commandString);
-        var urlData = parseURL(requestData.url);
-        if(!urlData.host)
-            throw new Error("Invalid Host: " + commandString);
-        var formattedCommandString = requestData.createRequestString(); // "GET " + urlData.url + "\n" + requestHeaders.join("\n");
-        getRestDB().getContent(urlData.path, onContent);
+        parseURLWithDefaultHost(requestData.url, function(urlData) {
+            console.log(urlData);
+            if(!urlData.host)
+                throw new Error("Invalid Host: " + commandString);
+            var formattedCommandString = requestData.createRequestString(); // "GET " + urlData.url + "\n" + requestHeaders.join("\n");
+            getRestDB().getContent(urlData.path_fixed, onContent);
 
-        function onContent(err, contentData) {
-            if(err)
-                throw new Error(err);
+            function onContent(err, contentData) {
+                if(err)
+                    throw new Error(err);
 
-            if(contentData) {
+                if(contentData) {
 
-                var signedBody = protectHTMLContent(contentData.content_verified);
-                var responseText200 = RESPONSE_BODY_TEMPLATE
-                    .replace(/{\$response_headers}/gi, requestData.createResponseHeaderString())
-                    .replace(/{\$response_code}/gi, "200")
-                    .replace(/{\$response_text}/gi, "OK")
-                    .replace(/{\$request_url}/gi, urlData.url)
-                    .replace(/{\$response_length}/gi, signedBody.length)
-                    .replace(/{\$response_body}/gi, signedBody);
+                    var signedBody = protectHTMLContent(contentData.content_verified);
 
-                callback(responseText200);
+                    templateRestResponseBody(
+                        signedBody,
+                        requestData.url,
+                        200,
+                        "OK",
+                        requestData.createResponseHeaderString(),
+                        callback
+                    );
 
-            } else {
-                (function() {
-                    importScripts('template/template-defaults.js');
-                    getDefaultResponse(formattedCommandString, function(defaultResponseString, responseCode, responseText, responseHeaders) {
-                        responseHeaders = (responseHeaders ? responseHeaders + "\n" : "") + requestData.createResponseHeaderString();
+                } else {
+                    (function() {
+                        importScripts('template/template-defaults.js');
+                        getDefaultResponse(formattedCommandString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
+                            responseHeaders = (responseHeaders ? responseHeaders + "\n" : "") + requestData.createResponseHeaderString();
+                            defaultResponseBody = protectHTMLContent(defaultResponseBody);
 
-                        defaultResponseString = protectHTMLContent(defaultResponseString);
-                        var responseText404 = RESPONSE_BODY_TEMPLATE
-                            .replace(/{\$response_headers}/gi, responseHeaders)
-                            .replace(/{\$response_code}/gi, responseCode || '200')
-                            .replace(/{\$response_text}/gi, responseText || 'OK')
-                            .replace(/{\$request_url}/gi, urlData.url)
-                            .replace(/{\$response_length}/gi, defaultResponseString.length)
-                            .replace(/{\$response_body}/gi, defaultResponseString);
-
-                        callback(responseText404);
-                    });
-                })();
+                            templateRestResponseBody(
+                                defaultResponseBody,
+                                requestData.url,
+                                responseCode,
+                                responseText,
+                                responseHeaders,
+                                callback);
+                        });
+                    })();
+                }
             }
-        }
+        });
     }
 
     function getPathIterator(urlPrefix, callback, onFinish) {
@@ -363,19 +261,13 @@
         }
 
         function r(urlData) {
+            requestUrl = urlData.url;
             var browserID = response.headers['browser-id'] || httpBrowserID++;
 
-            parseHTMLBody(response.body, urlData.url, function(parsedResponseBody) {
-                self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_GET + browserID + ' * ' +
-                    HTTP_BROWSER_TEMPLATE
-                        .replace(/{\$response_body}/gi, parsedResponseBody)
-                        .replace(/{\$response_code}/gi, response.code)
-                        .replace(/{\$response_text}/gi, response.text)
-                        .replace(/{\$browser_id}/gi, browserID)
-                        .replace(/{\$request_url}/gi, urlData.url)
-                        //.replace(/{\$response_headers}/gi, '')
-                    //.replace(/{\$[^}]+}/gi, '')
-                );
+            restHTTPBrowserTemplate(responseText, function(html) {
+                parseHTMLBody(html, requestUrl, function(parsedResponseBody) {
+                    self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_GET + browserID + ' * ' + html);
+                });
             });
 
         }
@@ -530,9 +422,9 @@
                 } else {
                     urlData.is_local = urlData.host === id_public_short;
                 }
-                urlData.path = urlData.path
+                urlData.path_fixed = urlData.path
                     .replace(/^\/~/, '/home/' + urlData.host);
-                urlData.url = (urlData.scheme || 'socket') + '://' + urlData.host +
+                urlData.url_fixed = (urlData.scheme || 'socket') + '://' + urlData.host +
                     (urlData.path[0] === '/' ? '' : '/') + urlData.path +
                     (urlData.query ? '?' + urlData.query : '') +
                     (urlData.fragment ? '?' + urlData.fragment : '');

@@ -10,38 +10,41 @@
     var CLASS_INACTIVE_USERS = 'inactive-users';
     var CLASS_CHANNEL_CONTENT = 'channel-content';
 
-    var CHANNEL_TEMPLATE =
-        "<article class='{$attr_class}'>" +
-            "<script src='chat/chat-form.js'></script>" +
-            "<link rel='stylesheet' href='chat/chat.css' type='text/css'>" +
-            "<header><span class='command'>Join</span> {$channel}</header>" +
-            "{$html_header_commands}" +
-            "<form name='chat-form' action='#' onsubmit='return submitChatForm(event);'>" +
-                "<table>" +
-                    "<tbody>" +
-                        "<tr>" +
-                            "<td style='vertical-align: top'>" +
-                                "<select multiple='multiple' name='user-list' size='5'>" +
-                                    "<optgroup class='" + CLASS_ACTIVE_USERS + "' label='Active Users (0)'></optgroup>" +
-                                    "<optgroup class='" + CLASS_INACTIVE_USERS + "' label='Inactive Users (0)'></optgroup>" +
-                                "</select>" +
-                            "</td>" +
-                            "<td style='vertical-align: top'>" +
-                                "<fieldset class='" + CLASS_CHANNEL_CONTENT + "'>Joining {$channel}...</fieldset>" +
-                            "</td>" +
-                        "</tr>" +
-                        "<tr>" +
-                            "<td colspan='2'>" +
-                                "<input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' />" +
-                                "<input type='submit' value='Send' name='submit-send-chat' />" +
-                                "<input type='hidden' value='{$channel}' name='channel' />" +
-                            "</td>" +
-                        "</tr>" +
-                    "</tbody>" +
-                "</table>" +
-
-            "</form>" +
-        "</article>";
+    var CHANNEL_TEMPLATE = "\
+        <article class='{$attr_class}'>\n\
+            <script src='chat/chat-form.js'></script>\n\
+            <link rel='stylesheet' href='chat/chat.css' type='text/css'>\n\
+            <header><span class='command'>Join</span> {$channel}</header>\n\
+            <div class='header-commands'>\n\
+                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\n\
+             --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\n\
+             --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
+            </div>\
+            <form name='chat-form' action='#' onsubmit='return submitChatForm(event);'>\n\
+                <table>\n\
+                    <tbody>\n\
+                        <tr>\n\
+                            <td style='vertical-align: top'>\n\
+                                <select multiple='multiple' name='user-list' size='5'>\n\
+                                    <optgroup class='" + CLASS_ACTIVE_USERS + "' label='Active Users (0)'></optgroup>\n\
+                                    <optgroup class='" + CLASS_INACTIVE_USERS + "' label='Inactive Users (0)'></optgroup>\n\
+                                </select>\n\
+                            </td>\n\
+                            <td style='vertical-align: top'>\n\
+                                <fieldset class='" + CLASS_CHANNEL_CONTENT + "'>Joining {$channel}...</fieldset>\n\
+                            </td>\n\
+                        </tr>\n\
+                        <tr>\n\
+                            <td colspan='2'>\n\
+                                <input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' />\n\
+                                <input type='submit' value='Send' name='submit-send-chat' />\n\
+                                <input type='hidden' value='{$channel}' name='channel' />\n\
+                            </td>\n\
+                        </tr>\n\
+                    </tbody>\n\
+                </table>\n\
+            </form>\n\
+        </article>";
 
     var CHAT_TEMPLATE = '<div class="channel-log">' +
         '<span class="username" data-session-uid="{$session_uid}" data-timestamp="{$timestamp}">{$username}</span>' +
@@ -233,10 +236,10 @@
         );
 
         var sigIDList = sigIDLists[channelPath] || [];
-        var sigIDMatch = "SIGID " + pgp_id_public + " " + session_uid;
+        //var sigIDMatch = "SIGID " + pgp_id_public + " " + session_uid;
         for(var i=0; i<sigIDList.length; i++) {
             var sigID = sigIDList[i];
-            if(sigID.indexOf(sigIDMatch) === 0) {
+            if(sigID.indexOf(session_uid) !== -1) {
                 sigIDList.splice(i, 1);
                 break;
             }
@@ -322,7 +325,6 @@
         return path.toLowerCase();
     }
 
-    console.log("Loaded Command: join");
 })();
 
 

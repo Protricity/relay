@@ -19,100 +19,105 @@
         //"</article>";
 
 
-    var FEED_POST_FORM_TEMPLATE =
-        "<article class='{$attr_class}'>" +
-            "<script src='feed/feed-form.js'></script>" +
-            "<link rel='stylesheet' href='feed/feed.css' type='text/css'>" +
-            "<header>Post to your feed</header>" +
-            "{$html_header_commands}" +
+    var FEED_POST_FORM_TEMPLATE = "\
+        <article class='{$attr_class}'>\n\
+            <script src='feed/feed-form.js'></script>\n\
+            <link rel='stylesheet' href='feed/feed.css' type='text/css'>\n\
+            <header>Post to your feed</header>\n\
+            <div class='header-commands'>\n\
+                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\n\
+             --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\n\
+             --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
+            </div>\
+            <form name='feed-post-form' class='feed-post-form:uninitiated' action='#' onsubmit='return submitPostForm(event);'>\n\
+                <label class='label-content'>Use this text box to create a new feed post:<br/>\n\
+                    <textarea cols='56' rows='8' onfocus='focusPostForm(event)' oninput='focusPostForm(event)' class='focus' name='content' required='required' placeholder='" + ARTICLE_PLACEHOLDER + "'>{$content}</textarea>\n\
+                <br/></label>\n\
+                <div class='show-section-on-value hide-section-on-no-value'>\n\
+                    <label class='label-pgp-id'>Post with (PGP Identity):<br/>\n\
+                        <select name='pgp-id' required='required' onfocus='focusPostForm(event)' onselect='focusPostForm(event)' oninput='focusPostForm(event)'>\n\
+                            <optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>\n\
+                            </optgroup>\n\
+                            <optgroup disabled='disabled' label='Other options'>\n\
+                                <option value=''>Manage PGP Identities...</option>\n\
+                            </optgroup>\n\
+                        </select>\n\
+                    <br/><br/></label>\n\
+                    <label class='label-channel'>Post to:<br/>\n\
+                        <select name='channel'>\n\
+                            <option value='~'>My Feed</option>\n\
+                            <option disabled='disabled'>Other Feed...</option>\n\
+                            <option disabled='disabled'>Friend's Feed...</option>\n\
+                        </select>\n\
+                    <br/><br/></label>\n\
+                    <label class='label-passphrase' style='display: none'>PGP Passphrase (if required):<br/>\n\
+                        <input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>\n\
+                    <br/><br/></label>\n\
+                    <label class='label-submit'><hr/>Submit your post:<br/>\n\
+                        <input type='submit' value='Post' name='submit-feed-post-form' />\n\
+                    </label>\n\
+                </div>\n\
+            </form>\n\
+            <fieldset class='preview-container' style='display: none'>\n\
+                <legend>Preview</legend>\n\
+                <div class='preview'></div>\n\
+            </fieldset>\n\
+        </article>";
 
-            "<form name='feed-post-form' class='feed-post-form:uninitiated' action='#' onsubmit='return submitPostForm(event);'>" +
-                "<label class='label-content'>Use this text box to create a new feed post:<br/>" +
-                    "<textarea cols='56' rows='8' onfocus='focusPostForm(event)' oninput='focusPostForm(event)' class='focus' name='content' required='required' placeholder='" + ARTICLE_PLACEHOLDER + "'>{$content}</textarea>" +
-                "<br/></label>" +
+    //"<label class='label-recipients show-section-on-value'>Choose which subscribers may view this post:<br/>\n\
+    //    "<select name='recipients'>\n\
+    //        "<option value='*'>Everybody</option>\n\
+    //        "<option disabled='disabled'>My friends</option>\n\
+    //        "<option disabled='disabled'>Friends of Friends</option>\n\
+    //        "<option disabled='disabled'>Specific Recipients</option>\n\
+    //    "</select>\n\
+    //"<br/><br/></label>\n\
 
-                "<div class='show-section-on-value hide-section-on-no-value'>" +
-
-                    "<label class='label-pgp-id'>Post with (PGP Identity):<br/>" +
-                        "<select name='pgp-id' required='required' onfocus='focusPostForm(event)' onselect='focusPostForm(event)' oninput='focusPostForm(event)'>" +
-                            "<optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>" +
-                            "</optgroup>" +
-                            "<optgroup disabled='disabled' label='Other options'>" +
-                                "<option value=''>Manage PGP Identities...</option>" +
-                            "</optgroup>" +
-                        "</select>" +
-                    "<br/><br/></label>" +
-
-                    "<label class='label-channel'>Post to:<br/>" +
-                        "<select name='channel'>" +
-                            "<option value='~'>My Feed</option>" +
-                            "<option disabled='disabled'>Other Feed...</option>" +
-                            "<option disabled='disabled'>Friend's Feed...</option>" +
-                        "</select>" +
-                    "<br/><br/></label>" +
-
-                    //"<label class='label-recipients show-section-on-value'>Choose which subscribers may view this post:<br/>" +
-                    //    "<select name='recipients'>" +
-                    //        "<option value='*'>Everybody</option>" +
-                    //        "<option disabled='disabled'>My friends</option>" +
-                    //        "<option disabled='disabled'>Friends of Friends</option>" +
-                    //        "<option disabled='disabled'>Specific Recipients</option>" +
-                    //    "</select>" +
-                    //"<br/><br/></label>" +
-
-                    "<label class='label-passphrase' style='display: none'>PGP Passphrase (if required):<br/>" +
-                        "<input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>" +
-                    "<br/><br/></label>" +
-
-                    "<label class='label-submit'><hr/>Submit your post:<br/>" +
-                        "<input type='submit' value='Post' name='submit-feed-post-form' />" +
-                    "</label>" +
-                "</div>" +
-            "</form>" +
-            "<fieldset class='preview-container' style='display: none'>" +
-                "<legend>Preview</legend>" +
-                "<div class='preview'></div>" +
-            "</fieldset>" +
-        "</article>";
+    var FEED_TEMPLATE = "\
+        <article class='{$attr_class}'>\n\
+            <script src='feed/feed-form.js'></script>\n\
+            <link rel='stylesheet' href='feed/feed.css' type='text/css'>\n\
+            <header>{$title}</header>\n\
+            <div class='header-commands'>\n\
+                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\
+             --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\
+             --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
+            </div>\n\
+            <div class='feed-container channel-content' onscroll='scrollFeed.apply(this, [event]);'>\n\
+                <fieldset class='feed-post-form-container'>\n\
+                    FEED_POST_FORM_TEMPLATE\n\
+                </fieldset>\n\
+            </div>\n\
+        </article>";
 
 
-    var FEED_TEMPLATE =
-        "<article class='{$attr_class}'>" +
-            "<script src='feed/feed-form.js'></script>" +
-            "<link rel='stylesheet' href='feed/feed.css' type='text/css'>" +
-            "<header>{$title}</header>" +
-            "{$html_header_commands}" +
-            "<div class='feed-container channel-content' onscroll='scrollFeed.apply(this, [event]);'>" +
-                "<fieldset class='feed-post-form-container'>" +
-                    FEED_POST_FORM_TEMPLATE +
-                "</fieldset>" +
-            "</div>" +
-        "</article>";
-
-
-    var FEED_TEMPLATE_ENTRY =
-        "<fieldset class='feed-post-container unsorted'>" +
-            "<header>Feed Post</header>" +
-            "{$html_header_commands}" +
-            "<div class='feed-post-author'>" +
-                "<img class='user_icon' src='feed/img/user_icon_default.png' alt='UI' />" +
-                "<a href='{$user_home}' class='user'>{$user_id}</a>" +
-                "<div class='timestamp_formatted'>{$timestamp_formatted}</div>" +
-            "</div>" +
-            "{$content_verified}" +
-            "<div class='feed-post-commands'>" +
-                "<button onclick='toggleFeedPostLike([\"{$uid}\")' class='command command-like'>Like</button>" +
-                "<button onclick='toggleSection(\"feed-section-comments:{$row_n}\")' class='command command-comment'>Comments</button>" +
-                "<button onclick='toggleSection(\"feed-section-share:{$row_n}\")' class='command command-share'>Share</button>" +
-                "<button onclick='toggleSection(\"feed-section-info:{$row_n}\")' class='command command-info'>Info</button>" +
-            "</div>" +
-            "<div class='feed-section-comments:{$row_n}' style='display:none;'>Comments" +
-            "</div>" +
-            "<div class='feed-section-share:{$row_n}' style='display:none;'>Share" +
-            "</div>" +
-            "<div class='feed-section-info:{$row_n}' style='display:none;'>Info" +
-            "</div>" +
-        "</fieldset>";
+    var FEED_TEMPLATE_ENTRY = "\
+        <fieldset class='feed-post-container unsorted'>\n\
+            <header>Feed Post</header>\n\
+            <div class='header-commands'>\n\
+                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\n\
+             --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\n\
+             --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
+            </div>\
+            <div class='feed-post-author'>\n\
+                <img class='user_icon' src='feed/img/user_icon_default.png' alt='UI' />\n\
+                <a href='{$user_home}' class='user'>{$user_id}</a>\n\
+                <div class='timestamp_formatted'>{$timestamp_formatted}</div>\n\
+            </div>\n\
+            {$content_verified}\n\
+            <div class='feed-post-commands'>\n\
+                <button onclick='toggleFeedPostLike([\"{$uid}\")' class='command command-like'>Like</button>\n\
+                <button onclick='toggleSection(\"feed-section-comments:{$row_n}\")' class='command command-comment'>Comments</button>\n\
+                <button onclick='toggleSection(\"feed-section-share:{$row_n}\")' class='command command-share'>Share</button>\n\
+                <button onclick='toggleSection(\"feed-section-info:{$row_n}\")' class='command command-info'>Info</button>\n\
+            </div>\n\
+            <div class='feed-section-comments:{$row_n}' style='display:none;'>Comments\n\
+            </div>\n\
+            <div class='feed-section-share:{$row_n}' style='display:none;'>Share\n\
+            </div>\n\
+            <div class='feed-section-info:{$row_n}' style='display:none;'>Info\n\
+            </div>\n\
+        </fieldset>";
 
     var feedNCounter = 0;
     var postFormNCounter = 0;

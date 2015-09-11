@@ -30,7 +30,6 @@
         var commandString = "GET " + anchorElement.href;
         if(browserID)
             commandString += "\nBrowser-ID: " + browserID;
-        // TODO: header with .http-browser id
         // TODO: grab latest timestamp from path via header
 
         var commandEvent = new CustomEvent('command', {
@@ -196,6 +195,32 @@
                 });
 
         });
+    }
+
+    function submitHTTPBrowserNavigationForm(e, formElm) {
+        var urlElm = formElm.querySelector('[name=url]');
+        if(!urlElm)
+            throw new Error("Could not find url input");
+        if(!urlElm.value)
+            return;
+
+        var browserID = null;
+        var targetElm = e.target || formElm;
+        while(!browserID && (targetElm = targetElm.parentNode))
+            browserID = targetElm.getAttribute('data-browser-id');
+        if(!browserID)
+            throw new Error("Browser ID not found");
+
+        var commandString = "GET " + urlElm.value +
+            "\nBrowser-ID: " + browserID;
+
+        var commandEvent = new CustomEvent('command', {
+            detail: commandString,
+            cancelable: true,
+            bubbles: true
+        });
+        e.target.dispatchEvent(commandEvent);
+
     }
 
     function protectHTMLContent(htmlContent, formElm) {
