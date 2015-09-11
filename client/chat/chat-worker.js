@@ -3,67 +3,10 @@
  */
 (function() {
 
+    importScripts('chat/chat-templates.js');
+
     var PATH_PREFIX_CHAT = 'chat:';
     var PATH_PREFIX_MESSAGE = 'message:';
-
-    var CLASS_ACTIVE_USERS = 'active-users';
-    var CLASS_INACTIVE_USERS = 'inactive-users';
-    var CLASS_CHANNEL_CONTENT = 'channel-content';
-
-    var CHANNEL_TEMPLATE = "\
-        <article class='{$attr_class}'>\n\
-            <script src='chat/chat-form.js'></script>\n\
-            <link rel='stylesheet' href='chat/chat.css' type='text/css'>\n\
-            <header><span class='command'>Join</span> {$channel}</header>\n\
-            <div class='header-commands'>\n\
-                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\n\
-             --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\n\
-             --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
-            </div>\
-            <form name='chat-form' action='#' onsubmit='return submitChatForm(event);'>\n\
-                <table>\n\
-                    <tbody>\n\
-                        <tr>\n\
-                            <td style='vertical-align: top'>\n\
-                                <select multiple='multiple' name='user-list' size='5'>\n\
-                                    <optgroup class='" + CLASS_ACTIVE_USERS + "' label='Active Users (0)'></optgroup>\n\
-                                    <optgroup class='" + CLASS_INACTIVE_USERS + "' label='Inactive Users (0)'></optgroup>\n\
-                                </select>\n\
-                            </td>\n\
-                            <td style='vertical-align: top'>\n\
-                                <fieldset class='" + CLASS_CHANNEL_CONTENT + "'>Joining {$channel}...</fieldset>\n\
-                            </td>\n\
-                        </tr>\n\
-                        <tr>\n\
-                            <td colspan='2'>\n\
-                                <input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' />\n\
-                                <input type='submit' value='Send' name='submit-send-chat' />\n\
-                                <input type='hidden' value='{$channel}' name='channel' />\n\
-                            </td>\n\
-                        </tr>\n\
-                    </tbody>\n\
-                </table>\n\
-            </form>\n\
-        </article>";
-
-    var CHAT_TEMPLATE = '<div class="channel-log">' +
-        '<span class="username" data-session-uid="{$session_uid}" data-timestamp="{$timestamp}">{$username}</span>' +
-        ': <span class="message">{$content}</span>' +
-        '</div>';
-
-    var ACTION_TEMPLATE = '<div class="channel-log">' +
-        '<span class="username" data-session-uid="{$session_uid}">{$username}</span>' +
-        ' has <span class="action">{$action}</span>' +
-        ' <a href="#JOIN {$channel}" class="path">{$channel}</a>' +
-        '</div>';
-
-    var NICK_TEMPLATE = '<div class="channel-log">' +
-        'Username <span class="username">{$old_username}</span>' +
-        ' has been <span class="action">renamed</span> to <span class="username">{$new_username}</span>' +
-        '</div>';
-
-
-    var CHANNEL_USERLIST_SELECT_OPTION = "<option value='{$session_uid}'>{$username}</option>";
 
     var activeChannels = [];
 
@@ -95,18 +38,10 @@
         if(!match)
             throw new Error("Invalid Chat Response: " + commandResponse);
         var channelPath = fixChannelPath(match[2]);
-        var timestamp = parseInt(match[3]);
-        var session_uid = match[4];
-        var username = match[5];
-        var content = fixPGPMessage(match[6]);
         checkChannel(channelPath);
-        self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath + ' .' + CLASS_CHANNEL_CONTENT + ' ' + CHAT_TEMPLATE
-                .replace(/{\$timestamp}/gi, timestamp.toString())
-                .replace(/{\$channel}/gi, channelPath)
-                .replace(/{\$session_uid}/gi, session_uid)
-                .replace(/{\$username}/gi, username)
-                .replace(/{\$content}/gi, content)
-        );
+        templateChatChannelMessage(commandResponse, function(html) {
+            self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath + ' .channel-content ' + html);
+        });
     };
 
     function sendUserList(channelPath, sigIDList) {
@@ -132,7 +67,7 @@
         })(sigIDList[ui]);
         checkChannel(channelPath);
         optionHTML =
-            "<optgroup class='" + CLASS_ACTIVE_USERS + "' label='Active Users (" + sigIDList.length + ")'>" +
+            "<optgroup class='active-users' label='Active Users (" + sigIDList.length + ")'>" +
                 optionHTML +
             "</optgroup>";
         self.routeResponseToClient('LOG.REPLACE ' + PATH_PREFIX_CHAT + channelPath + ' .' + CLASS_ACTIVE_USERS + ' ' + optionHTML);
@@ -158,13 +93,9 @@
         var username = args[4];
         var visibility = args[5];
         checkChannel(channelPath);
-        self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath + ' .' + CLASS_CHANNEL_CONTENT +  ' ' + ACTION_TEMPLATE
-            .replace(/{\$action}/gi, 'joined')
-            .replace(/{\$channel}/gi, channelPath)
-            .replace(/{\$session_uid}/gi, session_uid)
-            .replace(/{\$username}/gi, username)
-            .replace(/{\$pgp_id_public}/gi, pgp_id_public)
-        );
+        templateChatChannelAction(commandResponse, function(html) {
+            self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath + ' .channel-content ' + html);
+        });
 
         var sigIDList = sigIDLists[channelPath] || [];
         var identityString = "IDSIG" + // Recreate IDSIG cause we can
@@ -194,13 +125,9 @@
         var session_uid = args[3];
         var username = args[4];
         checkChannel(channelPath);
-        self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath + ' .' + CLASS_CHANNEL_CONTENT +  ' ' + ACTION_TEMPLATE
-                .replace(/{\$action}/gi, 'left')
-                .replace(/{\$channel}/gi, channelPath)
-                .replace(/{\$session_uid}/gi, session_uid)
-                .replace(/{\$username}/gi, username)
-                .replace(/{\$pgp_id_public}/gi, pgp_id_public)
-        );
+        templateChatChannelAction(commandResponse, function(html) {
+            self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath + ' .channel-content ' + html);
+        });
 
         var sigIDList = sigIDLists[channelPath] || [];
         var sigIDMatch = "SIGID " + pgp_id_public + " " + session_uid;
@@ -226,14 +153,9 @@
         var new_username = args[5];
         var visibility = args[6];
         checkChannel(channelPath);
-        self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath + ' .' + CLASS_CHANNEL_CONTENT +  ' ' + NICK_TEMPLATE
-                .replace(/{\$action}/gi, 'left')
-                .replace(/{\$channel}/gi, channelPath)
-                //.replace(/{\$old_session_uid}/gi, session_uid)
-                .replace(/{\$old_username}/gi, old_username)
-                //.replace(/{\$new_session_uid}/gi, session_uid)
-                .replace(/{\$new_username}/gi, new_username)
-        );
+        templateChatChannelNick(commandResponse, function(html) {
+            self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath + ' .class-content ' + html);
+        });
 
         var sigIDList = sigIDLists[channelPath] || [];
         //var sigIDMatch = "SIGID " + pgp_id_public + " " + session_uid;
@@ -265,10 +187,9 @@
         var match = /^(msg|message)\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandResponse);
         var session_uid = match[2];
         var content = fixPGPMessage(match[3]);
-        self.routeResponseToClient('LOG ' + PATH_PREFIX_MESSAGE + session_uid + ' ' + MESSAGE_TEMPLATE
-                .replace(/{\$session_uid}/gi, session_uid)
-                .replace(/{\$content}/gi, content)
-        );
+        templateChatChannelMessage(commandResponse, function(html) {
+            self.routeResponseToClient('LOG ' + PATH_PREFIX_MESSAGE + session_uid + ' ' + html);
+        });
     };
 
 
@@ -312,8 +233,9 @@
         //    throw new Error("Invalid Channel: " + channelPath);
 
         if(activeChannels.indexOf(channelPath) === -1) {
-            self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_CHAT + channelPath + ' * ' + CHANNEL_TEMPLATE
-                .replace(/{\$channel}/gi, channelPath));
+            templateChatChannel(channelPath, function(html) {
+                self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_CHAT + channelPath + ' * ' + html);
+            });
             activeChannels.push(channelPath);
             console.info("New active channel: " + channelPath);
         }
