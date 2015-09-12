@@ -67,44 +67,26 @@
         }
     }
 
-    var refreshTimeout = null;
     function refreshHTTPPutForm(e, formElm) {
+        var pgpIDElm = formElm.querySelector('[name=pgp_id_private]');
+        if(!pgpIDElm.value) {
+            formElm.classList.add('id-required');
+            return;
+        }
+        formElm.classList.remove('id-required');
+        var split = pgpIDElm.value.split(',');
+        var pgp_id_private = split[0];
+        var pgp_id_public = split[1];
+        var defaultUsername = split[2];
+        var passphraseRequired = split[3] === '1';
+
         var passphraseElm = formElm.querySelector('*[name=passphrase][type=password], [type=password]');
         var postContentElm = formElm.querySelector('textarea[name=content]');
-        var pgpIDPrivateElm = formElm.querySelector('*[name=pgp_id_private]');
 
-        if(pgpIDPrivateElm.value) {
-            var optionSplit = pgpIDPrivateElm.value.split(',');
-            var selectedPrivateKeyID = optionSplit[0];
-            var selectedPrivateKeyRequiresPassphrase = optionSplit.length > 1 && optionSplit[1] === '1';
-            formElm.classList[selectedPrivateKeyRequiresPassphrase ? 'add' : 'remove']('passphrase-required');
-            passphraseElm[(selectedPrivateKeyRequiresPassphrase ? 'set' : 'remove') + 'Attribute']('required', 'required');
-        }
-
-        clearTimeout(refreshTimeout);
-        refreshTimeout = setTimeout(function() {
-            formElm.classList[postContentElm.value.length === 0 ? 'add' : 'remove']('compact');
-
-            var newOptionHTML = '';
-            PGPDB.queryPrivateKeys(function(pkData) {
-                var privateKeyID = pkData.id_private;
-                var optionValue = privateKeyID + (pkData.passphrase_required ? ',1' : '');
-
-                if(!pgpIDPrivateElm.value)
-                    pgpIDPrivateElm.value = optionValue;
-                var userID = pkData.user_id;
-
-                newOptionHTML +=
-                    '<option ' + (privateKeyID === selectedPrivateKeyID ? 'selected="selected"' : '') + ' value="' + optionValue + '">' +
-                        (pkData.passphrase_required ? '(*) ' : '') + userID.replace(/</, '&lt;') +
-                    '</option>';
-
-            }, function() {
-                var optGroupPGPIdentities = formElm.getElementsByClassName('pgp-identities')[0];
-                optGroupPGPIdentities.innerHTML = newOptionHTML;
-
-            });
-        }, REFRESH_TIMEOUT);
+        if(postContentElm.value.length > 0)
+            formElm.classList.remove('compact');
+        formElm.classList[passphraseRequired ? 'add' : 'remove']('passphrase-required');
+        passphraseElm[(passphraseRequired ? 'set' : 'remove') + 'Attribute']('required', 'required');
     }
 
     function submitHTTPPutForm(e, formElm) {

@@ -106,24 +106,15 @@ var restPutFormTemplate = function(content, callback) {
         <article class='{$attr_class}'>\n\
             <script src='rest/rest-listener.js'></script>\n\
             <link rel='stylesheet' href='rest/rest.css' type='text/css'>\n\
-            <header><span class='command'>Put</span> content in your web space</header>\n\
+            <header><span class='command'>Put</span> content in your <strong>User Space</strong></header>\n\
             <div class='header-commands'>\n\
                 <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\
              --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\
              --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
             </div>\n\
             <form name='http-put-form' class='compact'>\n\
-                <label class='label-content'>Use this text box to create new content for your <strong>web space</strong>:<br/>\n\
-                    <textarea cols='56' rows='8' class='focus' name='content' required='required' placeholder=''>{$content}</textarea>\n\
-                <br/></label>\n\
-                <label class='label-pgp-id-private hide-on-compact'>Post with (PGP Identity):<br/>\n\
-                    <select name='pgp_id_private' required='required'>\n\
-                        <optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>\n\
-                        </optgroup>\n\
-                        <optgroup disabled='disabled' label='Other options'>\n\
-                            <option value=''>Manage PGP Identities...</option>\n\
-                        </optgroup>\n\
-                    </select>\n\
+                <label class='label-content'>Create new content for your <strong>User Space</strong>:<br/>\n\
+                    <textarea cols='42' rows='8' class='focus' name='content' required='required' placeholder='Type anything you like.\n\n\t<i>some</i>\n\t<code>html tags</code>\n\t<strong>allowed!</strong>'>{$content}</textarea>\n\
                 <br/><br/></label>\n\
                 <label class='label-path hide-on-compact'>Post to:<br/>\n\
                     <select name='path'>\n\
@@ -132,7 +123,19 @@ var restPutFormTemplate = function(content, callback) {
                         <option disabled='disabled'>Other Web Space...</option>\n\
                     </select>\n\
                 <br/><br/></label>\n\
-                <label class='label-passphrase hide-on-compact show-on-passphrase-required'>PGP Passphrase (if required):<br/>\n\
+                <label class='label-pgp-id-private hide-on-compact'>Post with (PGP Identity):<br/>\n\
+                    <select name='pgp_id_private' required='required'>\n\
+                        <option value=''>Select a PGP Identity</option>\n\
+                        <optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>\n\
+                            {$html_pgp_id_private}\n\
+                        </optgroup>\n\
+                        <optgroup label='Other options'>\n\
+                            <option value='' disabled='disabled'>Manage PGP Identities...</option>\n\
+                            <option value='' disabled='disabled'>Look up Identity...</option>\n\
+                        </optgroup>\n\
+                    </select>\n\
+                <br/><br/></label>\n\
+                <label class='label-passphrase show-on-passphrase-required'>PGP Passphrase (if required):<br/>\n\
                     <input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>\n\
                 <br/><br/></label>\n\
                 <label class='label-submit hide-on-compact'><hr/>Submit your post:<br/>\n\
@@ -145,8 +148,32 @@ var restPutFormTemplate = function(content, callback) {
             </fieldset>\n\
         </article>";
 
-    // Callback
-    callback(PUT_FORM_TEMPLATE
-        .replace(/{\$content}/gi, content || '')
-    );
+
+    if(typeof PGPDB !== 'function')
+        importScripts('pgp/pgp-db.js');
+
+    var form_classes = [];
+    var html_pgp_id_private_html = '';
+    PGPDB.queryPrivateKeys(function(privateKeyData) {
+        var defaultUsername = privateKeyData.user_name || privateKeyData.user_id;
+        defaultUsername = defaultUsername.trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
+        var optionValue = privateKeyData.id_private + "," + privateKeyData.id_public + "," + defaultUsername + (privateKeyData.passphrase_required ? ',1' : ',0');
+
+        if(privateKeyData.default && privateKeyData.passphrase_required)
+            form_classes.push('passphrase-required');
+
+        html_pgp_id_private_html +=
+            '<option' + (privateKeyData.default ? ' selected="selected"' : '') + ' value="' + optionValue + '">' +
+            (privateKeyData.passphrase_required ? '(*) ' : '') + privateKeyData.user_id.replace(/</, '&lt;') +
+            '</option>';
+
+    }, function() {
+
+        // Callback
+        callback(PUT_FORM_TEMPLATE
+            .replace(/{\$content}/gi, content || '')
+            .replace(/{\$html_pgp_id_private}/gi, html_pgp_id_private_html || '')
+            .replace(/{\$form_class}/gi, form_classes.join(' '))
+        );
+    });
 };

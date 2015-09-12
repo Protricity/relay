@@ -30,15 +30,14 @@ body.template-minimal {
 
 
 .template-minimal .channel {
-    animation: fadein 0.5s;
+    animation: fade-in-resize 1s ease-out;
     position: relative;
-    transition: opacity 0.4s ease-in-out;
+    /*transition: opacity 0.4s ease-in-out;*/
     display: inline-block;
     border: 2px groove threedface;
     margin: 1px;
     padding: 1em 0.75em 0.625em 0.75em;
-     
-    min-width: 15em;
+    min-width: 9em;
     vertical-align: top;
 }
 
@@ -172,6 +171,20 @@ body.template-minimal {
 
 /* Menu */
 
+
+
+.template-minimal .navigation-commands {
+    border-style: solid;
+    border-width: 1px;
+    display: block;
+    min-width: 5em;
+    transition: min-width 0.5s, transform 0.5s;
+}
+
+.template-minimal .navigation-commands:hover {
+    min-width: 12em;
+}
+
 .template-minimal .navigation-commands {
     position: relative;
     z-index: 999;
@@ -181,10 +194,6 @@ body.template-minimal {
     padding: 0.5em;
     margin-bottom: 0.5em;
     animation: fade-in;
-    -webkit-transition:width 300ms ease-in-out, height 300ms ease-in-out;
-    -moz-transition:width 300ms ease-in-out, height 300ms ease-in-out;
-    -o-transition:width 300ms ease-in-out, height 300ms ease-in-out;
-    transition:width 300ms ease-in-out, height 300ms ease-in-out;
     /* border: 2px groove threedface; */
     vertical-align: top;
 }
@@ -250,23 +259,23 @@ body.template-minimal {
 
 /* Animation */
 
-
-
 @keyframes fade-in {
-    from {
-        opacity:0;
-    }
-    to {
-        opacity:1;
-    }
+    from { opacity:0; }
+    to { opacity:1; }
 }
 
-
 @keyframes fade-out {
+    from { opacity:1; }
+    to { opacity:0; }
+}
+
+@keyframes fade-in-resize {
     from {
-        opacity:1;
+        max-width: 5px;
+        max-height: 5px;
     }
     to {
-        opacity:0;
+        max-width: 800px;
+        max-height: 200px;
     }
 }

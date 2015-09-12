@@ -6,7 +6,7 @@
 var templateChatChannel = function(channelPath, callback) {
     var CHANNEL_TEMPLATE = "\
             <article class='{$attr_class}'>\n\
-                <script src='chat/chat-form.js'></script>\n\
+                <script src='chat/chat-listener.js'></script>\n\
                 <link rel='stylesheet' href='chat/chat.css' type='text/css'>\n\
                 <header><span class='command'>Join</span> {$channel}</header>\n\
                 <div class='header-commands'>\n\
@@ -14,7 +14,7 @@ var templateChatChannel = function(channelPath, callback) {
                  --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\n\
                  --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
                 </div>\
-                <form name='chat-form' action='#' onsubmit='return submitChatForm(event);'>\n\
+                <form name='chat-form'>\n\
                     <table>\n\
                         <tbody>\n\
                             <tr>\n\
@@ -126,4 +126,33 @@ var templateChatChannelNick = function (commandResponse, callback) {
 };
 
 
-var CHANNEL_USERLIST_SELECT_OPTION = "<option value='{$session_uid}'>{$username}</option>";
+var templateUserList = function(sigIDList, callback) {
+    var CHANNEL_USERLIST_SELECT_OPTION = "<option value='{$session_uid}'>{$username}</option>";
+
+    var CHANNEL_USERLIST_SELECT_OPTGROUP =
+        "<optgroup class='active-users' label='Active Users (" + sigIDList.length + ")'>{$html_options}</optgroup>";
+
+    var optionHTML = '';
+    for(var i=0; i<sigIDList.length; i++) (function(sigid) {
+
+        var split = sigid.split(/\s+/g);
+        if(split[0].toUpperCase() !== 'IDSIG')
+            throw new Error("Invalid IDSIG: " + sigid);
+
+        var pgp_id_public = split[1];
+        var session_uid = split[2];
+        var username = split[3];
+        var visibility = split[4];
+
+        optionHTML += CHANNEL_USERLIST_SELECT_OPTION
+            .replace(/{\$session_uid}/gi, session_uid)
+            .replace(/{\$username}/gi, username)
+            .replace(/{\$pgp_id_public}/gi, pgp_id_public)
+            .replace(/{\$visibility}/gi, visibility);
+
+    })(sigIDList[i]);
+
+    callback(CHANNEL_USERLIST_SELECT_OPTGROUP
+        .replace(/{\$html_options}/gi, optionHTML)
+    );
+};
