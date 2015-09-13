@@ -3,16 +3,95 @@
  */
 
 
+var templatePGPManageForm = function(status_content, callback) {
+
+    // Template
+    var MANAGE_TEMPLATE = "\
+        <article class='pgp-manage:'>\n\
+            <script src='pgp/pgp-listener.js'></script>\n\
+            <link rel='stylesheet' href='pgp/pgp.css' type='text/css'>\n\
+            <header><span class='command'>Manage</span> PGP Identities</header>\n\
+            <div class='header-commands'>\n\
+                <a class='header-command-minimize' href='#MINIMIZE pgp-manage:'>[-]</a><!--\
+                 --><a class='header-command-maximize' href='#MAXIMIZE pgp-manage:'>[+]</a><!--\
+                 --><a class='header-command-close' href='#CLOSE pgp-manage:'>[x]</a>\n\
+            </div>\n\
+            <form name='pgp-manage-form' action='#'>\n\
+                <code class='status-box'>{$status_content}</code>\n\
+                <div class='pgp-manage-entries:'></div>\n\
+                <label><strong>Action:&nbsp;&nbsp;</strong> <span class='action span-action'>No Keys Selected</span></label><br/>\n\
+                <label><strong>Commands:</strong> \n\
+                    <select name='action'>\n\
+                        <option value=''>Select action</option>\n\
+                        <option value='default {$id_private_list}'>Make Default Identity</option>\n\
+                        <option value='@passphrase {$id_private}'>Change Password</option>\n\
+                        <option value='sign {$id_private_list}'>Sign Message</option>\n\
+                        <option value='verify {$id_private_list}'>Verify Message</option>\n\
+                        <option value='encrypt {$id_private_list}'>Encrypt Message</option>\n\
+                        <option value='decrypt {$id_private_list}'>Decrypt Message</option>\n\
+                        <option value='@export.public {$id_private}'>Export Public Key Block</option>\n\
+                        <option value='@export.private {$id_private}'>Export Private Key Block</option>\n\
+                        <option value='@unregister {$id_private}'>Unregister Private Key Identity</option>\n\
+                        <option value='keygen'>Generate a new Identity</option>\n\
+                    </select>\n\
+                </label><br/>\n\
+                <label><strong>Submit:&nbsp;&nbsp;</strong> <input type='submit' /><br/>\n\
+            </form>\n\
+        </article>";
+
+    // Callback
+    callback(MANAGE_TEMPLATE
+        .replace(/{\$status_content}/gi, status_content || '')
+    );
+};
+
+
+var templatePGPManageFormEntry = function(privateKeyData, callback) {
+
+    var MANAGE_TEMPLATE_ENTRY = "\
+        <label>\n\
+            <fieldset class='pgp-id-box pgp-id-box:{$id_private}{$class}'>\n\
+                <legend>\n\
+                    <input type='checkbox' value='{$id_private}' name='selected:{$id_private}'/> <span class='user'>{$user_id}</span>\n\
+                </legend>\n\
+                <strong>ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='fingerprint'>{$id_private_short}</span><br/>\n\
+                <strong>Public ID:&nbsp;</strong> {$id_public_short}<br/>\n\
+                <strong>User ID:&nbsp;&nbsp;&nbsp;</strong> <span class='user'>{$user_id}</span><br/>\n\
+                <strong>Email:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='email'>{$user_email}</span><br/>\n\
+                <strong>Passphrase:</strong> {$passphrase_required}<br/>\n\
+                <strong>Is Default:</strong> {$is_default}<br/>\n\
+            </fieldset>\n\
+        </label>";
+
+    // Callback
+    callback(MANAGE_TEMPLATE_ENTRY
+            .replace(/{\$id_private}/gi, privateKeyData.id_private)
+            .replace(/{\$id_public}/gi, privateKeyData.id_public)
+            .replace(/{\$id_private_short}/gi, privateKeyData.id_private.substr(privateKeyData.id_private.length - 8))
+            .replace(/{\$id_public_short}/gi, privateKeyData.id_public.substr(privateKeyData.id_public.length - 8))
+            .replace(/{\$block_private}/gi, privateKeyData.block_private)
+            .replace(/{\$block_public}/gi, privateKeyData.block_public)
+            .replace(/{\$user_id}/gi, privateKeyData.user_id.replace(/</, '&lt;'))
+            .replace(/{\$user_name}/gi, privateKeyData.user_name || '')
+            .replace(/{\$user_email}/gi, privateKeyData.user_email || '')
+            .replace(/{\$user_comment}/gi, privateKeyData.user_comment || '')
+            .replace(/{\$passphrase_required}/gi, privateKeyData.passphrase_required ? "Yes" : "No")
+            .replace(/{\$is_default}/gi, privateKeyData.default === '1' ? "<strong>Yes</strong>" : "No")
+            .replace(/{\$class}/gi, privateKeyData.default === '1' ? " pgp-id-box-default" : "")
+            .replace(/{\$default}/gi, privateKeyData.default)
+    );
+};
+
 var templatePGPKeyGenForm = function(user_id, send_as_socket_command, callback) {
     var GENERATE_TEMPLATE = "\
-        <article class='{$attr_class}'>\n\
+        <article class='channel pgp:'>\n\
             <script src='pgp/pgp-listener.js'></script>\n\
             <link rel='stylesheet' href='pgp/pgp.css' type='text/css'>\n\
             <header><span class='command'>Generate</span> a new Identity</header>\n\
             <div class='header-commands'>\n\
-                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\
-                 --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\
-                 --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
+                <a class='header-command-minimize' href='#MINIMIZE pgp:'>[-]</a><!--\
+                 --><a class='header-command-maximize' href='#MAXIMIZE pgp:'>[+]</a><!--\
+                 --><a class='header-command-close' href='#CLOSE pgp:'>[x]</a>\n\
             </div>\n\
             <form name='pgp-keygen-form' action='#' method='post'>\n\
                 <code class='status-box' style='display: none'></code><br/>\n\
@@ -45,14 +124,14 @@ var templatePGPKeyGenForm = function(user_id, send_as_socket_command, callback) 
 var templatePGPRegisterForm = function(private_key_block, status_content, callback) {
 
     var REGISTER_TEMPLATE = "\
-            <article class='{$attr_class}'>\n\
+            <article class='channel pgp:'>\n\
                 <script src='pgp/pgp-listener.js'></script>\n\
                 <link rel='stylesheet' href='pgp/pgp.css' type='text/css'>\n\
                 <header><span class='command'>Register</span> a new PGP Key Pair</header>\n\
                 <div class='header-commands'>\n\
-                    <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\
-                     --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\
-                     --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
+                    <a class='header-command-minimize' href='#MINIMIZE pgp:'>[-]</a><!--\
+                     --><a class='header-command-maximize' href='#MAXIMIZE pgp:'>[+]</a><!--\
+                     --><a class='header-command-close' href='#CLOSE pgp:'>[x]</a>\n\
                 </div>\n\
                 <form name='pgp-register-form' action='#' method='post' >\n\
                     <code class='status-box'>{$status_content}</code><br/>\n\
@@ -99,14 +178,14 @@ var templatePGPRegisterForm = function(private_key_block, status_content, callba
 var templatePGPIdentifyForm = function(responseString, socket_url, CONFIG, callback) {
 
     var IDENTIFY_TEMPLATE = "\
-        <article class='{$attr_class}'>\n\
+        <article class='channel identify:'>\n\
             <script src='pgp/pgp-listener.js'></script>\n\
             <link rel='stylesheet' href='pgp/pgp.css' type='text/css'>\n\
             <header><span class='command'>Identify</span> yourself to the network</header>\n\
             <div class='header-commands'>\n\
-                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\
-                 --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\
-                 --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
+                <a class='header-command-minimize' href='#MINIMIZE identify:'>[-]</a><!--\
+                 --><a class='header-command-maximize' href='#MAXIMIZE identify:'>[+]</a><!--\
+                 --><a class='header-command-close' href='#CLOSE identify:'>[x]</a>\n\
             </div>\n\
             <form class='{$form_class}' name='pgp-identify-form' action='#' method='post'>\n\
                 <code class='status-box'>{$status_content}</code><br/>\n\
@@ -130,7 +209,6 @@ var templatePGPIdentifyForm = function(responseString, socket_url, CONFIG, callb
                 <br/><br/></label>\n\
                 <label class='hide-on-idsig-required'>\n\
                     <hr/>Submit Identification Signature:<br/>\n\
-                        //<input type='button' name='submit-sign' value='Sign' />\n\
                     <input type='submit' name='submit-identify' value='Identify'/>\n\
                     <select name='auto_identify' class='show-on-succes' style='width:16em;'>\n\
                         <option value='ask'>Ask me every time</option>\n\
@@ -244,20 +322,20 @@ var templatePGPIdentifyForm = function(responseString, socket_url, CONFIG, callb
 var templatePGPIdentifySuccessForm = function(idsigString, socket_url, CONFIG, callback) {
 
     var IDENTIFY_TEMPLATE_SUCCESS = "\
-        <article class='{$attr_class}'>\n\
+        <article class='channel identify:'>\n\
             <script src='pgp/pgp-listener.js'></script>\n\
             <link rel='stylesheet' href='pgp/pgp.css' type='text/css'>\n\
             <header><span class='command'>IDSIG</span> Successful</header>\n\
             <div class='header-commands'>\n\
-                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\
-                 --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\
-                 --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
+                <a class='header-command-minimize' href='#MINIMIZE identify:'>[-]</a><!--\
+                 --><a class='header-command-maximize' href='#MAXIMIZE identify:'>[+]</a><!--\
+                 --><a class='header-command-close' href='#CLOSE identify:'>[x]</a>\n\
             </div>\n\
-            <form name='pgp-identify-success-form' action='#CLOSE {$channel_class}' onsubmit=''>\n\
+            <form name='pgp-identify-success-form' action='#CLOSE identify:' onsubmit=''>\n\
                 <code class='status-box'>{$status_content}</code><br/>\n\
                 Options for next time:<hr/>\n\
                 <button type='submit' name='submit-close'>\n\
-                    <a class='header-command-close' href='#CLOSE {$channel_class}'>Close</a>\n\
+                    <a class='header-command-close' href='#CLOSE identify:'>Close</a>\n\
                 </button>\n\
                 <select name='auto_identify' style='width:16em;'>\n\
                     <option value='ask'>Ask me every time</option>\n\
@@ -327,7 +405,7 @@ var templatePGPIdentifySuccessForm = function(idsigString, socket_url, CONFIG, c
                     .replace(/{\$form_class}/gi, form_classes.join(' '))
                     .replace(/{\$pgp_id_public}/gi, pgp_id_public)
                     .replace(/{\$pgp_id_private}/gi, pgp_id_private)
-                    //.replace(/{\$status_content}/gi, status_content || '')
+                    .replace(/{\$status_content}/gi, status_content || '')
                     .replace(/{\$id_signature}/gi, '')
                     .replace(/{\$socket_url}/gi, socket_url || '')
                     .replace(/{\$socket_host}/gi, socket_host || '')

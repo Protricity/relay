@@ -17,8 +17,8 @@
 }
 
 form[name=chat-form] {
-    /* max-width: 37em; */
-    /* font-family: monospace; */
+    max-width: 64em;
+    font-family: monospace;
 }
 
 

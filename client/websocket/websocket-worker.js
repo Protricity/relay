@@ -7,7 +7,7 @@
     var SOCKET_RECONNECT_INTERVAL = 5000;
 
     var PATH_PREFIX_SOCKET = 'socket:';
-    var CLASS_SOCKET_CONTENT = 'websocket-content';
+    var CLASS_SOCKET_CONTENT = 'websocket-log';
 
 
     importScripts('websocket/websocket-templates.js');
@@ -43,7 +43,7 @@
             for(var i=0; i<onNewSocketOpenCallbacks.length; i++)
                 onNewSocketOpenCallbacks[i](newSocket);
             templateSocketActionEntry("SOCKET OPEN: " + newSocket.url, function(html) {
-                self.routeResponseToClient('LOG ' + PATH_PREFIX_SOCKET + newSocket.url + ' .' + CLASS_SOCKET_CONTENT + ' ' + html);
+                self.routeResponseToClient('LOG socket-log:' + newSocket.url + ' ' + html);
             });
         }
         function onClose(e) {
@@ -66,7 +66,7 @@
             }
 
             templateSocketActionEntry("SOCKET CLOSED: " + newSocket.url, function(html) {
-                self.routeResponseToClient('LOG ' + PATH_PREFIX_SOCKET + newSocket.url + ' .' + CLASS_SOCKET_CONTENT + ' ' + html);
+                self.routeResponseToClient('LOG socket-log:' + newSocket.url + ' ' + html);
             });
         }
         function onSocketMessage(e) {
@@ -81,7 +81,7 @@
         activeSockets.push(newSocket);
 
         templateSocketLog(newSocket.url, function(html) {
-            self.routeResponseToClient('LOG.REPLACE ' + PATH_PREFIX_SOCKET + newSocket.url + ' * ' + html);
+            self.routeResponseToClient('LOG.REPLACE socket:' + newSocket.url + ' ' + html);
         });
 
         return newSocket;
@@ -146,7 +146,7 @@
 
     self.sendWithSocket = function(socket, commandString) {
         templateSocketLogEntry(commandString, 'O', function(html) {
-            self.routeResponseToClient('LOG ' + PATH_PREFIX_SOCKET + socket.url + ' .' + CLASS_SOCKET_CONTENT + ' ' + html);
+            self.routeResponseToClient('LOG socket-log:' + socket.url + ' ' + html);
         });
         socket.send(commandString);
         //             console.log("SOCKET OUT (" + selectedSocket.url + "): " + commandString);
@@ -209,7 +209,7 @@
 
         if(socket instanceof WebSocket) {
             templateSocketLogEntry(commandResponse, 'I', function(html) {
-                self.routeResponseToClient('LOG ' + PATH_PREFIX_SOCKET + socket.url + ' .' + CLASS_SOCKET_CONTENT + ' ' + html);
+                self.routeResponseToClient('LOG socket-log:' + socket.url + ' ' + html);
             });
         }
 

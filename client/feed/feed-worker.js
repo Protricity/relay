@@ -11,79 +11,18 @@
     var db = null;
 
 
-    var ARTICLE_PLACEHOLDER =
-        //"<article>\n" +
-        "<header>Optional Topic Header</header>\n" +
-        "Post about <i>any</i> <strong>topic</strong>\n" +
-        "<img src=\"path/to/topic/picture\" alt=\"my picture\" />\n";
-        //"</article>";
-
-
-    var FEED_POST_FORM_TEMPLATE = "\
-        <article class='{$attr_class}'>\n\
-            <script src='feed/feed-form.js'></script>\n\
-            <link rel='stylesheet' href='feed/feed.css' type='text/css'>\n\
-            <header>Post to your feed</header>\n\
-            <div class='header-commands'>\n\
-                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\n\
-             --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\n\
-             --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
-            </div>\
-            <form name='feed-post-form' class='feed-post-form:uninitiated' action='#' onsubmit='return submitPostForm(event);'>\n\
-                <label class='label-content'>Use this text box to create a new feed post:<br/>\n\
-                    <textarea cols='56' rows='8' onfocus='focusPostForm(event)' oninput='focusPostForm(event)' class='focus' name='content' required='required' placeholder='" + ARTICLE_PLACEHOLDER + "'>{$content}</textarea>\n\
-                <br/></label>\n\
-                <div class='show-section-on-value hide-section-on-no-value'>\n\
-                    <label class='label-pgp-id'>Post with (PGP Identity):<br/>\n\
-                        <select name='pgp-id' required='required' onfocus='focusPostForm(event)' onselect='focusPostForm(event)' oninput='focusPostForm(event)'>\n\
-                            <optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>\n\
-                            </optgroup>\n\
-                            <optgroup disabled='disabled' label='Other options'>\n\
-                                <option value=''>Manage PGP Identities...</option>\n\
-                            </optgroup>\n\
-                        </select>\n\
-                    <br/><br/></label>\n\
-                    <label class='label-channel'>Post to:<br/>\n\
-                        <select name='channel'>\n\
-                            <option value='~'>My Feed</option>\n\
-                            <option disabled='disabled'>Other Feed...</option>\n\
-                            <option disabled='disabled'>Friend's Feed...</option>\n\
-                        </select>\n\
-                    <br/><br/></label>\n\
-                    <label class='label-passphrase' style='display: none'>PGP Passphrase (if required):<br/>\n\
-                        <input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>\n\
-                    <br/><br/></label>\n\
-                    <label class='label-submit'><hr/>Submit your post:<br/>\n\
-                        <input type='submit' value='Post' name='submit-feed-post-form' />\n\
-                    </label>\n\
-                </div>\n\
-            </form>\n\
-            <fieldset class='preview-container' style='display: none'>\n\
-                <legend>Preview</legend>\n\
-                <div class='preview'></div>\n\
-            </fieldset>\n\
-        </article>";
-
-    //"<label class='label-recipients show-section-on-value'>Choose which subscribers may view this post:<br/>\n\
-    //    "<select name='recipients'>\n\
-    //        "<option value='*'>Everybody</option>\n\
-    //        "<option disabled='disabled'>My friends</option>\n\
-    //        "<option disabled='disabled'>Friends of Friends</option>\n\
-    //        "<option disabled='disabled'>Specific Recipients</option>\n\
-    //    "</select>\n\
-    //"<br/><br/></label>\n\
 
     var FEED_TEMPLATE = "\
-        <article class='{$attr_class}'>\n\
+        <article class='channel feed:{$channel_path}'>\n\
             <script src='feed/feed-form.js'></script>\n\
             <link rel='stylesheet' href='feed/feed.css' type='text/css'>\n\
             <header>{$title}</header>\n\
             <div class='header-commands'>\n\
-                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\
-             --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\
-             --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
+                <a class='header-command-minimize' href='#MINIMIZE feed:{$channel_path}'>[-]</a><!--\
+             --><a class='header-command-maximize' href='#MAXIMIZE feed:{$channel_path}'>[+]</a><!--\
+             --><a class='header-command-close' href='#CLOSE feed:{$channel_path}'>[x]</a>\n\
             </div>\n\
-            <div class='feed-container channel-content' onscroll='scrollFeed.apply(this, [event]);'>\n\
+            <div class='feed-container feed-content:$channel_path' onscroll='scrollFeed.apply(this, [event]);'>\n\
                 <fieldset class='feed-post-form-container'>\n\
                     FEED_POST_FORM_TEMPLATE\n\
                 </fieldset>\n\
@@ -94,11 +33,6 @@
     var FEED_TEMPLATE_ENTRY = "\
         <fieldset class='feed-post-container unsorted'>\n\
             <header>Feed Post</header>\n\
-            <div class='header-commands'>\n\
-                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\n\
-             --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\n\
-             --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
-            </div>\
             <div class='feed-post-author'>\n\
                 <img class='user_icon' src='feed/img/user_icon_default.png' alt='UI' />\n\
                 <a href='{$user_home}' class='user'>{$user_id}</a>\n\
@@ -139,7 +73,7 @@
             FEED_TEMPLATE
                 .replace(/{\$row_n}/gi, (postFormNCounter++).toString())
                 .replace(/{\$title}/gi, "Viewing Feed for " + fixedChannelPath)
-                .replace(/{\$channel}/gi, fixedChannelPath)
+                .replace(/{\$channel_path}/gi, fixedChannelPath.toLowerCase())
                 //.replace(/{\$[^}]+}/gi, '')
         );
 
@@ -164,7 +98,7 @@
                             function(data) {
                                 try{
                                     var contentProtected = protectHTMLContent(data.content_verified);
-                                    self.routeResponseToClient("LOG " + logChannelPath + " * " + FEED_TEMPLATE_ENTRY
+                                    self.routeResponseToClient("LOG " + logChannelPath + " " + FEED_TEMPLATE_ENTRY
                                             .replace(/{\$row_n}/gi, (feedNCounter++).toString())
                                             .replace(/{\$uid}/gi, data.key_id + '-' + data.timestamp)
                                             .replace(/{\$user_id}/gi, userID)

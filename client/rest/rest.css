@@ -51,25 +51,11 @@ form[name=http-put-form] input[type=submit] {
 
 /** Visibility **/
 
-form[name=http-put-form] .show-on-passphrase-required,
-form[name=http-put-form].compact .hide-on-compact{
+.compact .hide-on-compact,
+.compact + .hide-on-compact{
     display: none;
-    /*animation: fade-out 0.5s;*/
-}
-form[name=http-put-form] .hide-on-compact,
-form[name=http-put-form].passphrase-required .show-on-passphrase-required {
-    display: inherit;
-    animation: rest-fade-in-resize-height 2s;
 }
 
-/** Animation **/
-
-
-@keyframes rest-fade-in-resize-height {
-    from {
-        max-height: 5px;
-    }
-    to {
-        max-height: 200px;
-    }
+form[name=http-put-form].no-passphrase-required .hide-on-no-passphrase-required {
+    display: none;
 }

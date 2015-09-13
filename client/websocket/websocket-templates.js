@@ -6,19 +6,19 @@ var templateSocketLog = function(url, callback) {
 
     // Template
     var SOCKET_TEMPLATE = "\
-        <article class='{$attr_class} minimized' data-sort='z'>\n\
+        <article class='channel socket:{$socket_url} minimized' data-sort='z'>\n\
             <link rel='stylesheet' href='websocket/websocket.css' type='text/css'>\n\
             <header>\
-                <a href='#MINIMIZE {$channel_class}'>\
+                <a href='#MINIMIZE socket:{$socket_url}'>\
                     <span class='command'>Socket</span> {$socket_host}\
                 </a>\
             </header>\n\
             <div class='header-commands'>\n\
-                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\
-             --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\
-             --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
+                <a class='header-command-minimize' href='#MINIMIZE socket:{$socket_url}'>[-]</a><!--\
+             --><a class='header-command-maximize' href='#MAXIMIZE socket:{$socket_url}'>[+]</a><!--\
+             --><a class='header-command-close' href='#CLOSE socket:{$socket_url}'>[x]</a>\n\
             </div>\n\
-            <fieldset class='websocket-content'></fieldset>\n\
+            <fieldset class='socket-log:{$socket_url}'></fieldset>\n\
             </form>\n\
         </article>";
 

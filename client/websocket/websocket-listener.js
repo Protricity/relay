@@ -57,19 +57,19 @@
     }
 
     function logToChannel(commandString) {
-        var args = /^log(?:.(\w+))?\s+(\S+)\s*(\S*)\s*([\s\S]*)$/mi.exec(commandString);
+        var args = /^log(?:.(\w+))?\s+(\S+)\s*([\s\S]*)$/mi.exec(commandString);
         if(!args)
             throw new Error("Invalid Log: " + commandString);
         var subCommand = args[1] ? args[1].toLowerCase() : 'append';
         var channelPath = args[2];
         //var channelPathClass = CLASS_CHANNEL + ':' + channelPath;
-        var channelSelector = args[3];
-        var content = args[4];
+        //var channelSelector = args[3];
+        var content = args[3];
 
-        content = content
-            .replace(/{\$attr_class}/gi, CLASS_CHANNEL + ' ' + channelPath)
-            .replace(/{\$channel_class}/gi, channelPath)
-            .replace(/{\$path}/gi, channelPath);
+        //content = content
+        //    .replace(/{\$attr_class}/gi, CLASS_CHANNEL + ' ' + channelPath)
+        //    .replace(/{\$channel_class}/gi, channelPath)
+        //    .replace(/{\$path}/gi, channelPath);
 
         var match;
         while(match = /<script([^>]*)><\/script>/gi.exec(content)) {
@@ -94,7 +94,9 @@
         var contentParent = document.createElement('div');
         contentParent.innerHTML = content;
         var contentElement = contentParent.firstChild;
-        if(!contentElement) {
+        if(contentElement) {
+
+        } else {
             if(content)
                 throw new Error("First child missing");
             contentElement = document.createTextNode('');
@@ -106,8 +108,28 @@
             var channelOutputs = channelContainer.getElementsByClassName(channelPath);
             var channelOutput;
             if(channelOutputs.length === 0) {
-                channelContainer[channelContainer.firstChild ? 'insertBefore' : 'appendChild'](contentElement, channelContainer.firstChild);
-                //channelContainer.innerHTML = content + "\n" + oldContent;
+
+                switch(subCommand) {
+                    case 'minimize':
+                    case 'maximize':
+                    case 'close':
+                        throw new Error("Could not find class: " + channelPath);
+
+                    case 'replace':
+                    case 'prepend':
+                        channelContainer[channelContainer.firstChild ? 'insertBefore' : 'appendChild'](contentElement, channelContainer.firstChild);
+                        //channelContainer.scrollTop = 0;
+                        break;
+
+                    case 'append':
+                        channelContainer.appendChild(contentElement);
+                        //contentTarget.scrollTop = contentTarget.scrollHeight;
+                        break;
+
+                    default:
+                        throw new Error("Unknown subcommand: " + subCommand);
+                }
+
                 if(channelOutputs.length === 0) {
                     contentElement.parentNode.removeChild(contentElement);
                     throw new Error("Invalid content. Missing class='" + channelPath + "'", content);
@@ -117,11 +139,11 @@
             } else {
                 channelOutput = channelOutputs[0];
                 var contentTarget = channelOutput;
-                if(channelSelector && channelSelector !== '*') {
-                    contentTarget = channelOutput.querySelector(channelSelector);
-                    if(!contentTarget)
-                        throw new Error("Could not find selector: " + channelSelector);
-                }
+                //if(channelSelector && channelSelector !== '*') {
+                //    contentTarget = channelOutput.querySelector(channelSelector);
+                //    if(!contentTarget)
+                //        throw new Error("Could not find selector: " + channelSelector);
+                //}
 
 
                 switch(subCommand) {

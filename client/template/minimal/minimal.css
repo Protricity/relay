@@ -10,7 +10,9 @@
 /** General **/
 
 body.template-minimal {
-    font-family: monospace, serif;
+    /* font-family: monospace, serif; */
+    font-family: monospace;*/;
+    color: #333;
 }
 
 .template-minimal a {
@@ -21,21 +23,14 @@ body.template-minimal {
     vertical-align: top;
 }
 
-.template-minimal .channel-container {
-    font-family: monospace;
-    color: #333;
-    /*padding: 1em 0 10em 0; */
-
-}
-
 
 .template-minimal .channel {
-    animation: fade-in-resize 1s ease-out;
+    animation: fade-in-resize 1s ease-in-out;
     position: relative;
     /*transition: opacity 0.4s ease-in-out;*/
     display: inline-block;
     border: 2px groove threedface;
-    margin: 1px;
+    margin: 4px 1px;
     padding: 1em 0.75em 0.625em 0.75em;
     min-width: 9em;
     vertical-align: top;
@@ -178,6 +173,7 @@ body.template-minimal {
     border-width: 1px;
     display: block;
     min-width: 5em;
+
     transition: min-width 0.5s, transform 0.5s;
 }
 
@@ -276,6 +272,6 @@ body.template-minimal {
     }
     to {
         max-width: 800px;
-        max-height: 200px;
+        max-height: 500px;
     }
 }

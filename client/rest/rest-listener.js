@@ -77,16 +77,47 @@
         var split = pgpIDElm.value.split(',');
         var pgp_id_private = split[0];
         var pgp_id_public = split[1];
-        var defaultUsername = split[2];
-        var passphraseRequired = split[3] === '1';
+        var passphraseRequired = split[2] === '1';
 
         var passphraseElm = formElm.querySelector('*[name=passphrase][type=password], [type=password]');
         var postContentElm = formElm.querySelector('textarea[name=content]');
+        var previewCheckBoxElm = formElm.querySelector('input[name=preview]');
 
         if(postContentElm.value.length > 0)
             formElm.classList.remove('compact');
         formElm.classList[passphraseRequired ? 'add' : 'remove']('passphrase-required');
+        formElm.classList[passphraseRequired ? 'remove' : 'add']('no-passphrase-required');
         passphraseElm[(passphraseRequired ? 'set' : 'remove') + 'Attribute']('required', 'required');
+        if(previewCheckBoxElm.checked)
+            submitHTTPPutFormPreview(e, formElm);
+    }
+
+    function submitHTTPPutFormPreview(e, formElm) {
+        var postContentElm = formElm.querySelector('textarea[name=content]');
+
+        var timestamp = Date.now();
+
+        var postContent = postContentElm.value.trim();
+        if(!postContent.length)
+            return false;
+
+        var contentDiv = document.createElement('div');
+        contentDiv.innerHTML = postContent;
+        var articleElm = contentDiv.querySelector('article');
+        if(!articleElm) {
+            contentDiv.innerHTML = "<article>" + contentDiv.innerHTML + "</article>";
+            articleElm = contentDiv.querySelector('article');
+        }
+        //articleElm.setAttribute('data-path', fixedPostPath);
+        articleElm.setAttribute('data-timestamp', timestamp.toString());
+        postContent = articleElm.outerHTML;
+
+        postContent = protectHTMLContent(postContent, formElm);
+
+        var putPreviewElm = formElm.parentNode.getElementsByClassName('put-preview:')[0];
+        putPreviewElm.innerHTML = postContent;
+        console.log(putPreviewElm, postContent);
+        // TODO create put preview
     }
 
     function submitHTTPPutForm(e, formElm) {
@@ -132,7 +163,7 @@
                 throw new Error("No channel field found");
             //var postPath = pathElm.value;
             var fixedPostPath = fixHomePath(pathElm.value, publicKeyID);
-            var homeChannel = '~'; // fixHomePath('~', publicKeyID);
+            var homeChannel = '/home/' + publicKeyID + '/'; // fixHomePath('~', publicKeyID);
             var timestamp = Date.now();
 
             var postContent = postContentElm.value.trim();

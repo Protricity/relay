@@ -2,21 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f1a3609b-05f2-4e93-b5c1-0f477f2ec236" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/chat/chat-listener.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/pgp/pgp-templates.js" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\client\chat\chat-form.js" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\client\pgp\pgp-listener.js.old" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/chat/chat-templates.js" afterPath="$PROJECT_DIR$/client/chat/chat-templates.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/chat/chat-worker.js" afterPath="$PROJECT_DIR$/client/chat/chat-worker.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/feed/feed.css" afterPath="$PROJECT_DIR$/client/feed/feed.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/chat/chat.css" afterPath="$PROJECT_DIR$/client/chat/chat.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/feed/feed-worker.js" afterPath="$PROJECT_DIR$/client/feed/feed-worker.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/template/minimal/minimal.css" afterPath="$PROJECT_DIR$/client/template/minimal/minimal.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/pgp/pgp-templates.js" afterPath="$PROJECT_DIR$/client/pgp/pgp-templates.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/pgp/pgp-worker.js" afterPath="$PROJECT_DIR$/client/pgp/pgp-worker.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/pgp/pgp.css" afterPath="$PROJECT_DIR$/client/pgp/pgp.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/rest/rest-listener.js" afterPath="$PROJECT_DIR$/client/rest/rest-listener.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/rest/rest-templates.js" afterPath="$PROJECT_DIR$/client/rest/rest-templates.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/rest/rest-worker.js" afterPath="$PROJECT_DIR$/client/rest/rest-worker.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/rest/rest.css" afterPath="$PROJECT_DIR$/client/rest/rest.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/websocket/websocket.css" afterPath="$PROJECT_DIR$/client/websocket/websocket.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/websocket/websocket-listener.js" afterPath="$PROJECT_DIR$/client/websocket/websocket-listener.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/websocket/websocket-templates.js" afterPath="$PROJECT_DIR$/client/websocket/websocket-templates.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/websocket/websocket-worker.js" afterPath="$PROJECT_DIR$/client/websocket/websocket-worker.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="relay.iws" />
@@ -49,105 +48,79 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="pgp.css" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/pgp/pgp.css">
+      <file leaf-file-name="rest-worker.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/rest/rest-worker.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="523" max-vertical-offset="1173">
-              <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1530" max-vertical-offset="8126">
+              <caret line="35" column="45" selection-start-line="35" selection-start-column="45" selection-end-line="35" selection-end-column="45" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pgp-worker.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/client/pgp/pgp-worker.js">
+      <file leaf-file-name="rest-listener.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/rest/rest-listener.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.892779" vertical-offset="0" max-vertical-offset="11203">
-              <caret line="48" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
-              <folding>
-                <marker date="1442013252587" expanded="true" signature="345:2598" placeholder="..." />
-                <marker date="1442013252587" expanded="true" signature="606:922" placeholder="..." />
-                <marker date="1442013252587" expanded="true" signature="707:726" placeholder="..." />
-                <marker date="1442013252587" expanded="true" signature="809:828" placeholder="..." />
-                <marker date="1442013252587" expanded="true" signature="978:2576" placeholder="..." />
-                <marker date="1442013252587" expanded="true" signature="1283:2456" placeholder="..." />
-                <marker date="1442013252587" expanded="true" signature="1356:2428" placeholder="..." />
-                <marker date="1442013252587" expanded="true" signature="2488:2569" placeholder="..." />
-                <marker date="1442013252587" expanded="true" signature="2652:3942" placeholder="..." />
-                <marker date="1442013252587" expanded="true" signature="2730:3922" placeholder="..." />
-                <marker date="1442013252587" expanded="true" signature="2758:2924" placeholder="..." />
-                <marker date="1442013252587" expanded="true" signature="2973:3305" placeholder="..." />
-                <marker date="1442013252587" expanded="true" signature="3078:3101" placeholder="..." />
-                <marker date="1442013252587" expanded="true" signature="3184:3207" placeholder="..." />
-                <marker date="1442013252587" expanded="true" signature="21100:21112" placeholder="..." />
-              </folding>
+            <state vertical-scroll-proportion="0.0" vertical-offset="1373" max-vertical-offset="5899">
+              <caret line="119" column="34" selection-start-line="119" selection-start-column="34" selection-end-line="119" selection-end-column="34" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pgp-templates.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/pgp/pgp-templates.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="28.56" vertical-offset="5593" max-vertical-offset="6358">
-              <caret line="287" column="64" selection-start-line="287" selection-start-column="64" selection-end-line="287" selection-end-column="64" />
-              <folding>
-                <marker date="1442013252596" expanded="true" signature="193:2354" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="456:772" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="557:576" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="659:678" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="842:2332" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="895:908" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="1085:1403" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="2727:4099" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="3010:3342" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="3115:3138" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="3221:3244" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="3418:4073" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="3528:3836" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="14931:16665" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="15187:15503" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="15288:15307" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="15390:15409" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="15603:16643" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="15786:15911" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="15968:15979" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="15980:16362" placeholder="..." />
-                <marker date="1442013252596" expanded="true" signature="17579:17591" placeholder="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rest-templates.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="rest-templates.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/client/rest/rest-templates.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2491" max-vertical-offset="3128">
-              <caret line="150" column="0" selection-start-line="150" selection-start-column="0" selection-end-line="177" selection-end-column="7" />
+            <state vertical-scroll-proportion="2.57109" vertical-offset="805" max-vertical-offset="3077">
+              <caret line="175" column="2" selection-start-line="175" selection-start-column="2" selection-end-line="175" selection-end-column="2" />
               <folding>
-                <marker date="1442009127319" expanded="true" signature="328:1605" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="428:545" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="590:914" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="691:714" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="797:820" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="935:1428" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="997:1406" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="4240:7229" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="4531:4839" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="4632:4647" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="4730:4745" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="4898:7015" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="4947:5279" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="5341:5705" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="5398:5667" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="5777:6531" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="5881:6493" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="6069:6162" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="6222:6460" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="6611:6789" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="6853:6992" placeholder="..." />
-                <marker date="1442009127319" expanded="false" signature="7075:7088" placeholder="..." />
-                <marker date="1442009127319" expanded="true" signature="7089:7207" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="292:1644" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="453:570" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="615:953" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="726:741" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="834:849" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="974:1467" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="1036:1445" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="4278:7236" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="4278:7236" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="4278:7254" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="4569:4841" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="4658:4673" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="4744:4759" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="4908:4919" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="4920:7083" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="4920:7232" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="4969:5301" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="5363:5727" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="5420:5689" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="5799:6553" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="5903:6515" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="6091:6184" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="6244:6482" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="6652:6830" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="6894:7020" placeholder="..." />
+                <marker date="1442124348851" expanded="true" signature="7084:7209" placeholder="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rest.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/rest/rest.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="265" max-vertical-offset="1139">
+              <caret line="54" column="28" selection-start-line="54" selection-start-column="28" selection-end-line="54" selection-end-column="28" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="chat.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/chat/chat.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="98" max-vertical-offset="1343">
+              <caret line="20" column="26" selection-start-line="20" selection-start-column="26" selection-end-line="20" selection-end-column="26" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -165,8 +138,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/home/user-index.js" />
-        <option value="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/404.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-db.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/command/rest/rest-worker.js" />
         <option value="$PROJECT_DIR$/system/service/websocket/web/command/template/base/pages/index.html" />
@@ -194,38 +165,40 @@
         <option value="$PROJECT_DIR$/client/websocket/socket-defaults.js" />
         <option value="$PROJECT_DIR$/client/websocket/websocket.css" />
         <option value="$PROJECT_DIR$/client/worker.js" />
-        <option value="$PROJECT_DIR$/client/websocket/websocket-listener.js" />
         <option value="$PROJECT_DIR$/scripts/start-python-server.sh" />
         <option value="$PROJECT_DIR$/scripts/start-python-server-8080.sh" />
         <option value="$PROJECT_DIR$/client/client.js" />
         <option value="$PROJECT_DIR$/client/index.html" />
         <option value="$PROJECT_DIR$/client/websocket/rest-templates.js" />
-        <option value="$PROJECT_DIR$/client/websocket/websocket-templates.js" />
-        <option value="$PROJECT_DIR$/client/rest/rest-worker.js" />
-        <option value="$PROJECT_DIR$/client/websocket/websocket-worker.js" />
-        <option value="$PROJECT_DIR$/client/feed/feed-worker.js" />
-        <option value="$PROJECT_DIR$/client/chat/chat-worker.js" />
         <option value="$PROJECT_DIR$/client/rest/chat-listener.js" />
-        <option value="$PROJECT_DIR$/client/chat/chat-templates.js" />
         <option value="$PROJECT_DIR$/index.html" />
-        <option value="$PROJECT_DIR$/client/rest/rest-listener.js" />
         <option value="$PROJECT_DIR$/client/feed/feed.css" />
-        <option value="$PROJECT_DIR$/client/rest/rest-templates.js" />
-        <option value="$PROJECT_DIR$/client/template/minimal/minimal.css" />
-        <option value="$PROJECT_DIR$/client/rest/rest.css" />
         <option value="$PROJECT_DIR$/client/pgp/pgp.css" />
-        <option value="$PROJECT_DIR$/client/pgp/pgp-worker.js" />
         <option value="$PROJECT_DIR$/client/chat/pgp-templates.js" />
+        <option value="$PROJECT_DIR$/client/template/minimal/minimal.css" />
+        <option value="$PROJECT_DIR$/client/websocket/websocket-worker.js" />
+        <option value="$PROJECT_DIR$/client/websocket/websocket-templates.js" />
+        <option value="$PROJECT_DIR$/client/websocket/websocket-listener.js" />
+        <option value="$PROJECT_DIR$/client/chat/chat-worker.js" />
+        <option value="$PROJECT_DIR$/client/chat/chat-templates.js" />
+        <option value="$PROJECT_DIR$/client/pgp/pgp-worker.js" />
+        <option value="$PROJECT_DIR$/client/feed/feed-worker.js" />
+        <option value="$PROJECT_DIR$/client/rest/rest-worker.js" />
+        <option value="$PROJECT_DIR$/client/chat/chat.css" />
+        <option value="$PROJECT_DIR$/client/pgp/pgp-templates.js" />
+        <option value="$PROJECT_DIR$/client/rest/rest.css" />
+        <option value="$PROJECT_DIR$/client/rest/rest-templates.js" />
+        <option value="$PROJECT_DIR$/client/rest/rest-listener.js" />
       </list>
     </option>
   </component>
   <component name="JsBuildToolGruntFileManager" detection-done="true" />
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="-1928" />
-    <option name="y" value="-1088" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
     <option name="width" value="1936" />
-    <option name="height" value="1096" />
+    <option name="height" value="1014" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -253,7 +226,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -474,12 +446,31 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="config" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="relay" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="relay" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="client" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="chat" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -572,15 +563,15 @@
       <BehatRunner />
       <method />
     </configuration>
+    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server">
+      <method />
+    </configuration>
     <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
       <node-options />
       <gulpfile />
       <tasks />
       <pass-parent-env-vars>false</pass-parent-env-vars>
       <envs />
-      <method />
-    </configuration>
-    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server">
       <method />
     </configuration>
     <configuration default="false" name="start-python-server.sh" type="BashConfigurationType" factoryName="Bash">
@@ -644,17 +635,17 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1928" y="-1088" width="1936" height="1096" extended-state="7" />
-    <editor active="false" />
+    <frame x="-8" y="-8" width="1936" height="1014" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32988626" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29948187" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29844558" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33919063" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20021299" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20234291" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32885212" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -663,9 +654,9 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32885212" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32885212" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Command Line Tools Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32953367" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -692,13 +683,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/client/template/base/pages/test.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="612">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/client/template/base/pages/home/test.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="68" max-vertical-offset="612">
@@ -745,20 +729,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="623">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/template/base/pages/home/test.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="68" max-vertical-offset="612">
-          <caret line="4" column="18" selection-start-line="4" selection-start-column="18" selection-end-line="4" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/template/base/pages/test.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-13.730769" vertical-offset="0" max-vertical-offset="612">
-          <caret line="21" column="12" selection-start-line="21" selection-start-column="12" selection-end-line="21" selection-end-column="12" />
         </state>
       </provider>
     </entry>
@@ -853,13 +823,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/websocket/websocket-listener.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3944">
-          <caret line="6" column="51" selection-start-line="6" selection-start-column="51" selection-end-line="6" selection-end-column="51" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/start-python-server.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="136">
@@ -878,13 +841,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-11.653846" vertical-offset="275" max-vertical-offset="816">
           <caret line="34" column="100" selection-start-line="34" selection-start-column="100" selection-end-line="34" selection-end-column="100" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/client.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="425" max-vertical-offset="1802">
-          <caret line="35" column="20" selection-start-line="35" selection-start-column="20" selection-end-line="36" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -910,75 +866,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/websocket/websocket-defaults.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="901">
-          <caret line="6" column="47" selection-start-line="6" selection-start-column="47" selection-end-line="6" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/websocket/websocket-worker.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2657" max-vertical-offset="3825">
-          <caret line="173" column="33" selection-start-line="173" selection-start-column="33" selection-end-line="173" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/feed/feed-worker.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1148" max-vertical-offset="5168">
-          <caret line="106" column="12" selection-start-line="106" selection-start-column="12" selection-end-line="106" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/chat/chat-worker.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-18.96" vertical-offset="3113" max-vertical-offset="3825">
-          <caret line="211" column="39" selection-start-line="211" selection-start-column="39" selection-end-line="211" selection-end-column="39" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/client/chat/chat-listener.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1564">
           <caret line="23" column="5" selection-start-line="23" selection-start-column="5" selection-end-line="23" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/chat/chat-templates.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="39" max-vertical-offset="2771">
-          <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-          <folding>
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441997325119" expanded="true" signature="-1:-1" placeholder="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -990,19 +881,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/rest/rest-worker.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="221" max-vertical-offset="8109">
-          <caret line="39" column="21" selection-start-line="39" selection-start-column="21" selection-end-line="39" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/client/pgp/pgp-listener.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="3945" max-vertical-offset="10251">
           <caret line="269" column="0" selection-start-line="240" selection-start-column="0" selection-end-line="269" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1010,15 +892,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-2.6153846" vertical-offset="0" max-vertical-offset="289">
           <caret line="4" column="98" selection-start-line="4" selection-start-column="98" selection-end-line="4" selection-end-column="98" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/rest/rest-listener.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1157" max-vertical-offset="5372">
-          <caret line="85" column="40" selection-start-line="85" selection-start-column="40" selection-end-line="85" selection-end-column="40" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1038,130 +911,279 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/websocket/websocket-templates.js">
+    <entry file="file://$PROJECT_DIR$/client/client.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1309">
-          <caret line="0" column="3" selection-start-line="0" selection-start-column="3" selection-end-line="0" selection-end-column="3" />
-          <folding>
-            <marker date="1441946065275" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441946065275" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441946065275" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441946065275" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441946065275" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441946065275" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441946065275" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1441946065275" expanded="true" signature="-1:-1" placeholder="..." />
-          </folding>
+        <state vertical-scroll-proportion="0.0" vertical-offset="1164" max-vertical-offset="1802">
+          <caret line="35" column="20" selection-start-line="35" selection-start-column="20" selection-end-line="36" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/websocket/websocket-defaults.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="250" max-vertical-offset="901">
+          <caret line="34" column="16" selection-start-line="34" selection-start-column="16" selection-end-line="34" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/websocket/websocket-worker.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="3174" max-vertical-offset="3825">
+          <caret line="211" column="21" selection-start-line="211" selection-start-column="21" selection-end-line="211" selection-end-column="21" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/template/minimal/minimal.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-14.12" vertical-offset="4237" max-vertical-offset="4862">
-          <caret line="270" column="0" selection-start-line="270" selection-start-column="0" selection-end-line="280" selection-end-column="1" />
+        <state vertical-scroll-proportion="-4.68" vertical-offset="614" max-vertical-offset="4879">
+          <caret line="43" column="26" selection-start-line="43" selection-start-column="26" selection-end-line="43" selection-end-column="26" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/rest/rest.css">
+    <entry file="file://$PROJECT_DIR$/client/template/base/pages/home/test.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="710" max-vertical-offset="1360">
-          <caret line="61" column="43" selection-start-line="61" selection-start-column="43" selection-end-line="61" selection-end-column="43" />
+        <state vertical-scroll-proportion="-13.076923" vertical-offset="0" max-vertical-offset="612">
+          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/pgp/pgp.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="523" max-vertical-offset="1173">
-          <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="522" max-vertical-offset="1173">
+          <caret line="60" column="52" selection-start-line="59" selection-start-column="35" selection-end-line="61" selection-end-column="75" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/template/base/pages/test.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-13.076923" vertical-offset="0" max-vertical-offset="612">
+          <caret line="20" column="23" selection-start-line="20" selection-start-column="16" selection-end-line="20" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/websocket/websocket-listener.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1712" max-vertical-offset="4318">
+          <caret line="131" column="0" selection-start-line="131" selection-start-column="0" selection-end-line="131" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/chat/chat-templates.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.96" vertical-offset="2162" max-vertical-offset="2788">
+          <caret line="133" column="77" selection-start-line="133" selection-start-column="77" selection-end-line="133" selection-end-column="77" />
+          <folding>
+            <marker date="1442100172609" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1442100172609" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442100172609" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442100172609" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442100172609" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442100172609" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442100172609" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442100172609" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442100172609" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442100172609" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1442100172609" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442100172609" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442100172609" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1442100172609" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442100172609" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442100172609" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/chat/chat-worker.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2486" max-vertical-offset="3910">
+          <caret line="87" column="29" selection-start-line="87" selection-start-column="29" selection-end-line="87" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/pgp/pgp-worker.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2652" max-vertical-offset="9979">
+          <caret line="39" column="0" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
+          <folding>
+            <marker date="1442101146805" expanded="false" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/feed/feed-worker.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1007" max-vertical-offset="4046">
+          <caret line="72" column="12" selection-start-line="72" selection-start-column="12" selection-end-line="72" selection-end-column="12" />
+          <folding>
+            <marker date="1442101385255" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101385255" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101385255" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101385255" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101385255" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101385255" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101385255" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101385255" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101385255" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101385255" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1442101385255" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101385255" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1442101385255" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101385255" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1442101385255" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/websocket/websocket-templates.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="408" max-vertical-offset="1309">
+          <caret line="8" column="8" selection-start-line="8" selection-start-column="8" selection-end-line="8" selection-end-column="8" />
+          <folding>
+            <marker date="1442098653350" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442098653350" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442098653350" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442098653350" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442098653350" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442098653350" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442098653350" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442098653350" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/chat/chat.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="98" max-vertical-offset="1343">
+          <caret line="20" column="26" selection-start-line="20" selection-start-column="26" selection-end-line="20" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/pgp/pgp-templates.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="3245" max-vertical-offset="7684">
+          <caret line="211" column="0" selection-start-line="211" selection-start-column="0" selection-end-line="211" selection-end-column="0" />
+          <folding>
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442101921849" expanded="false" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/rest/rest.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="265" max-vertical-offset="1139">
+          <caret line="54" column="28" selection-start-line="54" selection-start-column="28" selection-end-line="54" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/rest/rest-listener.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1373" max-vertical-offset="5899">
+          <caret line="119" column="34" selection-start-line="119" selection-start-column="34" selection-end-line="119" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/rest/rest-worker.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1530" max-vertical-offset="8126">
+          <caret line="35" column="45" selection-start-line="35" selection-start-column="45" selection-end-line="35" selection-end-column="45" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/rest/rest-templates.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2491" max-vertical-offset="3128">
-          <caret line="150" column="0" selection-start-line="150" selection-start-column="0" selection-end-line="177" selection-end-column="7" />
+        <state vertical-scroll-proportion="2.57109" vertical-offset="805" max-vertical-offset="3077">
+          <caret line="175" column="2" selection-start-line="175" selection-start-column="2" selection-end-line="175" selection-end-column="2" />
           <folding>
-            <marker date="1442009127319" expanded="true" signature="328:1605" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="428:545" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="590:914" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="691:714" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="797:820" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="935:1428" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="997:1406" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="4240:7229" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="4531:4839" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="4632:4647" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="4730:4745" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="4898:7015" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="4947:5279" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="5341:5705" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="5398:5667" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="5777:6531" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="5881:6493" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="6069:6162" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="6222:6460" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="6611:6789" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="6853:6992" placeholder="..." />
-            <marker date="1442009127319" expanded="false" signature="7075:7088" placeholder="..." />
-            <marker date="1442009127319" expanded="true" signature="7089:7207" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/pgp/pgp-templates.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="28.56" vertical-offset="5593" max-vertical-offset="6358">
-          <caret line="287" column="64" selection-start-line="287" selection-start-column="64" selection-end-line="287" selection-end-column="64" />
-          <folding>
-            <marker date="1442013252596" expanded="true" signature="193:2354" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="456:772" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="557:576" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="659:678" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="842:2332" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="895:908" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="1085:1403" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="2727:4099" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="3010:3342" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="3115:3138" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="3221:3244" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="3418:4073" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="3528:3836" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="14931:16665" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="15187:15503" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="15288:15307" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="15390:15409" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="15603:16643" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="15786:15911" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="15968:15979" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="15980:16362" placeholder="..." />
-            <marker date="1442013252596" expanded="true" signature="17579:17591" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/pgp/pgp-worker.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.892779" vertical-offset="0" max-vertical-offset="11203">
-          <caret line="48" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
-          <folding>
-            <marker date="1442013252587" expanded="true" signature="345:2598" placeholder="..." />
-            <marker date="1442013252587" expanded="true" signature="606:922" placeholder="..." />
-            <marker date="1442013252587" expanded="true" signature="707:726" placeholder="..." />
-            <marker date="1442013252587" expanded="true" signature="809:828" placeholder="..." />
-            <marker date="1442013252587" expanded="true" signature="978:2576" placeholder="..." />
-            <marker date="1442013252587" expanded="true" signature="1283:2456" placeholder="..." />
-            <marker date="1442013252587" expanded="true" signature="1356:2428" placeholder="..." />
-            <marker date="1442013252587" expanded="true" signature="2488:2569" placeholder="..." />
-            <marker date="1442013252587" expanded="true" signature="2652:3942" placeholder="..." />
-            <marker date="1442013252587" expanded="true" signature="2730:3922" placeholder="..." />
-            <marker date="1442013252587" expanded="true" signature="2758:2924" placeholder="..." />
-            <marker date="1442013252587" expanded="true" signature="2973:3305" placeholder="..." />
-            <marker date="1442013252587" expanded="true" signature="3078:3101" placeholder="..." />
-            <marker date="1442013252587" expanded="true" signature="3184:3207" placeholder="..." />
-            <marker date="1442013252587" expanded="true" signature="21100:21112" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="292:1644" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="453:570" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="615:953" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="726:741" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="834:849" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="974:1467" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="1036:1445" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="4278:7236" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="4278:7236" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="4278:7254" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="4569:4841" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="4658:4673" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="4744:4759" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="4908:4919" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="4920:7083" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="4920:7232" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="4969:5301" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="5363:5727" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="5420:5689" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="5799:6553" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="5903:6515" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="6091:6184" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="6244:6482" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="6652:6830" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="6894:7020" placeholder="..." />
+            <marker date="1442124348851" expanded="true" signature="7084:7209" placeholder="..." />
           </folding>
         </state>
       </provider>

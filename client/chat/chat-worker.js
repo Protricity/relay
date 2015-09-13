@@ -6,6 +6,9 @@
     importScripts('chat/chat-templates.js');
 
     var PATH_PREFIX_CHAT = 'chat:';
+    var PATH_PREFIX_CHAT_USER_LIST = 'chat-user-list:';
+
+    var PATH_PREFIX_MESSAGE = 'message:';
 
     var activeChannels = [];
 
@@ -39,7 +42,7 @@
         var channelPath = match[2];
         checkChannel(channelPath);
         templateChatChannelMessage(commandResponse, function(html) {
-            self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath.toLowerCase() + ' .channel-content ' + html);
+            self.routeResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
         });
     };
 
@@ -62,7 +65,7 @@
         var visibility = args[5];
         checkChannel(channelPath);
         templateChatChannelAction(commandResponse, function(html) {
-            self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath.toLowerCase() + ' .channel-content ' + html);
+            self.routeResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
         });
 
         var sigIDList = sigIDLists[channelPath.toLowerCase()] || [];
@@ -94,7 +97,7 @@
         var username = args[4];
         checkChannel(channelPath);
         templateChatChannelAction(commandResponse, function(html) {
-            self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath.toLowerCase() + ' .channel-content ' + html);
+            self.routeResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
         });
 
         var sigIDList = sigIDLists[channelPath.toLowerCase()] || [];
@@ -122,7 +125,7 @@
         var visibility = args[6];
         checkChannel(channelPath);
         templateChatChannelNick(commandResponse, function(html) {
-            self.routeResponseToClient('LOG ' + PATH_PREFIX_CHAT + channelPath.toLowerCase() + ' .class-content ' + html);
+            self.routeResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
         });
 
         var sigIDList = sigIDLists[channelPath.toLowerCase()] || [];
@@ -153,16 +156,16 @@
 
     socketResponses.message = function(commandResponse) {
         var match = /^(msg|message)\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandResponse);
-        //var session_uid = match[2];
+        var session_uid = match[2];
         //var content = fixPGPMessage(match[3]);
         templateChatChannelMessage(commandResponse, function(html) {
-            self.routeResponseToClient('LOG ' + PATH_PREFIX_MESSAGE + session_uid + ' ' + html);
+            self.routeResponseToClient('LOG message:' + session_uid + ' ' + html);
         });
     };
 
     function sendUserList(channelPath, sigIDList) {
-        templateUserList(sigIDList, function(html) {
-            self.routeResponseToClient('LOG.REPLACE ' + PATH_PREFIX_CHAT + channelPath.toLowerCase() + ' .active-users ' + html);
+        templateUserList(channelPath, sigIDList, function(html) {
+            self.routeResponseToClient('LOG.REPLACE chat-active-users:' + channelPath.toLowerCase() + ' ' + html);
         });
 
         //checkChannel(channelPath);
@@ -205,9 +208,11 @@
 //    }
 
     function checkChannel(channelPath) {
+        if(!channelPath)
+            throw new Error("Invalid Channel Path Argument");
         if(activeChannels.indexOf(channelPath.toLowerCase()) === -1) {
             templateChatChannel(channelPath, function(html) {
-                self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_CHAT + channelPath.toLowerCase() + ' * ' + html);
+                self.routeResponseToClient("LOG.REPLACE chat:" + channelPath.toLowerCase() + ' ' + html);
             });
             activeChannels.push(channelPath.toLowerCase());
             console.info("New active channel: " + channelPath);

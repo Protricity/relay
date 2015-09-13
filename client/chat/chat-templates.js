@@ -5,14 +5,14 @@
 
 var templateChatChannel = function(channelPath, callback) {
     var CHANNEL_TEMPLATE = "\
-            <article class='{$attr_class}'>\n\
+            <article class='channel chat chat:{$channel_path}'>\n\
                 <script src='chat/chat-listener.js'></script>\n\
                 <link rel='stylesheet' href='chat/chat.css' type='text/css'>\n\
                 <header><span class='command'>Join</span> {$channel}</header>\n\
                 <div class='header-commands'>\n\
-                    <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\n\
-                 --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\n\
-                 --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
+                    <a class='header-command-minimize' href='#MINIMIZE chat:{$channel_path}'>[-]</a><!--\n\
+                 --><a class='header-command-maximize' href='#MAXIMIZE chat:{$channel_path}'>[+]</a><!--\n\
+                 --><a class='header-command-close' href='#CLOSE chat:{$channel_path}'>[x]</a>\n\
                 </div>\
                 <form name='chat-form'>\n\
                     <table>\n\
@@ -20,12 +20,12 @@ var templateChatChannel = function(channelPath, callback) {
                             <tr>\n\
                                 <td style='vertical-align: top'>\n\
                                     <select multiple='multiple' name='user-list' size='5'>\n\
-                                        <optgroup class='active-users' label='Active Users (0)'></optgroup>\n\
-                                        <optgroup class='inactive-users' label='Inactive Users (0)'></optgroup>\n\
+                                        <optgroup class='chat-active-users:{$channel_path}' label='Active Users (0)'></optgroup>\n\
+                                        <optgroup class='chat-inactive-users:{$channel_path}' label='Inactive Users (0)'></optgroup>\n\
                                     </select>\n\
                                 </td>\n\
                                 <td style='vertical-align: top'>\n\
-                                    <fieldset class='channel-content'>Joining {$channel}...</fieldset>\n\
+                                    <fieldset class='chat-log:{$channel_path}'>Joining {$channel}...</fieldset>\n\
                                 </td>\n\
                             </tr>\n\
                             <tr>\n\
@@ -43,6 +43,7 @@ var templateChatChannel = function(channelPath, callback) {
 
     // Callback
     callback(CHANNEL_TEMPLATE
+        .replace(/{\$channel_path}/gi, channelPath.toLowerCase())
         .replace(/{\$channel}/gi, channelPath)
     );
 };
@@ -126,11 +127,11 @@ var templateChatChannelNick = function (commandResponse, callback) {
 };
 
 
-var templateUserList = function(sigIDList, callback) {
+var templateUserList = function(channelPath, sigIDList, callback) {
     var CHANNEL_USERLIST_SELECT_OPTION = "<option value='{$session_uid}'>{$username}</option>";
 
     var CHANNEL_USERLIST_SELECT_OPTGROUP =
-        "<optgroup class='active-users' label='Active Users (" + sigIDList.length + ")'>{$html_options}</optgroup>";
+        "<optgroup class='chat-active-users:" + channelPath.toLowerCase() + "' label='Active Users (" + sigIDList.length + ")'>{$html_options}</optgroup>";
 
     var optionHTML = '';
     for(var i=0; i<sigIDList.length; i++) (function(sigid) {

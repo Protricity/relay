@@ -14,60 +14,6 @@
     var USE_SOCKET_PGP_KEYGEN = false;
 
 
-    var MANAGE_TEMPLATE = "\
-        <article class='{$attr_class}'>\n\
-            <script src='pgp/pgp-listener.js'></script>\n\
-            <link rel='stylesheet' href='pgp/pgp.css' type='text/css'>\n\
-            <header><span class='command'>Manage</span> PGP Identities</header>\n\
-            <div class='header-commands'>\n\
-                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\
-                 --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\
-                 --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
-            </div>\n\
-            <form name='pgp-manage-form' action='#'>\n\
-                <code class='status-box'>{$status_content}</code>\n\
-                <div class='pgp-id-box-container channel-content'></div>\n\
-                <label><strong>Action:&nbsp;&nbsp;</strong> <span class='action span-action'>No Keys Selected</span></label><br/>\n\
-                <label><strong>Commands:</strong> \n\
-                    <select name='action'>\n\
-                        <option value=''>Select action</option>\n\
-                        <option value='default {$id_private_list}'>Make Default Identity</option>\n\
-                        <option value='@passphrase {$id_private}'>Change Password</option>\n\
-                        <option value='sign {$id_private_list}'>Sign Message</option>\n\
-                        <option value='verify {$id_private_list}'>Verify Message</option>\n\
-                        <option value='encrypt {$id_private_list}'>Encrypt Message</option>\n\
-                        <option value='decrypt {$id_private_list}'>Decrypt Message</option>\n\
-                        <option value='@export.public {$id_private}'>Export Public Key Block</option>\n\
-                        <option value='@export.private {$id_private}'>Export Private Key Block</option>\n\
-                        <option value='@unregister {$id_private}'>Unregister Private Key Identity</option>\n\
-                        <option value='keygen'>Generate a new Identity</option>\n\
-                    </select>\n\
-                </label><br/>\n\
-                <label><strong>Submit:&nbsp;&nbsp;</strong> <input type='submit' /><br/>\n\
-            </form>\n\
-        </article>";
-
-    var MANAGE_TEMPLATE_ENTRY = "\
-        <label>\n\
-            <fieldset class='pgp-id-box pgp-id-box:{$id_private}{$class}'>\n\
-                <legend>\n\
-                    <input type='checkbox' value='{$id_private}' name='selected:{$id_private}'/> <span class='user'>{$user_id}</span>\n\
-                </legend>\n\
-                <div class='header-commands'>\n\
-                    <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\
-                     --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\
-                     --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
-                </div>\n\
-                <strong>ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='fingerprint'>{$id_private_short}</span><br/>\n\
-                <strong>Public ID:&nbsp;</strong> {$id_public_short}<br/>\n\
-                <strong>User ID:&nbsp;&nbsp;&nbsp;</strong> <span class='user'>{$user_id}</span><br/>\n\
-                <strong>Email:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='email'>{$user_email}</span><br/>\n\
-                <strong>Passphrase:</strong> {$passphrase_required}<br/>\n\
-                <strong>Is Default:</strong> {$is_default}<br/>\n\
-            </fieldset>\n\
-        </label>";
-
-
     /**
      * @param commandString
      * @param status_content
@@ -75,30 +21,15 @@
     socketCommands.manage = function (commandString, e, status_content) {
         //var match = /^manage$/im.exec(commandString);
 
-        self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + MANAGE_TEMPLATE
-                .replace(/{\$status_content}/gi, status_content || '')
-            //.replace(/{\$[^}]+}/gi, '')
-        );
+        templatePGPManageForm(status_content, function(html) {
+            self.routeResponseToClient("LOG.REPLACE pgp-manage: " + html);
+        });
 
         var PGPDB = getPGPDB();
         PGPDB.queryPrivateKeys(function(data) {
-            self.routeResponseToClient("LOG " + PATH_MAIN + " .channel-content " + MANAGE_TEMPLATE_ENTRY
-                    .replace(/{\$id_private}/gi, data.id_private)
-                    .replace(/{\$id_public}/gi, data.id_public)
-                    .replace(/{\$id_private_short}/gi, data.id_private.substr(data.id_private.length - 8))
-                    .replace(/{\$id_public_short}/gi, data.id_public.substr(data.id_public.length - 8))
-                    .replace(/{\$block_private}/gi, data.block_private)
-                    .replace(/{\$block_public}/gi, data.block_public)
-                    .replace(/{\$user_id}/gi, data.user_id.replace(/</, '&lt;'))
-                    .replace(/{\$user_name}/gi, data.user_name || '')
-                    .replace(/{\$user_email}/gi, data.user_email || '')
-                    .replace(/{\$user_comment}/gi, data.user_comment || '')
-                    .replace(/{\$passphrase_required}/gi, data.passphrase_required ? "Yes" : "No")
-                    .replace(/{\$is_default}/gi, data.default === '1' ? "<strong>Yes</strong>" : "No")
-                    .replace(/{\$class}/gi, data.default === '1' ? " pgp-id-box-default" : "")
-                    .replace(/{\$default}/gi, data.default)
-                //.replace(/{\$[^}]+}/gi, '')
-            );
+            templatePGPManageFormEntry(data, function(html) {
+                self.routeResponseToClient("LOG pgp-manage-entries: " + html);
+            });
         });
 
     };
@@ -106,9 +37,6 @@
     socketResponses.manage = function(e) {
         throw new Error("manage response is not implemented");
     };
-
-
-
 
     /**
      * @param commandString KEYGEN --bits [2048] [user id]
@@ -143,7 +71,7 @@
 
         if(!userID || !send_as_socket_command) {
             templatePGPKeyGenForm(userID, send_as_socket_command, function(html) {
-                self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + html);
+                self.routeResponseToClient("LOG.REPLACE pgp: " + html);
             });
             return;
         }
@@ -186,7 +114,7 @@
                         console.log("private key: ", err, privateKeyBlock);
 
                         templatePGPRegisterForm(privateKeyBlock, '', function(html) {
-                            self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + html);
+                            self.routeResponseToClient("LOG.REPLACE pgp: " + html);
                         });
 
                     });
@@ -252,14 +180,14 @@
                         "Public Key ID:  " + publicKeyFingerprint + "<br/>\n";
 
                     templatePGPRegisterForm(privateKeyBlock, status_content, function(html) {
-                        self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + html);
+                        self.routeResponseToClient("LOG.REPLACE pgp: " + html);
                     });
                 });
 
             } else {
                 status_content = "<span class='info'>Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually</span>";
                 templatePGPRegisterForm(privateKeyBlock, '', function(html) {
-                    self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + html);
+                    self.routeResponseToClient("LOG.REPLACE pgp: " + html);
                 });
             }
         } else {
@@ -269,7 +197,7 @@
                 console.log(data);
                 if(err) {
                     templatePGPRegisterForm(privateKeyBlock, err, function(html) {
-                        self.routeResponseToClient("LOG.REPLACE " + PATH_MAIN + " * " + html);
+                        self.routeResponseToClient("LOG.REPLACE pgp: " + html);
                     });
                 } else {
                     socketCommands.manage("MANAGE");
@@ -388,7 +316,7 @@
                 throw new Error(err);
 
             templatePGPIdentifyForm(responseString, socket.url, CONFIG, function(html) {
-                self.routeResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + html);
+                self.routeResponseToClient("LOG.REPLACE identify: " + html);
             });
         });
 
@@ -510,7 +438,7 @@
                     }
 
                     templatePGPIdentifySuccessForm(commandData, socket.url, CONFIG, function(html) {
-                        self.routeResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + html);
+                        self.routeResponseToClient("LOG.REPLACE identify: " + html);
                     });
 
                     //var PGPDB = getPGPDB();

@@ -5,16 +5,16 @@
 var restHTTPBrowserTemplate = function(responseText, callback) {
     // Template
     var HTTP_BROWSER_TEMPLATE = "\
-        <script src='rest/rest-listener.js'></script>\n\
-        <article class='{$attr_class} http-browser http-response-{$response_code}' data-browser-id='{$browser_id}'>\n\
+        <article class='channel http-browser:{$browser_id} http-browser http-response-{$response_code}' data-browser-id='{$browser_id}'>\n\
+            <script src='rest/rest-listener.js'></script>\n\
             <link rel='stylesheet' href='rest/rest.css' type='text/css'>\n\
             <header>\n\
                 <span class='command'>GET</span> <span class='url'>{$request_url}</span>\n\
             </header>\n\
             <div class='header-commands'>\n\
-                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\
-                     --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\
-                     --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
+                <a class='header-command-minimize' href='#MINIMIZE http-browser:{$browser_id}'>[-]</a><!--\
+             --><a class='header-command-maximize' href='#MAXIMIZE http-browser:{$browser_id}'>[+]</a><!--\
+             --><a class='header-command-close' href='#CLOSE http-browser:{$browser_id}'>[x]</a>\n\
             </div>\n\
             <nav>\n\
                 <form name='http-browser-navigation-form'>\n\
@@ -103,18 +103,18 @@ Request-url: {$request_url}\n\
 var restPutFormTemplate = function(content, callback) {
 
     var PUT_FORM_TEMPLATE = "\
-        <article class='{$attr_class}'>\n\
+        <article class='channel put:'>\n\
             <script src='rest/rest-listener.js'></script>\n\
             <link rel='stylesheet' href='rest/rest.css' type='text/css'>\n\
             <header><span class='command'>Put</span> content in your <strong>User Space</strong></header>\n\
             <div class='header-commands'>\n\
-                <a class='header-command-minimize' href='#MINIMIZE {$channel_class}'>[-]</a><!--\
-             --><a class='header-command-maximize' href='#MAXIMIZE {$channel_class}'>[+]</a><!--\
-             --><a class='header-command-close' href='#CLOSE {$channel_class}'>[x]</a>\n\
+                <a class='header-command-minimize' href='#MINIMIZE put:'>[-]</a><!--\
+             --><a class='header-command-maximize' href='#MAXIMIZE put:'>[+]</a><!--\
+             --><a class='header-command-close' href='#CLOSE put:'>[x]</a>\n\
             </div>\n\
-            <form name='http-put-form' class='compact'>\n\
+            <form name='http-put-form' class='compact' style='float:left;'>\n\
                 <label class='label-content'>Create new content for your <strong>User Space</strong>:<br/>\n\
-                    <textarea cols='42' rows='8' class='focus' name='content' required='required' placeholder='Type anything you like.\n\n\t<i>some</i>\n\t<code>html tags</code>\n\t<strong>allowed!</strong>'>{$content}</textarea>\n\
+                    <textarea cols='42' rows='8' class='focus' name='content' required='required' placeholder='Type anything you like.\n\n\t<i>most</i>\n\t<code>html tags</code>\n\t<strong>allowed!</strong>'>{$content}</textarea>\n\
                 <br/><br/></label>\n\
                 <label class='label-path hide-on-compact'>Post to:<br/>\n\
                     <select name='path'>\n\
@@ -135,17 +135,16 @@ var restPutFormTemplate = function(content, callback) {
                         </optgroup>\n\
                     </select>\n\
                 <br/><br/></label>\n\
-                <label class='label-passphrase show-on-passphrase-required'>PGP Passphrase (if required):<br/>\n\
+                <label class='label-passphrase hide-on-compact hide-on-no-passphrase-required'>PGP Passphrase (if required):<br/>\n\
                     <input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>\n\
                 <br/><br/></label>\n\
                 <label class='label-submit hide-on-compact'><hr/>Submit your post:<br/>\n\
-                    <input type='submit' value='Post' name='submit-post-form' />\n\
+                    <input type='submit' value='Post' name='put' />\n\
+                </label>\n\
+                <label class='label-submit hide-on-compact'>\n\
+                    <input class='pressed' type='checkbox' name='preview' />Preview your post\n\
                 </label>\n\
             </form>\n\
-            <fieldset class='preview-container' style='display: none'>\n\
-                <legend>Preview</legend>\n\
-                <div class='preview'></div>\n\
-            </fieldset>\n\
         </article>";
 
 
@@ -155,12 +154,10 @@ var restPutFormTemplate = function(content, callback) {
     var form_classes = [];
     var html_pgp_id_private_html = '';
     PGPDB.queryPrivateKeys(function(privateKeyData) {
-        var defaultUsername = privateKeyData.user_name || privateKeyData.user_id;
-        defaultUsername = defaultUsername.trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
-        var optionValue = privateKeyData.id_private + "," + privateKeyData.id_public + "," + defaultUsername + (privateKeyData.passphrase_required ? ',1' : ',0');
+        var optionValue = privateKeyData.id_private + "," + privateKeyData.id_public + (privateKeyData.passphrase_required ? ',1' : ',0');
 
-        if(privateKeyData.default && privateKeyData.passphrase_required)
-            form_classes.push('passphrase-required');
+        if(privateKeyData.default)
+            form_classes.push(privateKeyData.passphrase_required ? 'passphrase-required' : 'no-passphrase-required');
 
         html_pgp_id_private_html +=
             '<option' + (privateKeyData.default ? ' selected="selected"' : '') + ' value="' + optionValue + '">' +

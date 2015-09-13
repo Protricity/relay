@@ -3,7 +3,7 @@
  */
 (function() {
 
-    var PATH_PREFIX_PUT = 'put:';
+    var PATH_PUT = 'put';
     var PATH_PREFIX_GET = 'get:';
 
     importScripts("rest/rest-templates.js");
@@ -17,8 +17,7 @@
     //    </select>\n\
     //<br/><br/></label>\n\
 
-    var httpBrowserID = 1;
-    var putFormCounterN = 0;
+
     /**
      *
      * @param commandString PUT [path] [content]
@@ -38,7 +37,7 @@
 
         } else {
             restPutFormTemplate(content, function(html) {
-                self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_PUT + ' * ' + html);
+                self.routeResponseToClient("LOG.REPLACE put: " + html);
             });
         }
 
@@ -47,6 +46,8 @@
 
     socketResponses.put = function(commandString) { return self.routeResponseToClient(commandString); };
 
+
+    var httpBrowserID = 1;
     /**
      *
      * @param commandString GET [URL]
@@ -266,7 +267,7 @@
 
             restHTTPBrowserTemplate(responseText, function(html) {
                 parseHTMLBody(html, requestUrl, function(parsedResponseBody) {
-                    self.routeResponseToClient("LOG.REPLACE " + PATH_PREFIX_GET + browserID + ' * ' + html);
+                    self.routeResponseToClient("LOG.REPLACE http-browser:" + browserID + ' ' + html);
                 });
             });
 
