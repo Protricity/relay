@@ -115,12 +115,11 @@
                     case 'close':
                         throw new Error("Could not find class: " + channelPath);
 
-                    case 'replace':
+                    //channelContainer[channelContainer.firstChild ? 'insertBefore' : 'appendChild'](contentElement, channelContainer.firstChild);
+                    ////channelContainer.scrollTop = 0;
+                    //break;
+                    case 'replace': // TODO: verify logic
                     case 'prepend':
-                        channelContainer[channelContainer.firstChild ? 'insertBefore' : 'appendChild'](contentElement, channelContainer.firstChild);
-                        //channelContainer.scrollTop = 0;
-                        break;
-
                     case 'append':
                         channelContainer.appendChild(contentElement);
                         //contentTarget.scrollTop = contentTarget.scrollHeight;
@@ -162,8 +161,9 @@
 
 
                     case 'replace':
-                        contentTarget.parentNode.insertBefore(contentElement, contentTarget);
-                        contentTarget.parentNode.removeChild(contentTarget);
+                        //contentTarget.parentNode.insertBefore(contentElement, contentTarget);
+                        //contentTarget.parentNode.removeChild(contentTarget);
+                        contentTarget.innerHTML = contentElement.innerHTML;
                         //contentTarget.outerHTML = content;
                         //contentTarget.scrollTop = 0;
                         break;

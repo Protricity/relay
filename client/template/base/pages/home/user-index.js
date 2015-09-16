@@ -17,7 +17,8 @@ var getUserIndexTemplate = function(commandString, callback) {
         for(var i=0; i<urls.length; i++)
             pathHTML += "\t<li><a href='" + urls[i][0] + "'>" + urls[i][1] + "</a></li>";
         pathHTML += "</ul>";
-        TEMPLATE_HOME_INDEX = TEMPLATE_HOME_INDEX.replace(/{\$html_ul_index}/gi, pathHTML);
-        callback(TEMPLATE_HOME_INDEX);
+        callback(TEMPLATE_HOME_INDEX
+            .replace(/{\$html_ul_index}/gi, pathHTML)
+        );
     });
 };

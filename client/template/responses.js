@@ -1,11 +1,11 @@
 
-var responsePages = [
+var defaultContentResponses = [
     [/^\/?home\/?$/i, function(commandString, callback) { importScripts('template/base/pages/home/user-index.js'); getUserIndexTemplate(commandString, callback); }],
     [/^\/?$/, function(commandString, callback) { importScripts('template/base/pages/index.js'); getRootIndexTemplate(commandString, callback); }]
 ];
+// TODO: change to pages defaults
 
-
-var getDefaultResponse = function(commandString, callback) {
+var getDefaultContentResponse = function(commandString, callback) {
     var headers = commandString.split(/\n/);
     var firstLine = headers.shift();
     var match = /^get\s*(.*)$/i.exec(firstLine);
@@ -19,10 +19,10 @@ var getDefaultResponse = function(commandString, callback) {
         .replace(/^\/~/, '/home/' + contentURLHost)
         .toLowerCase();
 
-    for(var i=0; i<responsePages.length; i++) {
-        //console.log(responsePages[i], contentURLPath, contentURL);
-        if(responsePages[i][0].test(contentURLPath)) {
-            responsePages[i][1](commandString, callback);
+    for(var i=0; i<defaultContentResponses.length; i++) {
+        //console.log(defaultContentResponses[i], contentURLPath, contentURL);
+        if(defaultContentResponses[i][0].test(contentURLPath)) {
+            defaultContentResponses[i][1](commandString, callback);
             return;
         }
     }

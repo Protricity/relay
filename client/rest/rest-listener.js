@@ -9,6 +9,7 @@
 
     self.addEventListener('submit', onFormEvent);
     self.addEventListener('input', onFormEvent);
+    self.addEventListener('change', onFormEvent);
     self.addEventListener('click', onClickEvent);
 
     function onClickEvent(e) {
@@ -67,6 +68,7 @@
         }
     }
 
+    var lastPostContent = null;
     function refreshHTTPPutForm(e, formElm) {
         var pgpIDElm = formElm.querySelector('[name=pgp_id_private]');
         if(!pgpIDElm.value) {
@@ -81,19 +83,36 @@
 
         var passphraseElm = formElm.querySelector('*[name=passphrase][type=password], [type=password]');
         var postContentElm = formElm.querySelector('textarea[name=content]');
-        var previewCheckBoxElm = formElm.querySelector('input[name=preview]');
 
         if(postContentElm.value.length > 0)
             formElm.classList.remove('compact');
         formElm.classList[passphraseRequired ? 'add' : 'remove']('passphrase-required');
         formElm.classList[passphraseRequired ? 'remove' : 'add']('no-passphrase-required');
         passphraseElm[(passphraseRequired ? 'set' : 'remove') + 'Attribute']('required', 'required');
-        if(previewCheckBoxElm.checked)
-            submitHTTPPutFormPreview(e, formElm);
+
+        if(!lastPostContent || lastPostContent != postContentElm.value) {
+            lastPostContent = postContentElm.value;
+            if(refreshHTTPPutForm.previewTimeout)
+                clearTimeout(refreshHTTPPutForm.previewTimeout);
+            refreshHTTPPutForm.previewTimeout = setTimeout(function() {
+                submitHTTPPutFormPreview(e, formElm);
+            }, 200)
+        }
     }
 
     function submitHTTPPutFormPreview(e, formElm) {
         var postContentElm = formElm.querySelector('textarea[name=content]');
+        var pgpIDPrivateElm = formElm.querySelector('*[name=pgp_id_private]');
+        if(!pgpIDPrivateElm.value)
+            throw new Error("Invalid Private Key ID");
+        var pathElm = formElm.querySelector('*[name=path]');
+        if(!pathElm)
+            throw new Error("No channel field found");
+
+        var optionSplit = pgpIDPrivateElm.value.split(',');
+        var pgp_id_private = optionSplit[0];
+        var pgp_id_public = optionSplit[0];
+        var fixedPostPath = fixHomePath(pathElm.value, pgp_id_public);
 
         var timestamp = Date.now();
 
@@ -114,10 +133,22 @@
 
         postContent = protectHTMLContent(postContent, formElm);
 
-        var putPreviewElm = formElm.parentNode.getElementsByClassName('put-preview:')[0];
-        putPreviewElm.innerHTML = postContent;
-        console.log(putPreviewElm, postContent);
-        // TODO create put preview
+        var previewCheckBoxElm = formElm.querySelector('input[name=preview]');
+        //putPreviewElm.innerHTML = postContent;
+        //console.log(putPreviewElm, postContent);
+        var commandString = "PUT " + fixedPostPath + " --preview " + postContent;
+        if(!previewCheckBoxElm.checked) // TODO Config
+            commandString = "CLOSE put-preview:";
+
+        var socketEvent = new CustomEvent('socket', {
+            detail: commandString,
+            cancelable:true,
+            bubbles:true
+        });
+        formElm.dispatchEvent(socketEvent);
+
+        if(!socketEvent.defaultPrevented)
+            throw new Error("Socket event for new post was not handled");
     }
 
     function submitHTTPPutForm(e, formElm) {
@@ -126,9 +157,11 @@
         var passphraseElm = formElm.querySelector('*[name=passphrase][type=password], [type=password]');
         var postContentElm = formElm.querySelector('textarea[name=content]');
         var pgpIDPrivateElm = formElm.querySelector('*[name=pgp_id_private]');
-
         if(!pgpIDPrivateElm.value)
             throw new Error("Invalid Private Key ID");
+        var pathElm = formElm.querySelector('*[name=path]');
+        if(!pathElm)
+            throw new Error("No channel field found");
         var optionSplit = pgpIDPrivateElm.value.split(',');
         var selectedPrivateKeyID = optionSplit[0];
 
@@ -158,12 +191,9 @@
             var publicKeyID = privateKeyData.id_public;
             publicKeyID = publicKeyID.substr(publicKeyID.length - 8);
 
-            var pathElm = formElm.querySelector('*[name=path]');
-            if(!pathElm)
-                throw new Error("No channel field found");
             //var postPath = pathElm.value;
             var fixedPostPath = fixHomePath(pathElm.value, publicKeyID);
-            var homeChannel = '/home/' + publicKeyID + '/'; // fixHomePath('~', publicKeyID);
+            //var homeChannel = fixHomePath('~', publicKeyID);
             var timestamp = Date.now();
 
             var postContent = postContentElm.value.trim();
@@ -190,7 +220,7 @@
                     RestDB.verifyAndAddContentToDB(pgpSignedContent, function() {
                         //setStatus(formElm, "<span class='command'>Message</span>ing channel [" + homeChannel + "]");
 
-                        var commandString = "CHAT " + homeChannel + " " + pgpSignedContent;
+                        var commandString = "PUT " + fixedPostPath + " " + pgpSignedContent;
 
                         var socketEvent = new CustomEvent('socket', {
                             detail: commandString,

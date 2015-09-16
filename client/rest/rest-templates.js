@@ -114,13 +114,14 @@ var restPutFormTemplate = function(content, callback) {
             </div>\n\
             <form name='http-put-form' class='compact' style='float:left;'>\n\
                 <label class='label-content'>Create new content for your <strong>User Space</strong>:<br/>\n\
-                    <textarea cols='42' rows='8' class='focus' name='content' required='required' placeholder='Type anything you like.\n\n\t<i>most</i>\n\t<code>html tags</code>\n\t<strong>allowed!</strong>'>{$content}</textarea>\n\
+                    <textarea cols='50' rows='8' class='focus' name='content' required='required' placeholder='Type anything you like.\n\n\t<i>most</i>\n\t<code>html tags</code>\n\t<strong>allowed!</strong>'>{$content}</textarea>\n\
                 <br/><br/></label>\n\
                 <label class='label-path hide-on-compact'>Post to:<br/>\n\
                     <select name='path'>\n\
                         <option value='~'>My Home Page</option>\n\
                         <option disabled='disabled'>Friend's Web Space...</option>\n\
                         <option disabled='disabled'>Other Web Space...</option>\n\
+                        {$html_path_options}\n\
                     </select>\n\
                 <br/><br/></label>\n\
                 <label class='label-pgp-id-private hide-on-compact'>Post with (PGP Identity):<br/>\n\
@@ -142,7 +143,7 @@ var restPutFormTemplate = function(content, callback) {
                     <input type='submit' value='Post' name='put' />\n\
                 </label>\n\
                 <label class='label-submit hide-on-compact'>\n\
-                    <input class='pressed' type='checkbox' name='preview' />Preview your post\n\
+                    <input class='pressed' type='checkbox' name='preview' {$attr_preview_checked}/>Preview your post\n\
                 </label>\n\
             </form>\n\
         </article>";
@@ -153,6 +154,7 @@ var restPutFormTemplate = function(content, callback) {
 
     var form_classes = [];
     var html_pgp_id_private_html = '';
+    var html_path_options = '';
     PGPDB.queryPrivateKeys(function(privateKeyData) {
         var optionValue = privateKeyData.id_private + "," + privateKeyData.id_public + (privateKeyData.passphrase_required ? ',1' : ',0');
 
@@ -163,14 +165,58 @@ var restPutFormTemplate = function(content, callback) {
             '<option' + (privateKeyData.default ? ' selected="selected"' : '') + ' value="' + optionValue + '">' +
             (privateKeyData.passphrase_required ? '(*) ' : '') + privateKeyData.user_id.replace(/</, '&lt;') +
             '</option>';
-
     }, function() {
 
         // Callback
         callback(PUT_FORM_TEMPLATE
-            .replace(/{\$content}/gi, content || '')
-            .replace(/{\$html_pgp_id_private}/gi, html_pgp_id_private_html || '')
-            .replace(/{\$form_class}/gi, form_classes.join(' '))
+                .replace(/{\$content}/gi, content || '')
+                .replace(/{\$html_pgp_id_private}/gi, html_pgp_id_private_html || '')
+                .replace(/{\$form_class}/gi, form_classes.join(' '))
+                .replace(/{\$html_path_options}/gi, html_path_options || '')
+                .replace(/{\$attr_preview_checked}/gi, "checked='checked'") // TODO: get from config
         );
     });
+};
+
+
+var restPutFormTemplatePreview = function(content, callback) {
+
+    var PUT_FORM_PREVIEW_TEMPLATE = "\
+        <article class='channel put-preview:'>\n\
+            <script src='rest/rest-listener.js'></script>\n\
+            <link rel='stylesheet' href='rest/rest.css' type='text/css'>\n\
+            <header><span class='command'>Preview</span></header>\n\
+            <div class='header-commands'>\n\
+                <a class='header-command-minimize' href='#MINIMIZE put:'>[-]</a><!--\
+             --><a class='header-command-maximize' href='#MAXIMIZE put:'>[+]</a><!--\
+             --><a class='header-command-close' href='#CLOSE put:'>[x]</a>\n\
+            </div>\n\
+            <section class='put-preview-content:'>{$content}</section>\n\
+            <br/>\n\
+            <form name='http-put-preview-form' >\n\
+                <fieldset draggable='true'>\n\
+                    <legend>\
+                        <select name='template'>\n\
+                            <option value=''>Select a template...</option>\n\
+                            <option value='header'>Header</option>\n\
+                            <option value='footer'>Footer</option>\n\
+                            {$html_template_options}\n\
+                        </select>\n\
+                    </legend>\n\
+                    <div class='put-preview-template-content:'>asd fsdfas</div>\n\
+                </fieldset>\n\
+                <fieldset>\n\
+                    <legend>HTML Code</legend>\n\
+                    <code class='put-preview-template-code:'>adsf asd</code>\n\
+                </fieldset>\n\
+            </form>\n\
+        </article>";
+
+    var html_template_options = '';
+
+    // Callback
+    callback(PUT_FORM_PREVIEW_TEMPLATE
+            .replace(/{\$content}/gi, content || '')
+            .replace(/{\$html_template_options}/gi, html_template_options || '')
+    );
 };

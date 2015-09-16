@@ -1,4 +1,12 @@
 
+form[name=http-put-preview-form] {
+    min-width: 30em;
+}
+
+form[name=http-put-form] {
+    /*min-width: 30em;*/
+}
+
 form[name=http-put-form] input[type=submit] {
     padding: 0.5em 1em;
     margin: 0.5em;
@@ -51,8 +59,7 @@ form[name=http-put-form] input[type=submit] {
 
 /** Visibility **/
 
-.compact .hide-on-compact,
-.compact + .hide-on-compact{
+.compact .hide-on-compact{
     display: none;
 }
 

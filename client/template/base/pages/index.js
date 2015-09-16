@@ -5,7 +5,7 @@
 var getRootIndexTemplate = function(commandString, callback) {
     var TEMPLATE_INDEX = "\
         <h2>Index</h2>\n\
-        {$html_ul_index}\n\
+        {rest::index}\n\
     ";
 
 

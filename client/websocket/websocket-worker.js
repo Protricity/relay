@@ -152,11 +152,60 @@
         //             console.log("SOCKET OUT (" + selectedSocket.url + "): " + commandString);
     };
 
+    function lookupAndReplaceTags(tagString, callback) {
+        var match =         /{([^}]+)}/.exec(tagString);
+        if(!match)
+            throw new Error("Invalid Tag: " + tagString);
+        var tagName = match[1];
+        var tagNamespace = 'websocket';
+        if(tagName.indexOf('::') !== -1) {
+            tagNamespace = tagName.split('::', 2)[0].toLowerCase();
+            if(!/^\w+$/.test(tagNamespace)) {
+                console.error("Invalid Tag Namespace: " + tagString);
+                callback(tagString);
+                return;
+            }
+
+        }
+        importScripts(tagNamespace + '/' + tagNamespace + '-tags.js');
+
+        var found = false;
+        for(var i=0; i<templateTags.length && !found; i++) (function(templateTag) {
+            var regex = templateTag[0];
+            if(regex.test(tagString)) {
+                var tagCall = templateTag[1];
+                if(typeof tagCall === 'function') {
+                    tagString.replace(regex, function(tagString) {
+                        var args = Array.prototype.slice.call(arguments);
+                        args.unshift(callback);
+                        tagCall.apply(tagCall, args);
+                        found = true;
+                    });
+
+                } else {
+                    tagString = tagString.replace(regex, tagCall);
+                    callback(tagString);
+                    found = true;
+                }
+            }
+        })(templateTags[i]);
+
+        if(found) {
+            console.warn("Could not find tag: " + tagString);
+            callback(tagString);
+        }
+    }
 
     self.routeResponseToClient = function(commandResponse) {
-        self.postMessage(commandResponse
-            //.replace(/{\$html_header_commands}/gi, HEADER_COMMANDS_TEMPLATE)
-        );
+        function parseTags(tagString, onFinished) {
+            if(/{[^}]+}/.test(tagString)) {
+                lookupAndReplaceTags(tagString, parseTags);
+
+            } else {
+                onFinished(tagString);
+            }
+        }
+        parseTags(commandResponse, self.postMessage);
     };
 
     self.executeWorkerCommand = function(commandString, e) {

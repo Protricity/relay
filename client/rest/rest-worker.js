@@ -23,18 +23,30 @@
      * @param commandString PUT [path] [content]
      */
     socketCommands.put = function (commandString) {
-        var match = /^put\s*(\S*)\s*([\S\s]*)?$/im.exec(commandString);
+        var match = /^put\s*(\S*)\s*([\S\s]+)?$/im.exec(commandString);
+        if(!match)
+            throw new Error("Invalid PUT: " + commandString);
 
         var path = match[1] || '~';
-        var content = match[2];
+        var content = match[2] || '';
+
+        var preview = false;
+        content = content.replace(/--preview\s+/i, function(match, contents, offset, s) {
+            preview = true; return '';
+        });
 
         if(!/[~/a-z_-]+/i.test(path))
             throw new Error("Invalid Path: " + path);
 
         if(content) {
             // todo http format
-            self.sendWithFastestSocket(commandString);
-
+            if(preview) {
+                restPutFormTemplatePreview(content, function(html) {
+                    self.routeResponseToClient("LOG.REPLACE put-preview: " + html);
+                })
+            } else {
+                self.sendWithFastestSocket(commandString);
+            }
         } else {
             restPutFormTemplate(content, function(html) {
                 self.routeResponseToClient("LOG.REPLACE put: " + html);
@@ -167,7 +179,7 @@
                 } else {
                     (function() {
                         importScripts('template/template-defaults.js');
-                        getDefaultResponse(formattedCommandString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
+                        getDefaultContentResponse(formattedCommandString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
                             responseHeaders = (responseHeaders ? responseHeaders + "\n" : "") + requestData.createResponseHeaderString();
                             defaultResponseBody = protectHTMLContent(defaultResponseBody);
 
