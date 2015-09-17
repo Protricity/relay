@@ -3,6 +3,12 @@
  */
 
 
-var templateTags = [
-    [/{\websocket::test}/gi, 'websocket-test']
-];
+
+
+tagCallbacks['websocket'] = function(tagString, callback) {
+    var found = false;
+    if(!found) {
+        console.warn("Could not find content for tag: " + tagString);
+        callback("<span class='error'>Tag content not found</span>");
+    }
+};

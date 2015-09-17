@@ -233,7 +233,7 @@ RestDB.listURLIndex = function(currentURL, callback) {
     var match = currentURL.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
     var contentURLHost = match[4];
     if(!contentURLHost)
-        throw new Error("Invalid Host: " + contentURLHost);
+        throw new Error("Invalid Host: " + currentURL);
     var contentURLPath = (match[5] || '')
         .replace(/^\/~/, '/home/' + contentURLHost);
     var contentURLParentPath = contentURLPath.replace(/[^\/]+\/$/, '') || '/';

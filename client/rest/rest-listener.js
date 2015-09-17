@@ -25,7 +25,7 @@
 
         var browserID = null;
         var targetElm = e.target;
-        while(!browserID && (targetElm = targetElm.parentNode))
+        while(!browserID && (targetElm = targetElm.parentNode) && targetElm.getAttribute)
             browserID = targetElm.getAttribute('data-browser-id');
 
         var commandString = "GET " + anchorElement.href;

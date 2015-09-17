@@ -2,6 +2,8 @@
  * Created by ari on 6/19/2015.
  */
 
+var tagCallbacks = {};
+
 (function() {
     var NEXT_SOCKET_INTERVAL = 5000;
     var SOCKET_RECONNECT_INTERVAL = 5000;
@@ -152,60 +154,41 @@
         //             console.log("SOCKET OUT (" + selectedSocket.url + "): " + commandString);
     };
 
-    function lookupAndReplaceTags(tagString, callback) {
-        var match =         /{([^}]+)}/.exec(tagString);
-        if(!match)
-            throw new Error("Invalid Tag: " + tagString);
-        var tagName = match[1];
+    function replaceAllTags(htmlContent, callback) {
+        var match = /{([a-z][^}]+)}/.exec(htmlContent);
+        if(!match) {
+            callback(htmlContent);
+            return;
+        }
+
+        var tagString = match[0];
+        var tagContent = match[1];
         var tagNamespace = 'websocket';
-        if(tagName.indexOf('::') !== -1) {
-            tagNamespace = tagName.split('::', 2)[0].toLowerCase();
-            if(!/^\w+$/.test(tagNamespace)) {
-                console.error("Invalid Tag Namespace: " + tagString);
-                callback(tagString);
-                return;
-            }
-
+        if(tagContent.indexOf('::') !== -1) {
+            tagNamespace = tagContent.split('::', 2)[0].toLowerCase();
+            if(!/^\w+$/.test(tagNamespace))
+                throw new Error("Invalid Tag Namespace: " + tagString);
         }
-        importScripts(tagNamespace + '/' + tagNamespace + '-tags.js');
-
-        var found = false;
-        for(var i=0; i<templateTags.length && !found; i++) (function(templateTag) {
-            var regex = templateTag[0];
-            if(regex.test(tagString)) {
-                var tagCall = templateTag[1];
-                if(typeof tagCall === 'function') {
-                    tagString.replace(regex, function(tagString) {
-                        var args = Array.prototype.slice.call(arguments);
-                        args.unshift(callback);
-                        tagCall.apply(tagCall, args);
-                        found = true;
-                    });
-
-                } else {
-                    tagString = tagString.replace(regex, tagCall);
-                    callback(tagString);
-                    found = true;
-                }
-            }
-        })(templateTags[i]);
-
-        if(found) {
-            console.warn("Could not find tag: " + tagString);
-            callback(tagString);
+        if(typeof tagCallbacks === 'undefined')
+            tagCallbacks = {};
+        if(typeof tagCallbacks[tagNamespace] === 'undefined') {
+            tagCallbacks[tagNamespace] = false;
+            importScripts(tagNamespace + '/' + tagNamespace + '-tags.js');
         }
+        var tagCall = tagCallbacks[tagNamespace];
+
+        tagCall(tagString, function(tagContent) {
+            replaceAllTags(htmlContent
+                .replace(tagString, tagContent),
+                callback
+            );
+        });
     }
 
     self.routeResponseToClient = function(commandResponse) {
-        function parseTags(tagString, onFinished) {
-            if(/{[^}]+}/.test(tagString)) {
-                lookupAndReplaceTags(tagString, parseTags);
-
-            } else {
-                onFinished(tagString);
-            }
-        }
-        parseTags(commandResponse, self.postMessage);
+        replaceAllTags(commandResponse, function(parsedCommandResponse) {
+            self.postMessage(parsedCommandResponse);
+        });
     };
 
     self.executeWorkerCommand = function(commandString, e) {

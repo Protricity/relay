@@ -2,9 +2,10 @@
  * Created by ari on 9/16/2015.
  */
 
-
-var templateTags = [
-    [/{\rest::index(?:\s+([^}]+))?}/gi, function(cb, tagString, pathString) {
+tagCallbacks['rest'] = function(tagString, callback) {
+    var found = false;
+    tagString.replace(/\{rest::index\s+([^}]+)}/i, function(tagString, pathString) {
+        found = true;
         if(typeof RestDB !== 'function')
             importScripts('rest/rest-db.js');
 
@@ -13,7 +14,12 @@ var templateTags = [
             for(var i=0; i<urls.length; i++)
                 pathHTML += "\t<li><a href='" + urls[i][0] + "'>" + urls[i][1] + "</a></li>";
             pathHTML += "</ul>";
-            cb(pathHTML);
+            callback(pathHTML);
         });
-    }]
-];
+    });
+
+    if(!found) {
+        console.warn("Could not find content for tag: " + tagString);
+        callback("<span class='tag-error'>Tag content not found</span>");
+    }
+};

@@ -153,7 +153,7 @@
     function executeLocalGETRequest(commandString, callback) {
         var requestData = parseRequestBody(commandString);
         parseURLWithDefaultHost(requestData.url, function(urlData) {
-            console.log(urlData);
+//             console.log(urlData);
             if(!urlData.host)
                 throw new Error("Invalid Host: " + commandString);
             var formattedCommandString = requestData.createRequestString(); // "GET " + urlData.url + "\n" + requestHeaders.join("\n");
@@ -178,7 +178,6 @@
 
                 } else {
                     (function() {
-                        importScripts('template/template-defaults.js');
                         getDefaultContentResponse(formattedCommandString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
                             responseHeaders = (responseHeaders ? responseHeaders + "\n" : "") + requestData.createResponseHeaderString();
                             defaultResponseBody = protectHTMLContent(defaultResponseBody);
@@ -196,6 +195,40 @@
             }
         });
     }
+
+
+    //importScripts('template/template-defaults.js');
+    // TODO default content public config
+    var defaultContentResponses = [
+        [/^\/?home\/?$/i, function(commandString, callback) { importScripts('rest/pages/home/user-index.js'); getUserIndexTemplate(commandString, callback); }],
+        [/^\/?$/, function(commandString, callback) { importScripts('rest/pages/index.js'); getRootIndexTemplate(commandString, callback); }]
+    ];
+
+    var getDefaultContentResponse = function(commandString, callback) {
+        var headers = commandString.split(/\n/);
+        var firstLine = headers.shift();
+        var match = /^get\s*(.*)$/i.exec(firstLine);
+        if(!match)
+            throw new Error("Invalid GET Request: " + contentURL);
+        var contentURL = match[1];
+
+        match = contentURL.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
+        var contentURLHost = match[4];
+        var contentURLPath = (match[5] || '')
+            .replace(/^\/~/, '/home/' + contentURLHost)
+            .toLowerCase();
+
+        for(var i=0; i<defaultContentResponses.length; i++) {
+            //console.log(defaultContentResponses[i], contentURLPath, contentURL);
+            if(defaultContentResponses[i][0].test(contentURLPath)) {
+                defaultContentResponses[i][1](commandString, callback);
+                return;
+            }
+        }
+
+        importScripts('rest/pages/404.js');
+        get404IndexTemplate(commandString, callback);
+    };
 
     function getPathIterator(urlPrefix, callback, onFinish) {
         var match = urlPrefix.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));

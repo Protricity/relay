@@ -91,7 +91,7 @@ Request-url: {$request_url}\n\
 {$response_body}";
 
     callback(RESPONSE_BODY_TEMPLATE
-        .replace(/{\$response_headers}/gi, headers)
+        .replace(/{\$response_headers}/gi, headers.trim())
         .replace(/{\$response_code}/gi, code || '200')
         .replace(/{\$response_text}/gi, text || 'OK')
         .replace(/{\$request_url}/gi, url)
