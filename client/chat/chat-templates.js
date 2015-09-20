@@ -2,13 +2,16 @@
  * Created by ari on 6/19/2015.
  */
 
-
-var templateChatChannel = function(channelPath, callback) {
+var Templates = Templates || {};
+Templates.chat = Templates.chat || {};
+Templates.chat.form = function(channelPath, callback) {
     var CHANNEL_TEMPLATE = "\
         <article class='channel chat chat:{$channel_path}'>\n\
             <script src='chat/chat-listeners.js'></script>\n\
             <link rel='stylesheet' href='chat/chat.css' type='text/css'>\n\
-            <legend><span class='command'>Join</span> {$channel}</legend>\n\
+            <legend class='title'>\n\
+                <span class='command'>Join</span> {$channel}\n\
+            </legend>\n\
             <div class='title-commands'>\n\
                 <a class='title-command-minimize' href='#MINIMIZE chat:{$channel_path}'>[-]</a><!--\n\
              --><a class='title-command-maximize' href='#MAXIMIZE chat:{$channel_path}'>[+]</a><!--\n\
@@ -25,7 +28,7 @@ var templateChatChannel = function(channelPath, callback) {
                                 </select>\n\
                             </td>\n\
                             <td style='vertical-align: top'>\n\
-                                <fieldset class='chat-log:{$channel_path}'>Joining {$channel}...</fieldset>\n\
+                                <fieldset class='chat-log chat-log:{$channel_path}'>Joining {$channel}...</fieldset>\n\
                             </td>\n\
                         </tr>\n\
                         <tr>\n\
@@ -49,7 +52,7 @@ var templateChatChannel = function(channelPath, callback) {
 };
 
 
-var templateChatChannelMessage = function(commandResponse, callback) {
+Templates.chat.message = function(commandResponse, callback) {
     var match = /^(chat)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandResponse);
     if (!match)
         throw new Error("Invalid Chat Response: " + commandResponse);
@@ -59,7 +62,7 @@ var templateChatChannelMessage = function(commandResponse, callback) {
     var username = match[5];
     var content = (match[6]); // fixPGPMessage
 
-    var MESSAGE_TEMPLATE = '<div class="channel-log">' +
+    var MESSAGE_TEMPLATE = '<div class="chat-log-entry">' +
         '<span class="username" data-session-uid="{$session_uid}" data-timestamp="{$timestamp}">{$username}</span>' +
         ': <span class="message">{$content}</span>' +
         '</div>';
@@ -73,7 +76,7 @@ var templateChatChannelMessage = function(commandResponse, callback) {
     );
 };
 
-var templateChatChannelAction = function(commandResponse, callback) {
+Templates.chat.action = function(commandResponse, callback) {
     var args = commandResponse.split(/\s/);
     var channelPath = args[1];
     var pgp_id_public = args[2];
@@ -88,7 +91,7 @@ var templateChatChannelAction = function(commandResponse, callback) {
         default: throw new Error("Unknown action: " + commandResponse);
     }
 
-    var ACTION_TEMPLATE = '<div class="channel-log">' +
+    var ACTION_TEMPLATE = '<div class="chat-log-entry">' +
         '<span class="username" data-session-uid="{$session_uid}">{$username}</span>' +
         ' has <span class="action">{$action}</span>' +
         ' <a href="#JOIN {$channel}" class="path">{$channel}</a>' +
@@ -104,7 +107,7 @@ var templateChatChannelAction = function(commandResponse, callback) {
     );
 };
 
-var templateChatChannelNick = function (commandResponse, callback) {
+Templates.chat.nick = function (commandResponse, callback) {
     var args = commandResponse.split(/\s/);
     var channelPath = args[1];
     var old_username = args[2];
@@ -113,7 +116,7 @@ var templateChatChannelNick = function (commandResponse, callback) {
     var new_username = args[5];
     var visibility = args[6];
 
-    var NICK_TEMPLATE = '<div class="channel-log">' +
+    var NICK_TEMPLATE = '<div class="chat-log-entry">' +
         'Username <span class="username">{$old_username}</span>' +
         ' has been <span class="action">renamed</span> to <span class="username">{$new_username}</span>' +
         '</div>';
@@ -127,7 +130,7 @@ var templateChatChannelNick = function (commandResponse, callback) {
 };
 
 
-var templateUserList = function(channelPath, sigIDList, callback) {
+Templates.chat.userList = function(channelPath, sigIDList, callback) {
     var CHANNEL_USERLIST_SELECT_OPTION = "<option value='{$session_uid}'>{$username}</option>";
 
     var CHANNEL_USERLIST_SELECT_OPTGROUP =

@@ -73,7 +73,7 @@ body.template-minimal {
 }
 
 .template-minimal .channel.minimized .channel-header,
-.template-minimal .channel.minimized header {
+.template-minimal .channel.minimized .title {
     display: inherit;
     color: grey;
 }

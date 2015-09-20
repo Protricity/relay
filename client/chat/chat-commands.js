@@ -20,7 +20,7 @@
 //         var username = match[3];
 
         checkChannel(channelPath);
-        Commands.sendWithSocket(commandString, channelPath);
+        Commands.sendWithSocket(commandString);
     });
 
 
@@ -34,19 +34,19 @@
         return Commands.sendWithSocket(commandString);
     });
 
-    CommandResponses.add('chat', function(commandResponse, e) {
-        var match = /^(chat)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandResponse);
+    Commands.addResponse('chat', function(commandResponse, e) {
+        var match = /^(chat)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s*([\s\S]+)$/im.exec(commandResponse);
         if(!match)
             throw new Error("Invalid Chat Response: " + commandResponse);
         var channelPath = match[2];
         checkChannel(channelPath);
-        templateChatChannelMessage(commandResponse, function(html) {
-            CommandResponses.postToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
+        Templates.chat.message(commandResponse, function(html) {
+            Commands.postResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
         });
     });
 
     var sigIDLists = {};
-    CommandResponses.join = function(commandResponse) {
+    Commands.addResponse('join', function(commandResponse) {
         var args = commandResponse.split(/\s/);
         var channelPath = args[1];
         var pgp_id_public = args[2];
@@ -54,8 +54,8 @@
         var username = args[4];
         var visibility = args[5];
         checkChannel(channelPath);
-        templateChatChannelAction(commandResponse, function(html) {
-            CommandResponses.postToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
+        Templates.chat.action(commandResponse, function(html) {
+            Commands.postResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
         });
 
         var sigIDList = sigIDLists[channelPath.toLowerCase()] || [];
@@ -77,9 +77,9 @@
         }
         sendUserList(channelPath, sigIDList);
 
-    };
+    });
 
-    CommandResponses.add('userlist', function(commandResponse) {
+    Commands.addResponse('userlist', function(commandResponse) {
         var match = /^(userlist)\s+([^\s]+)\n([\s\S]+)$/im.exec(commandResponse);
         var channelPath = match[2];
         var sigIDList = match[3].split(/\n/img);
@@ -88,15 +88,15 @@
         sendUserList(channelPath, sigIDList);
     });
 
-    CommandResponses.add('leave', function(commandResponse) {
+    Commands.addResponse('leave', function(commandResponse) {
         var args = commandResponse.split(/\s/);
         var channelPath = args[1];
         var pgp_id_public = args[2];
         var session_uid = args[3];
         var username = args[4];
         checkChannel(channelPath);
-        templateChatChannelAction(commandResponse, function(html) {
-            CommandResponses.postToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
+        Templates.chat.action(commandResponse, function(html) {
+            Commands.postResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
         });
 
         var sigIDList = sigIDLists[channelPath.toLowerCase()] || [];
@@ -114,7 +114,7 @@
         sendUserList(channelPath, sigIDList);
     });
 
-    CommandResponses.add('nick', function(commandResponse) {
+    Commands.addResponse('nick', function(commandResponse) {
         var args = commandResponse.split(/\s/);
         var channelPath = args[1];
         var old_username = args[2];
@@ -123,8 +123,8 @@
         var new_username = args[5];
         var visibility = args[6];
         checkChannel(channelPath);
-        templateChatChannelNick(commandResponse, function(html) {
-            CommandResponses.postToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
+        Templates.chat.nick(commandResponse, function(html) {
+            Commands.postResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
         });
 
         var sigIDList = sigIDLists[channelPath.toLowerCase()] || [];
@@ -153,19 +153,19 @@
         sendUserList(channelPath, sigIDList);
     });
 
-    CommandResponses.add('message', function(commandResponse) {
+    Commands.addResponse('message', function(commandResponse) {
         var match = /^(msg|message)\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandResponse);
         var session_uid = match[2];
         //var content = fixPGPMessage(match[3]);
-        templateChatChannelMessage(commandResponse, function(html) {
-            CommandResponses.postToClient('LOG message:' + session_uid + ' ' + html);
+        Templates.chat.message(commandResponse, function(html) {
+            Commands.postResponseToClient('LOG message:' + session_uid + ' ' + html);
         });
     });
 
 
     function sendUserList(channelPath, sigIDList) {
-        templateUserList(channelPath, sigIDList, function(html) {
-            CommandResponses.postToClient('LOG.REPLACE chat-active-users:' + channelPath.toLowerCase() + ' ' + html);
+        Templates.chat.userList(channelPath, sigIDList, function(html) {
+            Commands.postResponseToClient('LOG.REPLACE chat-active-users:' + channelPath.toLowerCase() + ' ' + html);
         });
 
         //checkChannel(channelPath);
@@ -211,8 +211,8 @@
         if(!channelPath)
             throw new Error("Invalid Channel Path Argument");
         if(activeChannels.indexOf(channelPath.toLowerCase()) === -1) {
-            templateChatChannel(channelPath, function(html) {
-                CommandResponses.postToClient("LOG.REPLACE chat:" + channelPath.toLowerCase() + ' ' + html);
+            Templates.chat.form(channelPath, function(html) {
+                Commands.postResponseToClient("LOG.REPLACE chat:" + channelPath.toLowerCase() + ' ' + html);
             });
             activeChannels.push(channelPath.toLowerCase());
             console.info("New active channel: " + channelPath);

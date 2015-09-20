@@ -12,15 +12,17 @@ function Sockets(socketURL) {
 
 (function() {
 
+    var eventListeners = [];
     var activeSockets = [];
     var socketURLList = [];
+    var reconnectTimeout = null;
 
     Sockets.addURL = function(socketURL) {
         socketURLList.push(socketURL);
     };
 
-    importScripts('socket/socket-defaults.js');
-    importScripts('socket/socket-templates.js');
+    importScripts('sockets/sockets-defaults.js');
+    importScripts('sockets/templates/sockets-log-template.js');
 
     Sockets.getAll = function() { return activeSockets; };
 
@@ -40,45 +42,50 @@ function Sockets(socketURL) {
             newSocket.removeEventListener('open', onOpen);
             //self.postMessage("SOCKET OPEN " + socketURL);
 
-            for(var i=0; i<Sockets.listeners.length; i++)
-                if(Sockets.listeners[i][0] === 'open')
-                    Sockets.listeners[i][1](newSocket);
+            for(var i=0; i<eventListeners.length; i++)
+                if(eventListeners[i][0] === 'open')
+                    eventListeners[i][1](newSocket);
 
-            templateSocketActionEntry("SOCKET OPEN: " + newSocket.url, function(html) {
-                CommandResponses.postToClient('LOG socket-log:' + newSocket.url + ' ' + html);
+            Templates.socket.log.action("SOCKET OPEN: " + newSocket.url, function(html) {
+                Commands.postResponseToClient('LOG socket-log:' + newSocket.url + ' ' + html);
             });
         }
         function onClose(e) {
-
             console.log("SOCKET CLOSED: ", e.currentTarget, e.reason, e);
             //self.postMessage("SOCKET CLOSED " + socketURL);
 
             newSocket.removeEventListener('close', onClose);
-            var socketCount = 0;
             for(var j=0; j<activeSockets.length; j++) {
-                socketCount += newSocket.readyState === WebSocket.OPEN ? 1 : 0;
-                if (activeSockets[j].url === socketURL)
+                if (activeSockets[j] === newSocket) {
                     activeSockets.splice(j, 1);
+                    console.log("Removing Socket: "+ j, newSocket, activeSockets);
+                    break;
+                }
             }
 
-            if(socketCount === 0) {
-                setTimeout(function () {
-                    console.info("Reconnecting to: " + socketURL);
-                    Sockets.get(socketURL);
-                }, Sockets.SOCKET_RECONNECT_INTERVAL);
-            }
+            if(reconnectTimeout)
+                clearTimeout(reconnectTimeout);
 
-            templateSocketActionEntry("SOCKET CLOSED: " + newSocket.url, function(html) {
-                CommandResponses.postToClient('LOG socket-log:' + newSocket.url + ' ' + html);
+            reconnectTimeout = setTimeout(function () {
+                for(var i=0; i<activeSockets.length; i++)
+                    if(activeSockets[i].readyState === WebSocket.OPEN)
+                        return;
+
+                console.info("No active sockets found. Reconnecting to: " + socketURL);
+                Sockets.get(socketURL);
+            }, Sockets.SOCKET_RECONNECT_INTERVAL);
+
+            Templates.socket.log.action("SOCKET CLOSED: " + newSocket.url, function(html) {
+                Commands.postResponseToClient('LOG socket-log:' + newSocket.url + ' ' + html);
             });
 
         }
         function onSocketMessage(e) {
-            CommandResponses.process(e.data, e);
+            Commands.processResponse(e.data, e);
             var socket = e.target;
             if(socket instanceof WebSocket) {
-                templateSocketLogEntry(e.data, 'I', function(html) {
-                    CommandResponses.postToClient('LOG socket-log:' + socket.url + ' ' + html);
+                Templates.socket.log.entry(e.data, 'I', function(html) {
+                    Commands.postResponseToClient('LOG socket-log:' + socket.url + ' ' + html);
                 });
             }
         }
@@ -91,8 +98,8 @@ function Sockets(socketURL) {
         newSocket.addEventListener('open', Sockets.callEventListeners);
         newSocket.addEventListener('close', Sockets.callEventListeners);
 
-        templateSocketLog(newSocket.url, function(html) {
-            CommandResponses.postToClient('LOG.REPLACE socket:' + newSocket.url + ' ' + html);
+        Templates.socket.log.container(newSocket.url, function(html) {
+            Commands.postResponseToClient('LOG.REPLACE socket:' + newSocket.url + ' ' + html);
         });
 
         return newSocket;
@@ -100,21 +107,20 @@ function Sockets(socketURL) {
 
 
 
-    var listeners = [];
     Sockets.callEventListeners = function(e) {
-        for(var i=0; i<listeners.length; i++)
-            if(listeners[i][0] === e.type)
-                listeners[i][1](e);
+        for(var i=0; i<eventListeners.length; i++)
+            if(eventListeners[i][0] === e.type)
+                eventListeners[i][1](e);
     };
     Sockets.addEventListener = function(type, listener) {
         Sockets.removeEventListener(listener);
-        listeners.push([type, listener]);
+        eventListeners.push([type, listener]);
     };
     Sockets.removeEventListener = function(listener) {
-        for(var i=0; i<listeners.length; i++) {
-            var entry = listeners[i];
+        for(var i=0; i<eventListeners.length; i++) {
+            var entry = eventListeners[i];
             if(entry[1] === listener) {
-                Array.prototype.splice(i, 1);
+                eventListeners.splice(i, 1);
                 return true;
             }
         }
@@ -137,12 +143,22 @@ function Sockets(socketURL) {
                 return;
             }
 
+            for(var j=0; j<activeSockets.length; j++) {
+                if(activeSockets[j].readyState === WebSocket.OPEN) {
+                    openSocket = activeSockets[j];
+                    onSelected(openSocket);
+                    onSelected = function() {};
+                    return;
+                }
+            }
+
             if(socketList.length <= i)
                 throw new Error("No more sockets");
             var socket = Sockets.get(socketList[i++]);
             if(socket.readyState === WebSocket.OPEN) {
                 openSocket = socket;
                 onSelected(socket);
+                onSelected = function() {};
                 return;
             }
 
@@ -152,6 +168,7 @@ function Sockets(socketURL) {
                 if(!openSocket) {
                     openSocket = socket;
                     onSelected(socket);
+                    onSelected = function() {};
                 }
             }
         }
@@ -162,8 +179,8 @@ function Sockets(socketURL) {
 
     Sockets.send = function(commandString, withSocket) {
         function send(socket){
-            templateSocketLogEntry(commandString, 'O', function(html) {
-                CommandResponses.postToClient('LOG socket-log:' + socket.url + ' ' + html);
+            Templates.socket.log.entry(commandString, 'O', function(html) {
+                Commands.postResponseToClient('LOG socket-log:' + socket.url + ' ' + html);
             });
             socket.send(commandString);
         }

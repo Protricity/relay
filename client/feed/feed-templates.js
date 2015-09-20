@@ -2,12 +2,13 @@
  * Created by ari on 6/19/2015.
  */
 
-
-var templateFeed = function(channelPath, callback) {
+var Templates = Templates || {};
+Templates.feed = Templates.feed || {};
+Templates.feed.container = function(channelPath, callback) {
 
     var FEED_TEMPLATE = "\
         <article class='channel chat chat:{$channel_path}'>\n\
-            <script src='feed/feed-form.js'></script>\n\
+            <script src='feed/feed-listeners.js'></script>\n\
             <link rel='stylesheet' href='feed/feed.css' type='text/css'>\n\
             <header>{$title}</header>\n\
             <div class='title-commands'>\n\
@@ -24,14 +25,13 @@ var templateFeed = function(channelPath, callback) {
 
 
     // Callback
-    callback(CHANNEL_TEMPLATE
+    callback(FEED_TEMPLATE
             .replace(/{\$channel_path}/gi, channelPath.toLowerCase())
             .replace(/{\$channel}/gi, channelPath)
     );
 };
 
-var templateFeedEntry = function(channelPath, callback) {
-
+Templates.feed.entry = function(channelPath, entryData, privateKeyData, callback) {
     var FEED_TEMPLATE_ENTRY = "\
         <fieldset class='feed-post-container unsorted'>\n\
             <header>Feed Post</header>\n\
@@ -57,7 +57,16 @@ var templateFeedEntry = function(channelPath, callback) {
 
     // Callback
     callback(FEED_TEMPLATE_ENTRY
-            .replace(/{\$channel_path}/gi, channelPath.toLowerCase())
-            .replace(/{\$channel}/gi, channelPath)
+            .replace(/{\$row_n}/gi, (feedNCounter++).toString())
+            .replace(/{\$uid}/gi, entryData.key_id + '-' + entryData.timestamp)
+            .replace(/{\$user_id}/gi, privateKeyData.user_id)
+            .replace(/{\$key_id}/gi, entryData.key_id)
+            .replace(/{\$short_key_id}/gi, entryData.key_id.substr(entryData.key_id.length - 8))
+            .replace(/{\$channel}/gi, entryData.channel)
+            .replace(/{\$timestamp}/gi, entryData.timestamp)
+            .replace(/{\$timestamp_formatted}/gi, timeSince(entryData.timestamp) + ' ago')
+            //.replace(/{\$content}/gi, data.content)
+            .replace(/{\$content_verified}/gi, contentProtected)
+        //.replace(/{\$[^}]+}/gi, '')
     );
 };

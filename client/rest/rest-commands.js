@@ -6,8 +6,6 @@
     var PATH_PUT = 'put';
     var PATH_PREFIX_GET = 'get:';
 
-    importScripts("rest/rest-templates.js");
-
     //<label class='label-recipients show-section-on-value'>Choose which subscribers may view this post:<br/>\n\
     //    <select name='recipients'>\n\
     //        <option value='*'>Everybody</option>\n\
@@ -41,20 +39,28 @@
         if(content) {
             // todo http format
             if(preview) {
-                restPutFormTemplatePreview(content, function(html) {
-                    CommandResponses.postToClient("LOG.REPLACE put-preview: " + html);
-                })
+                importScripts('rest/templates/rest-put-template.js');
+                Templates.rest.put.preview(content, function(html) {
+                    Commands.postResponseToClient("LOG.REPLACE put-preview: " + html);
+                });
+                // Free up template resources
+                delete Templates.rest.put.preview;
+
             } else {
                 Commands.sendWithSocket(commandString);
             }
+
         } else {
-            restPutFormTemplate(content, function(html) {
-                CommandResponses.postToClient("LOG.REPLACE put: " + html);
+            importScripts('rest/templates/rest-put-template.js');
+            Templates.rest.put.form(content, function(html) {
+                Commands.postResponseToClient("LOG.REPLACE put: " + html);
             });
+            // Free up template resources
+            delete Templates.rest.put.form;
         }
     });
 
-    CommandResponses.add('put', CommandResponses.postToClient);
+    Commands.addResponse('put', Commands.postResponseToClient);
 
 
     var httpBrowserID = 1;
@@ -80,8 +86,9 @@
                 // If remote, request content from server
                 Commands.sendWithSocket(formattedCommandString);
 
+                importScripts('rest/templates/rest-response-template.js');
                 // Show something, sheesh
-                templateRestResponseBody(
+                Templates.rest.response.body(
                     "<p>Request sent...</p>",
                     requestData.url,
                     200,
@@ -91,10 +98,13 @@
                         renderResponseText(html);
                     }
                 );
+                // Free up template resources
+                delete Templates.rest.response.body;
 
             }
         }, function(err) {
-            templateRestResponseBody(
+            importScripts('rest/templates/rest-response-template.js');
+            Templates.rest.response.body(
                 '',
                 requestData.url,
                 400,
@@ -104,18 +114,20 @@
                     renderResponseText(html);
                 }
             );
+            // Free up template resources
+            delete Templates.rest.response.body;
 
         });
     });
 
-    CommandResponses.add('get', function(requestResponseString) {
+    Commands.addResponse('get', function(requestResponseString) {
 
         executeLocalGETRequest(requestResponseString, function(responseText) {
             Commands.sendWithSocket(responseText);
         });
     });
 
-    CommandResponses.add('http', function(httpResponseText) {
+    Commands.addResponse('http', function(httpResponseText) {
         parseResponseURLs(httpResponseText);
         var responseData = parseResponseText(httpResponseText);
         var requestURL = responseData.headers['request-url'];
@@ -161,11 +173,13 @@
                 if(err)
                     throw new Error(err);
 
+
                 if(contentData) {
 
                     var signedBody = protectHTMLContent(contentData.content_verified);
 
-                    templateRestResponseBody(
+                    importScripts('rest/templates/rest-response-template.js');
+                    Templates.rest.response.body(
                         signedBody,
                         requestData.url,
                         200,
@@ -174,19 +188,26 @@
                         callback
                     );
 
+                    // Free up template resources
+                    delete Templates.rest.response.body;
+
                 } else {
                     (function() {
                         getDefaultContentResponse(formattedCommandString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
                             responseHeaders = (responseHeaders ? responseHeaders + "\n" : "") + requestData.createResponseHeaderString();
                             defaultResponseBody = protectHTMLContent(defaultResponseBody);
 
-                            templateRestResponseBody(
+                            importScripts('rest/templates/rest-response-template.js');
+                            Templates.rest.response.body(
                                 defaultResponseBody,
                                 requestData.url,
                                 responseCode,
                                 responseText,
                                 responseHeaders,
                                 callback);
+
+                            // Free up template resources
+                            delete Templates.rest.response.body;
                         });
                     })();
                 }
@@ -308,11 +329,14 @@
             requestUrl = urlData.url;
             var browserID = response.headers['browser-id'] || httpBrowserID++;
 
-            restHTTPBrowserTemplate(responseText, function(html) {
+            importScripts('rest/templates/test-browser-template.js');
+            Templates.rest.browser(responseText, function(html) {
                 parseHTMLBody(html, requestUrl, function(parsedResponseBody) {
-                    CommandResponses.postToClient("LOG.REPLACE rest-browser:" + browserID + ' ' + html);
+                    Commands.postResponseToClient("LOG.REPLACE rest-browser:" + browserID + ' ' + parsedResponseBody);
                 });
             });
+            // Free up template resources
+            delete Templates.rest.browser;
 
         }
     }

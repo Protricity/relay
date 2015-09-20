@@ -32,11 +32,14 @@
         //send('JOIN /test');
         //send('manage');
 
-        //send('keygen');
         send('put');
-        send('feed');
 
+        //send('keygen');
         var timezone = jstz.determine().name();
+        send('JOIN /timezone/' + timezone);
+
+        //send('feed');
+
         var channelList = document.getElementsByClassName('command-list-channels')[0];
         channelList.innerHTML+= "<li><a href='#JOIN /timezone/" + timezone + "'><span class='command'>Join</span> <strong>" + timezone + "</strong></a></li>";
 //                send('put');
@@ -47,7 +50,6 @@
             //send('get socket://ABCD1234/~/');
             //send('get /missing/');
         } else {
-            send('JOIN /timezone/' + timezone);
 
         }
     }, 200);

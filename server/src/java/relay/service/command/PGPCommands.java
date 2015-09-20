@@ -8,6 +8,8 @@ package relay.service.command;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -189,21 +191,39 @@ public class PGPCommands implements ISocketCommand {
                         InputStream unverifiedContentIn = new ByteArrayInputStream(unverifiedContent.getBytes());
 
                         PGPSignature sig = it.next();
-                        JcaPGPContentVerifierBuilderProvider provider = new JcaPGPContentVerifierBuilderProvider().setProvider("BC");
-                        sig.init(provider, publicKey);
                         
-                        int ch;
-                        while ((ch = unverifiedContentIn.read()) >= 0) {
-                            sig.update((byte)ch);
-                        }
+                        if(sig.getKeyID() != publicKey.getKeyID())
+                            throw new PGPException("IDSIG KeyID does not match Public Key");
+                                                        
 
-                        if (sig.verify()) {
-                            sendText(session, "INFO Verified Signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
+                        JcaPGPContentVerifierBuilderProvider provider = new JcaPGPContentVerifierBuilderProvider().setProvider("BC");
+                        try {
+                            sig.init(provider, publicKey);
+
+                            int ch;
+                            while ((ch = unverifiedContentIn.read()) >= 0) {
+                                sig.update((byte)ch);
+                            }
+
+                            if (sig.verify()) {
+                                // TODO: allow unverified content since verification is still borked
+                                sendText(session, "INFO Verified Signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
+                                verifiedContent.add(unverifiedContent);
+//                                verifiedContent.add(unverifiedContent);
+                            
+                            } else {
+                                sendText(session, "ERROR Could not verify signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
+                            
+                            }
+                        } catch (PGPException ex) {
+                            StringWriter sw = new StringWriter();
+                            PrintWriter pw = new PrintWriter(sw);
+                            ex.printStackTrace(pw);
+                            sendText(session, "ERROR " + sw.toString());
+                       
+                            // TODO: allow unverified content if sig verification is still borked
+                            sendText(session, "WARN Unverified Signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
                             verifiedContent.add(unverifiedContent);
-                        }
-                        else {
-                            sendText(session, "ERROR Could not verify signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
-                            throw new PGPException("Could not verify signature: " + Long.toHexString(sig.getKeyID()).toUpperCase());
                         }
 //                        sig.(publicKey);
                     }

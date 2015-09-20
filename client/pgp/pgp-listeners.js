@@ -13,15 +13,16 @@
     self.addEventListener('submit', onFormEvent);
     self.addEventListener('change', onFormEvent);
     self.addEventListener('input', onFormEvent);
-    //self.addEventListener('log', function(e) {
-    //    console.log(e.type, e.target.querySelector('form'), e.target);
-    //    return onFormEvent(e, e.target.querySelector('form'));
-    //});
-    setTimeout(function() {
-        var forms = document.querySelectorAll('form[name=pgp-identify-form]');
-        for(var i=forms.length-1; i>=0 ;i--)
-            onFormEvent({}, forms[i]);
-    }, 400);
+    self.addEventListener('log', function(e) {
+        //console.log(e.type, e.target.querySelector('form'), e.target);
+        return onFormEvent(e, e.target.querySelector('form'));
+    });
+    //setTimeout(function() {
+    //    var forms = document.querySelectorAll('form[name=pgp-identify-form]');
+    //    console.log(forms);
+    //    for(var i=forms.length-1; i>=0 ;i--)
+    //        onFormEvent({}, forms[i]);
+    //}, 400);
 
 
     var lastIDSIG = null;
@@ -34,24 +35,25 @@
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
         if(formElm.nodeName.toLowerCase() !== 'form')
             return false;
-        if(e.type === 'submit')
-            e.preventDefault();
 
         switch(formElm.getAttribute('name')) {
             case 'pgp-keygen-form':
                 if(e.type === 'submit')
+                    e.preventDefault() &&
                     submitPGPKeyGenForm();
                 return true;
 
             case 'pgp-register-form':
                 refreshPGPRegisterForm();
                 if(e.type === 'submit')
+                    e.preventDefault() &&
                     submitPGPRegisterForm();
                 return true;
 
             case 'pgp-manage-form':
                 refreshPGPManageForm();
                 if(e.type === 'submit')
+                    e.preventDefault() &&
                     submitPGPManageForm();
                 return true;
 
@@ -60,6 +62,7 @@
                     saveAutoIdentify();
                 refreshIdentifyForm();
                 if(e.type === 'submit')
+                    e.preventDefault() &&
                     submitPGPIdentifyForm();
 
                 return true;

@@ -49,23 +49,20 @@ form[name=chat-form] .pgp-message:hover {
     height: 21em;
 }
 
-
-form[name=chat-form] .channel-content {
+form[name=chat-form] .chat-log {
     overflow: auto;
     max-height: 18em;
-    width: 45vw;
     max-width: 45em;
     min-width: 25em;
 }
 
-
-form[name=chat-form] .channel-log {
+form[name=chat-form] .chat-log .chat-log-entry {
     border: 1px solid transparent;
     overflow: hidden;
     max-height: 5em;
 }
 
-form[name=chat-form] .channel-log:hover {
+form[name=chat-form] .chat-log .chat-log-entry:hover {
     border-radius: 0.2em;
     border: 1px solid lightgrey;
     overflow: hidden;

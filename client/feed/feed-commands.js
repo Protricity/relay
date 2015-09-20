@@ -27,13 +27,16 @@
         var feedEndTime = Date.now();
         var feedStartTime = feedEndTime - MS_DAY;
 
-        CommandResponses.postToClient("LOG.REPLACE " + logChannelPath + ' * ' +
-            FEED_TEMPLATE
-                .replace(/{\$row_n}/gi, (postFormNCounter++).toString())
-                .replace(/{\$title}/gi, "Viewing Feed for " + fixedChannelPath)
-                .replace(/{\$channel_path}/gi, fixedChannelPath.toLowerCase())
-                //.replace(/{\$[^}]+}/gi, '')
-        );
+        importScripts('feed/feed-templates.js');
+        Templates.feed.container(fixedChannelPath.toLowerCase(), function(html) {
+            Commands.postResponseToClient("LOG.REPLACE " + logChannelPath + ' ' + html);
+        });
+
+        // Reference Entry template for remainder of command call
+        var createFeedTemplateEntry = Templates.feed.entry;
+
+        // Free template resource after call ends
+        delete Templates.feed.container;
 
         getPGPDB(function (db, PGPDB) {
 
@@ -56,25 +59,12 @@
                             function(data) {
                                 try{
                                     var contentProtected = protectHTMLContent(data.content_verified);
-                                    CommandResponses.postToClient("LOG " + logChannelPath + " " + FEED_TEMPLATE_ENTRY
-                                            .replace(/{\$row_n}/gi, (feedNCounter++).toString())
-                                            .replace(/{\$uid}/gi, data.key_id + '-' + data.timestamp)
-                                            .replace(/{\$user_id}/gi, userID)
-                                            .replace(/{\$key_id}/gi, data.key_id)
-                                            .replace(/{\$short_key_id}/gi, data.key_id.substr(data.key_id.length - 8))
-                                            .replace(/{\$channel}/gi, data.channel)
-                                            .replace(/{\$timestamp}/gi, data.timestamp)
-                                            .replace(/{\$timestamp_formatted}/gi, timeSince(data.timestamp) + ' ago')
-                                            //.replace(/{\$content}/gi, data.content)
-                                            .replace(/{\$content_verified}/gi, contentProtected)
-                                            //.replace(/{\$[^}]+}/gi, '')
-                                    );
-
                                 } catch (e) {
                                     console.error("Skipping Feed Post: " + e);
-
-                                    //discard? config
                                 }
+                                createFeedTemplateEntry(data, privateKeyData, function(html) {
+                                    Commands.postResponseToClient("LOG " + logChannelPath + " " + html);
+                                });
                             });
                     });
 
@@ -87,7 +77,7 @@
 
 
 
-    CommandResponses.add('feed', Commands.sendWithSocket);
+    Commands.addResponse('feed', Commands.sendWithSocket);
 
 
     function protectHTMLContent(htmlContent) {
