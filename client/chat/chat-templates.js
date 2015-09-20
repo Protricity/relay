@@ -5,40 +5,40 @@
 
 var templateChatChannel = function(channelPath, callback) {
     var CHANNEL_TEMPLATE = "\
-            <article class='channel chat chat:{$channel_path}'>\n\
-                <script src='chat/chat-listener.js'></script>\n\
-                <link rel='stylesheet' href='chat/chat.css' type='text/css'>\n\
-                <header><span class='command'>Join</span> {$channel}</header>\n\
-                <div class='header-commands'>\n\
-                    <a class='header-command-minimize' href='#MINIMIZE chat:{$channel_path}'>[-]</a><!--\n\
-                 --><a class='header-command-maximize' href='#MAXIMIZE chat:{$channel_path}'>[+]</a><!--\n\
-                 --><a class='header-command-close' href='#CLOSE chat:{$channel_path}'>[x]</a>\n\
-                </div>\
-                <form name='chat-form'>\n\
-                    <table>\n\
-                        <tbody>\n\
-                            <tr>\n\
-                                <td style='vertical-align: top'>\n\
-                                    <select multiple='multiple' name='user-list' size='5'>\n\
-                                        <optgroup class='chat-active-users:{$channel_path}' label='Active Users (0)'></optgroup>\n\
-                                        <optgroup class='chat-inactive-users:{$channel_path}' label='Inactive Users (0)'></optgroup>\n\
-                                    </select>\n\
-                                </td>\n\
-                                <td style='vertical-align: top'>\n\
-                                    <fieldset class='chat-log:{$channel_path}'>Joining {$channel}...</fieldset>\n\
-                                </td>\n\
-                            </tr>\n\
-                            <tr>\n\
-                                <td colspan='2'>\n\
-                                    <input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' />\n\
-                                    <input type='submit' value='Send' name='submit-send-chat' />\n\
-                                    <input type='hidden' value='{$channel}' name='channel' />\n\
-                                </td>\n\
-                            </tr>\n\
-                        </tbody>\n\
-                    </table>\n\
-                </form>\n\
-            </article>";
+        <article class='channel chat chat:{$channel_path}'>\n\
+            <script src='chat/chat-listeners.js'></script>\n\
+            <link rel='stylesheet' href='chat/chat.css' type='text/css'>\n\
+            <legend><span class='command'>Join</span> {$channel}</legend>\n\
+            <div class='title-commands'>\n\
+                <a class='title-command-minimize' href='#MINIMIZE chat:{$channel_path}'>[-]</a><!--\n\
+             --><a class='title-command-maximize' href='#MAXIMIZE chat:{$channel_path}'>[+]</a><!--\n\
+             --><a class='title-command-close' href='#CLOSE chat:{$channel_path}'>[x]</a>\n\
+            </div>\
+            <form name='chat-form'>\n\
+                <table>\n\
+                    <tbody>\n\
+                        <tr>\n\
+                            <td style='vertical-align: top'>\n\
+                                <select multiple='multiple' name='user-list' size='5'>\n\
+                                    <optgroup class='chat-active-users:{$channel_path}' label='Active Users (0)'></optgroup>\n\
+                                    <optgroup class='chat-inactive-users:{$channel_path}' label='Inactive Users (0)'></optgroup>\n\
+                                </select>\n\
+                            </td>\n\
+                            <td style='vertical-align: top'>\n\
+                                <fieldset class='chat-log:{$channel_path}'>Joining {$channel}...</fieldset>\n\
+                            </td>\n\
+                        </tr>\n\
+                        <tr>\n\
+                            <td colspan='2'>\n\
+                                <input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' />\n\
+                                <input type='submit' value='Send' name='submit-send-chat' />\n\
+                                <input type='hidden' value='{$channel}' name='channel' />\n\
+                            </td>\n\
+                        </tr>\n\
+                    </tbody>\n\
+                </table>\n\
+            </form>\n\
+        </article>";
 
 
     // Callback

@@ -18,30 +18,27 @@
      * @param commandString
      * @param status_content
      */
-    socketCommands.manage = function (commandString, e, status_content) {
+    Commands.manage = function (commandString, e, status_content) {
         //var match = /^manage$/im.exec(commandString);
 
         templatePGPManageForm(status_content, function(html) {
-            self.routeResponseToClient("LOG.REPLACE pgp-manage: " + html);
+            CommandResponses.postToClient("LOG.REPLACE pgp-manage: " + html);
         });
 
         var PGPDB = getPGPDB();
         PGPDB.queryPrivateKeys(function(data) {
             templatePGPManageFormEntry(data, function(html) {
-                self.routeResponseToClient("LOG pgp-manage-entries: " + html);
+                CommandResponses.postToClient("LOG pgp-manage-entries: " + html);
             });
         });
 
     };
 
-    socketResponses.manage = function(e) {
-        throw new Error("manage response is not implemented");
-    };
 
     /**
      * @param commandString KEYGEN --bits [2048] [user id]
      */
-    socketCommands.keygen = function (commandString, e) {
+    Commands.add('keygen', function (commandString, e) {
         var match = /^keygen ?(.+)?$/im.exec(commandString);
         if(!match)
             throw new Error("Invalid command: " + commandString);
@@ -71,7 +68,7 @@
 
         if(!userID || !send_as_socket_command) {
             templatePGPKeyGenForm(userID, send_as_socket_command, function(html) {
-                self.routeResponseToClient("LOG.REPLACE pgp: " + html);
+                CommandResponses.postToClient("LOG.REPLACE pgp: " + html);
             });
             return;
         }
@@ -114,7 +111,7 @@
                         console.log("private key: ", err, privateKeyBlock);
 
                         templatePGPRegisterForm(privateKeyBlock, '', function(html) {
-                            self.routeResponseToClient("LOG.REPLACE pgp: " + html);
+                            CommandResponses.postToClient("LOG.REPLACE pgp: " + html);
                         });
 
                     });
@@ -128,16 +125,16 @@
                 });
             }
         });
-    };
+    });
 
-    socketResponses.keygen = function(responseString, e) {
+    CommandResponses.add('keygen', function(responseString, e) {
         throw new Error("keygen response is not implemented");
-    };
+    });
 
     /**
      * @param commandString REGISTER
      */
-    socketCommands.register = function (commandString, e) {
+    Commands.add('register', function (commandString, e) {
         var privateKeyBlock = '';
         var status_content = '';
         var match = /^register\s*([\s\S]*)$/im.exec(commandString);
@@ -180,14 +177,14 @@
                         "Public Key ID:  " + publicKeyFingerprint + "<br/>\n";
 
                     templatePGPRegisterForm(privateKeyBlock, status_content, function(html) {
-                        self.routeResponseToClient("LOG.REPLACE pgp: " + html);
+                        CommandResponses.postToClient("LOG.REPLACE pgp: " + html);
                     });
                 });
 
             } else {
                 status_content = "<span class='info'>Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually</span>";
                 templatePGPRegisterForm(privateKeyBlock, '', function(html) {
-                    self.routeResponseToClient("LOG.REPLACE pgp: " + html);
+                    CommandResponses.postToClient("LOG.REPLACE pgp: " + html);
                 });
             }
         } else {
@@ -197,25 +194,30 @@
                 console.log(data);
                 if(err) {
                     templatePGPRegisterForm(privateKeyBlock, err, function(html) {
-                        self.routeResponseToClient("LOG.REPLACE pgp: " + html);
+                        CommandResponses.postToClient("LOG.REPLACE pgp: " + html);
                     });
                 } else {
-                    socketCommands.manage("MANAGE");
+                    Commands.manage("MANAGE");
 
                 }
             });
         }
+    });
 
-    };
 
-    socketResponses.register = function(responseString, e) {
+    CommandResponses.add('register', function(responseString, e) {
         throw new Error("register response is not implemented");
+    });
+
+    CommandResponses.unregister = function(responseString, e) {
+        throw new Error("unregister response is not implemented");
     };
+
 
     /**
      * @param commandString UNREGISTER [PGP Private Key Fingerprint]
      */
-    socketCommands.unregister = function (commandString) {
+    Commands.add('unregister', function (commandString) {
         var match = /^unregister\s+(.*)$/im.exec(commandString);
         var privateKeyFingerprints = match[1].trim().split(/\W+/g);
         for(var i=0; i<privateKeyFingerprints.length; i++)
@@ -231,31 +233,25 @@
                     insertRequest.onsuccess = function(e) {
                         var status_content = "Deleted private key block from database: " + privateKeyID;
                         console.log(status_content);
-                        socketCommands.manage("MANAGE", e, status_content);
+                        Commands.manage("MANAGE", e, status_content);
 
                     };
                     insertRequest.onerror = function(e) {
                         var err = e.currentTarget.error;
                         var status_content = "Error adding private key (" + privateKeyID + ") database: " + err.message;
                         console.error(status_content, e);
-                        socketCommands.manage("MANAGE", e, status_content);
+                        Commands.manage("MANAGE", e, status_content);
 
                     };
                 });
             }) (privateKeyFingerprints[i]);
-    };
-
-
-    socketResponses.unregister = function(responseString, e) {
-        throw new Error("unregister response is not implemented");
-    };
-
+    });
 
 
     /**
      * @param commandString DEFAULT [PGP Private Key Fingerprint]
      */
-    socketCommands['default'] = function (commandString, e) {
+    Commands.add('default', function (commandString, e) {
         var match = /^default\s+(.*)$/im.exec(commandString);
         var privateKeyFingerprint = match[1].trim().split(/\W+/g)[0];
         var privateKeyID = privateKeyFingerprint.substr(privateKeyFingerprint.length - 16);
@@ -285,24 +281,23 @@
                     privateKeyData.default = '1';
                     var updateRequest = privateKeyStore.put(privateKeyData);
                     updateRequest.onsuccess = function(event) {
-                        socketCommands.manage("MANAGE", e, "Private Key ID set to default: " + privateKeyFingerprint);
+                        Commands.manage("MANAGE", e, "Private Key ID set to default: " + privateKeyFingerprint);
                     };
                 };
             };
         });
-    };
+    });
 
-    socketResponses['default'] = function(responseString, e) {
+
+    CommandResponses.add('default', function(responseString, e) {
         throw new Error("default response is not implemented");
-    };
-
-
+    });
 
     var identifyRequests = [];
     /**
      * @param commandData IDENTIFY --session [session-uid]
      */
-    socketCommands.identify = function (commandData, e) {
+    Commands.add('identify', function (commandData, e) {
         if(identifyRequests.length === 0)
             throw new Error("No IDENTIFY REQUESTS received");
 
@@ -316,7 +311,7 @@
                 throw new Error(err);
 
             templatePGPIdentifyForm(responseString, socket.url, CONFIG, function(html) {
-                self.routeResponseToClient("LOG.REPLACE identify: " + html);
+                CommandResponses.postToClient("LOG.REPLACE identify: " + html);
             });
         });
 
@@ -336,28 +331,13 @@
         //identifyContent = identifyContent.replace(/(?:-y|--auto-identify) (\S+)/i, function(match, contents, offset, s) {
         //    auto_identify = contents ? true : false; return '';
         //});
-    };
+    });
 
-
-
-    /**
-     * @param responseString [challenge_string] [session_id]
-     */
-    socketResponses.identify = function (responseString, e) {
-        var socket = e.target;
-        identifyRequests.push([responseString, socket]);
-        socketCommands.identify("IDENTIFY", e);
-
-        //ConfigDB.getConfig(CONFIG_ID, function(CONFIG) {
-        //    var socket_host = socket.url.split('/')[2];
-            //var autoIdentify = CONFIG.autoIdentify || CONFIG['autoIdentifyHost:' + socket_host] || false;
-        //});
-    };
 
     /**
      * @param commandData IDSIG [idsig and public key content]
      */
-    socketCommands.idsig = function (commandData, e) {
+    Commands.idsig = function (commandData, e) {
         if(typeof commandData === 'string')
             commandData = {message: commandData, passphrase: null};
         var commandString = commandData.message;
@@ -389,17 +369,32 @@
             throw new Error("Could not find IDENTITY request: " + session_uid);
 
         var sendSocket = foundRequest[1];
-        self.sendWithSocket(sendSocket, commandString);
+        Commands.sendWithSocket(commandString, sendSocket);
         //sendSocket.send(commandString); // TODO: socket out
         //console.log("SOCKET OUT (" + sendSocket.url + "): " + commandString);
 
     };
 
+    /**
+     * @param responseString [challenge_string] [session_id]
+     */
+    CommandResponses.add('identify', function (responseString, e) {
+        var socket = e.target;
+        identifyRequests.push([responseString, socket]);
+        Commands.identify("IDENTIFY", e);
+
+        //ConfigDB.getConfig(CONFIG_ID, function(CONFIG) {
+        //    var socket_host = socket.url.split('/')[2];
+        //var autoIdentify = CONFIG.autoIdentify || CONFIG['autoIdentifyHost:' + socket_host] || false;
+        //});
+    });
+
+
 
     /**
      * @param commandData IDSIG [challenge-string] [session-id] [pgp-key-id] [username] [visibility]
      */
-    socketResponses.idsig = function (commandData, e) {
+    CommandResponses.add('idsig', function (commandData, e) {
         var split = commandData.split(/\s+/g);
         if(split[0].toUpperCase() !== 'IDSIG')
             throw new Error("Invalid IDSIG: " + commandData);
@@ -438,7 +433,7 @@
                     }
 
                     templatePGPIdentifySuccessForm(commandData, socket.url, CONFIG, function(html) {
-                        self.routeResponseToClient("LOG.REPLACE identify: " + html);
+                        CommandResponses.postToClient("LOG.REPLACE identify: " + html);
                     });
 
                     //var PGPDB = getPGPDB();
@@ -454,7 +449,7 @@
                     //            throw new Error("Could not find private key: " + privateKeyID);
                     //        var pgp_id_private = privateKeyData.id_private + "," + privateKeyData.id_public + "," + username + (privateKeyData.passphrase_required ? ',1' : ',0');
                     //
-                    //        self.routeResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE_SUCCESS
+                    //        CommandResponses.postToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE_SUCCESS
                     //                .replace(/{\$pgp_id_public}/gi, pgp_id_public)
                     //                .replace(/{\$pgp_id_private}/gi, pgp_id_private)
                     //                .replace(/{\$status_content}/gi, status_content || '')
@@ -483,7 +478,8 @@
                }) ;
             });
         });
-    };
+    });
+
 
     //
     //

@@ -1,6 +1,7 @@
 /**
  * Created by ari on 7/2/2015.
  */
+"use strict";
 
 RestDB.DB_VERSION               = 2;
 RestDB.DB_NAME                  = 'http';

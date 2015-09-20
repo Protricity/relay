@@ -34,6 +34,7 @@
 
         //send('keygen');
         send('put');
+        send('feed');
 
         var timezone = jstz.determine().name();
         var channelList = document.getElementsByClassName('command-list-channels')[0];

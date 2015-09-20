@@ -5,19 +5,19 @@
 var restHTTPBrowserTemplate = function(responseText, callback) {
     // Template
     var HTTP_BROWSER_TEMPLATE = "\
-        <article class='channel http-browser:{$browser_id} http-browser http-response-{$response_code}' data-browser-id='{$browser_id}'>\n\
-            <script src='rest/rest-listener.js'></script>\n\
+        <article class='channel rest-browser:{$browser_id} rest-browser rest-response-{$response_code}' data-browser-id='{$browser_id}'>\n\
+            <script src='rest/rest-listeners.js'></script>\n\
             <link rel='stylesheet' href='rest/rest.css' type='text/css'>\n\
-            <header>\n\
+            <legend class='title'>\n\
                 <span class='command'>GET</span> <span class='url'>{$request_url}</span>\n\
-            </header>\n\
-            <div class='header-commands'>\n\
-                <a class='header-command-minimize' href='#MINIMIZE http-browser:{$browser_id}'>[-]</a><!--\
-             --><a class='header-command-maximize' href='#MAXIMIZE http-browser:{$browser_id}'>[+]</a><!--\
-             --><a class='header-command-close' href='#CLOSE http-browser:{$browser_id}'>[x]</a>\n\
+            </legend>\n\
+            <div class='title-commands'>\n\
+                <a class='title-command-minimize' href='#MINIMIZE rest-browser:{$browser_id}'>[-]</a><!--\
+             --><a class='title-command-maximize' href='#MAXIMIZE rest-browser:{$browser_id}'>[+]</a><!--\
+             --><a class='title-command-close' href='#CLOSE rest-browser:{$browser_id}'>[x]</a>\n\
             </div>\n\
             <nav>\n\
-                <form name='http-browser-navigation-form'>\n\
+                <form name='rest-browser-navigation-form'>\n\
                     <button type='submit' name='back'>&#8678;</button>\n\
                     <button type='submit' name='forward'>&#8680;</button>\n\
                     <button type='submit' name='home'>&#8962;</button>\n\
@@ -25,8 +25,8 @@ var restHTTPBrowserTemplate = function(responseText, callback) {
                     <button type='submit' name='navigate'>&#8476;</button>\n\
                 </form>\n\
             </nav>\n\
-            <section class='http-body'>{$response_body}</section>\n\
-            <footer class='http-status'>{$response_code} {$response_text}</footer>\n\
+            <section class='rest-body'>{$response_body}</section>\n\
+            <footer class='rest-status'>{$response_code} {$response_text}</footer>\n\
         </article>";
 
 
@@ -100,20 +100,29 @@ Request-url: {$request_url}\n\
     );
 };
 
+var EXAMPLE_VOTE = "\
+        <ul draggable='true' class='app.vote' data-id='abcd'>\n\
+            <script src='app/vote/vote-listeners.js'></script>\n\
+            <lh class='app.vote.title'>Vote 'abcd'</lh>\n\
+            <li class='app.vote.option' data-option-id='abcd.1'>Option #1</li>\n\
+            <li class='app.vote.option' data-option-id='abcd.2'>Option #2</li>\n\
+            <li class='app.vote.option' data-option-id='abcd.3'>Option #3</li>\n\
+        </ul>";
+
 var restPutFormTemplate = function(content, callback) {
 
     var PUT_FORM_TEMPLATE = "\
         <article class='channel put:'>\n\
-            <script src='rest/rest-listener.js'></script>\n\
+            <script src='rest/rest-listeners.js'></script>\n\
             <link rel='stylesheet' href='rest/rest.css' type='text/css'>\n\
-            <header><span class='command'>Put</span> content in your <strong>User Space</strong></header>\n\
-            <div class='header-commands'>\n\
-                <a class='header-command-minimize' href='#MINIMIZE put:'>[-]</a><!--\
-             --><a class='header-command-maximize' href='#MAXIMIZE put:'>[+]</a><!--\
-             --><a class='header-command-close' href='#CLOSE put:'>[x]</a>\n\
+            <legend class='title'><span class='command'>Put</span> content in your <strong>User Space</strong></legend>\n\
+            <div class='title-commands'>\n\
+                <a class='title-command-minimize' href='#MINIMIZE put:'>[-]</a><!--\
+             --><a class='title-command-maximize' href='#MAXIMIZE put:'>[+]</a><!--\
+             --><a class='title-command-close' href='#CLOSE put:'>[x]</a>\n\
             </div>\n\
-            <form name='http-put-form' class='compact' style='float:left;'>\n\
-                <label class='label-content'>Create new content for your <strong>User Space</strong>:<br/>\n\
+            <form name='rest-put-form' class='compact' style='float:left;'>\n\
+                <label class='label-content'>Create new <span class='html'>HTML</span> content for your <strong>User Space</strong>:<br/>\n\
                     <textarea cols='50' rows='8' class='focus' name='content' required='required' placeholder='Type anything you like.\n\n\t<i>most</i>\n\t<code>html tags</code>\n\t<strong>allowed!</strong>'>{$content}</textarea>\n\
                 <br/><br/></label>\n\
                 <label class='label-path hide-on-compact'>Post to:<br/>\n\
@@ -147,6 +156,7 @@ var restPutFormTemplate = function(content, callback) {
                 </label>\n\
             </form>\n\
         </article>";
+    // " + EXAMPLE_VOTE + "\n\
 
 
     if(typeof PGPDB !== 'function')
@@ -180,38 +190,48 @@ var restPutFormTemplate = function(content, callback) {
 
 
 var restPutFormTemplatePreview = function(content, callback) {
+// TODO: variables for topic, url, image etc
 
     var PUT_FORM_PREVIEW_TEMPLATE = "\
         <article class='channel put-preview:'>\n\
-            <script src='rest/rest-listener.js'></script>\n\
+            <script src='rest/rest-listeners.js'></script>\n\
             <link rel='stylesheet' href='rest/rest.css' type='text/css'>\n\
-            <header><span class='command'>Preview</span></header>\n\
-            <div class='header-commands'>\n\
-                <a class='header-command-minimize' href='#MINIMIZE put:'>[-]</a><!--\
-             --><a class='header-command-maximize' href='#MAXIMIZE put:'>[+]</a><!--\
-             --><a class='header-command-close' href='#CLOSE put:'>[x]</a>\n\
+            <legend class='title'><span class='command'>Preview</span></legend>\n\
+            <div class='title-commands'>\n\
+                <a class='title-command-minimize' href='#MINIMIZE put:'>[-]</a><!--\
+             --><a class='title-command-maximize' href='#MAXIMIZE put:'>[+]</a><!--\
+             --><a class='title-command-close' href='#CLOSE put:'>[x]</a>\n\
             </div>\n\
-            <section class='put-preview-content:'>{$content}</section>\n\
+            <section class='put-preview-content:' style='position:relative;'>{$content}</section>\n\
             <br/>\n\
-            <form name='http-put-preview-form' >\n\
-                <fieldset draggable='true'>\n\
-                    <legend>\
-                        <select name='template'>\n\
-                            <option value=''>Select a template...</option>\n\
-                            <option value='header'>Header</option>\n\
-                            <option value='footer'>Footer</option>\n\
-                            {$html_template_options}\n\
-                        </select>\n\
-                    </legend>\n\
-                    <div class='put-preview-template-content:'>asd fsdfas</div>\n\
-                </fieldset>\n\
+            <form name='rest-put-preview-form' >\n\
                 <fieldset>\n\
-                    <legend>HTML Code</legend>\n\
-                    <code class='put-preview-template-code:'>adsf asd</code>\n\
+                    <legend>Drag and Drop Suggested Content</legend>\n\
+                    <div class='put-preview-template-content:'>\n\
+                        <header draggable='true'>Content Header</header>\n\
+                        <a draggable='true' href='#sdf'>URL Hyperlink</a>\n\
+                        <hr draggable='true' />\n\
+                        <footer draggable='true'>Content Footer</footer>\n\
+                    </div>\n\
                 </fieldset>\n\
             </form>\n\
         </article>";
-
+    //
+    //<fieldset draggable='true'>\n\
+    //    <legend>\
+    //        <select name='template'>\n\
+    //            <option value=''>Select a template...</option>\n\
+    //            <option value='header'>Header</option>\n\
+    //            <option value='footer'>Footer</option>\n\
+    //                        {$html_template_options}\n\
+    //        </select>\n\
+    //    </legend>\n\
+    //    <div class='put-preview-template-content:'>asd fsdfas</div>\n\
+    //</fieldset>\n\
+    //            <fieldset>\n\
+    //                <legend>HTML Code</legend>\n\
+    //                <code class='put-preview-template-code:'>adsf asd</code>\n\
+    //            </fieldset>\n\
     var html_template_options = '';
 
     // Callback

@@ -11,21 +11,21 @@
     <script>
         document.addEventListener("DOMContentLoaded", function(event) {
             getUserIndexTemplate("GET socket://3110FF44/~/", function(responseHTML) {
-                document.querySelector('.http-body').innerHTML = responseHTML;
+                document.querySelector('.rest-body').innerHTML = responseHTML;
             })
         });
 
     </script>
 </head>
 <body class="template-minimal">
-<article class="channel get:1 http-browser http-response-404" data-browser-id="1">
+<article class="channel get:1 rest-browser rest-response-404" data-browser-id="1">
     <header><span class="command">GET</span> <span class="url">socket://3110FF44/~/</span></header>
-    <div class="header-commands"><a class="header-command-minimize" href="#MINIMIZE get:1">[-]</a><a class="header-command-maximize" href="#MAXIMIZE get:1">[+]</a>
-        <a class="header-command-close" href="#CLOSE get:1">[x]</a></div>
-    <nav><form name="http-browser-navigation-form"><button type="submit" name="back">⇦</button><button type="submit" name="forward">⇨</button>
+    <div class="title-commands"><a class="title-command-minimize" href="#MINIMIZE get:1">[-]</a><a class="title-command-maximize" href="#MAXIMIZE get:1">[+]</a>
+        <a class="title-command-close" href="#CLOSE get:1">[x]</a></div>
+    <nav><form name="rest-browser-navigation-form"><button type="submit" name="back">⇦</button><button type="submit" name="forward">⇨</button>
         <button type="submit" name="home">⌂</button><input name="url" type="text" value="socket://3110FF44/~/"><button type="submit" name="navigate">ℜ</button></form></nav>
-    <section class="http-body"></section>
-    <footer class="http-status">200 OK</footer></article>
+    <section class="rest-body"></section>
+    <footer class="rest-status">200 OK</footer></article>
 
 </body>
 </html>

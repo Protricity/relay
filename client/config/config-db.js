@@ -1,7 +1,7 @@
 /**
  * Created by ari on 7/2/2015.
  */
-"user string";
+"use strict";
 
 ConfigDB.DB_NAME                  = 'config';
 ConfigDB.DB_TABLE_CONFIG_CLIENT   = 'client';
