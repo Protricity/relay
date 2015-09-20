@@ -39,21 +39,21 @@
         switch(formElm.getAttribute('name')) {
             case 'pgp-keygen-form':
                 if(e.type === 'submit')
-                    e.preventDefault() &&
+                    e.preventDefault() ||
                     submitPGPKeyGenForm();
                 return true;
 
             case 'pgp-register-form':
                 refreshPGPRegisterForm();
                 if(e.type === 'submit')
-                    e.preventDefault() &&
+                    e.preventDefault() ||
                     submitPGPRegisterForm();
                 return true;
 
             case 'pgp-manage-form':
                 refreshPGPManageForm();
                 if(e.type === 'submit')
-                    e.preventDefault() &&
+                    e.preventDefault() ||
                     submitPGPManageForm();
                 return true;
 
@@ -62,7 +62,7 @@
                     saveAutoIdentify();
                 refreshIdentifyForm();
                 if(e.type === 'submit')
-                    e.preventDefault() &&
+                    e.preventDefault() ||
                     submitPGPIdentifyForm();
 
                 return true;

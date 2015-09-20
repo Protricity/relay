@@ -2,38 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f1a3609b-05f2-4e93-b5c1-0f477f2ec236" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/commands/commands.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/pgp/templates/pgp-generate-template.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/pgp/templates/pgp-manage-template.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/pgp/templates/pgp-register-template.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/rest/templates/rest-browser-template.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/rest/templates/rest-response-template.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/dist/relay-server.war" afterPath="$PROJECT_DIR$/server/dist/relay-server.war" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/src/java/relay/service/command/PGPCommands.java" afterPath="$PROJECT_DIR$/server/src/java/relay/service/command/PGPCommands.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/chat/chat-commands.js" afterPath="$PROJECT_DIR$/client/chat/chat-commands.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/chat/chat-templates.js" afterPath="$PROJECT_DIR$/client/chat/chat-templates.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/chat/chat.css" afterPath="$PROJECT_DIR$/client/chat/chat.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/client.js" afterPath="$PROJECT_DIR$/client/client.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/feed/feed-commands.js" afterPath="$PROJECT_DIR$/client/feed/feed-commands.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/feed/feed-templates.js" afterPath="$PROJECT_DIR$/client/feed/feed-templates.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/index.html" afterPath="$PROJECT_DIR$/client/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/template/minimal/minimal.css" afterPath="$PROJECT_DIR$/client/template/minimal/minimal.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/pgp/pgp-listeners.js" afterPath="$PROJECT_DIR$/client/pgp/pgp-listeners.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/nbproject/private/private.xml" afterPath="$PROJECT_DIR$/server/nbproject/private/private.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/rest/rest-commands.js" afterPath="$PROJECT_DIR$/client/rest/rest-commands.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/sockets/sockets.js" afterPath="$PROJECT_DIR$/client/sockets/sockets.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/worker.js" afterPath="$PROJECT_DIR$/client/worker.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client\command\command-defaults.js" afterPath="$PROJECT_DIR$/client/commands/commands-defaults.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client\command\command-listeners.js" afterPath="$PROJECT_DIR$/client/commands/commands-listeners.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client\command\command-tags.js" afterPath="$PROJECT_DIR$/client/commands/commands-tags.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client\command\command-worker.js" afterPath="$PROJECT_DIR$/client/commands/commands.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client\command\command.css" afterPath="$PROJECT_DIR$/client/sockets/sockets.css" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client\pgp\pgp-templates.js" afterPath="$PROJECT_DIR$/client/pgp/templates/pgp-identify-template.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client\pgp\pgp-worker.js" afterPath="$PROJECT_DIR$/client/pgp/pgp-commands.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client\rest\rest-templates.js" afterPath="$PROJECT_DIR$/client/rest/templates/rest-put-template.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client\sockets\sockets-default.js" afterPath="$PROJECT_DIR$/client/sockets/sockets-defaults.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client\sockets\sockets-templates.js" afterPath="$PROJECT_DIR$/client/sockets/templates/sockets-log-template.js" />
     </list>
     <ignored path="relay.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -65,144 +36,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="pgp-listeners.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="pgp-listeners.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/client/pgp/pgp-listeners.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="10302">
-              <caret line="17" column="38" selection-start-line="17" selection-start-column="38" selection-end-line="17" selection-end-column="38" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="client.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/client.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="374" max-vertical-offset="1853">
-              <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="sockets.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/sockets/sockets.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-15.84" vertical-offset="2103" max-vertical-offset="3655">
-              <caret line="147" column="49" selection-start-line="147" selection-start-column="49" selection-end-line="147" selection-end-column="49" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="chat-templates.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/chat/chat-templates.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2839">
-              <caret line="4" column="32" selection-start-line="3" selection-start-column="0" selection-end-line="4" selection-end-column="32" />
-              <folding>
-                <marker date="1442791335938" expanded="true" signature="257:2356" placeholder="..." />
-                <marker date="1442791335938" expanded="true" signature="433:522" placeholder="..." />
-                <marker date="1442791335938" expanded="true" signature="566:887" placeholder="..." />
-                <marker date="1442791335938" expanded="true" signature="670:687" placeholder="..." />
-                <marker date="1442791335938" expanded="true" signature="773:790" placeholder="..." />
-                <marker date="1442791335938" expanded="true" signature="924:2334" placeholder="..." />
-                <marker date="1442791335938" expanded="true" signature="951:2311" placeholder="..." />
-                <marker date="1442791335938" expanded="true" signature="982:2283" placeholder="..." />
-                <marker date="1442791335938" expanded="true" signature="1014:1764" placeholder="..." />
-                <marker date="1442791335938" expanded="true" signature="1058:1077" placeholder="..." />
-                <marker date="1442791335938" expanded="true" signature="1078:1510" placeholder="..." />
-                <marker date="1442791335938" expanded="true" signature="1168:1473" placeholder="..." />
-                <marker date="1442791335938" expanded="false" signature="1554:1573" placeholder="..." />
-                <marker date="1442791335938" expanded="true" signature="1574:1731" placeholder="..." />
-                <marker date="1442791335938" expanded="true" signature="1796:2251" placeholder="..." />
-                <marker date="1442791335938" expanded="true" signature="1844:2218" placeholder="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="chat-commands.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/chat/chat-commands.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="446" max-vertical-offset="3910">
-              <caret line="37" column="75" selection-start-line="37" selection-start-column="75" selection-end-line="37" selection-end-column="75" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="chat.css" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/chat/chat.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="623" max-vertical-offset="1292">
-              <caret line="48" column="0" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
-              <folding>
-                <marker date="1442791387936" expanded="true" signature="822:909" placeholder="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="feed-templates.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/feed/feed-templates.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1326">
-              <caret line="5" column="35" selection-start-line="5" selection-start-column="35" selection-end-line="5" selection-end-column="35" />
-              <folding>
-                <marker date="1442791455103" expanded="true" signature="260:1100" placeholder="..." />
-                <marker date="1442791455103" expanded="true" signature="483:800" placeholder="..." />
-                <marker date="1442791455103" expanded="true" signature="587:602" placeholder="..." />
-                <marker date="1442791455103" expanded="true" signature="688:703" placeholder="..." />
-                <marker date="1442791455103" expanded="true" signature="915:1078" placeholder="..." />
-                <marker date="1442791455103" expanded="true" signature="978:1056" placeholder="..." />
-                <marker date="1442791455103" expanded="true" signature="1452:2758" placeholder="..." />
-                <marker date="1442791455103" expanded="true" signature="1540:1804" placeholder="..." />
-                <marker date="1442791455103" expanded="true" signature="1887:2413" placeholder="..." />
-                <marker date="1442791455103" expanded="false" signature="2481:2494" placeholder="..." />
-                <marker date="1442791455103" expanded="true" signature="2495:2525" placeholder="..." />
-                <marker date="1442791455103" expanded="false" signature="2590:2603" placeholder="..." />
-                <marker date="1442791455103" expanded="true" signature="2604:2631" placeholder="..." />
-                <marker date="1442791455103" expanded="false" signature="2695:2708" placeholder="..." />
-                <marker date="1442791455103" expanded="true" signature="2709:2735" placeholder="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pgp-generate-template.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/pgp/templates/pgp-generate-template.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="867">
-              <caret line="5" column="4" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="4" />
-              <folding>
-                <marker date="1442786139262" expanded="true" signature="319:2455" placeholder="..." />
-                <marker date="1442786139262" expanded="true" signature="596:873" placeholder="..." />
-                <marker date="1442786139262" expanded="true" signature="684:703" placeholder="..." />
-                <marker date="1442786139262" expanded="true" signature="773:792" placeholder="..." />
-                <marker date="1442786139262" expanded="true" signature="943:2433" placeholder="..." />
-                <marker date="1442786139262" expanded="false" signature="996:1009" placeholder="..." />
-                <marker date="1442786139262" expanded="true" signature="1186:1504" placeholder="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="commands.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/commands/commands.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2584">
-              <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="vote-listeners.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/client/app/vote/vote-listeners.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7131902" vertical-offset="402" max-vertical-offset="1054">
-              <caret line="51" column="28" selection-start-line="51" selection-start-column="28" selection-end-line="51" selection-end-column="28" />
+            <state vertical-scroll-proportion="0.756135" vertical-offset="578" max-vertical-offset="10302">
+              <caret line="63" column="38" selection-start-line="63" selection-start-column="38" selection-end-line="63" selection-end-column="38" />
               <folding />
             </state>
           </provider>
@@ -264,7 +102,6 @@
         <option value="$PROJECT_DIR$/client/sockets/templates/sockets-log-template.js" />
         <option value="$PROJECT_DIR$/client/commands/commands-defaults.js" />
         <option value="$PROJECT_DIR$/client/pgp/templates/pgp-identify-template.js" />
-        <option value="$PROJECT_DIR$/client/pgp/pgp-listeners.js" />
         <option value="$PROJECT_DIR$/client/client.js" />
         <option value="$PROJECT_DIR$/client/sockets/sockets.js" />
         <option value="$PROJECT_DIR$/client/chat/chat-commands.js" />
@@ -272,6 +109,7 @@
         <option value="$PROJECT_DIR$/client/chat/chat.css" />
         <option value="$PROJECT_DIR$/client/feed/feed-templates.js" />
         <option value="$PROJECT_DIR$/client/commands/commands.js" />
+        <option value="$PROJECT_DIR$/client/pgp/pgp-listeners.js" />
       </list>
     </option>
   </component>
@@ -542,6 +380,28 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="pgp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="relay" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="relay" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="client" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pgp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="templates" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1209,32 +1069,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/pgp/templates/pgp-identify-template.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-15.64" vertical-offset="2108" max-vertical-offset="4845">
-          <caret line="147" column="69" selection-start-line="147" selection-start-column="69" selection-end-line="147" selection-end-column="69" />
-          <folding>
-            <marker date="1442790070936" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442790070936" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442790070936" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442790070936" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442790070936" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442790070936" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442790070936" expanded="false" signature="-1:-1" placeholder="..." />
-            <marker date="1442790070936" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442790070936" expanded="false" signature="-1:-1" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/pgp/pgp-listeners.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="10302">
-          <caret line="17" column="38" selection-start-line="17" selection-start-column="38" selection-end-line="17" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/client/client.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="374" max-vertical-offset="1853">
@@ -1264,7 +1098,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="623" max-vertical-offset="1292">
           <caret line="48" column="0" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
           <folding>
-            <marker date="1442791387936" expanded="true" signature="822:909" placeholder="{...}" />
+            <marker date="1442791387936" expanded="true" signature="-1:-1" placeholder="{...}" />
           </folding>
         </state>
       </provider>
@@ -1274,22 +1108,22 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2839">
           <caret line="4" column="32" selection-start-line="3" selection-start-column="0" selection-end-line="4" selection-end-column="32" />
           <folding>
-            <marker date="1442791335938" expanded="true" signature="257:2356" placeholder="..." />
-            <marker date="1442791335938" expanded="true" signature="433:522" placeholder="..." />
-            <marker date="1442791335938" expanded="true" signature="566:887" placeholder="..." />
-            <marker date="1442791335938" expanded="true" signature="670:687" placeholder="..." />
-            <marker date="1442791335938" expanded="true" signature="773:790" placeholder="..." />
-            <marker date="1442791335938" expanded="true" signature="924:2334" placeholder="..." />
-            <marker date="1442791335938" expanded="true" signature="951:2311" placeholder="..." />
-            <marker date="1442791335938" expanded="true" signature="982:2283" placeholder="..." />
-            <marker date="1442791335938" expanded="true" signature="1014:1764" placeholder="..." />
-            <marker date="1442791335938" expanded="true" signature="1058:1077" placeholder="..." />
-            <marker date="1442791335938" expanded="true" signature="1078:1510" placeholder="..." />
-            <marker date="1442791335938" expanded="true" signature="1168:1473" placeholder="..." />
-            <marker date="1442791335938" expanded="false" signature="1554:1573" placeholder="..." />
-            <marker date="1442791335938" expanded="true" signature="1574:1731" placeholder="..." />
-            <marker date="1442791335938" expanded="true" signature="1796:2251" placeholder="..." />
-            <marker date="1442791335938" expanded="true" signature="1844:2218" placeholder="..." />
+            <marker date="1442791335938" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791335938" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791335938" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791335938" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791335938" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791335938" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791335938" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791335938" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791335938" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791335938" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791335938" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791335938" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791335938" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1442791335938" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791335938" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791335938" expanded="true" signature="-1:-1" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1299,37 +1133,21 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1326">
           <caret line="5" column="35" selection-start-line="5" selection-start-column="35" selection-end-line="5" selection-end-column="35" />
           <folding>
-            <marker date="1442791455103" expanded="true" signature="260:1100" placeholder="..." />
-            <marker date="1442791455103" expanded="true" signature="483:800" placeholder="..." />
-            <marker date="1442791455103" expanded="true" signature="587:602" placeholder="..." />
-            <marker date="1442791455103" expanded="true" signature="688:703" placeholder="..." />
-            <marker date="1442791455103" expanded="true" signature="915:1078" placeholder="..." />
-            <marker date="1442791455103" expanded="true" signature="978:1056" placeholder="..." />
-            <marker date="1442791455103" expanded="true" signature="1452:2758" placeholder="..." />
-            <marker date="1442791455103" expanded="true" signature="1540:1804" placeholder="..." />
-            <marker date="1442791455103" expanded="true" signature="1887:2413" placeholder="..." />
-            <marker date="1442791455103" expanded="false" signature="2481:2494" placeholder="..." />
-            <marker date="1442791455103" expanded="true" signature="2495:2525" placeholder="..." />
-            <marker date="1442791455103" expanded="false" signature="2590:2603" placeholder="..." />
-            <marker date="1442791455103" expanded="true" signature="2604:2631" placeholder="..." />
-            <marker date="1442791455103" expanded="false" signature="2695:2708" placeholder="..." />
-            <marker date="1442791455103" expanded="true" signature="2709:2735" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/pgp/templates/pgp-generate-template.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="867">
-          <caret line="5" column="4" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="4" />
-          <folding>
-            <marker date="1442786139262" expanded="true" signature="319:2455" placeholder="..." />
-            <marker date="1442786139262" expanded="true" signature="596:873" placeholder="..." />
-            <marker date="1442786139262" expanded="true" signature="684:703" placeholder="..." />
-            <marker date="1442786139262" expanded="true" signature="773:792" placeholder="..." />
-            <marker date="1442786139262" expanded="true" signature="943:2433" placeholder="..." />
-            <marker date="1442786139262" expanded="false" signature="996:1009" placeholder="..." />
-            <marker date="1442786139262" expanded="true" signature="1186:1504" placeholder="..." />
+            <marker date="1442791455103" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791455103" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791455103" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791455103" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791455103" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791455103" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791455103" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791455103" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791455103" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791455103" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1442791455103" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791455103" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1442791455103" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442791455103" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1442791455103" expanded="true" signature="-1:-1" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -1344,8 +1162,50 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/client/app/vote/vote-listeners.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7131902" vertical-offset="402" max-vertical-offset="1054">
+        <state vertical-scroll-proportion="0.0" vertical-offset="402" max-vertical-offset="1054">
           <caret line="51" column="28" selection-start-line="51" selection-start-column="28" selection-end-line="51" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/pgp/templates/pgp-generate-template.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="867">
+          <caret line="5" column="4" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="4" />
+          <folding>
+            <marker date="1442786139262" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442786139262" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442786139262" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442786139262" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442786139262" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442786139262" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1442786139262" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/pgp/templates/pgp-identify-template.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.16" vertical-offset="391" max-vertical-offset="4845">
+          <caret line="35" column="27" selection-start-line="35" selection-start-column="21" selection-end-line="35" selection-end-column="27" />
+          <folding>
+            <marker date="1442790070936" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442790070936" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442790070936" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442790070936" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442790070936" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442790070936" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442790070936" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1442790070936" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442790070936" expanded="false" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/pgp/pgp-listeners.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.756135" vertical-offset="578" max-vertical-offset="10302">
+          <caret line="63" column="38" selection-start-line="63" selection-start-column="38" selection-end-line="63" selection-end-column="38" />
           <folding />
         </state>
       </provider>
