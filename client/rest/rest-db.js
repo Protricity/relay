@@ -4,12 +4,13 @@
 "use strict";
 
 RestDB.DB_VERSION               = 2;
-RestDB.DB_NAME                  = 'http';
+RestDB.DB_NAME                  = 'rest';
 RestDB.DB_TABLE_HTTP_CONTENT    = 'content';
 RestDB.DB_TABLE_HTTP_URL        = 'url';
 
 RestDB.DB_INDEX_PATH            = 'path';
 RestDB.DB_INDEX_ID_PATH         = 'id_path';
+RestDB.DB_INDEX_PATH_TIMESTAMP  = 'path_timestamp';
 //RestDB.DB_INDEX_PGP_ID_PUBLIC   = 'pgp_id_public';
 //RestDB.DB_INDEX_TIMESTAMP       = 'timestamp';
 
@@ -42,6 +43,7 @@ function RestDB(dbReadyCallback) {
                 var postStore = upgradeDB.createObjectStore(RestDB.DB_TABLE_HTTP_CONTENT, { keyPath: ["pgp_id_public_short", "timestamp"] });
                 postStore.createIndex(RestDB.DB_INDEX_PATH, "path", { unique: false });
                 postStore.createIndex(RestDB.DB_INDEX_ID_PATH, ["pgp_id_public_short", "path"], { unique: false });
+                postStore.createIndex(RestDB.DB_INDEX_PATH_TIMESTAMP, ["path", "timestamp"], { unique: false });
                 //postStore.createIndex(RestDB.DB_INDEX_PGP_ID_PUBLIC, "pgp_id_public", { unique: false });
                 //postStore.createIndex(RestDB.DB_INDEX_TIMESTAMP, "timestamp", { unique: false });
 
@@ -104,7 +106,7 @@ RestDB.addVerifiedContentToDB = function(verifiedContent, callback) {
     var pgp_id_public = verifiedContent.signingKeyId;
     var pgp_id_public_short = pgp_id_public.substr(pgp_id_public.length - 8);
     var path = /data-path=["'](\S+)["']/i.exec(verifiedText)[1];
-    var timestamp = /data-timestamp=["'](\d+)["']/i.exec(verifiedText)[1];
+    var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(verifiedText)[1]);
     if(!path)
         throw new Error("Invalid Channel");
     if(!timestamp)
@@ -183,7 +185,7 @@ RestDB.getContentByPublicKeyID = function(path, publicKeyID, callback) {
         var transaction = db.transaction([RestDB.DB_TABLE_HTTP_CONTENT], "readonly");
         var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_CONTENT);
 
-        var pathIndex = httpContentStore.index('id_path');
+        var pathIndex = httpContentStore.index(RestDB.DB_INDEX_ID_PATH);
         var getRequest = pathIndex.get([path, publicKeyID]);
         getRequest.onsuccess = function(e) {
             var httpContentData = e.target.result;
@@ -195,6 +197,46 @@ RestDB.getContentByPublicKeyID = function(path, publicKeyID, callback) {
         };
     });
 };
+
+RestDB.queryContentFeedByID = function(publicKeyID, timespan, callback) {
+    var id_public_short = publicKeyID.toUpperCase().substr(publicKeyID.length - 8);
+
+    RestDB(function(db) {
+        var transaction = db.transaction([RestDB.DB_TABLE_HTTP_CONTENT], "readonly");
+        var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_CONTENT);
+
+        var boundKeyRange = IDBKeyRange.bound([id_public_short, timespan[0]], [id_public_short, timespan[1]], true, true);
+
+        httpContentStore.openCursor(boundKeyRange)
+            .onsuccess = function (e) {
+            var cursor = e.target.result;
+            if(cursor) {
+                callback(cursor.value);
+                cursor.continue();
+            }
+        };
+    });
+};
+
+
+RestDB.queryContentFeedByPath = function(pathPrefix, timespan, callback) {
+    RestDB(function(db) {
+        var transaction = db.transaction([RestDB.DB_TABLE_HTTP_CONTENT], "readonly");
+        var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_CONTENT);
+
+        var pathTimeStampIndex = httpContentStore.index(RestDB.DB_INDEX_PATH_TIMESTAMP);
+        var boundKeyRange = IDBKeyRange.bound([pathPrefix, timespan[0]], [pathPrefix + '\uffff', timespan[1]], true, true);
+        pathTimeStampIndex.openCursor(boundKeyRange)
+            .onsuccess = function (e) {
+            var cursor = e.target.result;
+            if(cursor) {
+                callback(cursor.value);
+                cursor.continue();
+            }
+        };
+    });
+};
+
 
 RestDB.addURLToDB = function(url, referrerURL, callback) {
     if(!callback)
@@ -270,4 +312,4 @@ RestDB.listURLIndex = function(currentURL, callback) {
             }
         };
     });
-}
+};

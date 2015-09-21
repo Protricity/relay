@@ -3,8 +3,8 @@
  */
 (function() {
 
-    var verifiedContentElms = document.getElementsByClassName('pgp-verified-content');
-    var unsortedFeedPostElms = document.getElementsByClassName('feed-post-container unsorted');
+    var verifiedContentElms = document.getElementsByClassName('pgp-verified-content1');
+    var unsortedFeedPostElms = document.getElementsByClassName('feed-post-container unsorted1');
 
     document.addEventListener('pgp:verified', function(e) {
         //var htmlContainer = e.target;

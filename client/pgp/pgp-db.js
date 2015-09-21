@@ -120,7 +120,6 @@ PGPDB.getPGPKeyIDs = function(pgpMessageContent, callback) {
 };
 
 PGPDB.getDefaultPrivateKeyData = function (callback) {
-
     PGPDB(function (db) {
         var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readonly");
         var privateKeyStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
@@ -129,7 +128,7 @@ PGPDB.getDefaultPrivateKeyData = function (callback) {
         var req = index.get('1');
         req.onsuccess = function (evt) {
             var privateKeyData = evt.target.result;
-                callback(privateKeyData);
+            callback(privateKeyData);
         };
     });
 };

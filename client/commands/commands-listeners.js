@@ -130,8 +130,9 @@
                 }
 
                 if(channelOutputs.length === 0) {
-                    contentElement.parentNode.removeChild(contentElement);
-                    throw new Error("Invalid content. Missing class='" + channelPath + "'", content);
+                    console.log(channelContainer.getElementsByClassName(channelPath));
+//                     contentElement.parentNode.removeChild(contentElement);
+                    throw new Error("Invalid content. Missing class='" + channelPath + "'\n" + content);
                 }
                 channelOutput = channelOutputs[0];
 

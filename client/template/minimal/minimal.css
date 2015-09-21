@@ -26,7 +26,7 @@ body.template-minimal {
 /** Channels **/
 
 .template-minimal .channel {
-    animation: fade-in-resize 0.5s ease-in-out;
+    animation: fade-in-resize 1s ease-in-out;
     position: relative;
     /*transition: opacity 0.4s ease-in-out;*/
     display: inline-block;

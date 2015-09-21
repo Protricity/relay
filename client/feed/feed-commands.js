@@ -5,176 +5,73 @@
 
     var MS_DAY = 24 * 60 * 60 * 1000;
 
-    var PATH_PREFIX_POST = 'post:';
     var PATH_PREFIX_FEED = 'feed:';
 
     var db = null;
 
+    importScripts('feed/feed-templates.js');
 
     var feedNCounter = 0;
     var postFormNCounter = 0;
     /**
      *
-     * @param commandString FEED [channel prefix] [start time] [end time]
+     * @param commandString FEED [public key id] [path prefix]
      */
     Commands.add('feed', function (commandString) {
-        var match = /^feed\s*(.*)$/im.exec(commandString);
+        var match = /^feed\s*(\S*)\s*(\S*)$/im.exec(commandString);
 
-        var channelPrefix = match[1] || '~';
-        var fixedChannelPath = fixChannelPath(channelPrefix);
-        var logChannelPath = PATH_PREFIX_FEED + channelPrefix;
+        var publicKeyID = match[1] || null;
+        var pathPrefix = match[2] || '~';
 
-        var feedEndTime = Date.now();
-        var feedStartTime = feedEndTime - MS_DAY;
+        if(publicKeyID) {
+            showFeed(publicKeyID);
 
-        importScripts('feed/feed-templates.js');
-        Templates.feed.container(fixedChannelPath.toLowerCase(), function(html) {
-            Commands.postResponseToClient("LOG.REPLACE " + logChannelPath + ' ' + html);
-        });
+        } else {
+            if(typeof PGPDB !== 'function')
+                importScripts('pgp/pgp-db.js');
 
-        // Reference Entry template for remainder of command call
-        var createFeedTemplateEntry = Templates.feed.entry;
+            PGPDB.getDefaultPrivateKeyData(function (defaultPrivateKeyData) {
+                if(!defaultPrivateKeyData)
+                    throw new Error("No default PGP Identity found");
+                showFeed(defaultPrivateKeyData.id_public);
+            });
+        }
 
-        // Free template resource after call ends
-        delete Templates.feed.container;
+        function showFeed(publicKeyID) {
+            var keyID = publicKeyID.substr(publicKeyID.length - 8);
 
-        getPGPDB(function (db, PGPDB) {
+            if(pathPrefix[0] === '~') {
+                pathPrefix = pathPrefix.substr(1);
+                if (!pathPrefix || pathPrefix[0] !== '/')
+                    pathPrefix = '/' + pathPrefix;
+                pathPrefix = '/home/' + keyID + pathPrefix;
+                console.info("Re-routing ~ => " + pathPrefix);
+            }
+            pathPrefix = pathPrefix.toLowerCase();
 
-            var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readonly");
-            var dbStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
+            var feedEndTime = Date.now();
+            var feedStartTime = feedEndTime - MS_DAY;
 
-            dbStore.openCursor().onsuccess = function (evt) {
-                var cursor = evt.target.result;
-                if (cursor) {
-                    var privateKeyData = cursor.value;
-                    var keyID = privateKeyData.id_public;
-                    var userID = privateKeyData.user_id;
-                    var fixedChannelPrefix = fixHomePath(channelPrefix, keyID);
+            Templates.feed.container(pathPrefix, function(html) {
+                Commands.postResponseToClient("LOG.REPLACE feed:" + pathPrefix + ' ' + html);
+            });
 
+            if(typeof RestDB !== 'function')
+                importScripts('rest/rest-db.js');
 
-                    getHTTPDB(function(db, FeedDB) {
-                        FeedDB.queryFeedPosts(
-                            fixedChannelPrefix,
-                            [feedStartTime, feedEndTime],
-                            function(data) {
-                                try{
-                                    var contentProtected = protectHTMLContent(data.content_verified);
-                                } catch (e) {
-                                    console.error("Skipping Feed Post: " + e);
-                                }
-                                createFeedTemplateEntry(data, privateKeyData, function(html) {
-                                    Commands.postResponseToClient("LOG " + logChannelPath + " " + html);
-                                });
-                            });
+            RestDB.queryContentFeedByID(
+                publicKeyID,
+                [feedStartTime, feedEndTime],
+                function(data) {
+                    Templates.feed.entry(data, function(html) {
+                        Commands.postResponseToClient("LOG feed-content:" + pathPrefix + " " + html);
                     });
-
-                } else {
-                }
-            };
-        });
+                });
+        }
 
     });
 
+    //Commands.addResponse('feed', Commands.sendWithSocket);
 
-
-    Commands.addResponse('feed', Commands.sendWithSocket);
-
-
-    function protectHTMLContent(htmlContent) {
-        var tagsToReplace = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;'
-        };
-
-        htmlContent = htmlContent.replace(/[&<>]/g, function(tag) {
-            return tagsToReplace[tag] || tag;
-        });
-
-        htmlContent = htmlContent.replace(/&lt;(a|p|span|div)(?:\s+(class|data-path|data-timestamp)=[^=&]+\s*)*&gt;/g, function(tag) {
-            tag = tag.replace('&lt;', '<');
-            return tag;
-        });
-
-        htmlContent = htmlContent.replace(/&lt;\//i, '</');
-        htmlContent = htmlContent.replace(/&gt;/ig, '>');
-
-        var match = /(lt;|<)[^>]+(on\w+)=/ig.exec(htmlContent);
-        if(match)
-            throw new Error("Dangerous HTML: " + match[2]);
-
-        return htmlContent;
-    }
-
-    function timeSince(date) {
-
-        var seconds = Math.floor((new Date() - date) / 1000);
-
-        var interval = Math.floor(seconds / 31536000);
-
-        if (interval > 1) {
-            return interval + " years";
-        }
-        interval = Math.floor(seconds / 2592000);
-        if (interval > 1) {
-            return interval + " months";
-        }
-        interval = Math.floor(seconds / 86400);
-        if (interval > 1) {
-            return interval + " days";
-        }
-        interval = Math.floor(seconds / 3600);
-        if (interval > 1) {
-            return interval + " hours";
-        }
-        interval = Math.floor(seconds / 60);
-        if (interval > 1) {
-            return interval + " minutes";
-        }
-        return Math.floor(seconds) + " seconds";
-    }
-
-    function fixChannelPath(path) {
-        if(!/[#~:./a-z_-]+/i.test(path))
-            throw new Error("Invalid Path: " + path);
-        return path;
-    }
-
-
-    function fixHomePath(channelPath, keyID) {
-        keyID = keyID.substr(keyID.length - 8);
-        channelPath = fixChannelPath(channelPath);
-        if(channelPath[0] === '~') {
-            channelPath = channelPath.substr(1);
-            if(!channelPath || channelPath[0] !== '/')
-                channelPath = '/' + channelPath;
-            channelPath = '/home/' + keyID + channelPath;
-        }
-        return channelPath;
-    }
-
-    function getKBPGP() {
-        if(typeof self.kbpgp !== 'undefined')
-            return self.kbpgp;
-        importScripts('pgp/lib/kbpgp/kbpgp.js');
-        console.log("Loaded: ", self.kbpgp);
-        return self.kbpgp;
-    }
-
-    // Database
-
-    function getPGPDB(callback) {
-        if(typeof self.PGPDB !== 'function')
-            importScripts('pgp/pgp-db.js');
-
-        self.PGPDB(callback, self.PGPDB);
-    }
-
-    function getHTTPDB(callback) {
-        if(typeof self.FeedDB !== 'function')
-            importScripts('rest/rest-db.js');
-
-        self.FeedDB(callback);
-    }
 
 })();

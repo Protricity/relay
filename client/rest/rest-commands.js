@@ -377,32 +377,10 @@
         }
     }
 
-    function protectHTMLContent(htmlContent, formElm) {
-        //var tagsToReplace = {
-        //    '&': '&amp;',
-        //    '<': '&lt;',
-        //    '>': '&gt;'
-        //};
-        //
-        //htmlContent = htmlContent.replace(/[&<>]/g, function(tag) {
-        //    return tagsToReplace[tag] || tag;
-        //});
-        //
-        //htmlContent = htmlContent.replace(/&lt;(a|p|span|article|header|h1|h2|h3|h4|h5|h6|footer|section)(?:\s+(class|data-path|data-timestamp)=[^=&]+\s*)*&gt;/g, function(tag) {
-        //    tag = tag.replace('&lt;', '<');
-        //    return tag;
-        //});
-        //
-        //htmlContent = htmlContent.replace(/&lt;\//i, '</');
-        //htmlContent = htmlContent.replace(/&gt;/ig, '>');
-
+    function protectHTMLContent(htmlContent) {
         var match = /(lt;|<)[^>]+(on\w+)=/ig.exec(htmlContent);
-        if(match) {
-            var err = "Dangerous HTML: " + match[2];
-            if(formElm)
-                setStatus(formElm, err);
-            throw new Error(err);
-        }
+        if(match)
+            throw new Error("Dangerous HTML: " + match[2]);
 
         return htmlContent;
     }
