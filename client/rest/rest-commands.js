@@ -507,11 +507,5 @@
         self.PGPDB(callback);
     }
 
-    function getFeedDB(callback) {
-        if(typeof self.FeedDB !== 'function')
-            importScripts('feed/feed-db.js');
-
-        self.FeedDB(callback);
-    }
 
 })();

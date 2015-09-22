@@ -34,9 +34,9 @@ Commands.addProxy(
 // Feed Commands
 Commands.addProxy(
     ['feed'],
-    'feed/feed-commands.js');
+    'rest/feed/feed-commands.js');
 
 // PGP Commands
 Commands.addProxy(
-    ['keygen', 'encrypt', 'register', 'unregister', 'manage', 'identify'],
+    ['key', 'keygen', 'encrypt', 'register', 'unregister', 'manage', 'identify', 'idsig'],
     'pgp/pgp-commands.js');

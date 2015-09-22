@@ -42,8 +42,8 @@
 //                send('put');
 
         if (document.location.host === 'localhost') {
-            send('put');
             send('feed');
+            send('put');
 
 
         } else {

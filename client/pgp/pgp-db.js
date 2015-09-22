@@ -133,13 +133,6 @@ PGPDB.getDefaultPrivateKeyData = function (callback) {
     });
 };
 
-PGPDB.getPrivateKeyObjectStore = function(callback) {
-    PGPDB(function (db) {
-        var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readonly");
-        var dbStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
-        callback(dbStore);
-    });
-};
 PGPDB.getPrivateKeyData = function(id_private, callback) {
     id_private = id_private.substr(id_private.length - 16);
 
@@ -149,37 +142,30 @@ PGPDB.getPrivateKeyData = function(id_private, callback) {
 
         var req = dbStore.get(id_private);
         req.onsuccess = function (evt) {
-            var privateKeyData = evt.target.result;
-            if(!privateKeyData)
-                callback("Private Key Not Found: " + id_private, null);
-            else
-                callback(null, privateKeyData);
+            callback(evt.target.result);
         };
-        req.onerror = function(err) {
-            callback(err, null);
-        }
     });
 };
 
-PGPDB.getPrivateKey = function(id_private, callback) {
-    id_private = id_private.substr(id_private.length - 16);
-
-    PGPDB.getPrivateKeyData(id_private, function (err, privateKeyData) {
-
-        var kbpgp = PGPDB.getKBPGP();
-
-        kbpgp.KeyManager.import_from_armored_pgp({
-            armored: privateKeyData.block_private
-        }, function(err, alice) {
-
-            var privateKey = alice.find_signing_pgp_key();
-            var privateKeyFingerprint = privateKey.get_fingerprint().toString('hex').toUpperCase();
-            callback(err, privateKey, privateKeyData, alice);
-
-        });
-    });
-
-};
+//PGPDB.getPrivateKey = function(id_private, callback) {
+//    id_private = id_private.substr(id_private.length - 16);
+//
+//    PGPDB.getPrivateKeyData(id_private, function (err, privateKeyData) {
+//
+//        var kbpgp = PGPDB.getKBPGP();
+//
+//        kbpgp.KeyManager.import_from_armored_pgp({
+//            armored: privateKeyData.block_private
+//        }, function(err, alice) {
+//
+//            var privateKey = alice.find_signing_pgp_key();
+//            var privateKeyFingerprint = privateKey.get_fingerprint().toString('hex').toUpperCase();
+//            callback(err, privateKey, privateKeyData, alice);
+//
+//        });
+//    });
+//
+//};
 
 
 PGPDB.getPublicKeyData = function(id_public, callback) {
@@ -191,33 +177,29 @@ PGPDB.getPublicKeyData = function(id_public, callback) {
 
         var req = dbStore.get(id_public);
         req.onsuccess = function (evt) {
-            var publicKeyData = evt.target.result;
-            callback(null, publicKeyData);
+            callback( evt.target.result);
         };
-        req.onerror = function(err) {
-            callback(err, null);
-        }
     });
 };
 
-PGPDB.getPublicKey = function(id_public, callback) {
-    id_public = id_public.substr(id_public.length - 16);
-
-    PGPDB.getPublicKeyData(id_public, function (err, publicKeyData) {
-        var kbpgp = PGPDB.getKBPGP();
-        kbpgp.KeyManager.import_from_armored_pgp({
-            armored: publicKeyData.block_public
-        }, function (err, alice) {
-            if (err)
-                throw new Error(err);
-
-            var publicKey = alice.find_crypt_pgp_key();
-            var publicKeyFingerprint = publicKey.get_fingerprint().toString('hex').toUpperCase();
-
-            callback(err, publicKey, publicKeyData, alice);
-        });
-    });
-};
+//PGPDB.getPublicKey = function(id_public, callback) {
+//    id_public = id_public.substr(id_public.length - 16);
+//
+//    PGPDB.getPublicKeyData(id_public, function (err, publicKeyData) {
+//        var kbpgp = PGPDB.getKBPGP();
+//        kbpgp.KeyManager.import_from_armored_pgp({
+//            armored: publicKeyData.block_public
+//        }, function (err, alice) {
+//            if (err)
+//                throw new Error(err);
+//
+//            var publicKey = alice.find_crypt_pgp_key();
+//            var publicKeyFingerprint = publicKey.get_fingerprint().toString('hex').toUpperCase();
+//
+//            callback(err, publicKey, publicKeyData, alice);
+//        });
+//    });
+//};
 
 
 

@@ -2,19 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f1a3609b-05f2-4e93-b5c1-0f477f2ec236" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/pgp/templates/pgp-public-key-template.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/dist/relay-server.war" afterPath="$PROJECT_DIR$/server/dist/relay-server.war" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/client.js" afterPath="$PROJECT_DIR$/client/client.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/commands/commands-listeners.js" afterPath="$PROJECT_DIR$/client/commands/commands-listeners.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/feed/feed-commands.js" afterPath="$PROJECT_DIR$/client/feed/feed-commands.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/feed/feed-form.js" afterPath="$PROJECT_DIR$/client/feed/feed-form.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/feed/feed-listeners.js" afterPath="$PROJECT_DIR$/client/feed/feed-listeners.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/feed/feed-templates.js" afterPath="$PROJECT_DIR$/client/feed/feed-templates.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/commands/commands-defaults.js" afterPath="$PROJECT_DIR$/client/commands/commands-defaults.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/template/minimal/minimal.css" afterPath="$PROJECT_DIR$/client/template/minimal/minimal.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/pgp/pgp-commands.js" afterPath="$PROJECT_DIR$/client/pgp/pgp-commands.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/pgp/pgp-db.js" afterPath="$PROJECT_DIR$/client/pgp/pgp-db.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/rest/rest-commands.js" afterPath="$PROJECT_DIR$/client/rest/rest-commands.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/rest/rest-db.js" afterPath="$PROJECT_DIR$/client/rest/rest-db.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/rest/rest-listeners.js" afterPath="$PROJECT_DIR$/client/rest/rest-listeners.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client\feed\feed-commands.js" afterPath="$PROJECT_DIR$/client/rest/feed/feed-commands.js" />
+      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client\feed\feed-form.js" afterPath="$PROJECT_DIR$/client/rest/feed/feed-form.js.old" />
+      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client\feed\feed-listeners.js" afterPath="$PROJECT_DIR$/client/rest/feed/feed-listeners.js" />
+      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client\feed\feed-templates.js" afterPath="$PROJECT_DIR$/client/rest/feed/feed-templates.js" />
+      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client\feed\feed.css" afterPath="$PROJECT_DIR$/client/rest/feed/feed.css" />
+      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client\feed\img\user_icon_default.png" afterPath="$PROJECT_DIR$/client/rest/feed/img/user_icon_default.png" />
     </list>
     <ignored path="relay.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -47,59 +51,114 @@
   <component name="FileEditorManager">
     <leaf>
       <file leaf-file-name="feed-commands.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/feed/feed-commands.js">
+        <entry file="file://$PROJECT_DIR$/client/rest/feed/feed-commands.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="640" max-vertical-offset="1411">
-              <caret line="61" column="28" selection-start-line="61" selection-start-column="28" selection-end-line="61" selection-end-column="28" />
+            <state vertical-scroll-proportion="-29.16" vertical-offset="376" max-vertical-offset="1411">
+              <caret line="65" column="44" selection-start-line="65" selection-start-column="44" selection-end-line="65" selection-end-column="44" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rest-listeners.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/rest/rest-listeners.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1166" max-vertical-offset="6732">
+              <caret line="105" column="0" selection-start-line="105" selection-start-column="0" selection-end-line="107" selection-end-column="29" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="feed-listeners.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/rest/feed/feed-listeners.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-27.2" vertical-offset="714" max-vertical-offset="2108">
+              <caret line="82" column="0" selection-start-line="82" selection-start-column="0" selection-end-line="82" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="feed-templates.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/client/feed/feed-templates.js">
+        <entry file="file://$PROJECT_DIR$/client/rest/feed/feed-templates.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7789934" vertical-offset="495" max-vertical-offset="2006">
-              <caret line="71" column="57" selection-start-line="71" selection-start-column="57" selection-end-line="71" selection-end-column="57" />
+            <state vertical-scroll-proportion="0.49307775" vertical-offset="608" max-vertical-offset="3281">
+              <caret line="63" column="116" selection-start-line="63" selection-start-column="116" selection-end-line="63" selection-end-column="116" />
               <folding>
-                <marker date="1442801982766" expanded="true" signature="260:1190" placeholder="..." />
-                <marker date="1442801982766" expanded="true" signature="422:1180" placeholder="..." />
-                <marker date="1442801982766" expanded="true" signature="436:487" placeholder="..." />
-                <marker date="1442801982766" expanded="true" signature="436:527" placeholder="..." />
-                <marker date="1442801982766" expanded="true" signature="571:888" placeholder="..." />
-                <marker date="1442801982766" expanded="true" signature="675:690" placeholder="..." />
-                <marker date="1442801982766" expanded="true" signature="776:791" placeholder="..." />
-                <marker date="1442801982766" expanded="true" signature="1005:1168" placeholder="..." />
-                <marker date="1442801982766" expanded="true" signature="1068:1146" placeholder="..." />
-                <marker date="1442801982766" expanded="true" signature="1448:2754" placeholder="..." />
-                <marker date="1442801982766" expanded="true" signature="1536:1800" placeholder="..." />
-                <marker date="1442801982766" expanded="true" signature="1883:2409" placeholder="..." />
-                <marker date="1442801982766" expanded="false" signature="2477:2490" placeholder="..." />
-                <marker date="1442801982766" expanded="true" signature="2491:2521" placeholder="..." />
-                <marker date="1442801982766" expanded="false" signature="2586:2599" placeholder="..." />
-                <marker date="1442801982766" expanded="true" signature="2600:2627" placeholder="..." />
-                <marker date="1442801982766" expanded="false" signature="2691:2704" placeholder="..." />
-                <marker date="1442801982766" expanded="true" signature="2705:2731" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="260:1057" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="446:537" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="581:898" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="685:700" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="786:801" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="1013:1035" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="1595:3373" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="1695:2003" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="1796:1811" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="1894:1909" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="2044:2372" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="2109:2269" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="2554:2894" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="2602:2635" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="2602:2877" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="2602:2877" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="2602:2877" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="2602:2888" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="2987:3132" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="2987:3219" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="2987:3228" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="2987:3263" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="3324:3351" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="5275:6181" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="5324:5652" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="5389:5549" placeholder="..." />
+                <marker date="1442890849934" expanded="true" signature="5858:6159" placeholder="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="feed-listeners.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/feed/feed-listeners.js">
+      <file leaf-file-name="rest-put-template.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/rest/templates/rest-put-template.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1241">
-              <caret line="6" column="93" selection-start-line="6" selection-start-column="93" selection-end-line="6" selection-end-column="93" />
-              <folding />
+            <state vertical-scroll-proportion="0.0" vertical-offset="68" max-vertical-offset="2618">
+              <caret line="18" column="21" selection-start-line="18" selection-start-column="21" selection-end-line="19" selection-end-column="78" />
+              <folding>
+                <marker date="1442786109198" expanded="true" signature="285:3374" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="590:859" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="678:693" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="763:778" placeholder="..." />
+                <marker date="1442786109198" expanded="false" signature="926:937" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="938:3352" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="987:1350" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="1412:1824" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="1469:1786" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="1896:2650" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="2000:2612" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="2188:2281" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="2341:2579" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="2749:2927" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="2991:3117" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="3181:3329" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="4900:6163" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="5165:5434" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="5253:5268" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="5338:5353" placeholder="..." />
+                <marker date="1442786109198" expanded="false" signature="5496:5514" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="5607:6141" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="5638:6118" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="5777:6087" placeholder="..." />
+                <marker date="1442786109198" expanded="true" signature="7182:7570" placeholder="..." />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rest-db.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/rest/rest-db.js">
+      <file leaf-file-name="feed.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/client/rest/feed/feed.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.92" vertical-offset="1763" max-vertical-offset="5440">
-              <caret line="108" column="83" selection-start-line="108" selection-start-column="83" selection-end-line="108" selection-end-column="83" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="17" max-vertical-offset="1666">
+              <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -118,13 +177,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/client/sockets/command-sockets.js" />
-        <option value="$PROJECT_DIR$/client/sockets/socket-templates.js" />
-        <option value="$PROJECT_DIR$/client/config/config-db.js" />
-        <option value="$PROJECT_DIR$/client/sockets/sockets-default.js" />
-        <option value="$PROJECT_DIR$/client/pgp/pgp-worker.js" />
-        <option value="$PROJECT_DIR$/client/feed/tmpl/feed-template.js" />
-        <option value="$PROJECT_DIR$/client/feed/tmpl/feed-template-entry.js" />
         <option value="$PROJECT_DIR$/client/rest/templates/rest-template-browser.js" />
         <option value="$PROJECT_DIR$/client/rest/templates/rest-http-response-template.js" />
         <option value="$PROJECT_DIR$/client/rest/rest-templates.js" />
@@ -140,7 +192,6 @@
         <option value="$PROJECT_DIR$/client/pgp/templates/pgp-generate-templates.js" />
         <option value="$PROJECT_DIR$/client/pgp/templates/pgp-identify-templates.js" />
         <option value="$PROJECT_DIR$/client/pgp/templates/pgp-register-templates.js" />
-        <option value="$PROJECT_DIR$/client/pgp/pgp-commands.js" />
         <option value="$PROJECT_DIR$/client/rest/templates/rest-put-form-preview-template.js" />
         <option value="$PROJECT_DIR$/client/rest/templates/rest-put-form-template.js" />
         <option value="$PROJECT_DIR$/client/rest/templates/rest-response-body-template.js" />
@@ -151,7 +202,6 @@
         <option value="$PROJECT_DIR$/client/rest/templates/rest-browser-template.js" />
         <option value="$PROJECT_DIR$/client/rest/templates/rest-response-template.js" />
         <option value="$PROJECT_DIR$/client/sockets/templates/sockets-log-template.js" />
-        <option value="$PROJECT_DIR$/client/commands/commands-defaults.js" />
         <option value="$PROJECT_DIR$/client/pgp/templates/pgp-identify-template.js" />
         <option value="$PROJECT_DIR$/client/sockets/sockets.js" />
         <option value="$PROJECT_DIR$/client/chat/chat-commands.js" />
@@ -159,16 +209,25 @@
         <option value="$PROJECT_DIR$/client/chat/chat.css" />
         <option value="$PROJECT_DIR$/client/commands/commands.js" />
         <option value="$PROJECT_DIR$/client/pgp/pgp-listeners.js" />
-        <option value="$PROJECT_DIR$/client/template/minimal/minimal.css" />
-        <option value="$PROJECT_DIR$/client/client.js" />
-        <option value="$PROJECT_DIR$/client/rest/rest-commands.js" />
-        <option value="$PROJECT_DIR$/client/rest/rest-listeners.js" />
         <option value="$PROJECT_DIR$/client/feed/feed-form.js" />
-        <option value="$PROJECT_DIR$/client/pgp/pgp-db.js" />
-        <option value="$PROJECT_DIR$/client/feed/feed-commands.js" />
-        <option value="$PROJECT_DIR$/client/rest/rest-db.js" />
         <option value="$PROJECT_DIR$/client/feed/feed-listeners.js" />
+        <option value="$PROJECT_DIR$/client/pgp/pgp-commands.js" />
+        <option value="$PROJECT_DIR$/client/pgp/templates/pgp-public-key-template.js" />
+        <option value="$PROJECT_DIR$/client/client.js" />
+        <option value="$PROJECT_DIR$/client/commands/commands-defaults.js" />
+        <option value="$PROJECT_DIR$/client/feed/feed-commands.js" />
+        <option value="$PROJECT_DIR$/client/feed/feed-form.js.old" />
         <option value="$PROJECT_DIR$/client/feed/feed-templates.js" />
+        <option value="$PROJECT_DIR$/client/rest/rest-commands.js" />
+        <option value="$PROJECT_DIR$/client/rest/feed/feed-form.js.old" />
+        <option value="$PROJECT_DIR$/client/pgp/pgp-db.js" />
+        <option value="$PROJECT_DIR$/client/rest/feed/feed-commands.js" />
+        <option value="$PROJECT_DIR$/client/template/minimal/minimal.css" />
+        <option value="$PROJECT_DIR$/client/rest/rest-db.js" />
+        <option value="$PROJECT_DIR$/client/rest/rest-listeners.js" />
+        <option value="$PROJECT_DIR$/client/rest/feed/feed-listeners.js" />
+        <option value="$PROJECT_DIR$/client/rest/feed/feed.css" />
+        <option value="$PROJECT_DIR$/client/rest/feed/feed-templates.js" />
       </list>
     </option>
   </component>
@@ -328,28 +387,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="sockets" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="client" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="rest" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -391,192 +428,10 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="rest" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pages" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="client" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="rest" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pages" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="home" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="client" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pgp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="client" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pgp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="client" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="feed" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="client" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="feed" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="img" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="client" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="config" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="client" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="commands" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="client" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="chat" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="client" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="vote" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -612,15 +467,15 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\Dev\Server\WWW\relay\client\sockets\templates" />
       <recent name="D:\Dev\Server\WWW\relay\client\pgp\templates" />
+      <recent name="D:\Dev\Server\WWW\relay\client\sockets\templates" />
       <recent name="D:\Dev\Server\WWW\relay\client\sockets" />
       <recent name="D:\Dev\Server\WWW\relay\client\rest\templates" />
       <recent name="D:\Dev\Server\WWW\relay\client\feed\tmpl" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Dev\Server\WWW\relay\client\sockets" />
       <recent name="D:\Dev\Server\WWW\relay\client\rest" />
+      <recent name="D:\Dev\Server\WWW\relay\client\sockets" />
       <recent name="D:\Dev\Server\WWW\relay\client\template\base" />
       <recent name="D:\Dev\Server\WWW\relay\client\pgp" />
       <recent name="D:\Dev\Server\WWW\relay\client\chat" />
@@ -802,32 +657,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/template/base/base.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="939">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/feed/feed.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="438" max-vertical-offset="1088">
-          <caret line="58" column="1" selection-start-line="52" selection-start-column="0" selection-end-line="58" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/client/pgp/pgp.css">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="522" max-vertical-offset="1173">
           <caret line="60" column="52" selection-start-line="59" selection-start-column="35" selection-end-line="61" selection-end-column="75" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/template/minimal/minimal-defaults.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1156">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -937,14 +770,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/sockets/sockets.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="652">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/client/commands/commands.css">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="652">
@@ -957,24 +782,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="238">
           <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/pgp/pgp-commands.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2979" max-vertical-offset="10336">
-          <caret line="189" column="33" selection-start-line="189" selection-start-column="20" selection-end-line="189" selection-end-column="33" />
-          <folding>
-            <marker date="1442785251307" expanded="false" signature="-1:-1" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/pgp/templates/pgp-manage-template.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1547">
-          <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -992,40 +799,6 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1479">
           <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/rest/templates/rest-put-template.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2618">
-          <caret line="5" column="4" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="4" />
-          <folding>
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1442786109198" expanded="true" signature="-1:-1" placeholder="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1051,14 +824,6 @@
             <marker date="1442786139267" expanded="true" signature="-1:-1" placeholder="..." />
             <marker date="1442786139267" expanded="true" signature="-1:-1" placeholder="..." />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/commands/commands-defaults.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="816">
-          <caret line="9" column="20" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="20" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1189,101 +954,216 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/template/minimal/minimal.css">
+    <entry file="file://$PROJECT_DIR$/client/pgp/templates/pgp-manage-template.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.36" vertical-offset="267" max-vertical-offset="4828">
-          <caret line="28" column="31" selection-start-line="28" selection-start-column="31" selection-end-line="28" selection-end-column="31" />
+        <state vertical-scroll-proportion="0.58359957" vertical-offset="608" max-vertical-offset="1547">
+          <caret line="68" column="34" selection-start-line="68" selection-start-column="34" selection-end-line="82" selection-end-column="61" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/pgp/templates/pgp-public-key-template.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-9.72" vertical-offset="114" max-vertical-offset="850">
+          <caret line="21" column="34" selection-start-line="21" selection-start-column="34" selection-end-line="21" selection-end-column="34" />
+          <folding>
+            <marker date="1442812244435" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442812244435" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442812244435" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442812244435" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1442812244435" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/client.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="374" max-vertical-offset="1836">
-          <caret line="44" column="24" selection-start-line="44" selection-start-column="24" selection-end-line="44" selection-end-column="24" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="357" max-vertical-offset="1836">
+          <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/rest/rest-listeners.js">
+    <entry file="file://$PROJECT_DIR$/client/commands/commands-defaults.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="5257" max-vertical-offset="6749">
-          <caret line="316" column="5" selection-start-line="316" selection-start-column="5" selection-end-line="316" selection-end-column="5" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="164" max-vertical-offset="816">
+          <caret line="36" column="5" selection-start-line="36" selection-start-column="5" selection-end-line="36" selection-end-column="5" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/rest/rest-commands.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3132" max-vertical-offset="8891">
-          <caret line="197" column="50" selection-start-line="197" selection-start-column="50" selection-end-line="197" selection-end-column="50" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="307" max-vertical-offset="8789">
+          <caret line="137" column="0" selection-start-line="137" selection-start-column="0" selection-end-line="137" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/pgp/pgp-commands.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="803" max-vertical-offset="10863">
+          <caret line="60" column="33" selection-start-line="60" selection-start-column="33" selection-end-line="60" selection-end-column="33" />
+          <folding>
+            <marker date="1442811993373" expanded="false" signature="-1:-1" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/pgp/pgp-db.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1744" max-vertical-offset="7565">
-          <caret line="130" column="12" selection-start-line="130" selection-start-column="12" selection-end-line="130" selection-end-column="12" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="2197" max-vertical-offset="7259">
+          <caret line="134" column="0" selection-start-line="134" selection-start-column="0" selection-end-line="134" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/feed/feed-form.js">
+    <entry file="file://$PROJECT_DIR$/client/sockets/sockets.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="4377" max-vertical-offset="6953">
-          <caret line="259" column="0" selection-start-line="259" selection-start-column="0" selection-end-line="260" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="652">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/feed/feed-commands.js">
+    <entry file="file://$PROJECT_DIR$/client/template/base/base.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="640" max-vertical-offset="1411">
-          <caret line="61" column="28" selection-start-line="61" selection-start-column="28" selection-end-line="61" selection-end-column="28" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="102">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/template/minimal/minimal-defaults.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1156">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/template/minimal/minimal.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="895" max-vertical-offset="4964">
+          <caret line="74" column="15" selection-start-line="74" selection-start-column="15" selection-end-line="74" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/rest/feed/feed-form.js.old">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-12.0" vertical-offset="2811" max-vertical-offset="6953">
+          <caret line="183" column="84" selection-start-line="183" selection-start-column="77" selection-end-line="183" selection-end-column="84" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/rest/rest-db.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.92" vertical-offset="1763" max-vertical-offset="5440">
-          <caret line="108" column="83" selection-start-line="108" selection-start-column="83" selection-end-line="108" selection-end-column="83" />
+        <state vertical-scroll-proportion="-27.8" vertical-offset="3113" max-vertical-offset="5457">
+          <caret line="224" column="69" selection-start-line="224" selection-start-column="69" selection-end-line="224" selection-end-column="69" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/feed/feed-listeners.js">
+    <entry file="file://$PROJECT_DIR$/client/rest/templates/rest-put-template.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1241">
-          <caret line="6" column="93" selection-start-line="6" selection-start-column="93" selection-end-line="6" selection-end-column="93" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/feed/feed-templates.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7789934" vertical-offset="495" max-vertical-offset="2006">
-          <caret line="71" column="57" selection-start-line="71" selection-start-column="57" selection-end-line="71" selection-end-column="57" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="68" max-vertical-offset="2618">
+          <caret line="18" column="21" selection-start-line="18" selection-start-column="21" selection-end-line="19" selection-end-column="78" />
           <folding>
-            <marker date="1442801982766" expanded="true" signature="260:1190" placeholder="..." />
-            <marker date="1442801982766" expanded="true" signature="422:1180" placeholder="..." />
-            <marker date="1442801982766" expanded="true" signature="436:487" placeholder="..." />
-            <marker date="1442801982766" expanded="true" signature="436:527" placeholder="..." />
-            <marker date="1442801982766" expanded="true" signature="571:888" placeholder="..." />
-            <marker date="1442801982766" expanded="true" signature="675:690" placeholder="..." />
-            <marker date="1442801982766" expanded="true" signature="776:791" placeholder="..." />
-            <marker date="1442801982766" expanded="true" signature="1005:1168" placeholder="..." />
-            <marker date="1442801982766" expanded="true" signature="1068:1146" placeholder="..." />
-            <marker date="1442801982766" expanded="true" signature="1448:2754" placeholder="..." />
-            <marker date="1442801982766" expanded="true" signature="1536:1800" placeholder="..." />
-            <marker date="1442801982766" expanded="true" signature="1883:2409" placeholder="..." />
-            <marker date="1442801982766" expanded="false" signature="2477:2490" placeholder="..." />
-            <marker date="1442801982766" expanded="true" signature="2491:2521" placeholder="..." />
-            <marker date="1442801982766" expanded="false" signature="2586:2599" placeholder="..." />
-            <marker date="1442801982766" expanded="true" signature="2600:2627" placeholder="..." />
-            <marker date="1442801982766" expanded="false" signature="2691:2704" placeholder="..." />
-            <marker date="1442801982766" expanded="true" signature="2705:2731" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="285:3374" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="590:859" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="678:693" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="763:778" placeholder="..." />
+            <marker date="1442786109198" expanded="false" signature="926:937" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="938:3352" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="987:1350" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="1412:1824" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="1469:1786" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="1896:2650" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="2000:2612" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="2188:2281" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="2341:2579" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="2749:2927" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="2991:3117" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="3181:3329" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="4900:6163" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="5165:5434" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="5253:5268" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="5338:5353" placeholder="..." />
+            <marker date="1442786109198" expanded="false" signature="5496:5514" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="5607:6141" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="5638:6118" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="5777:6087" placeholder="..." />
+            <marker date="1442786109198" expanded="true" signature="7182:7570" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/rest/feed/feed-commands.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-29.16" vertical-offset="376" max-vertical-offset="1411">
+          <caret line="65" column="44" selection-start-line="65" selection-start-column="44" selection-end-line="65" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/rest/rest-listeners.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1166" max-vertical-offset="6732">
+          <caret line="105" column="0" selection-start-line="105" selection-start-column="0" selection-end-line="107" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/rest/feed/feed.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="17" max-vertical-offset="1666">
+          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/rest/feed/feed-listeners.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-27.2" vertical-offset="714" max-vertical-offset="2108">
+          <caret line="82" column="0" selection-start-line="82" selection-start-column="0" selection-end-line="82" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/rest/feed/feed-templates.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.49307775" vertical-offset="608" max-vertical-offset="3281">
+          <caret line="63" column="116" selection-start-line="63" selection-start-column="116" selection-end-line="63" selection-end-column="116" />
+          <folding>
+            <marker date="1442890849934" expanded="true" signature="260:1057" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="446:537" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="581:898" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="685:700" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="786:801" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="1013:1035" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="1595:3373" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="1695:2003" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="1796:1811" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="1894:1909" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="2044:2372" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="2109:2269" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="2554:2894" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="2602:2635" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="2602:2877" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="2602:2877" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="2602:2877" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="2602:2888" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="2987:3132" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="2987:3219" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="2987:3228" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="2987:3263" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="3324:3351" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="5275:6181" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="5324:5652" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="5389:5549" placeholder="..." />
+            <marker date="1442890849934" expanded="true" signature="5858:6159" placeholder="..." />
           </folding>
         </state>
       </provider>

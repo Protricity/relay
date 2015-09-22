@@ -17,6 +17,37 @@
      * @param commandString
      * @param status_content
      */
+    Commands.add('key', function (commandString) {
+        var match = /^key\s+(\w{8,})/im.exec(commandString);
+        if(!match)
+            throw new Error("Invalid command: " + commandString);
+
+        var keyID = match[1].toUpperCase();
+
+        if(typeof PGPDB !== 'function')
+            importScripts('pgp/pgp-db.js');
+
+        PGPDB.getPublicKeyData(keyID, function(publicKeyData) {
+            if(!publicKeyData)
+                publicKeyData = {
+                    id_public: keyID,
+                    user_id: null,
+                    block_public: null
+                };
+
+            importScripts('pgp/templates/pgp-public-key-template.js');
+            Templates.pgp.key.form(publicKeyData, function(html, className) {
+                Commands.postResponseToClient("LOG.REPLACE " + className + " " + html);
+            });
+            // Free up template resources
+            delete Templates.pgp.key.form;
+        });
+    });
+
+    /**
+     * @param commandString
+     * @param status_content
+     */
     Commands.add('manage', function (commandString, e, status_content) {
         //var match = /^manage$/im.exec(commandString);
 

@@ -3,7 +3,7 @@
  */
 "use strict";
 
-RestDB.DB_VERSION               = 2;
+RestDB.DB_VERSION               = 1;
 RestDB.DB_NAME                  = 'rest';
 RestDB.DB_TABLE_HTTP_CONTENT    = 'content';
 RestDB.DB_TABLE_HTTP_URL        = 'url';
@@ -38,11 +38,12 @@ function RestDB(dbReadyCallback) {
 
         openRequest.onupgradeneeded = function (e) {
             var upgradeDB = e.currentTarget.result;
+            var transaction = e.currentTarget.transaction;
 
             if(!upgradeDB.objectStoreNames.contains(RestDB.DB_TABLE_HTTP_CONTENT)) {
-                var postStore = upgradeDB.createObjectStore(RestDB.DB_TABLE_HTTP_CONTENT, { keyPath: ["pgp_id_public_short", "timestamp"] });
+                var postStore = upgradeDB.createObjectStore(RestDB.DB_TABLE_HTTP_CONTENT, { keyPath: ["pgp_id_public", "timestamp"] });
                 postStore.createIndex(RestDB.DB_INDEX_PATH, "path", { unique: false });
-                postStore.createIndex(RestDB.DB_INDEX_ID_PATH, ["pgp_id_public_short", "path"], { unique: false });
+                postStore.createIndex(RestDB.DB_INDEX_ID_PATH, ["pgp_id_public", "path"], { unique: false });
                 postStore.createIndex(RestDB.DB_INDEX_PATH_TIMESTAMP, ["path", "timestamp"], { unique: false });
                 //postStore.createIndex(RestDB.DB_INDEX_PGP_ID_PUBLIC, "pgp_id_public", { unique: false });
                 //postStore.createIndex(RestDB.DB_INDEX_TIMESTAMP, "timestamp", { unique: false });
@@ -81,7 +82,7 @@ RestDB.verifySignedContent = function(pgpMessageContent, callback) {
     var encIDs = pgpSignedMessage.getSigningKeyIds();
     var feedKeyID = encIDs[0].toHex().toUpperCase();
 
-    PGPDB.getPublicKeyData(feedKeyID, function (err, pkData) {
+    PGPDB.getPublicKeyData(feedKeyID, function (pkData) {
         if(!pkData)
             throw new Error("Public Key Block not found for: " + feedKeyID);
         var publicKey = openpgp.key.readArmored(pkData.block_public);
@@ -104,7 +105,7 @@ RestDB.addVerifiedContentToDB = function(verifiedContent, callback) {
     var verifiedText = verifiedContent.text;
     var pgpSignedContent = verifiedContent.encrypted;
     var pgp_id_public = verifiedContent.signingKeyId;
-    var pgp_id_public_short = pgp_id_public.substr(pgp_id_public.length - 8);
+    //var pgp_id_public_short = pgp_id_public.substr(pgp_id_public.length - 8);
     var path = /data-path=["'](\S+)["']/i.exec(verifiedText)[1];
     var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(verifiedText)[1]);
     if(!path)
@@ -125,7 +126,7 @@ RestDB.addVerifiedContentToDB = function(verifiedContent, callback) {
         var insertData = {
             //'uid': pgp_id_public + '-' + timestamp,
             'pgp_id_public': pgp_id_public,
-            'pgp_id_public_short': pgp_id_public_short,
+            //'pgp_id_public_short': pgp_id_public_short,
             'path': path,
             //'path_level': pathLevel,
             'timestamp': timestamp,
@@ -137,7 +138,7 @@ RestDB.addVerifiedContentToDB = function(verifiedContent, callback) {
         insertRequest.onsuccess = function(event) {
             console.log("Added http content to database: " + path, insertData);
 
-            var url = ('socket://' + pgp_id_public_short + path);
+            var url = ('socket://' + pgp_id_public + path);
             RestDB.addURLToDB(url, null);
             if(callback)
                 callback(null, insertData, insertRequest);
@@ -199,13 +200,13 @@ RestDB.getContentByPublicKeyID = function(path, publicKeyID, callback) {
 };
 
 RestDB.queryContentFeedByID = function(publicKeyID, timespan, callback) {
-    var id_public_short = publicKeyID.toUpperCase().substr(publicKeyID.length - 8);
+    //var id_public_short = publicKeyID.toUpperCase().substr(publicKeyID.length - 8);
 
     RestDB(function(db) {
         var transaction = db.transaction([RestDB.DB_TABLE_HTTP_CONTENT], "readonly");
         var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_CONTENT);
 
-        var boundKeyRange = IDBKeyRange.bound([id_public_short, timespan[0]], [id_public_short, timespan[1]], true, true);
+        var boundKeyRange = IDBKeyRange.bound([publicKeyID, timespan[0]], [publicKeyID, timespan[1]], true, true);
 
         httpContentStore.openCursor(boundKeyRange)
             .onsuccess = function (e) {

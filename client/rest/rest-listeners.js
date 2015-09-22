@@ -94,17 +94,17 @@
             case 'rest-put-form':
                 refreshHTTPPutForm(e, formElm);
                 if(e.type === 'submit')
+                    e.preventDefault() ||
                     submitHTTPPutForm(e, formElm);
                 return true;
 
             case 'rest-browser-navigation-form':
                 if(e.type === 'submit')
+                    e.preventDefault() ||
                     submitHTTPBrowserNavigationForm(e, formElm);
                 return true;
 
             default:
-                if(e.type === 'submit')
-                    e.preventDefault();
                 return false;
         }
     }
@@ -207,10 +207,7 @@
         var optionSplit = pgpIDPrivateElm.value.split(',');
         var selectedPrivateKeyID = optionSplit[0];
 
-        self.PGPDB.getPrivateKeyData(selectedPrivateKeyID, function(err, privateKeyData) {
-            if(err)
-                throw new Error(err);
-
+        PGPDB.getPrivateKeyData(selectedPrivateKeyID, function(privateKeyData) {
             if(!privateKeyData)
                 throw new Error("Private key not found: " + selectedPrivateKeyID);
 
@@ -232,6 +229,7 @@
 
             var publicKeyID = privateKeyData.id_public;
             publicKeyID = publicKeyID.substr(publicKeyID.length - 8);
+            var author = privateKeyData.user_id;
 
             //var postPath = pathElm.value;
             var fixedPostPath = fixHomePath(pathElm.value, publicKeyID);
@@ -248,6 +246,7 @@
                 contentDiv.innerHTML = "<article>" + contentDiv.innerHTML + "</article>";
                 articleElm = contentDiv.querySelector('article');
             }
+            articleElm.setAttribute('data-author', author);
             articleElm.setAttribute('data-path', fixedPostPath);
             articleElm.setAttribute('data-timestamp', timestamp.toString());
             postContent = articleElm.outerHTML;

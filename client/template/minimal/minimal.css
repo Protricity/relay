@@ -31,11 +31,15 @@ body.template-minimal {
     /*transition: opacity 0.4s ease-in-out;*/
     display: inline-block;
     border: 2px groove threedface;
-    margin: 4px 1px;
-    padding: 1em 0.75em 0.625em 0.75em;
+    margin: 4px 1px 13px 1px;
+    padding: 0.8em 0.75em 0.625em 0.75em;
     min-width: 9em;
-    max-width: 50em;
+    /* max-width: 50em; */
     vertical-align: top;
+}
+
+.template-minimal .channel:last-child {
+    margin: 4px 1px 0 1px;
 }
 
 .template-minimal .channel .title {
@@ -65,6 +69,10 @@ body.template-minimal {
     color: darkblue;
     background-color: lightgreen;
     box-shadow: 1px 4px 30px #333;
+}
+
+.template-minimal .channel.minimized {
+    min-width: 16em;
 }
 
 .template-minimal .channel.closed,
