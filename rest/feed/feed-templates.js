@@ -59,11 +59,11 @@ Templates.feed.entry = function(entryData, callback) {
                 <form name='feed-share-form'><button>Share</button></form>\n\
                 <form name='feed-source-form'><button>Source</button></form>\n\
             </div>\n\
-            <div class='feed-comments-section feed-comments-section:{$uid} feed-section'>\n\
+            <div class='feed-comments-section feed-comments-section:{$uid}'>\n\
                 <img class='user_icon tiny' src='rest/feed/img/user_icon_default.png' alt='UI' />\n\
-                <textarea name='comment' placeholder='Write a comment\n\t[<i>html</i> tags <strong>allowed</strong>]' cols='56' rows='2' ></textarea>\n\
+                <input name='comment' placeholder='Write a comment' size='56' />\n\
             </div>\n\
-            <div class='feed-share-section feed-section'>Share\n\
+            <div class='feed-share-section'>Share\n\
             </div>\n\
         </article>";
 
