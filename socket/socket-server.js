@@ -11,7 +11,7 @@
 if(!exports) var exports = {};
 exports.SocketServer = SocketServer;
 
-SocketServer.DEFAULT_PORT = 8080;
+SocketServer.DEFAULT_PORTS = 7314;
 
 function SocketServer() {
 
@@ -25,25 +25,34 @@ function SocketServer() {
         if(server)
             throw new Error("Socket Server already started");
 
-        port = port || SocketServer.DEFAULT_PORT;
+        port = port || SocketServer.DEFAULT_PORTS;
 
         var WebSocketServer = require('ws').Server;
         server = new WebSocketServer({port: port});
         server.on('connection', function (client) {
-            client.server = server;
-            client.on('message', function (message) {
-                //console.log('received: %s', message);
-                SocketServer.execute(client, message);
-            });
-            //client.send('something');
+            for(var i=0; i<clientEvents.length; i++)
+                client.on(clientEvents[i][0], clientEvents[i][1]);
         });
         console.log("Socket Server running on port " + port);
 
     };
 
-
+    var clientEvents = [];
     var commandList = [];
     var proxyList = [];
+
+    clientEvents.push(['message', function(message) {
+        SocketServer.execute(this, message);
+    }]);
+
+    // TODO: comes in too late for not-yet-loaded stuffs
+    SocketServer.addEventListener = function(type, listener) {
+        server.on(type, listener);
+    };
+
+    SocketServer.addClientEventListener = function(type, listener) {
+        clientEvents.push([type, listener]);
+    };
 
     SocketServer.addCommand = function (commandPrefix, commandCallback) {
         if(commandPrefix instanceof Array) {
@@ -69,8 +78,8 @@ function SocketServer() {
         }
     };
 
-    require('./socket-server-defaults.js')
-        .initSocketServerCommands(SocketServer);
+    //require('./socket-server-defaults.js')
+    //    .initSocketServerCommands(SocketServer);
 
     SocketServer.execute = function(client, commandString) {
         for(var i=0; i<commandList.length; i++) {
@@ -116,6 +125,28 @@ function SocketServer() {
         }
         return false;
     }
+
+
+
+
+    // Socket Command Proxies
+
+    // HTTP Commands
+    SocketServer.addCommandProxy(
+        ['get', 'post', 'put', 'delete', 'patch', 'head', 'http'],
+        '../rest/rest-socket-commands.js');
+
+    // Chat Commands
+    SocketServer.addCommandProxy(
+        ['join', 'leave', 'message', 'chat', 'nick'],
+        '../chat/chat-socket-commands.js');
+
+
+    // PGP Commands
+    SocketServer.addCommandProxy(
+        ['identify', 'idsig'],
+        '../pgp/pgp-socket-commands.js');
+
 
 })();
 

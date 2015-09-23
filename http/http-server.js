@@ -5,26 +5,28 @@
 if(!exports) var exports = {};
 exports.HTTPServer = HTTPServer;
 
-HTTPServer.DEFAULT_PORT = 80;
+HTTPServer.DEFAULT_PORTS = '8080,80,7315';
 
 function HTTPServer() {
 
 }
 
 (function() {
-    var server = null;
-    HTTPServer.getServerInstance = function() { return server; };
+    var servers = [];
+    //HTTPServer.getServerInstance = function() { return server; };
 
-    HTTPServer.startServer = function(port) {
-        if(server)
+    HTTPServer.startServer = function(ports) {
+        if(servers.length > 0)
             throw new Error("HTTP Server already started");
 
-        port = port || HTTPServer.DEFAULT_PORT;
+        ports = ports || HTTPServer.DEFAULT_PORTS;
         var http = require('http');
-        server = http
-            .createServer(HTTPServer.execute)
-            .listen(port);
-        console.log('HTTP Server running on port ' + port);
+        ports.replace(/\d+/g, function(port) {
+            var server = http.createServer(HTTPServer.execute);
+            server.listen(parseInt(port));
+            servers.push(server);
+            console.log('HTTP Server running on port ' + port);
+        });
     };
 
 
@@ -56,7 +58,8 @@ function HTTPServer() {
         }
     };
 
-    require('./http-defaults.js').initHTTPServerCommands(HTTPServer);
+
+    //require('./http-defaults.js').initHTTPServerCommands(HTTPServer);
 
     HTTPServer.execute = function(request, response) {
         var commandString = request.method + ' ' + request.url;
@@ -102,6 +105,23 @@ function HTTPServer() {
         }
         return false;
     }
+
+
+    // HTTP Commands
+    HTTPServer.addCommandProxy(
+        ['get123', 'post', 'put', 'delete', 'patch', 'head', 'http'],
+        '../rest/rest-http-commands.js');
+
+    HTTPServer.addCommandProxy(
+        ['get'],
+        './http-commands.js');
+
+    // Feed Commands
+    HTTPServer.addCommandProxy(
+        ['feed'],
+        '../rest/feed/feed-http-commands.js');
+
+
 
 })();
 

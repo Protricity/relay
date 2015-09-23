@@ -3,5 +3,5 @@
  */
 
 
-Sockets.addURL('ws://' + location.host + (location.port ? '' : ':8080') + '/relay-server/socket');
-Sockets.addURL('ws://relay.co.il:8080/relay-server/socket');
+Sockets.addURL('ws://' + location.host.split(':')[0] + ':7314/socket');
+Sockets.addURL('ws://relay.co.il:7314/relay-server/socket');

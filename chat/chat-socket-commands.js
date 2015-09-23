@@ -3,6 +3,7 @@
  */
 if(!exports) var exports = {};
 exports.initSocketServerCommands = function(SocketServer) {
+    SocketServer.addEventListener('connection', onSocketClient);
     SocketServer.addCommand('message', messageClient);
     SocketServer.addCommand('join', joinChannel);
     SocketServer.addCommand('leave', leaveChannel);
@@ -10,11 +11,24 @@ exports.initSocketServerCommands = function(SocketServer) {
     SocketServer.addCommand('nick', nickClient);
 };
 
+function onSocketClient(newClient) {
+    if(newClient.chat)
+        throw new Error("Chat Client already initiated");
+
+    var uid = generateUID('xxxx');
+    newClient.chat = {};
+    newClient.chat.username = "guest-" + uid.substring(uid.length - 4);
+    newClient.chat.channels = [];
+    console.log("Initiated new Chat Client: " + newClient);
+    //clientUIDs[newClient.chat.uid] = newClient;
+    //activeClients.push(client);
+    //send(newClient.chat, "INFO Initiated " + newClient.chat.uid);
+}
+
 //var activeClients = [];
 
-var DEFAULT_UID = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
 function generateUID(format) {
-    return (format || DEFAULT_UID).replace(/[xy]/g, function(c) {
+    return (format).replace(/[xy]/g, function(c) {
         var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
         return v.toString(16);
     });
@@ -22,17 +36,6 @@ function generateUID(format) {
 
 function isClientActive(client) {
     if(typeof client.chat === 'undefined') {
-        client.chat = {};
-        client.chat.uid = generateUID();
-
-        client.pgp = {};
-        client.pgp.id_public = '_';
-
-        client.chat.username = "guest-" + client.chat.uid.substring(client.chat.uid.length - 4);
-        client.chat.channels = [];
-        clientUIDs[client.chat.uid] = client;
-        //activeClients.push(client);
-        send(client, "INFO Initiated " + client.chat.uid + ' ' + client.readyState);
     }
 
     if(client.readyState !== 1) {
@@ -50,7 +53,7 @@ function isClientActive(client) {
 }
 
 var channelUsers = {};
-var clientUIDs = {};
+//var clientUIDs = {};
 
 function send(client, message) {
     client.send(message);
@@ -83,7 +86,7 @@ function chatChannel(client, commandString) {
     var match = /^chat\s+([^\s]+)\s+(\d+)\s+([\s\S]+)$/im.exec(commandString);
     if(!match)
         throw new Error("Invalid Chat Command: " + commandString);
-    var channel = match[1];
+    var channel = match[1].toLowerCase();
     var timestamp = parseInt(match[2]);
     var message = match[3];
 
@@ -109,7 +112,7 @@ function joinChannel(client, commandString) {
     var match = /^join\s+(\S+)$/im.exec(commandString);
     if(!match)
         throw new Error("Invalid Chat Command: " + commandString);
-    var channel = match[1];
+    var channel = match[1].toLowerCase();
 
     if(typeof channelUsers[channel] === 'undefined')
         channelUsers[channel] = [];
@@ -123,7 +126,7 @@ function joinChannel(client, commandString) {
     for(var i=0; i<clients.length; i++) {
         var channelClient = clients[i];
         if(isClientActive(channelClient)) {
-            send(channelClient, "JOIN " + channel + " " + client.pgp.id_public + " " + client.chat.uid + " " + client.chat.username + " " + Date.now());
+            send(channelClient, "JOIN " + channel + " " + ((client.pgp || {}).uid||'_') + " " + client.chat.username + " " + Date.now());
         }
     }
 }
@@ -133,7 +136,7 @@ function leaveChannel(client, commandString) {
     var match = /^leave\s+(\S+)$/im.exec(commandString);
     if(!match)
         throw new Error("Invalid Chat Command: " + commandString);
-    var channel = match[1];
+    var channel = match[1].toLowerCase();
 
     if(typeof channelUsers[channel] !== 'undefined')
         throw new Error("Channel does not exist: " + channel);
