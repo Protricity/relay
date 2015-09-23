@@ -30,6 +30,7 @@ function SocketServer() {
         var WebSocketServer = require('ws').Server;
         server = new WebSocketServer({port: port});
         server.on('connection', function (client) {
+            client.server = server;
             client.on('message', function (message) {
                 //console.log('received: %s', message);
                 SocketServer.execute(client, message);

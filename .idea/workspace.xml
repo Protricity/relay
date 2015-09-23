@@ -2,91 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f1a3609b-05f2-4e93-b5c1-0f477f2ec236" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/chat/chat-socket-commands.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/http/http-commands.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/http/http-defaults.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/http/http-server.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/server.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/socket/socket-server-defaults.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/socket/socket-server.js" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\WEB-INF\classes\.netbeans_automatic_build" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\WEB-INF\classes\relay\service\WebSocketServer.class" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\WEB-INF\classes\relay\service\command\ChannelCommands.class" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\WEB-INF\classes\relay\service\command\ISocketCommand.class" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\WEB-INF\classes\relay\service\command\PGPCommands$PGPUserInfo.class" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\WEB-INF\classes\relay\service\command\PGPCommands.class" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\WEB-INF\classes\relay\service\command\RESTCommands.class" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\WEB-INF\glassfish-web.xml" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\WEB-INF\lib\bcpg-jdk15on-152.jar" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\WEB-INF\lib\bcpkix-jdk15on-152.jar" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\WEB-INF\lib\bcprov-ext-jdk15on-152.jar" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\WEB-INF\lib\bcprov-jdk15on-152.jar" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\WEB-INF\lib\javaee-api-7.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\WEB-INF\sun-web.xml" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\commands\commands-tags.js" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\scripts\start-python-server-8080.sh" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\scripts\start-python-server.sh" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\server-node-js\.gitignore" afterPath="" />
-      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\server-node-js\server.js" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/init-node.sh" afterPath="$PROJECT_DIR$/init-node.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pgp/templates/pgp-manage-template.js" afterPath="$PROJECT_DIR$/pgp/templates/pgp-manage-template.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/relay.iml" afterPath="$PROJECT_DIR$/.idea/relay.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/worker.js" afterPath="$PROJECT_DIR$/worker.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\WEB-INF\classes\.netbeans_update_resources" afterPath="$PROJECT_DIR$/server.old/web/WEB-INF/classes/.netbeans_update_resources" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\chat\chat-commands.js" afterPath="$PROJECT_DIR$/chat/chat-client-commands.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\client.js" afterPath="$PROJECT_DIR$/index.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\commands\commands-defaults.js" afterPath="$PROJECT_DIR$/client/client-defaults.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\commands\commands-listeners.js" afterPath="$PROJECT_DIR$/client/client-listeners.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\commands\commands.css" afterPath="$PROJECT_DIR$/start-server.sh" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\commands\commands.js" afterPath="$PROJECT_DIR$/client/client.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\pgp\pgp-commands.js" afterPath="$PROJECT_DIR$/pgp/pgp-client-commands.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\rest\feed\feed-commands.js" afterPath="$PROJECT_DIR$/rest/feed/feed-client-commands.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\rest\rest-commands.js" afterPath="$PROJECT_DIR$/rest/rest-client-commands.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\.gitignore" afterPath="$PROJECT_DIR$/server.old/.gitignore" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\build.xml" afterPath="$PROJECT_DIR$/server.old/build.xml" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\dist\relay-server.war" afterPath="$PROJECT_DIR$/server.old/dist/relay-server.war" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\libs\bcpg-jdk15on-152.jar" afterPath="$PROJECT_DIR$/server.old/web/WEB-INF/lib/bcpg-jdk15on-152.jar" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\libs\bcpkix-jdk15on-152.jar" afterPath="$PROJECT_DIR$/server.old/web/WEB-INF/lib/bcpkix-jdk15on-152.jar" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\libs\bcprov-ext-jdk15on-152.jar" afterPath="$PROJECT_DIR$/server.old/web/WEB-INF/lib/bcprov-ext-jdk15on-152.jar" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\libs\copylibstask.jar" afterPath="$PROJECT_DIR$/server.old/libs/copylibstask.jar" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\libs\javaee-api-7.0.jar" afterPath="$PROJECT_DIR$/server.old/web/WEB-INF/lib/javaee-api-7.0.jar" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\nbproject\ant-deploy.xml" afterPath="$PROJECT_DIR$/server.old/nbproject/ant-deploy.xml" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\nbproject\build-impl.xml" afterPath="$PROJECT_DIR$/server.old/nbproject/build-impl.xml" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\nbproject\genfiles.properties" afterPath="$PROJECT_DIR$/server.old/nbproject/genfiles.properties" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\nbproject\private\private.properties" afterPath="$PROJECT_DIR$/server.old/nbproject/private/private.properties" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\nbproject\private\private.xml" afterPath="$PROJECT_DIR$/server.old/nbproject/private/private.xml" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\nbproject\project.properties" afterPath="$PROJECT_DIR$/server.old/nbproject/project.properties" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\nbproject\project.xml" afterPath="$PROJECT_DIR$/server.old/nbproject/project.xml" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\src\conf\MANIFEST.MF" afterPath="$PROJECT_DIR$/server.old/web/META-INF/MANIFEST.MF" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\src\java\relay\service\WebSocketServer.java" afterPath="$PROJECT_DIR$/server.old/src/java/relay/service/WebSocketServer.java" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\src\java\relay\service\command\ChannelCommands.java" afterPath="$PROJECT_DIR$/server.old/src/java/relay/service/command/ChannelCommands.java" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\src\java\relay\service\command\ISocketCommand.java" afterPath="$PROJECT_DIR$/server.old/src/java/relay/service/command/ISocketCommand.java" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\src\java\relay\service\command\PGPCommands.java" afterPath="$PROJECT_DIR$/server.old/src/java/relay/service/command/PGPCommands.java" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\src\java\relay\service\command\RESTCommands.java" afterPath="$PROJECT_DIR$/server.old/src/java/relay/service/command/RESTCommands.java" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\META-INF\MANIFEST.MF" afterPath="$PROJECT_DIR$/server.old/src/conf/MANIFEST.MF" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\META-INF\context.xml" afterPath="$PROJECT_DIR$/server.old/web/META-INF/context.xml" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\WEB-INF\classes\.netbeans_automatic_build" afterPath="$PROJECT_DIR$/server.old/web/WEB-INF/classes/.netbeans_automatic_build" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\WEB-INF\classes\.netbeans_update_resources" afterPath="$PROJECT_DIR$/client/client.css" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\WEB-INF\classes\relay\service\WebSocketServer.class" afterPath="$PROJECT_DIR$/server.old/web/WEB-INF/classes/relay/service/WebSocketServer.class" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\WEB-INF\classes\relay\service\command\ChannelCommands.class" afterPath="$PROJECT_DIR$/server.old/web/WEB-INF/classes/relay/service/command/ChannelCommands.class" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\WEB-INF\classes\relay\service\command\ISocketCommand.class" afterPath="$PROJECT_DIR$/server.old/web/WEB-INF/classes/relay/service/command/ISocketCommand.class" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\WEB-INF\classes\relay\service\command\PGPCommands$PGPUserInfo.class" afterPath="$PROJECT_DIR$/server.old/web/WEB-INF/classes/relay/service/command/PGPCommands$PGPUserInfo.class" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\WEB-INF\classes\relay\service\command\PGPCommands.class" afterPath="$PROJECT_DIR$/server.old/web/WEB-INF/classes/relay/service/command/PGPCommands.class" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\WEB-INF\classes\relay\service\command\RESTCommands.class" afterPath="$PROJECT_DIR$/server.old/web/WEB-INF/classes/relay/service/command/RESTCommands.class" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\WEB-INF\glassfish-web.xml" afterPath="$PROJECT_DIR$/server.old/web/WEB-INF/glassfish-web.xml" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\WEB-INF\lib\bcpg-jdk15on-152.jar" afterPath="$PROJECT_DIR$/server.old/libs/bcpg-jdk15on-152.jar" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\WEB-INF\lib\bcpkix-jdk15on-152.jar" afterPath="$PROJECT_DIR$/server.old/libs/bcpkix-jdk15on-152.jar" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\WEB-INF\lib\bcprov-ext-jdk15on-152.jar" afterPath="$PROJECT_DIR$/server.old/libs/bcprov-ext-jdk15on-152.jar" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\WEB-INF\lib\bcprov-jdk15on-152.jar" afterPath="$PROJECT_DIR$/server.old/web/WEB-INF/lib/bcprov-jdk15on-152.jar" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\WEB-INF\lib\javaee-api-7.0.jar" afterPath="$PROJECT_DIR$/server.old/libs/javaee-api-7.0.jar" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\WEB-INF\sun-web.xml" afterPath="$PROJECT_DIR$/server.old/web/WEB-INF/sun-web.xml" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\server-java\web\index.html" afterPath="$PROJECT_DIR$/server.old/web/index.html" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\sockets\sockets-defaults.js" afterPath="$PROJECT_DIR$/socket/sockets-defaults.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\sockets\sockets.css" afterPath="$PROJECT_DIR$/socket/sockets.css" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\sockets\sockets.js" afterPath="$PROJECT_DIR$/socket/sockets.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\sockets\templates\sockets-log-template.js" afterPath="$PROJECT_DIR$/socket/templates/sockets-log-template.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/chat/chat-socket-commands.js" afterPath="$PROJECT_DIR$/chat/chat-socket-commands.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/socket/socket-server.js" afterPath="$PROJECT_DIR$/socket/socket-server.js" />
     </list>
     <ignored path="relay.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -141,8 +58,8 @@
       <file leaf-file-name="chat-socket-commands.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/chat/chat-socket-commands.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.3720931" vertical-offset="0" max-vertical-offset="2091">
-              <caret line="61" column="47" selection-start-line="61" selection-start-column="47" selection-end-line="61" selection-end-column="47" />
+            <state vertical-scroll-proportion="0.7516234" vertical-offset="2053" max-vertical-offset="2669">
+              <caret line="150" column="103" selection-start-line="150" selection-start-column="88" selection-end-line="150" selection-end-column="103" />
               <folding />
             </state>
           </provider>
@@ -171,8 +88,8 @@
       <file leaf-file-name="socket-server.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/socket/socket-server.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-14.8" vertical-offset="208" max-vertical-offset="2142">
-              <caret line="34" column="37" selection-start-line="34" selection-start-column="37" selection-end-line="34" selection-end-column="37" />
+            <state vertical-scroll-proportion="-10.68" vertical-offset="396" max-vertical-offset="2159">
+              <caret line="39" column="9" selection-start-line="39" selection-start-column="9" selection-end-line="39" selection-end-column="9" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -720,7 +637,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21086262" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21554404" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28290156" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1182,28 +1099,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/socket/socket-server.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-14.8" vertical-offset="208" max-vertical-offset="2142">
-          <caret line="34" column="37" selection-start-line="34" selection-start-column="37" selection-end-line="34" selection-end-column="37" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/server.old/src/java/relay/service/command/PGPCommands.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="306" max-vertical-offset="5202">
           <caret line="39" column="36" selection-start-line="39" selection-start-column="36" selection-end-line="40" selection-end-column="80" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/chat/chat-listeners.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="612" max-vertical-offset="1564">
-          <caret line="44" column="51" selection-start-line="44" selection-start-column="51" selection-end-line="44" selection-end-column="51" />
           <folding />
         </state>
       </provider>
@@ -1227,10 +1126,28 @@
         <state />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/socket/socket-server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.68" vertical-offset="396" max-vertical-offset="2159">
+          <caret line="39" column="9" selection-start-line="39" selection-start-column="9" selection-end-line="39" selection-end-column="9" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/chat/chat-listeners.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="612" max-vertical-offset="1564">
+          <caret line="44" column="51" selection-start-line="44" selection-start-column="51" selection-end-line="44" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/chat/chat-socket-commands.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.3720931" vertical-offset="0" max-vertical-offset="2091">
-          <caret line="61" column="47" selection-start-line="61" selection-start-column="47" selection-end-line="61" selection-end-column="47" />
+        <state vertical-scroll-proportion="0.7516234" vertical-offset="2053" max-vertical-offset="2669">
+          <caret line="150" column="103" selection-start-line="150" selection-start-column="88" selection-end-line="150" selection-end-column="103" />
           <folding />
         </state>
       </provider>
