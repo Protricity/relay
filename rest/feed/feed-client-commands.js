@@ -17,7 +17,7 @@
      *
      * @param commandString FEED [public key id] [path prefix]
      */
-    Commands.add('feed', function (commandString) {
+    Client.addCommand('feed', function (commandString) {
         var match = /^feed\s*(\S*)\s*(\S*)$/im.exec(commandString);
 
         var publicKeyID = match[1] || null;
@@ -53,7 +53,7 @@
             var feedStartTime = feedEndTime - MS_DAY;
 
             Templates.feed.container(pathPrefix, function(html) {
-                Commands.postResponseToClient("LOG.REPLACE feed:" + pathPrefix + ' ' + html);
+                Client.postResponseToClient("LOG.REPLACE feed:" + pathPrefix + ' ' + html);
             });
 
             if(typeof RestDB !== 'function')
@@ -64,14 +64,14 @@
                 [feedStartTime, feedEndTime],
                 function(data) {
                     Templates.feed.entry(data, function(html) {
-                        Commands.postResponseToClient("LOG feed-entries:" + pathPrefix + " " + html);
+                        Client.postResponseToClient("LOG feed-entries:" + pathPrefix + " " + html);
                     });
                 });
         }
 
     });
 
-    //Commands.addResponse('feed', Commands.sendWithSocket);
+    //Client.addResponse('feed', Client.sendWithSocket);
 
 
 })();

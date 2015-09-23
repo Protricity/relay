@@ -1,4 +1,4 @@
 #!/bin/sh
-npm install nodejs-websocket;
-npm install ws;
+npm install --save ws;
 npm install --save openpgp;
+#npm install http-server -g;

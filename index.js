@@ -94,7 +94,7 @@
         var show = menuElms[0].classList.contains('closed');
         console.log(show);
         for(var i=0; i<menuElms.length; i++)
-            menuElms[i].classList[show ? 'remove' : 'add']('closed');
+            menuElms[i].classList[show ? 'remove' : 'addCommand']('closed');
     };
 
     /*! jstz - v1.0.4 - 2012-12-18 */

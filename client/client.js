@@ -3,11 +3,15 @@
  */
 "use strict";
 
+if(!exports) var exports = {};
+exports.Client = Client;
+
 var tagCallbacks = {};
 
-function Commands(commandString) {
-    return Commands.execute(commandString);
+function Client() {
+    //return Client.execute(commandString);
 }
+
 
 (function() {
 
@@ -15,16 +19,16 @@ function Commands(commandString) {
     var commandList = [];
     var proxyList = [];
 
-    Commands.sendWithSocket = function(commandString, withSocket) {
+    Client.sendWithSocket = function(commandString, withSocket) {
         if(typeof Sockets === 'undefined')
-            importScripts('sockets/sockets.js');
+            importScripts('socket/sockets.js');
         return Sockets.send(commandString, withSocket);
     };
 
-    Commands.add = function (commandPrefix, commandCallback) {
+    Client.addCommand = function (commandPrefix, commandCallback) {
         if(commandPrefix instanceof Array) {
             for(var i=0; i<commandPrefix.length; i++)
-                Commands.add(commandPrefix[i], commandCallback);
+                Client.addCommand(commandPrefix[i], commandCallback);
 
         } else {
             if(!(commandPrefix instanceof RegExp))
@@ -33,10 +37,10 @@ function Commands(commandString) {
         }
     };
 
-    Commands.addResponse = function (responsePrefix, responseCallback) {
+    Client.addResponse = function (responsePrefix, responseCallback) {
         if(responsePrefix instanceof Array) {
             for(var i=0; i<responsePrefix.length; i++)
-                Commands.addResponse(responsePrefix[i], responseCallback);
+                Client.addResponse(responsePrefix[i], responseCallback);
 
         } else {
             if(!(responsePrefix instanceof RegExp))
@@ -45,10 +49,10 @@ function Commands(commandString) {
         }
     };
 
-    Commands.addProxy = function (commandPrefix, scriptPath) {
+    Client.addCommandProxy = function (commandPrefix, scriptPath) {
         if(commandPrefix instanceof Array) {
             for(var i=0; i<commandPrefix.length; i++)
-                Commands.addProxy(commandPrefix[i], scriptPath);
+                Client.addCommandProxy(commandPrefix[i], scriptPath);
 
         } else {
             if(!(commandPrefix instanceof RegExp))
@@ -57,9 +61,9 @@ function Commands(commandString) {
         }
     };
 
-    importScripts('commands/commands-defaults.js');
+    importScripts('client/client-defaults.js');
 
-    Commands.execute = function(commandString, e) {
+    Client.execute = function(commandString, e) {
         for(var i=0; i<commandList.length; i++) {
             if(commandList[i][0].test(commandString)) {
                 return commandList[i][1](commandString, e);
@@ -75,7 +79,7 @@ function Commands(commandString) {
         throw new Error("Command Handler failed to load: " + commandString);
     };
 
-    Commands.processResponse = function(responseString, e) {
+    Client.processResponse = function(responseString, e) {
         for(var i=0; i<responseList.length; i++) {
             if(responseList[i][0].test(responseString)) {
                 return responseList[i][1](responseString, e);
@@ -92,7 +96,7 @@ function Commands(commandString) {
         throw new Error("Command Response Handler failed to load: " + responseString);
     };
 
-    Commands.postResponseToClient = function(responseString) {
+    Client.postResponseToClient = function(responseString) {
         replaceAllTags(responseString, function(parsedResponseString) {
             self.postMessage(parsedResponseString);
         });

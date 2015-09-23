@@ -17,7 +17,7 @@
      * @param commandString
      * @param status_content
      */
-    Commands.add('key', function (commandString) {
+    Client.addCommand('key', function (commandString) {
         var match = /^key\s+(\w{8,})/im.exec(commandString);
         if(!match)
             throw new Error("Invalid command: " + commandString);
@@ -37,7 +37,7 @@
 
             importScripts('pgp/templates/pgp-public-key-template.js');
             Templates.pgp.key.form(publicKeyData, function(html, className) {
-                Commands.postResponseToClient("LOG.REPLACE " + className + " " + html);
+                Client.postResponseToClient("LOG.REPLACE " + className + " " + html);
             });
             // Free up template resources
             delete Templates.pgp.key.form;
@@ -48,18 +48,18 @@
      * @param commandString
      * @param status_content
      */
-    Commands.add('manage', function (commandString, e, status_content) {
+    Client.addCommand('manage', function (commandString, e, status_content) {
         //var match = /^manage$/im.exec(commandString);
 
         importScripts('pgp/templates/pgp-manage-template.js');
         Templates.pgp.manage.form(status_content, function(html) {
-            Commands.postResponseToClient("LOG.REPLACE pgp-manage: " + html);
+            Client.postResponseToClient("LOG.REPLACE pgp-manage: " + html);
         });
 
         var PGPDB = getPGPDB();
         PGPDB.queryPrivateKeys(function(data) {
             Templates.pgp.manage.entry(data, function(html) {
-                Commands.postResponseToClient("LOG pgp-manage-entries: " + html);
+                Client.postResponseToClient("LOG pgp-manage-entries: " + html);
             });
         }, function() {
 
@@ -73,7 +73,7 @@
     /**
      * @param commandString KEYGEN --bits [2048] [user id]
      */
-    Commands.add('keygen', function (commandString, e) {
+    Client.addCommand('keygen', function (commandString, e) {
         var match = /^keygen ?(.+)?$/im.exec(commandString);
         if(!match)
             throw new Error("Invalid command: " + commandString);
@@ -104,7 +104,7 @@
         if(!userID || !send_as_socket_command) {
             importScripts('pgp/templates/pgp-generate-template.js');
             Templates.pgp.generate.form(userID, send_as_socket_command, function(html) {
-                Commands.postResponseToClient("LOG.REPLACE pgp: " + html);
+                Client.postResponseToClient("LOG.REPLACE pgp: " + html);
             });
             // Free up template resources
             delete Templates.pgp.generate;
@@ -150,7 +150,7 @@
 
                         importScripts('pgp/templates/pgp-register-template.js');
                         Templates.pgp.register.form(privateKeyBlock, '', function(html) {
-                            Commands.postResponseToClient("LOG.REPLACE pgp: " + html);
+                            Client.postResponseToClient("LOG.REPLACE pgp: " + html);
                         });
                         // Free up template resources
                         delete Templates.pgp.register;
@@ -168,14 +168,14 @@
         });
     });
 
-    Commands.addResponse('keygen', function(responseString, e) {
+    Client.addResponse('keygen', function(responseString, e) {
         throw new Error("keygen response is not implemented");
     });
 
     /**
      * @param commandString REGISTER
      */
-    Commands.add('register', function (commandString, e) {
+    Client.addCommand('register', function (commandString, e) {
         var privateKeyBlock = '';
         var status_content = '';
         var match = /^register\s*([\s\S]*)$/im.exec(commandString);
@@ -219,7 +219,7 @@
 
                     importScripts('pgp/templates/pgp-register-template.js');
                     Templates.pgp.register.form(privateKeyBlock, status_content, function(html) {
-                        Commands.postResponseToClient("LOG.REPLACE pgp: " + html);
+                        Client.postResponseToClient("LOG.REPLACE pgp: " + html);
                     });
                     // Free up template resources
                     delete Templates.pgp.register;
@@ -229,7 +229,7 @@
                 status_content = "<span class='info'>Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually</span>";
                 importScripts('pgp/templates/pgp-register-template.js');
                 Templates.pgp.register.form(privateKeyBlock, '', function(html) {
-                    Commands.postResponseToClient("LOG.REPLACE pgp: " + html);
+                    Client.postResponseToClient("LOG.REPLACE pgp: " + html);
                 });
                 // Free up template resources
                 delete Templates.pgp.register;
@@ -242,12 +242,12 @@
                 if(err) {
                     importScripts('pgp/templates/pgp-register-template.js');
                     Templates.pgp.register.form(privateKeyBlock, err, function(html) {
-                        Commands.postResponseToClient("LOG.REPLACE pgp: " + html);
+                        Client.postResponseToClient("LOG.REPLACE pgp: " + html);
                     });
                     // Free up template resources
                     delete Templates.pgp.register;
                 } else {
-                    Commands.manage("MANAGE");
+                    Client.manage("MANAGE");
 
                 }
             });
@@ -255,7 +255,7 @@
     });
 
 
-    Commands.addResponse('register', function(responseString, e) {
+    Client.addResponse('register', function(responseString, e) {
         throw new Error("register response is not implemented");
     });
 
@@ -263,7 +263,7 @@
     /**
      * @param commandString UNREGISTER [PGP Private Key Fingerprint]
      */
-    Commands.add('unregister', function (commandString) {
+    Client.addCommand('unregister', function (commandString) {
         var match = /^unregister\s+(.*)$/im.exec(commandString);
         var privateKeyFingerprints = match[1].trim().split(/\W+/g);
         for(var i=0; i<privateKeyFingerprints.length; i++)
@@ -279,21 +279,21 @@
                     insertRequest.onsuccess = function(e) {
                         var status_content = "Deleted private key block from database: " + privateKeyID;
                         console.log(status_content);
-                        Commands.manage("MANAGE", e, status_content);
+                        Client.manage("MANAGE", e, status_content);
 
                     };
                     insertRequest.onerror = function(e) {
                         var err = e.currentTarget.error;
                         var status_content = "Error adding private key (" + privateKeyID + ") database: " + err.message;
                         console.error(status_content, e);
-                        Commands.manage("MANAGE", e, status_content);
+                        Client.manage("MANAGE", e, status_content);
 
                     };
                 });
             }) (privateKeyFingerprints[i]);
     });
 
-    Commands.addResponse('unregister', function(responseString, e) {
+    Client.addResponse('unregister', function(responseString, e) {
         throw new Error("unregister response is not implemented");
     });
 
@@ -301,7 +301,7 @@
     /**
      * @param commandString DEFAULT [PGP Private Key Fingerprint]
      */
-    Commands.add('default', function (commandString, e) {
+    Client.addCommand('default', function (commandString, e) {
         var match = /^default\s+(.*)$/im.exec(commandString);
         var privateKeyFingerprint = match[1].trim().split(/\W+/g)[0];
         var privateKeyID = privateKeyFingerprint.substr(privateKeyFingerprint.length - 16);
@@ -331,7 +331,7 @@
                     privateKeyData.default = '1';
                     var updateRequest = privateKeyStore.put(privateKeyData);
                     updateRequest.onsuccess = function(event) {
-                        Commands.manage("MANAGE", e, "Private Key ID set to default: " + privateKeyFingerprint);
+                        Client.manage("MANAGE", e, "Private Key ID set to default: " + privateKeyFingerprint);
                     };
                 };
             };
@@ -339,7 +339,7 @@
     });
 
 
-    Commands.addResponse('default', function(responseString, e) {
+    Client.addResponse('default', function(responseString, e) {
         throw new Error("default response is not implemented");
     });
 
@@ -347,7 +347,7 @@
     /**
      * @param commandData IDENTIFY --session [session-uid]
      */
-    Commands.add('identify', function (commandData, e) {
+    Client.addCommand('identify', function (commandData, e) {
         if(identifyRequests.length === 0)
             throw new Error("No IDENTIFY REQUESTS received");
 
@@ -362,7 +362,7 @@
 
             importScripts('pgp/templates/pgp-identify-template.js');
             Templates.pgp.identify.form(responseString, socket.url, CONFIG, function(html) {
-                Commands.postResponseToClient("LOG.REPLACE identify: " + html);
+                Client.postResponseToClient("LOG.REPLACE identify: " + html);
             });
             // Free up template resources
             delete Templates.pgp.identify;
@@ -390,10 +390,10 @@
     /**
      * @param responseString [challenge_string] [session_id]
      */
-    Commands.addResponse('identify', function (responseString, e) {
+    Client.addResponse('identify', function (responseString, e) {
         var socket = e.target;
         identifyRequests.push([responseString, socket]);
-        Commands.execute("IDENTIFY");
+        Client.execute("IDENTIFY");
 
         //ConfigDB.getConfig(CONFIG_ID, function(CONFIG) {
         //    var socket_host = socket.url.split('/')[2];
@@ -405,7 +405,7 @@
     /**
      * @param commandData IDSIG [idsig and public key content]
      */
-    Commands.add('idsig', function (commandData, e) {
+    Client.addCommand('idsig', function (commandData, e) {
         if(typeof commandData === 'string')
             commandData = {message: commandData, passphrase: null};
         var commandString = commandData.message;
@@ -437,7 +437,7 @@
             throw new Error("Could not find IDENTITY request: " + session_uid);
 
         var sendSocket = foundRequest[1];
-        Commands.sendWithSocket(commandString, sendSocket);
+        Client.sendWithSocket(commandString, sendSocket);
         //sendSocket.send(commandString); // TODO: socket out
         //console.log("SOCKET OUT (" + sendSocket.url + "): " + commandString);
 
@@ -447,7 +447,7 @@
     /**
      * @param commandData IDSIG [challenge-string] [session-id] [pgp-key-id] [username] [visibility]
      */
-    Commands.addResponse('idsig', function (commandData, e) {
+    Client.addResponse('idsig', function (commandData, e) {
         var split = commandData.split(/\s+/g);
         if(split[0].toUpperCase() !== 'IDSIG')
             throw new Error("Invalid IDSIG: " + commandData);
@@ -487,7 +487,7 @@
 
                     importScripts('pgp/templates/pgp-identify-template.js');
                     Templates.pgp.identify.successForm(commandData, socket.url, CONFIG, function(html) {
-                        Commands.postResponseToClient("LOG.REPLACE identify: " + html);
+                        Client.postResponseToClient("LOG.REPLACE identify: " + html);
                     });
                     // Free up template resources
                     delete Templates.pgp.identify;
@@ -505,7 +505,7 @@
                     //            throw new Error("Could not find private key: " + privateKeyID);
                     //        var pgp_id_private = privateKeyData.id_private + "," + privateKeyData.id_public + "," + username + (privateKeyData.passphrase_required ? ',1' : ',0');
                     //
-                    //        Commands.postResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE_SUCCESS
+                    //        Client.postResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE_SUCCESS
                     //                .replace(/{\$pgp_id_public}/gi, pgp_id_public)
                     //                .replace(/{\$pgp_id_private}/gi, pgp_id_private)
                     //                .replace(/{\$status_content}/gi, status_content || '')

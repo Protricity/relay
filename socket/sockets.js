@@ -2,7 +2,6 @@
  * Created by ari on 6/19/2015.
  */
 
-
 Sockets.NEXT_SOCKET_INTERVAL = 5000;
 Sockets.SOCKET_RECONNECT_INTERVAL = 5000;
 
@@ -21,8 +20,8 @@ function Sockets(socketURL) {
         socketURLList.push(socketURL);
     };
 
-    importScripts('sockets/sockets-defaults.js');
-    importScripts('sockets/templates/sockets-log-template.js');
+    importScripts('socket/sockets-defaults.js');
+    importScripts('socket/templates/sockets-log-template.js');
 
     Sockets.getAll = function() { return activeSockets; };
 
@@ -47,7 +46,7 @@ function Sockets(socketURL) {
                     eventListeners[i][1](newSocket);
 
             Templates.socket.log.action("SOCKET OPEN: " + newSocket.url, function(html) {
-                Commands.postResponseToClient('LOG socket-log:' + newSocket.url + ' ' + html);
+                Client.postResponseToClient('LOG socket-log:' + newSocket.url + ' ' + html);
             });
         }
         function onClose(e) {
@@ -76,16 +75,16 @@ function Sockets(socketURL) {
             }, Sockets.SOCKET_RECONNECT_INTERVAL);
 
             Templates.socket.log.action("SOCKET CLOSED: " + newSocket.url, function(html) {
-                Commands.postResponseToClient('LOG socket-log:' + newSocket.url + ' ' + html);
+                Client.postResponseToClient('LOG socket-log:' + newSocket.url + ' ' + html);
             });
 
         }
         function onSocketMessage(e) {
-            Commands.processResponse(e.data, e);
+            Client.processResponse(e.data, e);
             var socket = e.target;
             if(socket instanceof WebSocket) {
                 Templates.socket.log.entry(e.data, 'I', function(html) {
-                    Commands.postResponseToClient('LOG socket-log:' + socket.url + ' ' + html);
+                    Client.postResponseToClient('LOG socket-log:' + socket.url + ' ' + html);
                 });
             }
         }
@@ -99,7 +98,7 @@ function Sockets(socketURL) {
         newSocket.addEventListener('close', Sockets.callEventListeners);
 
         Templates.socket.log.container(newSocket.url, function(html) {
-            Commands.postResponseToClient('LOG.REPLACE socket:' + newSocket.url + ' ' + html);
+            Client.postResponseToClient('LOG.REPLACE socket:' + newSocket.url + ' ' + html);
         });
 
         return newSocket;
@@ -180,7 +179,7 @@ function Sockets(socketURL) {
     Sockets.send = function(commandString, withSocket) {
         function send(socket){
             Templates.socket.log.entry(commandString, 'O', function(html) {
-                Commands.postResponseToClient('LOG socket-log:' + socket.url + ' ' + html);
+                Client.postResponseToClient('LOG socket-log:' + socket.url + ' ' + html);
             });
             socket.send(commandString);
         }

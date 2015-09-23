@@ -20,7 +20,7 @@
      *
      * @param commandString PUT [path] [content]
      */
-    Commands.add('put', function (commandString) {
+    Client.addCommand('put', function (commandString) {
         var match = /^put\s*(\S*)\s*([\S\s]+)?$/im.exec(commandString);
         if(!match)
             throw new Error("Invalid PUT: " + commandString);
@@ -41,26 +41,26 @@
             if(preview) {
                 importScripts('rest/templates/rest-put-template.js');
                 Templates.rest.put.preview(content, function(html) {
-                    Commands.postResponseToClient("LOG.REPLACE put-preview: " + html);
+                    Client.postResponseToClient("LOG.REPLACE put-preview: " + html);
                 });
                 // Free up template resources
                 delete Templates.rest.put.preview;
 
             } else {
-                Commands.sendWithSocket(commandString);
+                Client.sendWithSocket(commandString);
             }
 
         } else {
             importScripts('rest/templates/rest-put-template.js');
             Templates.rest.put.form(content, function(html) {
-                Commands.postResponseToClient("LOG.REPLACE put: " + html);
+                Client.postResponseToClient("LOG.REPLACE put: " + html);
             });
             // Free up template resources
             delete Templates.rest.put.form;
         }
     });
 
-    Commands.addResponse('put', Commands.postResponseToClient);
+    Client.addResponse('put', Client.postResponseToClient);
 
 
     var httpBrowserID = 1;
@@ -68,7 +68,7 @@
      *
      * @param commandString GET [URL]
      */
-    Commands.add('get', function (commandString) {
+    Client.addCommand('get', function (commandString) {
         var requestData = parseRequestBody(commandString);
         if(!requestData.headers['browser-id'])
             requestData.headers['browser-id'] = httpBrowserID++;
@@ -84,7 +84,7 @@
 
             } else {
                 // If remote, request content from server
-                Commands.sendWithSocket(formattedCommandString);
+                Client.sendWithSocket(formattedCommandString);
 
                 importScripts('rest/templates/rest-response-template.js');
                 // Show something, sheesh
@@ -120,14 +120,14 @@
         });
     });
 
-    Commands.addResponse('get', function(requestResponseString) {
+    Client.addResponse('get', function(requestResponseString) {
 
         executeLocalGETRequest(requestResponseString, function(responseText) {
-            Commands.sendWithSocket(responseText);
+            Client.sendWithSocket(responseText);
         });
     });
 
-    Commands.addResponse('http', function(httpResponseText) {
+    Client.addResponse('http', function(httpResponseText) {
         parseResponseURLs(httpResponseText);
         var responseData = parseResponseText(httpResponseText);
         var requestURL = responseData.headers['request-url'];
@@ -332,7 +332,7 @@
             importScripts('rest/templates/test-browser-template.js');
             Templates.rest.browser(responseText, function(html) {
                 parseHTMLBody(html, requestUrl, function(parsedResponseBody) {
-                    Commands.postResponseToClient("LOG.REPLACE rest-browser:" + browserID + ' ' + parsedResponseBody);
+                    Client.postResponseToClient("LOG.REPLACE rest-browser:" + browserID + ' ' + parsedResponseBody);
                 });
             });
             // Free up template resources

@@ -22,7 +22,7 @@ Templates.pgp.manage.form = function(status_content, callback) {
                 <code class='status-box'>{$status_content}</code>\n\
                 <div class='pgp-manage-entries:'></div>\n\
                 <label><strong>Action:&nbsp;&nbsp;</strong> <span class='action span-action'>No Keys Selected</span></label><br/>\n\
-                <label><strong>Commands:</strong> \n\
+                <label><strong>Client:</strong> \n\
                     <select name='action'>\n\
                         <option value=''>Select action</option>\n\
                         <option value='default {$id_private_list}'>Make Default Identity</option>\n\
