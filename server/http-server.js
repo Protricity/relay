@@ -31,7 +31,7 @@ function HTTPServer() {
 
 
 
-    var commandHandler = [];
+    var commandHandlers = [];
     //var proxyList = [];
     //var requestHandlers = [];
 
@@ -43,8 +43,18 @@ function HTTPServer() {
         } else {
             if(!(commandPrefix instanceof RegExp))
                 commandPrefix = new RegExp('^' + commandPrefix, 'i');
-            commandHandler.push([commandPrefix, requestHandler]);
+            commandHandlers.push([commandPrefix, requestHandler]);
         }
+    };
+
+    HTTPServer.removeCommand = function (commandCallback) {
+        for(var i=0; i<commandHandlers.length; i++) {
+            if(commandHandlers[i][1] === commandCallback) {
+                commandHandlers.splice(i, 1);
+                return;
+            }
+        }
+        throw new Error("Callback not found");
     };
 
     require('./http-server-command-proxies.js')
@@ -54,11 +64,12 @@ function HTTPServer() {
 
     HTTPServer.execute = function(request, response) {
         var commandString = request.method + ' ' + request.url;
-        for(var i=0; i<commandHandler.length; i++) {
-            if(commandHandler[i][0].test(commandString)) {
-                return commandHandler[i][1](request, response);
+        for(var i=0; i<commandHandlers.length; i++) {
+            if (commandHandlers[i][0].test(commandString)) {
+                return commandHandlers[i][1](request, response);
             }
         }
+
         //if(tryProxy(commandString)) {
         //    for(i=0; i<commandHandler.length; i++) {
         //        if(commandHandler[i][0].test(commandString)) {
@@ -68,96 +79,6 @@ function HTTPServer() {
         //}
         throw new Error("Command Handler failed to load: " + commandString);
     };
-
-
-    function handleURIRequest(request, response) {
-        //
-        //for(var j=0; j<requestHandlers.length; j++) {
-        //    var uriPrefix = requestHandlers[j][0];
-        //    if(!uriPrefix.test(request.uri))
-        //        continue;
-        //
-        //    var requestHandler = requestHandlers[j][1];
-        //    requestHandler(request, function(responseBody, statusCode, statusMessage, headers) {
-        //        response.writeHead(statusCode || 200, statusMessage || 'OK', headers);
-        //        response.end(responseBody);
-        //    });
-        //    return true;
-        //}
-
-        var fs = require('fs');
-
-        var filePath = '.' + request.url;
-        if (filePath == './')
-            filePath = './index.html';
-
-        var contentType = getContentType(filePath);
-
-        fs.readFile(filePath, function (error, content) {
-            if (error) {
-                if (error.code == 'ENOENT') {
-                    fs.readFile('./404.html', function (error, content) {
-                        response.writeHead(200, {'Content-Type': contentType});
-                        response.end(content, 'utf-8');
-                    });
-                }
-                else {
-                    response.writeHead(500);
-                    response.end('Sorry, check with the site admin for error: ' + error.code + ' ..\n');
-                    response.end();
-                }
-            }
-            else {
-                response.writeHead(200, {'Content-Type': contentType});
-                response.end(content, 'utf-8');
-            }
-        });
-    }
-
-
-    function getContentType(filePath) {
-        var extname = filePath.split('?')[0].split('.').pop().toLowerCase();
-        switch (extname) {
-            case 'htm':
-            case 'html':
-                return 'text/html';
-            case 'js':
-                return 'text/javascript';
-            case 'css':
-                return 'text/css';
-            case 'json':
-                return 'application/json';
-            case 'png':
-                return 'image/png';
-            case 'jpg':
-                return 'image/jpg';
-            case 'wav':
-                return 'audio/wav';
-            default:
-                console.error("Unknown file type: " + filePath);
-                return 'application/octet-stream';
-        }
-    }
-
-    //
-    //function tryProxy(contentString) {
-    //    for(var j=0; j<proxyList.length; j++) {
-    //        var proxyRegex = proxyList[j][0];
-    //        if(proxyRegex.test(contentString)) {
-    //            var proxyScript = proxyList[j][1];
-    //            var oldLength = commandHandler.length;
-    //            require('../' + proxyScript)
-    //                .initHTTPServerCommands(HTTPServer);
-    //            if(commandHandler.length === oldLength)
-    //                throw new Error("Imported script failed to add any new commands: " + proxyScript);
-    //            return true;
-    //        }
-    //    }
-    //    return false;
-    //}
-
-    // TODO: move to http-server-commands.js
-    HTTPServer.addCommand('get', handleURIRequest);
 
 
     // HTTP Commands

@@ -45,11 +45,12 @@ function SocketServer() {
 
     var clientEvents = [];
     var serverEvents = [];
-    var commandList = [];
+    var commandHandlers = [];
     //var proxyList = [];
     //var requestHandlers = [];
 
     clientEvents.push(['message', function(message) {
+        console.log("I " + message);
         SocketServer.execute(message, this);
     }]);
 
@@ -71,7 +72,17 @@ function SocketServer() {
     SocketServer.addCommand = function (commandPrefix, commandCallback) {
         if(!(commandPrefix instanceof RegExp))
             commandPrefix = new RegExp('^' + commandPrefix, 'i');
-        commandList.push([commandPrefix, commandCallback]);
+        commandHandlers.push([commandPrefix, commandCallback]);
+    };
+
+    SocketServer.removeCommand = function (commandCallback) {
+        for(var i=0; i<commandHandlers.length; i++) {
+            if(commandHandlers[i][1] === commandCallback) {
+                commandHandlers.splice(i, 1);
+                return;
+            }
+        }
+        throw new Error("Callback not found");
     };
 
 
@@ -79,9 +90,9 @@ function SocketServer() {
         .initSocketServerCommandProxies(SocketServer);
 
     SocketServer.execute = function(commandString, client) {
-        for(var i=0; i<commandList.length; i++) {
-            if(commandList[i][0].test(commandString)) {
-                return commandList[i][1](commandString, client);
+        for(var i=0; i<commandHandlers.length; i++) {
+            if(commandHandlers[i][0].test(commandString)) {
+                return commandHandlers[i][1](commandString, client);
             }
         }
         throw new Error("Command Handler failed to load: " + commandString);

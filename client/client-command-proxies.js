@@ -19,7 +19,7 @@
     }
     Client.addResponse(/^(http)/i, httpResponse);
     function httpResponse(responseString, e) {
-        Client.removeCommand(httpResponse);
+        Client.removeResponse(httpResponse);
         importScripts('http/http-client-commands.js');
         Client.processResponse(responseString, e);
     }
@@ -31,16 +31,16 @@
         importScripts('chat/chat-client-commands.js');
         Client.execute(commandString, e);
     }
-    Client.addResponse(/^(join|leave|message|chat|nick)/i, httpResponse);
+    Client.addResponse(/^(join|leave|message|chat|nick)/i, chatResponse);
     function chatResponse(responseString, e) {
-        Client.removeCommand(chatResponse);
+        Client.removeResponse(chatResponse);
         importScripts('http/http-client-commands.js');
         Client.processResponse(responseString, e);
     }
 
 
     // Feed Commands
-    Client.addCommand(/^(feed)/i, chatCommand);
+    Client.addCommand(/^(feed)/i, feedCommand);
     function feedCommand(commandString, e) {
         Client.removeCommand(feedCommand);
         importScripts('feed/feed-client-commands.js');
@@ -48,7 +48,7 @@
     }
 
     // PGP Commands
-    Client.addCommand(/^(keygen|encrypt|register|unregister|manage|pgp-auth|pgp-auth-validate)/i, chatCommand);
+    Client.addCommand(/^(keygen|encrypt|register|unregister|manage|pgp-auth|pgp-auth-validate)/i, pgpCommand);
     function pgpCommand(commandString, e) {
         Client.removeCommand(pgpCommand);
         importScripts('pgp/pgp-client-commands.js');

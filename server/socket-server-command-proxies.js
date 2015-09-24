@@ -5,13 +5,11 @@ if(!exports) var exports = {};
 exports.initSocketServerCommandProxies = function(SocketServer) {
     // Socket Command Proxies
 
-
-
     // HTTP Commands
     SocketServer.addCommand(/^(get|post|put|delete|patch|head|http|host-auth|host-auth-validate)/i, httpCommand);
     function httpCommand(commandString, client) {
         SocketServer.removeCommand(httpCommand);
-        require('../http/http-socket-commands.js')
+        require('../http/server-commands.js')
             .initSocketCommands(SocketServer);
         SocketServer.execute(commandString, client);
     }
@@ -26,7 +24,7 @@ exports.initSocketServerCommandProxies = function(SocketServer) {
     }
 
     // PGP Commands
-    SocketServer.addCommand(/^(pgp-auth|pgp-auth-validate|get @pgp)/i, chatCommand);
+    SocketServer.addCommand(/^(pgp-auth|pgp-auth-validate|get @pgp)/i, pgpCommand);
     function pgpCommand(commandString, client) {
         SocketServer.removeCommand(pgpCommand);
         require('../pgp/pgp-socket-commands.js')

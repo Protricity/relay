@@ -12,16 +12,18 @@
 
     var activeChannels = [];
 
-    Client.addCommand(['message', 'join', 'leave'],
-    function(commandString) {
-        var args = commandString.split(/\s+/, 3);
-        var channelPath = args[1];
-//         var session_uid = match[2];
-//         var username = match[3];
-
-        checkChannel(channelPath);
-        Client.sendWithSocket(commandString);
-    });
+    Client.addCommand('message', Client.sendWithSocket);
+    Client.addCommand('join', Client.sendWithSocket);
+    Client.addCommand('leave', Client.sendWithSocket);
+//    function(commandString) {
+//        var args = commandString.split(/\s+/, 3);
+//        var channelPath = args[1];
+////         var session_uid = match[2];
+////         var username = match[3];
+//
+//        checkChannel(channelPath);
+//        Client.sendWithSocket(commandString);
+//    });
 
 
     Client.addCommand('chat', function(commandString) {
@@ -35,141 +37,105 @@
     });
 
     Client.addResponse('chat', function(commandResponse, e) {
-        var match = /^(chat)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s*([\s\S]+)$/im.exec(commandResponse);
+        var match = /^(chat)\s+(\S+)/im.exec(commandResponse);
         if(!match)
             throw new Error("Invalid Chat Response: " + commandResponse);
         var channelPath = match[2];
-        checkChannel(channelPath);
+        getChannelUsers(channelPath);
         Templates.chat.message(commandResponse, function(html) {
             Client.postResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
         });
     });
 
-    var sigIDLists = {};
+    var channelUsers = {};
     Client.addResponse('join', function(commandResponse) {
         var args = commandResponse.split(/\s/);
         var channelPath = args[1];
-        var pgp_id_public = args[2];
-        var session_uid = args[3];
-        var username = args[4];
-        var visibility = args[5];
-        checkChannel(channelPath);
+        var channelPathLowerCase = channelPath.toLowerCase();
+        var username = args[2];
+        getChannelUsers(channelPath);
         Templates.chat.action(commandResponse, function(html) {
-            Client.postResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
+            Client.postResponseToClient('LOG chat-log:' + channelPathLowerCase + ' ' + html);
         });
 
-        var sigIDList = sigIDLists[channelPath.toLowerCase()] || [];
-        var identityString = "IDSIG" + // Recreate IDSIG cause we can
-            " " + pgp_id_public +
-            " " + session_uid +
-            " " + username +
-            " " + visibility;
-
-        if(!sigIDList.indexOf(identityString)) {
-            //throw new Error("Duplicate SIGID in user list: " + identityString);
-
-            sigIDList.push(identityString);
-
-            sigIDList.sort(function (s1, s2) {
-                return s1.split(/\s+/g)[3] - s2.split(/\s+/g)[3];
+        var userList = getChannelUsers(channelPath);
+        if(userList.indexOf(username) == -1) {
+            userList.push(username);
+            userList.sort();
+            Templates.chat.userList(channelPath, userList, function(html) {
+                Client.postResponseToClient('LOG.REPLACE chat-active-users:' + channelPath.toLowerCase() + ' ' + html);
             });
-            sigIDLists[channelPath.toLowerCase()] = sigIDList;
         }
-        sendUserList(channelPath, sigIDList);
 
     });
 
     Client.addResponse('userlist', function(commandResponse) {
-        var match = /^(userlist)\s+([^\s]+)\n([\s\S]+)$/im.exec(commandResponse);
+        var match = /^(userlist)\s+(\S+)\s+([\s\S]+)$/im.exec(commandResponse);
         var channelPath = match[2];
-        var sigIDList = match[3].split(/\n/img);
-        sigIDLists[channelPath.toLowerCase()] = sigIDList;
+        var channelPathLowerCase = channelPath.toLowerCase();
+        var userList = match[3].split(/\s+/img);
+        channelUsers[channelPathLowerCase] = userList;
 
-        sendUserList(channelPath, sigIDList);
+        Templates.chat.userList(channelPath, userList, function(html) {
+            Client.postResponseToClient('LOG.REPLACE chat-active-users:' + channelPath.toLowerCase() + ' ' + html);
+        });
     });
 
     Client.addResponse('leave', function(commandResponse) {
         var args = commandResponse.split(/\s/);
         var channelPath = args[1];
-        var pgp_id_public = args[2];
-        var session_uid = args[3];
-        var username = args[4];
-        checkChannel(channelPath);
+        var channelPathLowerCase = channelPath.toLowerCase();
+        var username = args[2];
+        getChannelUsers(channelPath);
         Templates.chat.action(commandResponse, function(html) {
-            Client.postResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
+            Client.postResponseToClient('LOG chat-log:' + channelPathLowerCase + ' ' + html);
         });
 
-        var sigIDList = sigIDLists[channelPath.toLowerCase()] || [];
-        var sigIDMatch = "SIGID " + pgp_id_public + " " + session_uid;
-        for(var i=0; i<sigIDList.length; i++) {
-            var sigID = sigIDList[i];
-            if(sigID.indexOf(sigIDMatch) === 0) {
-                sigIDList.splice(i, 1);
-                break;
-            }
-        }
+        var userList = getChannelUsers(channelPath);
+        var pos = userList.indexOf(username);
+        if(pos === -1)
+            throw new Error("User not in channel [" + channelPath + "]: " + username);
 
-        sigIDLists[channelPath.toLowerCase()] = sigIDList;
+        userList.splice(pos, 1);
 
-        sendUserList(channelPath, sigIDList);
+        Templates.chat.userList(channelPath, userList, function(html) {
+            Client.postResponseToClient('LOG.REPLACE chat-active-users:' + channelPath.toLowerCase() + ' ' + html);
+        });
     });
 
     Client.addResponse('nick', function(commandResponse) {
         var args = commandResponse.split(/\s/);
-        var channelPath = args[1];
-        var old_username = args[2];
-        var pgp_id_public = args[3];
-        var session_uid = args[4];
-        var new_username = args[5];
-        var visibility = args[6];
-        checkChannel(channelPath);
-        Templates.chat.nick(commandResponse, function(html) {
-            Client.postResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
-        });
-
-        var sigIDList = sigIDLists[channelPath.toLowerCase()] || [];
-        //var sigIDMatch = "SIGID " + pgp_id_public + " " + session_uid;
-        for(var i=0; i<sigIDList.length; i++) {
-            var sigID = sigIDList[i];
-            if(sigID.indexOf(session_uid) !== -1) {
-                sigIDList.splice(i, 1);
-                break;
+        var old_username = args[1];
+        var new_username = args[2];
+        console.log(old_username, new_username);
+        for (var channelPath in channelUsers) {
+            if (channelUsers.hasOwnProperty(channelPath)) {
+                (function (channelPath) {
+                    var userList = channelUsers[channelPath];
+                    var pos = userList.indexOf(old_username);
+                    if (pos >= 0) {
+                        userList[pos] = new_username;
+                        Templates.chat.nick(commandResponse, function (html) {
+                            Client.postResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
+                        });
+                        Templates.chat.userList(channelPath, userList, function(html) {
+                            Client.postResponseToClient('LOG.REPLACE chat-active-users:' + channelPath.toLowerCase() + ' ' + html);
+                        });
+                    }
+                })(channelPath);
             }
         }
-
-        var identityString = "IDSIG" + // Recreate IDSIG cause we can
-            " " + pgp_id_public +
-            " " + session_uid +
-            " " + new_username +
-            " " + visibility;
-        sigIDList.push(identityString);
-
-        sigIDList.sort(function (s1, s2) {
-            return s1.split(/\s+/g)[3] - s2.split(/\s+/g)[3];
-        });
-
-        sigIDLists[channelPath.toLowerCase()] = sigIDList;
-
-        sendUserList(channelPath, sigIDList);
     });
 
     Client.addResponse('message', function(commandResponse) {
-        var match = /^(msg|message)\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandResponse);
-        var session_uid = match[2];
+        var match = /^(msg|message)\s+([\s\S]+)$/im.exec(commandResponse);
+        var username = match[2];
         //var content = fixPGPMessage(match[3]);
         Templates.chat.message(commandResponse, function(html) {
-            Client.postResponseToClient('LOG message:' + session_uid + ' ' + html);
+            Client.postResponseToClient('LOG message:' + username + ' ' + html);
         });
     });
 
-
-    function sendUserList(channelPath, sigIDList) {
-        Templates.chat.userList(channelPath, sigIDList, function(html) {
-            Client.postResponseToClient('LOG.REPLACE chat-active-users:' + channelPath.toLowerCase() + ' ' + html);
-        });
-
-        //checkChannel(channelPath);
-    }
 //
 //
 //    function fixPGPMessage(htmlContent) {
@@ -207,16 +173,19 @@
 //        return htmlContent;
 //    }
 
-    function checkChannel(channelPath) {
+    function getChannelUsers(channelPath) {
         if(!channelPath)
             throw new Error("Invalid Channel Path Argument");
-        if(activeChannels.indexOf(channelPath.toLowerCase()) === -1) {
+
+        var channelPathLowerCase = channelPath.toLowerCase();
+        if(typeof channelUsers[channelPathLowerCase] === 'undefined') {
+            channelUsers[channelPathLowerCase] = [];
             Templates.chat.form(channelPath, function(html) {
-                Client.postResponseToClient("LOG.REPLACE chat:" + channelPath.toLowerCase() + ' ' + html);
+                Client.postResponseToClient("LOG.REPLACE chat:" + channelPathLowerCase + ' ' + html);
             });
-            activeChannels.push(channelPath.toLowerCase());
             console.info("New active channel: " + channelPath);
         }
+        return channelUsers[channelPathLowerCase];
     }
 
 })();

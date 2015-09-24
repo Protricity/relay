@@ -53,14 +53,13 @@ Templates.chat.form = function(channelPath, callback) {
 
 
 Templates.chat.message = function(commandResponse, callback) {
-    var match = /^(chat)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandResponse);
+    var match = /^(chat)\s+(\S+)\s+(\S+)\s+(\d+)\s+([\s\S]+)$/im.exec(commandResponse);
     if (!match)
         throw new Error("Invalid Chat Response: " + commandResponse);
     var channelPath = match[2];
-    var timestamp = parseInt(match[3]);
-    var session_uid = match[4];
-    var username = match[5];
-    var content = (match[6]); // fixPGPMessage
+    var username = match[3];
+    var timestamp = parseInt(match[4]);
+    var content = (match[5]); // fixPGPMessage
 
     var MESSAGE_TEMPLATE = '<div class="chat-log-entry">' +
         '<span class="username" data-session-uid="{$session_uid}" data-timestamp="{$timestamp}">{$username}</span>' +
@@ -68,9 +67,8 @@ Templates.chat.message = function(commandResponse, callback) {
         '</div>';
 
     callback(MESSAGE_TEMPLATE
-            .replace(/{\$timestamp}/gi, timestamp.toString())
+            .replace(/{\$timestamp}/gi, timestamp+'')
             .replace(/{\$channel}/gi, channelPath)
-            .replace(/{\$session_uid}/gi, session_uid)
             .replace(/{\$username}/gi, username)
             .replace(/{\$content}/gi, content)
     );
@@ -79,10 +77,7 @@ Templates.chat.message = function(commandResponse, callback) {
 Templates.chat.action = function(commandResponse, callback) {
     var args = commandResponse.split(/\s/);
     var channelPath = args[1];
-    var pgp_id_public = args[2];
-    var session_uid = args[3];
-    var username = args[4];
-    var visibility = args[5];
+    var username = args[2];
 
     var actionText = '';
     switch(args[0].toLowerCase()) {
@@ -100,21 +95,14 @@ Templates.chat.action = function(commandResponse, callback) {
     callback(ACTION_TEMPLATE
             .replace(/{\$action}/gi, actionText)
             .replace(/{\$channel}/gi, channelPath)
-            .replace(/{\$session_uid}/gi, session_uid)
             .replace(/{\$username}/gi, username)
-            .replace(/{\$visibility}/gi, visibility)
-            .replace(/{\$pgp_id_public}/gi, pgp_id_public)
     );
 };
 
 Templates.chat.nick = function (commandResponse, callback) {
     var args = commandResponse.split(/\s/);
-    var channelPath = args[1];
-    var old_username = args[2];
-    var pgp_id_public = args[3];
-    var session_uid = args[4];
-    var new_username = args[5];
-    var visibility = args[6];
+    var old_username = args[1];
+    var new_username = args[2];
 
     var NICK_TEMPLATE = '<div class="chat-log-entry">' +
         'Username <span class="username">{$old_username}</span>' +
@@ -122,41 +110,19 @@ Templates.chat.nick = function (commandResponse, callback) {
         '</div>';
 
     callback(NICK_TEMPLATE
-        .replace(/{\$action}/gi, 'left')
-        .replace(/{\$channel}/gi, channelPath)
         .replace(/{\$old_username}/gi, old_username)
         .replace(/{\$new_username}/gi, new_username)
     );
 };
 
 
-Templates.chat.userList = function(channelPath, sigIDList, callback) {
-    var CHANNEL_USERLIST_SELECT_OPTION = "<option value='{$session_uid}'>{$username}</option>";
+Templates.chat.userList = function(channelPath, userList, callback) {
+    var optionHTML = "<optgroup class='chat-active-users:" + channelPath.toLowerCase() + "' label='Active Users (" + userList.length + ")'>\n";
 
-    var CHANNEL_USERLIST_SELECT_OPTGROUP =
-        "<optgroup class='chat-active-users:" + channelPath.toLowerCase() + "' label='Active Users (" + sigIDList.length + ")'>{$html_options}</optgroup>";
-
-    var optionHTML = '';
-    for(var i=0; i<sigIDList.length; i++) (function(sigid) {
-
-        var split = sigid.split(/\s+/g);
-        if(split[0].toUpperCase() !== 'IDSIG')
-            throw new Error("Invalid IDSIG: " + sigid);
-
-        var pgp_id_public = split[1];
-        var session_uid = split[2];
-        var username = split[3];
-        var visibility = split[4];
-
-        optionHTML += CHANNEL_USERLIST_SELECT_OPTION
-            .replace(/{\$session_uid}/gi, session_uid)
-            .replace(/{\$username}/gi, username)
-            .replace(/{\$pgp_id_public}/gi, pgp_id_public)
-            .replace(/{\$visibility}/gi, visibility);
-
-    })(sigIDList[i]);
-
-    callback(CHANNEL_USERLIST_SELECT_OPTGROUP
-        .replace(/{\$html_options}/gi, optionHTML)
-    );
+    for (var i = 0; i < userList.length; i++) {
+        var username = userList[i];
+        optionHTML += "\n\t<option>" + username + "</option>"
+    }
+    optionHTML += "\n</optgroup>";
+    callback(optionHTML);
 };

@@ -9,11 +9,12 @@ exports.initHTTPServerCommandProxies = function(HTTPServer) {
 
     // HTTP Commands
     HTTPServer.addCommand(/^(get|post|put|delete|patch|head|http|host-auth|host-auth-validate)/i, httpCommand);
-    function httpCommand(commandString, client) {
+    function httpCommand(request, response) {
+
         HTTPServer.removeCommand(httpCommand);
-        require('../http/http-server-commands.js')
-            .initSocketCommands(HTTPServer);
-        HTTPServer.execute(commandString, client);
+        require('../server/server-commands.js')
+            .initHTTPServerCommands(HTTPServer);
+        HTTPServer.execute(request, response);
     }
     //
     //// Chat Commands
@@ -26,11 +27,11 @@ exports.initHTTPServerCommandProxies = function(HTTPServer) {
     //}
 
     // PGP Commands
-    HTTPServer.addCommand(/^(get @pgp)/i, chatCommand);
+    HTTPServer.addCommand(/^(get @pgp)/i, pgpCommand);
     function pgpCommand(commandString, client) {
         HTTPServer.removeCommand(pgpCommand);
         require('../pgp/pgp-server-commands.js')
-            .initSocketCommands(HTTPServer);
+            .initHTTPServerCommands(HTTPServer);
         HTTPServer.execute(commandString, client);
     }
 

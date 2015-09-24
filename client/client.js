@@ -16,27 +16,29 @@ function Client() {
 (function() {
 
     var responseList = [];
-    var commandList = [];
+    var commandHandlers = [];
 
-    Client.sendWithSocket = function(commandString, withSocket) {
+    Client.sendWithSocket = function(commandString, e, withSocket) {
         if(typeof Sockets === 'undefined')
             importScripts('server/sockets.js');
-        return Sockets.send(commandString, withSocket);
+        return Sockets.send(commandString, e, withSocket);
     };
 
 
     Client.addCommand = function (commandPrefix, commandCallback) {
         if(!(commandPrefix instanceof RegExp))
             commandPrefix = new RegExp('^' + commandPrefix, 'i');
-        commandList.push([commandPrefix, commandCallback]);
+        commandHandlers.push([commandPrefix, commandCallback]);
     };
 
     Client.removeCommand = function (commandCallback) {
-        for(var i=0; i<commandList.length; i++) {
-            if(commandList[i][1] === commandCallback) {
-                commandList.splice(i, 1);
+        for(var i=0; i<commandHandlers.length; i++) {
+            if(commandHandlers[i][1] === commandCallback) {
+                commandHandlers.splice(i, 1);
+                return;
             }
         }
+        throw new Error("Command Callback not found");
     };
 
     Client.addResponse = function (responsePrefix, responseCallback) {
@@ -45,15 +47,25 @@ function Client() {
         responseList.push([responsePrefix, responseCallback]);
     };
 
+    Client.removeResponse = function (responseCallback) {
+        for(var i=0; i<responseList.length; i++) {
+            if(responseList[i][1] === responseCallback) {
+                responseList.splice(i, 1);
+                return;
+            }
+        }
+        throw new Error("Response Callback not found");
+    };
+
     importScripts('client/client-command-proxies.js');
 
     Client.execute = function(commandString, e) {
-        for(var i=commandList.length-1; i>=0; i--) {
-            if(commandList[i][0].test(commandString)) {
-                return commandList[i][1](commandString, e);
+        for(var i=commandHandlers.length-1; i>=0; i--) {
+            if(commandHandlers[i][0].test(commandString)) {
+                return commandHandlers[i][1](commandString, e);
             }
         }
-        throw new Error("Command Handler failed to load: " + commandString);
+        throw new Error("Client Command Handler failed to load: " + commandString);
     };
 
     Client.processResponse = function(responseString, e) {
@@ -123,12 +135,12 @@ function Client() {
 
 
 // Window Client
-
-    Client.addCommand(['minimize', 'maximize', 'close'],
-        function(commandResponse) {
-            // TODO: custom logic per window
-            return Client.postResponseToClient("LOG." + commandResponse);
-        });
-
+    function logToClient(commandString) {
+        // TODO: custom logic per window
+        return Client.postResponseToClient("LOG." + commandString);
+    }
+    Client.addCommand('minimize', logToClient);
+    Client.addCommand('maximize', logToClient);
+    Client.addCommand('close', logToClient);
 
 })();

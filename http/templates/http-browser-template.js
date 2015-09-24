@@ -27,8 +27,8 @@ Templates.rest.browser = function(responseText, callback) {
                     <button type='submit' name='navigate'>&#8476;</button>\n\
                 </form>\n\
             </nav>\n\
-            <section class='rest-body'>{$response_body}</section>\n\
-            <footer class='rest-status'>{$response_code} {$response_text}</footer>\n\
+            <section class='http-body'>{$response_body}</section>\n\
+            <footer class='http-status'>{$response_code} {$response_text}</footer>\n\
         </article>";
 
 

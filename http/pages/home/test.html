@@ -6,12 +6,12 @@
     <link rel="stylesheet" href="../../../template/base/base.css" type="text/css" />
     <link rel="stylesheet" href="../../../template/minimal/minimal.css" type="text/css" />
     <link rel="stylesheet" href="../../rest.css" type="text/css">
-    <script src="../../rest-db.js"></script>
+    <script src="../../http-db.js"></script>
     <script src="user-index.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function(event) {
             getUserIndexTemplate("GET socket://3110FF44/~/", function(responseHTML) {
-                document.querySelector('.rest-body').innerHTML = responseHTML;
+                document.querySelector('.http-body').innerHTML = responseHTML;
             })
         });
 
@@ -24,8 +24,8 @@
         <a class="title-command-close" href="#CLOSE get:1">[x]</a></div>
     <nav><form name="http-browser-navigation-form"><button type="submit" name="back">⇦</button><button type="submit" name="forward">⇨</button>
         <button type="submit" name="home">⌂</button><input name="url" type="text" value="socket://3110FF44/~/"><button type="submit" name="navigate">ℜ</button></form></nav>
-    <section class="rest-body"></section>
-    <footer class="rest-status">200 OK</footer></article>
+    <section class="http-body"></section>
+    <footer class="http-status">200 OK</footer></article>
 
 </body>
 </html>

@@ -46,11 +46,11 @@ form[name=http-put-form] input[type=submit] {
     background-color: transparent;
 }
 
-.channel.http-browser .rest-body {
+.channel.http-browser .http-body {
     min-height: 11em;
 }
 
-.channel.http-browser .rest-status {
+.channel.http-browser .http-status {
     background-color: lightgrey;
     padding: 0 0.5em;
     color: #666;

@@ -3,7 +3,7 @@
  */
 if(!exports) var exports = {};
 exports.initSocketCommands = function(SocketServer) {
-    SocketServer.addEventListener('connection', onSocketClient);
+    //SocketServer.addEventListener('connection', initClient);
     SocketServer.addCommand('message', messageClient);
     SocketServer.addCommand('join', joinChannel);
     SocketServer.addCommand('leave', leaveChannel);
@@ -11,19 +11,17 @@ exports.initSocketCommands = function(SocketServer) {
     SocketServer.addCommand('nick', nickClient);
 };
 
-function onSocketClient(newClient) {
-    if(newClient.chat)
-        throw new Error("Chat Client already initiated: " + newClient.chat.username);
+function getClientInfo(client) {
+    if(client.chat)
+        return client.chat;
 
     var uid = generateUID('xxxx');
-    newClient.chat = {};
-    newClient.chat.username = "guest-" + uid.substring(uid.length - 4);
-    newClient.chat.channels = [];
-    //console.log("Initiated new Chat Client: " + newClient);
-    //clientUIDs[newClient.chat.uid] = newClient;
-    //activeClients.push(client);
-    //send(newClient.chat, "INFO Initiated " + newClient.chat.uid);
+    client.chat = {};
+    client.chat.username = "guest-" + uid.substring(uid.length - 4);
+    client.chat.channels = [];
+    return client.chat;
 }
+
 
 //var activeClients = [];
 
@@ -35,14 +33,12 @@ function generateUID(format) {
 }
 
 function isClientActive(client) {
-    if(typeof client.chat === 'undefined') {
-    }
-
-    if(client.readyState !== 1) {
-        console.info("Client is inactive: " + client.chat.uid);
-        for(var i=0; i<client.chat.channels.length; i++) {
-            var channel = client.chat.channels[i];
-            leaveChannel(client, channel);
+    if(client.readyState !== client.OPEN) {
+        var clientInfo = getClientInfo(client);
+        console.info("Client is inactive: " + clientInfo.username);
+        for(var i=0; i<clientInfo.channels.length; i++) {
+            var channel = clientInfo.channels[i];
+            //leaveChannel("LEAVE " + channel, client);
         }
         //for(var i=0; i<activeClients.length; i++) {
         //}
@@ -61,14 +57,40 @@ function send(client, message) {
 }
 
 function nickClient(commandString, client) {
-    var match = /^nick\s+([^\s]+)\s+(\d+)\s+([\s\S]+)$/im.exec(commandString);
+    var match = /^nick\s+([a-z0-9_-]{2,})$/im.exec(commandString);
     if(!match)
         throw new Error("Invalid Chat Command: " + commandString);
-    //var userID = match[1];
+
+    var clientInfo = getClientInfo(client);
+    var newNick = match[1];
+    var oldNick = clientInfo.username;
+    var now = Date.now();
+
+    var nickedClients = [];
+    for(var i=0; i<clientInfo.channels.length; i++) {
+        var channel = clientInfo.channels[i];
+        var channelLowerCase = channel.toLowerCase();
+        if(typeof channelUsers[channelLowerCase] === 'object') {
+            for(var j=0; j<channelUsers[channelLowerCase].length; j++) {
+                var channelClient = channelUsers[channelLowerCase][j];
+                if(isClientActive(channelClient)) {
+                    if(nickedClients.indexOf(channelClient) === -1) {
+                        nickedClients.push(channelClient);
+                        send(channelClient, "NICK " + oldNick + " " + newNick + " " + now);
+                    }
+                }
+            }
+        }
+    }
+
+    if(nickedClients.indexOf(client) === -1) {
+        nickedClients.push(client);
+        send(client, "NICK " + oldNick + " " + newNick + " " + now);
+    }
+
     //var timestamp = parseInt(match[2]);
     //var message = match[3];
 
-    console.log("Message ", commandString);
 }
 
 function messageClient(commandString, client) {
@@ -86,14 +108,16 @@ function chatChannel(commandString, client) {
     var match = /^chat\s+([^\s]+)\s+(\d+)\s+([\s\S]+)$/im.exec(commandString);
     if(!match)
         throw new Error("Invalid Chat Command: " + commandString);
-    var channel = match[1].toLowerCase();
+    var channel = match[1];
+    var channelLowerCase = channel.toLowerCase();
     var timestamp = parseInt(match[2]);
     var message = match[3];
+    var clientInfo = getClientInfo(client);
 
-    if(typeof channelUsers[channel] === 'undefined')
-        channelUsers[channel] = [];
+    if(typeof channelUsers[channelLowerCase] === 'undefined')
+        joinChannel("JOIN " + channel, client);
 
-    var clients = channelUsers[channel];
+    var clients = channelUsers[channelLowerCase];
     var pos = clients.indexOf(client);
     if(pos === -1)
         joinChannel(client, "JOIN " + channel);
@@ -101,7 +125,7 @@ function chatChannel(commandString, client) {
     for(var i=0; i<clients.length; i++) {
         var channelClient = clients[i];
         if(isClientActive(channelClient)) {
-            send(channelClient, "CHAT " + channel + " " + timestamp + " " + client.chat.uid + " " + client.chat.username + " " + message);
+            send(channelClient, "CHAT " + channel + " " + clientInfo.username + " " + timestamp + " " + message);
         }
     }
 
@@ -112,23 +136,30 @@ function joinChannel(commandString, client) {
     var match = /^join\s+(\S+)$/im.exec(commandString);
     if(!match)
         throw new Error("Invalid Chat Command: " + commandString);
-    var channel = match[1].toLowerCase();
+    var channel = match[1];
+    var channelLowerCase = channel.toLowerCase();
+    var clientInfo = getClientInfo(client);
 
-    if(typeof channelUsers[channel] === 'undefined')
-        channelUsers[channel] = [];
+    if(typeof channelUsers[channelLowerCase] === 'undefined')
+        channelUsers[channelLowerCase] = [];
 
-    var clients = channelUsers[channel];
+    var clients = channelUsers[channelLowerCase];
     var pos = clients.indexOf(client);
     if(pos >= 0)
-        throw new Error("Client already in channel: " + channel);
+        throw new Error("Client already in channel: " + channelLowerCase);
     clients.push(client);
+    clientInfo.channels.push(channel);
 
+    var userList = [];
     for(var i=0; i<clients.length; i++) {
         var channelClient = clients[i];
         if(isClientActive(channelClient)) {
-            send(channelClient, "JOIN " + channel + " " + ((client.pgp || {}).uid||'_') + " " + client.chat.username + " " + Date.now());
+            send(channelClient, "JOIN " + channel + " " + clientInfo.username + " " + Date.now());
+            userList.push(clientInfo.username);
         }
     }
+
+    send(client, "USERLIST " + channel + " " + userList.join(" "))
 }
 
 
@@ -136,22 +167,36 @@ function leaveChannel(commandString, client) {
     var match = /^leave\s+(\S+)$/im.exec(commandString);
     if(!match)
         throw new Error("Invalid Chat Command: " + commandString);
-    var channel = match[1].toLowerCase();
+    var channel = match[1];
+    var channelLowerCase = channel.toLowerCase();
+    var clientInfo = getClientInfo(client);
 
-    if(typeof channelUsers[channel] !== 'undefined')
-        throw new Error("Channel does not exist: " + channel);
-    var clients = channelUsers[channel];
+    if(!channelUsers[channelLowerCase])
+        throw new Error("Channel does not exist: " + channelLowerCase);
+
+    var clients = channelUsers[channelLowerCase];
     var pos = clients.indexOf(client);
     if(pos === -1)
-        throw new Error("Client not in channel: " + channel);
+        throw new Error("Client not in channel: " + channelLowerCase);
 
     clients.splice(pos, 1);
-    channelUsers = client;
+    channelUsers[channelLowerCase] = client;
+    for(var ci=0; ci<clientInfo.channels.length; ci++) {
+        var userChannel = clientInfo.channels[ci];
+        if(userChannel.toLowerCase() === channelLowerCase) {
+            clientInfo.channels.splice(ci, 1);
+            break;
+        }
+    }
 
     for(var i=0; i<clients.length; i++) {
         var channelClient = clients[i];
         if(isClientActive(channelClient)) {
-            send(channelClient, "LEAVE " + channel + " " + client.pgp.id_public + " " + client.chat.uid + " " + client.chat.username + " " + Date.now());
+            send(channelClient, "LEAVE " + channelLowerCase + " " + clientInfo.username + " " + Date.now());
         }
     }
+
+    // Delete channel entry after last user leaves
+    if(channelUsers[channelLowerCase].length === 0)
+        delete channelUsers[channelLowerCase];
 }

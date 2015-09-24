@@ -21,7 +21,7 @@ function Sockets(socketURL) {
     };
 
     importScripts('server/sockets-defaults.js');
-    importScripts('socket/templates/sockets-log-template.js');
+    importScripts('server/templates/sockets-log-template.js');
 
     Sockets.getAll = function() { return activeSockets; };
 
@@ -49,6 +49,9 @@ function Sockets(socketURL) {
                 Client.postResponseToClient('LOG socket-log:' + newSocket.url + ' ' + html);
             });
 
+            setTimeout(function () {
+                newSocket.send("NICK relay" + Date.now().toString().substr(6));
+            }, 500);
             newSocket.send("PGP-AUTH ABCD1234 ABCD6543");
         }
         function onClose(e) {
@@ -178,7 +181,7 @@ function Sockets(socketURL) {
 
 
 
-    Sockets.send = function(commandString, withSocket) {
+    Sockets.send = function(commandString, e, withSocket) {
         function send(socket){
             Templates.socket.log.entry(commandString, 'O', function(html) {
                 Client.postResponseToClient('LOG socket-log:' + socket.url + ' ' + html);

@@ -39,7 +39,7 @@
         if(content) {
             // todo http format
             if(preview) {
-                importScripts('rest/templates/http-put-template.js');
+                importScripts('http/templates/http-put-template.js');
                 Templates.rest.put.preview(content, function(html) {
                     Client.postResponseToClient("LOG.REPLACE put-preview: " + html);
                 });
@@ -51,7 +51,7 @@
             }
 
         } else {
-            importScripts('rest/templates/http-put-template.js');
+            importScripts('http/templates/http-put-template.js');
             Templates.rest.put.form(content, function(html) {
                 Client.postResponseToClient("LOG.REPLACE put: " + html);
             });
@@ -86,7 +86,7 @@
                 // If remote, request content from server
                 Client.sendWithSocket(formattedCommandString);
 
-                importScripts('rest/templates/http-response-template.js');
+                importScripts('http/templates/http-response-template.js');
                 // Show something, sheesh
                 Templates.rest.response.body(
                     "<p>Request sent...</p>",
@@ -103,7 +103,7 @@
 
             }
         }, function(err) {
-            importScripts('rest/templates/http-response-template.js');
+            importScripts('http/templates/http-response-template.js');
             Templates.rest.response.body(
                 '',
                 requestData.url,
@@ -178,7 +178,7 @@
 
                     var signedBody = protectHTMLContent(contentData.content_verified);
 
-                    importScripts('rest/templates/http-response-template.js');
+                    importScripts('http/templates/http-response-template.js');
                     Templates.rest.response.body(
                         signedBody,
                         requestData.url,
@@ -197,7 +197,7 @@
                             responseHeaders = (responseHeaders ? responseHeaders + "\n" : "") + requestData.createResponseHeaderString();
                             defaultResponseBody = protectHTMLContent(defaultResponseBody);
 
-                            importScripts('rest/templates/http-response-template.js');
+                            importScripts('http/templates/http-response-template.js');
                             Templates.rest.response.body(
                                 defaultResponseBody,
                                 requestData.url,
@@ -329,7 +329,7 @@
             requestUrl = urlData.url;
             var browserID = response.headers['browser-id'] || httpBrowserID++;
 
-            importScripts('rest/templates/test-browser-template.js');
+            importScripts('http/templates/test-browser-template.js');
             Templates.rest.browser(responseText, function(html) {
                 parseHTMLBody(html, requestUrl, function(parsedResponseBody) {
                     Client.postResponseToClient("LOG.REPLACE http-browser:" + browserID + ' ' + parsedResponseBody);
