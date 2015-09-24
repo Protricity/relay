@@ -43,7 +43,7 @@
         });
         e.target.dispatchEvent(commandEvent);
 
-        // TODO: pending action status with .rest-browser
+        // TODO: pending action status with .http-browser
 
     }
 
@@ -91,14 +91,14 @@
             return false;
 
         switch(formElm.getAttribute('name')) {
-            case 'rest-put-form':
+            case 'http-put-form':
                 refreshHTTPPutForm(e, formElm);
                 if(e.type === 'submit')
                     e.preventDefault() ||
                     submitHTTPPutForm(e, formElm);
                 return true;
 
-            case 'rest-browser-navigation-form':
+            case 'http-browser-navigation-form':
                 if(e.type === 'submit')
                     e.preventDefault() ||
                     submitHTTPBrowserNavigationForm(e, formElm);
@@ -371,7 +371,7 @@
     includeScript('pgp/pgp-db.js');
 
     // For HTTP Content Database access
-    includeScript('rest/rest-db.js');
+    includeScript('http/http-db.js');
 
     // For PGP Decryption in chat rooms
     var openPGPScriptPath = 'pgp/lib/openpgpjs/openpgp.js';

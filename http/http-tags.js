@@ -7,7 +7,7 @@ tagCallbacks['rest'] = function(tagString, callback) {
     tagString.replace(/\{rest::index\s+([^}]+)}/i, function(tagString, pathString) {
         found = true;
         if(typeof RestDB !== 'function')
-            importScripts('rest/rest-db.js');
+            importScripts('http/http-db.js');
 
         RestDB.listURLIndex(pathString, function(urls) {
             var pathHTML = "<ul class='path-index'>";

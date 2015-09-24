@@ -57,7 +57,7 @@
             });
 
             if(typeof RestDB !== 'function')
-                importScripts('rest/rest-db.js');
+                importScripts('http/http-db.js');
 
             RestDB.queryContentFeedByID(
                 publicKeyID,

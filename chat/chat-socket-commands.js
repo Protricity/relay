@@ -2,7 +2,7 @@
  * Created by ari on 9/22/2015.
  */
 if(!exports) var exports = {};
-exports.initSocketServerCommands = function(SocketServer) {
+exports.initSocketCommands = function(SocketServer) {
     SocketServer.addEventListener('connection', onSocketClient);
     SocketServer.addCommand('message', messageClient);
     SocketServer.addCommand('join', joinChannel);
@@ -13,13 +13,13 @@ exports.initSocketServerCommands = function(SocketServer) {
 
 function onSocketClient(newClient) {
     if(newClient.chat)
-        throw new Error("Chat Client already initiated");
+        throw new Error("Chat Client already initiated: " + newClient.chat.username);
 
     var uid = generateUID('xxxx');
     newClient.chat = {};
     newClient.chat.username = "guest-" + uid.substring(uid.length - 4);
     newClient.chat.channels = [];
-    console.log("Initiated new Chat Client: " + newClient);
+    //console.log("Initiated new Chat Client: " + newClient);
     //clientUIDs[newClient.chat.uid] = newClient;
     //activeClients.push(client);
     //send(newClient.chat, "INFO Initiated " + newClient.chat.uid);
@@ -60,7 +60,7 @@ function send(client, message) {
     console.info("O " + message);
 }
 
-function nickClient(client, commandString) {
+function nickClient(commandString, client) {
     var match = /^nick\s+([^\s]+)\s+(\d+)\s+([\s\S]+)$/im.exec(commandString);
     if(!match)
         throw new Error("Invalid Chat Command: " + commandString);
@@ -71,7 +71,7 @@ function nickClient(client, commandString) {
     console.log("Message ", commandString);
 }
 
-function messageClient(client, commandString) {
+function messageClient(commandString, client) {
     var match = /^message\s+([^\s]+)\s+(\d+)\s+([\s\S]+)$/im.exec(commandString);
     if(!match)
         throw new Error("Invalid Chat Command: " + commandString);
@@ -82,7 +82,7 @@ function messageClient(client, commandString) {
     console.log("Message ", userID, timestamp, message);
 }
 
-function chatChannel(client, commandString) {
+function chatChannel(commandString, client) {
     var match = /^chat\s+([^\s]+)\s+(\d+)\s+([\s\S]+)$/im.exec(commandString);
     if(!match)
         throw new Error("Invalid Chat Command: " + commandString);
@@ -108,7 +108,7 @@ function chatChannel(client, commandString) {
 }
 
 
-function joinChannel(client, commandString) {
+function joinChannel(commandString, client) {
     var match = /^join\s+(\S+)$/im.exec(commandString);
     if(!match)
         throw new Error("Invalid Chat Command: " + commandString);
@@ -132,7 +132,7 @@ function joinChannel(client, commandString) {
 }
 
 
-function leaveChannel(client, commandString) {
+function leaveChannel(commandString, client) {
     var match = /^leave\s+(\S+)$/im.exec(commandString);
     if(!match)
         throw new Error("Invalid Chat Command: " + commandString);

@@ -3,5 +3,5 @@
  */
 
 
-require('./http/http-server.js').HTTPServer.startServer();
-require('./socket/socket-server.js').SocketServer.startServer();
+require('./server/http-server.js').HTTPServer.startServer();
+require('./server/socket-server.js').SocketServer.startServer();

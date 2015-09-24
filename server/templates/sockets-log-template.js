@@ -10,7 +10,7 @@ Templates.socket.log.container = function(url, callback) {
     // Template
     var SOCKET_TEMPLATE = "\
         <article class='channel socket:{$socket_url} minimized' data-sort='z'>\n\
-            <link rel='stylesheet' href='socket/sockets.css' type='text/css'>\n\
+            <link rel='stylesheet' href='server/sockets.css' type='text/css'>\n\
             <legend class='title'>\n\
                 <a href='#MINIMIZE socket:{$socket_url}'>\n\
                     <span class='command'>Socket</span> {$socket_host}\n\

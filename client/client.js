@@ -17,83 +17,56 @@ function Client() {
 
     var responseList = [];
     var commandList = [];
-    var proxyList = [];
 
     Client.sendWithSocket = function(commandString, withSocket) {
         if(typeof Sockets === 'undefined')
-            importScripts('socket/sockets.js');
+            importScripts('server/sockets.js');
         return Sockets.send(commandString, withSocket);
     };
 
-    Client.addCommand = function (commandPrefix, commandCallback) {
-        if(commandPrefix instanceof Array) {
-            for(var i=0; i<commandPrefix.length; i++)
-                Client.addCommand(commandPrefix[i], commandCallback);
 
-        } else {
-            if(!(commandPrefix instanceof RegExp))
-                commandPrefix = new RegExp('^' + commandPrefix, 'i');
-            commandList.push([commandPrefix, commandCallback]);
+    Client.addCommand = function (commandPrefix, commandCallback) {
+        if(!(commandPrefix instanceof RegExp))
+            commandPrefix = new RegExp('^' + commandPrefix, 'i');
+        commandList.push([commandPrefix, commandCallback]);
+    };
+
+    Client.removeCommand = function (commandCallback) {
+        for(var i=0; i<commandList.length; i++) {
+            if(commandList[i][1] === commandCallback) {
+                commandList.splice(i, 1);
+            }
         }
     };
 
     Client.addResponse = function (responsePrefix, responseCallback) {
-        if(responsePrefix instanceof Array) {
-            for(var i=0; i<responsePrefix.length; i++)
-                Client.addResponse(responsePrefix[i], responseCallback);
-
-        } else {
-            if(!(responsePrefix instanceof RegExp))
-                responsePrefix = new RegExp('^' + responsePrefix, 'i');
-            responseList.push([responsePrefix, responseCallback]);
-        }
+        if(!(responsePrefix instanceof RegExp))
+            responsePrefix = new RegExp('^' + responsePrefix, 'i');
+        responseList.push([responsePrefix, responseCallback]);
     };
 
-    Client.addCommandProxy = function (commandPrefix, scriptPath) {
-        if(commandPrefix instanceof Array) {
-            for(var i=0; i<commandPrefix.length; i++)
-                Client.addCommandProxy(commandPrefix[i], scriptPath);
-
-        } else {
-            if(!(commandPrefix instanceof RegExp))
-                commandPrefix = new RegExp('^' + commandPrefix, 'i');
-            proxyList.push([commandPrefix, scriptPath]);
-        }
-    };
-
-    importScripts('client/client-defaults.js');
+    importScripts('client/client-command-proxies.js');
 
     Client.execute = function(commandString, e) {
-        for(var i=0; i<commandList.length; i++) {
+        for(var i=commandList.length-1; i>=0; i--) {
             if(commandList[i][0].test(commandString)) {
                 return commandList[i][1](commandString, e);
-            }
-        }
-        if(tryProxy(commandString)) {
-            for(i=0; i<commandList.length; i++) {
-                if(commandList[i][0].test(commandString)) {
-                    return commandList[i][1](commandString, e);
-                }
             }
         }
         throw new Error("Command Handler failed to load: " + commandString);
     };
 
     Client.processResponse = function(responseString, e) {
+        var responseFound = false;
         for(var i=0; i<responseList.length; i++) {
             if(responseList[i][0].test(responseString)) {
-                return responseList[i][1](responseString, e);
+                responseFound = true;
+                if(responseList[i][1](responseString, e) === true)
+                    break;
             }
         }
-        if(tryProxy(responseString)) {
-            for(i=0; i<responseList.length; i++) {
-                if(responseList[i][0].test(responseString)) {
-                    return responseList[i][1](responseString, e);
-                }
-            }
-        }
-
-        throw new Error("Command Response Handler failed to load: " + responseString);
+        if(!responseFound)
+            throw new Error("Command Response Handler failed to load: " + responseString);
     };
 
     Client.postResponseToClient = function(responseString) {
@@ -101,21 +74,6 @@ function Client() {
             self.postMessage(parsedResponseString);
         });
     };
-
-    function tryProxy(contentString) {
-        for(var j=0; j<proxyList.length; j++) {
-            var proxyRegex = proxyList[j][0];
-            if(proxyRegex.test(contentString)) {
-                var proxyScript = proxyList[j][1];
-                var oldLength = commandList.length + responseList.length;
-                importScripts(proxyScript);
-                if(commandList.length + responseList.length === oldLength)
-                    throw new Error("Imported script failed to add any new commands: " + proxyScript);
-                return true;
-            }
-        }
-        return false;
-    }
 
     function replaceAllTags(htmlContent, callback) {
         var match = /{([a-z][^}]+)}/.exec(htmlContent);
@@ -145,6 +103,32 @@ function Client() {
             );
         });
     }
+
+// Default
+
+    //var defaultResponse = function(responseString) {
+    //    defaultResponse = function(responseString) {
+    //        throw new Error("Command Response Handler failed to load: " + responseString);
+    //    };
+    //
+    //};
+    //Client.addResponse(/^\w+/, defaultResponse);
+
+// Socket Client
+
+    Client.addResponse('info', function(commandResponse) { console.info(commandResponse); });
+    Client.addResponse('error', function(commandResponse) { console.error(commandResponse); });
+    Client.addResponse('assert', function(commandResponse) { console.assert(commandResponse); });
+    Client.addResponse('warn', function(commandResponse) { console.warn(commandResponse); });
+
+
+// Window Client
+
+    Client.addCommand(['minimize', 'maximize', 'close'],
+        function(commandResponse) {
+            // TODO: custom logic per window
+            return Client.postResponseToClient("LOG." + commandResponse);
+        });
 
 
 })();

@@ -2,11 +2,19 @@
  * Created by ari on 9/22/2015.
  */
 if(!exports) var exports = {};
-exports.initSocketServerCommands = function(SocketServer) {
+exports.initSocketCommands = function(SocketServer) {
     //SocketServer.addCommand('idsig', messageClient);
 
     SocketServer.addEventListener('connection', onSocketClient);
-    SocketServer.addCommand('identify', identifyClient);
+    //SocketServer.addCommand('identify', pgpAuthIdentify);
+    SocketServer.addCommand('pgp-auth', pgpAuth);
+    SocketServer.addCommand('pgp-auth-validate', pgpAuthValidate);
+
+
+    SocketServer.addCommand(/^get @pgp/i, function(commandString, client) {
+        console.log("OMG PGP" + commandString);
+        //require('../pgp/pgp-request-handlers.js').processSocketRequest(commandString, client);
+    });
 };
 
 function onSocketClient(newClient) {
@@ -17,6 +25,7 @@ function onSocketClient(newClient) {
     newClient.pgp.id_public = '_';
     newClient.pgp.uid = generateUID(SESSION_UID);
     console.log("Initiated new PGP Client: " + newClient);
+    send(newClient, "UID " + newClient.pgp.uid);
 }
 
 
@@ -28,12 +37,26 @@ function generateUID(format) {
     });
 }
 
-function identifyClient(client, commandString) {
+function pgpAuth(commandString, client) {
+    var match = /^pgp-auth\s+(.*)?$/i.exec(commandString);
+    if(!match)
+        throw new Error("Invalid command: " + commandString);
+
+    var ids = match[1].split(/\W+/);
+    for(var i=0; i<ids.length; i++) {
+        var id = ids[i];
+        console.log("PGP IDENTIFY " + id);
+    }
+
+}
+
+function pgpAuthValidate(commandString, client) {
     //var publicKeyBlock = parsePublicKeyBlock(commandString);
     //var signedIDSIGBlock = parseSignedMessage(commandString);
-    var publicKeys = openpgp.key.readArmored(commandString);
-    var clearSignedMessages = openpgp.cleartext.readArmored(commandString);
-    send(client, "IDENTIFY " + client.pgp.uid);
+    //var publicKeys = openpgp.key.readArmored(commandString);
+    //var clearSignedMessages = openpgp.cleartext.readArmored(commandString);
+    console.log(commandString);
+    //send(client, "IDENTIFY " + client.pgp.uid);
 }
 
 function send(client, message) {

@@ -1,41 +1,41 @@
 
 
 
-form[name=rest-put-preview-form] {
+form[name=http-put-preview-form] {
     min-width: 30em;
 }
 
-form[name=rest-put-form] {
+form[name=http-put-form] {
     /*min-width: 30em;*/
 }
 
-form[name=rest-put-form] input[type=submit] {
+form[name=http-put-form] input[type=submit] {
     padding: 0.5em 1em;
     margin: 0.5em;
 }
 
-.channel.rest-response-400 {
+.channel.http-response-400 {
     border: 1px solid red;
 }
 
-.channel.rest-browser {
+.channel.http-browser {
     min-height: 15em;
 }
 
-.channel.rest-browser nav {
+.channel.http-browser nav {
     background-color: lightgray;
     border: 1px outset;
 }
 
-.channel.rest-browser input[name=url] {
+.channel.http-browser input[name=url] {
     width: 21em;
 }
 
-.channel.rest-browser nav input[name=url] {
+.channel.http-browser nav input[name=url] {
     padding: 1px 5px;
 }
 
-.channel.rest-browser nav button {
+.channel.http-browser nav button {
     /* height: 24px; */
     /* vertical-align: top; */
     margin: 1px;
@@ -46,11 +46,11 @@ form[name=rest-put-form] input[type=submit] {
     background-color: transparent;
 }
 
-.channel.rest-browser .rest-body {
+.channel.http-browser .rest-body {
     min-height: 11em;
 }
 
-.channel.rest-browser .rest-status {
+.channel.http-browser .rest-status {
     background-color: lightgrey;
     padding: 0 0.5em;
     color: #666;
@@ -65,6 +65,6 @@ form[name=rest-put-form] input[type=submit] {
     display: none;
 }
 
-form[name=rest-put-form].no-passphrase-required .hide-on-no-passphrase-required {
+form[name=http-put-form].no-passphrase-required .hide-on-no-passphrase-required {
     display: none;
 }

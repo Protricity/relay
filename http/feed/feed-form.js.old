@@ -326,7 +326,7 @@
     includeScript('pgp/pgp-listeners.js');
 
     // For Content Database access
-    includeScript('rest/rest-db.js');
+    includeScript('rest/http-db.js');
 
     // For Content Events
     includeScript('rest/feed/feed-listeners.js');

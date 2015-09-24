@@ -12,6 +12,42 @@
 
     var USE_SOCKET_PGP_KEYGEN = false;
 
+    /**
+     * @param commandString
+     */
+    Client.addCommand('pgp-auth', function (commandString) {
+        var match = /^pgp-identify/i.exec(commandString);
+        if(!match)
+            throw new Error("Invalid command: " + commandString);
+
+        // TODO: all or select sockets
+        Client.sendWithSocket(commandString); // sendSocket
+
+        //var keyID = match[1].toUpperCase();
+        //
+        //if(typeof PGPDB !== 'function')
+        //    importScripts('pgp/pgp-db.js');
+        //PGPDB.getPublicKeyData(keyID, function(publicKeyData) {
+        //    if(!publicKeyData)
+        //        throw new Error("Could not find Public Key: " + keyID);
+        //
+        //    //commandString = 'pgp-identify ' + publicKeyData.block_public;
+        //
+        //
+        //});
+    });
+
+    /**
+     * @param commandString
+     */
+    Client.addCommand('pgp-auth-validate', function (commandString) {
+        var match = /^pgp-auth-validate\s+(\w{8,})/im.exec(commandString);
+        if(!match)
+            throw new Error("Invalid command: " + commandString);
+
+        console.log(commandString);
+    });
+
 
     /**
      * @param commandString
