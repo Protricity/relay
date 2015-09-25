@@ -20,10 +20,10 @@
      *
      * @param commandString PUT [path] [content]
      */
-    Client.addCommand('put', function (commandString) {
+    Client.addCommand(function (commandString) {
         var match = /^put\s*(\S*)\s*([\S\s]+)?$/im.exec(commandString);
         if(!match)
-            throw new Error("Invalid PUT: " + commandString);
+            return false; // throw new Error("Invalid PUT: " + commandString);
 
         var path = match[1] || '~';
         var content = match[2] || '';
@@ -58,9 +58,16 @@
             // Free up template resources
             delete Templates.rest.put.form;
         }
+
+        return true;
     });
 
-    Client.addResponse('put', Client.postResponseToClient);
+    Client.addResponse(function(commandString) {
+        if(commandString.substr(0,3).toLowerCase() !== 'put')
+            return false; // throw new Error("Invalid PUT: " + commandString);
+        Client.postResponseToClient(commandString);
+        return true;
+    });
 
 
     var httpBrowserID = 1;
@@ -68,7 +75,9 @@
      *
      * @param commandString GET [URL]
      */
-    Client.addCommand('get', function (commandString) {
+    Client.addCommand(function (commandString) {
+        if(commandString.substr(0,3).toLowerCase() !== 'get')
+            return false; // throw new Error("Invalid GET: " + commandString);
         var requestData = parseRequestBody(commandString);
         if(!requestData.headers['browser-id'])
             requestData.headers['browser-id'] = httpBrowserID++;
@@ -118,24 +127,31 @@
             delete Templates.rest.response.body;
 
         });
+        return true;
     });
 
-    Client.addResponse('get', function(requestResponseString) {
+    Client.addResponse(function(responseString) {
+        if(responseString.substr(0,3).toLowerCase() !== 'get')
+            return false;
 
-        executeLocalGETRequest(requestResponseString, function(responseText) {
+        executeLocalGETRequest(responseString, function(responseText) {
             Client.sendWithSocket(responseText);
         });
+        return true;
     });
 
-    Client.addResponse('http', function(httpResponseText) {
-        parseResponseURLs(httpResponseText);
-        var responseData = parseResponseText(httpResponseText);
+    Client.addResponse(function(responseString) {
+        if(responseString.substr(0,4).toLowerCase() !== 'http')
+            return false;
+
+        parseResponseURLs(responseString);
+        var responseData = parseResponseText(responseString);
         var requestURL = responseData.headers['request-url'];
         if(!requestURL)
             throw new Error("Unknown request-url for response: Header is missing");
         var browserID = responseData.headers['browser-id'];
         if(!browserID)
-            throw new Error("Unknown browser-id for response:\n" + httpResponseText);
+            throw new Error("Unknown browser-id for response:\n" + responseString);
         var commandString = "GET " + requestURL + "\n" +
             "Browser-ID: " + browserID + "\n";
         if(responseData.code === 404) {
@@ -144,9 +160,10 @@
             });
 
         } else {
-            renderResponseText(httpResponseText);
+            renderResponseText(responseString);
         }
 
+        return true;
     });
 
     function parseResponseURLs(httpResponseText) {

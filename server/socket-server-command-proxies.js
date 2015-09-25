@@ -6,30 +6,33 @@ exports.initSocketServerCommandProxies = function(SocketServer) {
     // Socket Command Proxies
 
     // HTTP Commands
-    SocketServer.addCommand(/^(get|post|put|delete|patch|head|http|host-auth|host-auth-validate)/i, httpCommand);
+    SocketServer.addCommand(httpCommand);
     function httpCommand(commandString, client) {
+        if(!/^(get|post|put|delete|patch|head|http|host-auth|host-auth-validate)/i.test(commandString))
+            return false;
         SocketServer.removeCommand(httpCommand);
-        require('../http/server-commands.js')
-            .initSocketCommands(SocketServer);
-        SocketServer.execute(commandString, client);
+        require('../server/server-commands.js')
+            .initSocketServerCommands(SocketServer);
     }
 
     // Chat Commands
-    SocketServer.addCommand(/^(join|leave|message|chat|nick)/i, chatCommand);
+    SocketServer.addCommand(chatCommand);
     function chatCommand(commandString, client) {
+        if(!/^(join|leave|message|chat|nick)/i.test(commandString))
+            return false;
         SocketServer.removeCommand(chatCommand);
         require('../chat/chat-socket-commands.js')
-            .initSocketCommands(SocketServer);
-        SocketServer.execute(commandString, client);
+            .initSocketServerCommands(SocketServer);
     }
 
     // PGP Commands
-    SocketServer.addCommand(/^(pgp-auth|pgp-auth-validate|get @pgp)/i, pgpCommand);
+    SocketServer.addCommand(pgpCommand);
     function pgpCommand(commandString, client) {
+        if(!/^(pgp-auth|pgp-auth-validate|get @pgp)/i.test(commandString))
+            return false;
         SocketServer.removeCommand(pgpCommand);
         require('../pgp/pgp-socket-commands.js')
-            .initSocketCommands(SocketServer);
-        SocketServer.execute(commandString, client);
+            .initSocketServerCommands(SocketServer);
     }
 
 };

@@ -4,11 +4,11 @@
 if(!exports) var exports = {};
 exports.initSocketCommands = function(SocketServer) {
     //SocketServer.addEventListener('connection', initClient);
-    SocketServer.addCommand('message', messageClient);
-    SocketServer.addCommand('join', joinChannel);
-    SocketServer.addCommand('leave', leaveChannel);
-    SocketServer.addCommand('chat', chatChannel);
-    SocketServer.addCommand('nick', nickClient);
+    SocketServer.addCommand(messageClient);
+    SocketServer.addCommand(joinChannel);
+    SocketServer.addCommand(leaveChannel);
+    SocketServer.addCommand(chatChannel);
+    SocketServer.addCommand(nickClient);
 };
 
 function getClientInfo(client) {
@@ -59,7 +59,7 @@ function send(client, message) {
 function nickClient(commandString, client) {
     var match = /^nick\s+([a-z0-9_-]{2,})$/im.exec(commandString);
     if(!match)
-        throw new Error("Invalid Chat Command: " + commandString);
+        return false;
 
     var clientInfo = getClientInfo(client);
     var newNick = match[1];
@@ -88,26 +88,27 @@ function nickClient(commandString, client) {
         send(client, "NICK " + oldNick + " " + newNick + " " + now);
     }
 
-    //var timestamp = parseInt(match[2]);
-    //var message = match[3];
-
+    return true;
 }
 
 function messageClient(commandString, client) {
     var match = /^message\s+([^\s]+)\s+(\d+)\s+([\s\S]+)$/im.exec(commandString);
     if(!match)
-        throw new Error("Invalid Chat Command: " + commandString);
+        return false;
+
     var userID = match[1];
     var timestamp = parseInt(match[2]);
     var message = match[3];
 
     console.log("Message ", userID, timestamp, message);
+    return true;
 }
 
 function chatChannel(commandString, client) {
     var match = /^chat\s+([^\s]+)\s+(\d+)\s+([\s\S]+)$/im.exec(commandString);
     if(!match)
-        throw new Error("Invalid Chat Command: " + commandString);
+        return false;
+
     var channel = match[1];
     var channelLowerCase = channel.toLowerCase();
     var timestamp = parseInt(match[2]);
@@ -128,14 +129,15 @@ function chatChannel(commandString, client) {
             send(channelClient, "CHAT " + channel + " " + clientInfo.username + " " + timestamp + " " + message);
         }
     }
-
+    return true;
 }
 
 
 function joinChannel(commandString, client) {
     var match = /^join\s+(\S+)$/im.exec(commandString);
     if(!match)
-        throw new Error("Invalid Chat Command: " + commandString);
+        return false;
+
     var channel = match[1];
     var channelLowerCase = channel.toLowerCase();
     var clientInfo = getClientInfo(client);
@@ -159,14 +161,16 @@ function joinChannel(commandString, client) {
         }
     }
 
-    send(client, "USERLIST " + channel + " " + userList.join(" "))
+    send(client, "USERLIST " + channel + " " + userList.join(" "));
+    return true;
 }
 
 
 function leaveChannel(commandString, client) {
     var match = /^leave\s+(\S+)$/im.exec(commandString);
     if(!match)
-        throw new Error("Invalid Chat Command: " + commandString);
+        return false;
+
     var channel = match[1];
     var channelLowerCase = channel.toLowerCase();
     var clientInfo = getClientInfo(client);
@@ -199,4 +203,6 @@ function leaveChannel(commandString, client) {
     // Delete channel entry after last user leaves
     if(channelUsers[channelLowerCase].length === 0)
         delete channelUsers[channelLowerCase];
+
+    return true;
 }

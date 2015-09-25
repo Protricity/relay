@@ -12,9 +12,12 @@
 
     var activeChannels = [];
 
-    Client.addCommand('message', Client.sendWithSocket);
-    Client.addCommand('join', Client.sendWithSocket);
-    Client.addCommand('leave', Client.sendWithSocket);
+    Client.addCommand(function(commandString, e) {
+        if(!/^(message|join|leave)/i.test(commandString))
+            return false;
+        Client.sendWithSocket(commandString, e);
+        return true;
+    });
 //    function(commandString) {
 //        var args = commandString.split(/\s+/, 3);
 //        var channelPath = args[1];
@@ -26,33 +29,38 @@
 //    });
 
 
-    Client.addCommand('chat', function(commandString) {
+    Client.addCommand(function(commandString) {
         var match = /^chat\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandString);
         if(!match)
-            throw new Error("Invalid Chat Command: " + commandString);
+            return false; // throw new Error("Invalid Chat Command: " + commandString);
         var channelPath = match[1];
         var channelMessage = match[2];
         commandString = "CHAT " + channelPath + " " + Date.now() + " " + channelMessage;
-        return Client.sendWithSocket(commandString);
+        Client.sendWithSocket(commandString);
+        return true;
     });
 
-    Client.addResponse('chat', function(commandResponse, e) {
+    Client.addResponse(function(commandResponse, e) {
         var match = /^(chat)\s+(\S+)/im.exec(commandResponse);
         if(!match)
-            throw new Error("Invalid Chat Response: " + commandResponse);
+            return false; // throw new Error("Invalid Chat Response: " + commandResponse);
         var channelPath = match[2];
         getChannelUsers(channelPath);
         Templates.chat.message(commandResponse, function(html) {
             Client.postResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
         });
+        return true;
     });
 
     var channelUsers = {};
-    Client.addResponse('join', function(commandResponse) {
+    Client.addResponse(function(commandResponse) {
+        var match = /^(join)\s+(\S+)\s+(\S+)\s+/im.exec(commandResponse);
+        if(!match)
+            return false;
         var args = commandResponse.split(/\s/);
-        var channelPath = args[1];
+        var channelPath = match[2];
         var channelPathLowerCase = channelPath.toLowerCase();
-        var username = args[2];
+        var username = match[3];
         getChannelUsers(channelPath);
         Templates.chat.action(commandResponse, function(html) {
             Client.postResponseToClient('LOG chat-log:' + channelPathLowerCase + ' ' + html);
@@ -66,11 +74,13 @@
                 Client.postResponseToClient('LOG.REPLACE chat-active-users:' + channelPath.toLowerCase() + ' ' + html);
             });
         }
-
+        return true;
     });
 
-    Client.addResponse('userlist', function(commandResponse) {
+    Client.addResponse(function(commandResponse) {
         var match = /^(userlist)\s+(\S+)\s+([\s\S]+)$/im.exec(commandResponse);
+        if(!match)
+            return false;
         var channelPath = match[2];
         var channelPathLowerCase = channelPath.toLowerCase();
         var userList = match[3].split(/\s+/img);
@@ -79,13 +89,16 @@
         Templates.chat.userList(channelPath, userList, function(html) {
             Client.postResponseToClient('LOG.REPLACE chat-active-users:' + channelPath.toLowerCase() + ' ' + html);
         });
+        return true;
     });
 
-    Client.addResponse('leave', function(commandResponse) {
-        var args = commandResponse.split(/\s/);
-        var channelPath = args[1];
+    Client.addResponse(function(commandResponse) {
+        var match = /^(leave)\s+(\S+)\s+(\S+)\s+/im.exec(commandResponse);
+        if(!match)
+            return false;
+        var channelPath = match[2];
         var channelPathLowerCase = channelPath.toLowerCase();
-        var username = args[2];
+        var username = match[3];
         getChannelUsers(channelPath);
         Templates.chat.action(commandResponse, function(html) {
             Client.postResponseToClient('LOG chat-log:' + channelPathLowerCase + ' ' + html);
@@ -103,11 +116,12 @@
         });
     });
 
-    Client.addResponse('nick', function(commandResponse) {
-        var args = commandResponse.split(/\s/);
-        var old_username = args[1];
-        var new_username = args[2];
-        console.log(old_username, new_username);
+    Client.addResponse(function(commandResponse) {
+        var match = /^(nick)\s+(\S+)\s+(\S+)\s+/im.exec(commandResponse);
+        if(!match)
+            return false;
+        var old_username = match[2];
+        var new_username = match[3];
         for (var channelPath in channelUsers) {
             if (channelUsers.hasOwnProperty(channelPath)) {
                 (function (channelPath) {
@@ -127,14 +141,30 @@
         }
     });
 
-    Client.addResponse('message', function(commandResponse) {
-        var match = /^(msg|message)\s+([\s\S]+)$/im.exec(commandResponse);
-        var username = match[2];
+    Client.addResponse(function(commandResponse) {
+        if(!/^(msg|message)/im.test(commandResponse))
+            return false;
+        //var username = match[2];
         //var content = fixPGPMessage(match[3]);
-        Templates.chat.message(commandResponse, function(html) {
+        Templates.chat.message(commandResponse, function(html, username) {
             Client.postResponseToClient('LOG message:' + username + ' ' + html);
         });
     });
+
+    function getChannelUsers(channelPath) {
+        if(!channelPath)
+            throw new Error("Invalid Channel Path Argument");
+
+        var channelPathLowerCase = channelPath.toLowerCase();
+        if(typeof channelUsers[channelPathLowerCase] === 'undefined') {
+            channelUsers[channelPathLowerCase] = [];
+            Templates.chat.form(channelPath, function(html) {
+                Client.postResponseToClient("LOG.REPLACE chat:" + channelPathLowerCase + ' ' + html);
+            });
+            console.info("New active channel: " + channelPath);
+        }
+        return channelUsers[channelPathLowerCase];
+    }
 
 //
 //
@@ -172,21 +202,6 @@
 //
 //        return htmlContent;
 //    }
-
-    function getChannelUsers(channelPath) {
-        if(!channelPath)
-            throw new Error("Invalid Channel Path Argument");
-
-        var channelPathLowerCase = channelPath.toLowerCase();
-        if(typeof channelUsers[channelPathLowerCase] === 'undefined') {
-            channelUsers[channelPathLowerCase] = [];
-            Templates.chat.form(channelPath, function(html) {
-                Client.postResponseToClient("LOG.REPLACE chat:" + channelPathLowerCase + ' ' + html);
-            });
-            console.info("New active channel: " + channelPath);
-        }
-        return channelUsers[channelPathLowerCase];
-    }
 
 })();
 

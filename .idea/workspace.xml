@@ -2,26 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f1a3609b-05f2-4e93-b5c1-0f477f2ec236" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/server/server-commands.js" />
+      <change type="DELETED" beforePath="D:\Dev\Server\WWW\relay\pgp\pgp-request-handlers.js" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/chat/chat-client-commands.js" afterPath="$PROJECT_DIR$/chat/chat-client-commands.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/chat/chat-socket-commands.js" afterPath="$PROJECT_DIR$/chat/chat-socket-commands.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/chat/chat-templates.js" afterPath="$PROJECT_DIR$/chat/chat-templates.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/client-command-proxies.js" afterPath="$PROJECT_DIR$/client/client-command-proxies.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/client.js" afterPath="$PROJECT_DIR$/client/client.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/http/feed/feed-client-commands.js" afterPath="$PROJECT_DIR$/http/feed/feed-client-commands.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/http/http-client-commands.js" afterPath="$PROJECT_DIR$/http/http-client-commands.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/http-server-command-proxies.js" afterPath="$PROJECT_DIR$/server/http-server-command-proxies.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/http-server.js" afterPath="$PROJECT_DIR$/server/http-server.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/http/http.css" afterPath="$PROJECT_DIR$/http/http.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pgp/pgp-client-commands.js" afterPath="$PROJECT_DIR$/pgp/pgp-client-commands.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/server-commands.js" afterPath="$PROJECT_DIR$/server/server-commands.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/socket-server-command-proxies.js" afterPath="$PROJECT_DIR$/server/socket-server-command-proxies.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/socket-server.js" afterPath="$PROJECT_DIR$/server/socket-server.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/sockets.js" afterPath="$PROJECT_DIR$/server/sockets.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/http/pages/test.html" afterPath="$PROJECT_DIR$/http/pages/test.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/http/pages/home/test.html" afterPath="$PROJECT_DIR$/http/pages/home/test.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\http\templates\rest-browser-template.js" afterPath="$PROJECT_DIR$/http/templates/http-browser-template.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\http\templates\rest-put-template.js" afterPath="$PROJECT_DIR$/http/templates/http-put-template.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\http\templates\rest-response-template.js" afterPath="$PROJECT_DIR$/http/templates/http-response-template.js" />
-      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\pgp\pgp-server-commands.js" afterPath="$PROJECT_DIR$/pgp/pgp-socket-commands.js" />
+      <change type="MOVED" beforePath="D:\Dev\Server\WWW\relay\pgp\pgp-socket-commands.js" afterPath="$PROJECT_DIR$/pgp/pgp-server-commands.js" />
     </list>
     <ignored path="relay.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -53,11 +50,41 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="chat-socket-commands.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/chat/chat-socket-commands.js">
+      <file leaf-file-name="pgp-server-commands.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pgp/pgp-server-commands.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.3853211" vertical-offset="1108" max-vertical-offset="3519">
-              <caret line="80" column="0" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1887">
+              <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="http-server-command-proxies.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/server/http-server-command-proxies.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="731">
+              <caret line="16" column="23" selection-start-line="16" selection-start-column="23" selection-end-line="16" selection-end-column="23" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="http-server.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/server/http-server.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="317" max-vertical-offset="1700">
+              <caret line="69" column="30" selection-start-line="69" selection-start-column="30" selection-end-line="69" selection-end-column="30" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="socket-server.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/server/socket-server.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="912" max-vertical-offset="1921">
+              <caret line="96" column="16" selection-start-line="96" selection-start-column="16" selection-end-line="99" selection-end-column="31" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -65,11 +92,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="chat-client-commands.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/chat/chat-client-commands.js">
+      <file leaf-file-name="client.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/client/client.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="41.04" vertical-offset="1604" max-vertical-offset="3383">
-              <caret line="34" column="62" selection-start-line="34" selection-start-column="54" selection-end-line="34" selection-end-column="62" />
+            <state vertical-scroll-proportion="0.28987068" vertical-offset="836" max-vertical-offset="2669">
+              <caret line="65" column="0" selection-start-line="65" selection-start-column="0" selection-end-line="65" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="server-commands.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/server/server-commands.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1547">
+              <caret line="24" column="99" selection-start-line="24" selection-start-column="99" selection-end-line="26" selection-end-column="39" />
               <folding />
             </state>
           </provider>
@@ -88,7 +125,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/start-server.sh" />
         <option value="$PROJECT_DIR$/rest/rest-server.js" />
         <option value="$PROJECT_DIR$/chat/chat-commands.js" />
         <option value="$PROJECT_DIR$/commands/commands.js" />
@@ -103,9 +139,7 @@
         <option value="$PROJECT_DIR$/socket/socket-server-defaults.js" />
         <option value="$PROJECT_DIR$/http/http-defaults.js" />
         <option value="$PROJECT_DIR$/socket/sockets-defaults.js" />
-        <option value="$PROJECT_DIR$/pgp/pgp-client-commands.js" />
         <option value="$PROJECT_DIR$/socket/sockets.js" />
-        <option value="$PROJECT_DIR$/http/feed/feed-client-commands.js" />
         <option value="$PROJECT_DIR$/http/http-tags.js" />
         <option value="$PROJECT_DIR$/http/templates/rest-put-template.js" />
         <option value="$PROJECT_DIR$/http/http-listeners.js" />
@@ -119,26 +153,29 @@
         <option value="$PROJECT_DIR$/server/server-defaults.js" />
         <option value="$PROJECT_DIR$/server/http-server-defaults.js" />
         <option value="$PROJECT_DIR$/client/client-defaults.js" />
-        <option value="$PROJECT_DIR$/client/client-command-proxies.js" />
         <option value="$PROJECT_DIR$/pgp/pgp-request-handlers.js" />
-        <option value="$PROJECT_DIR$/pgp/pgp-socket-commands.js" />
         <option value="$PROJECT_DIR$/server/socket-server-proxies.js" />
         <option value="$PROJECT_DIR$/server/http-server-commands.js" />
-        <option value="$PROJECT_DIR$/server/http-server-command-proxies.js" />
-        <option value="$PROJECT_DIR$/server/server-commands.js" />
-        <option value="$PROJECT_DIR$/http/http-client-commands.js" />
         <option value="$PROJECT_DIR$/http/http.css" />
         <option value="$PROJECT_DIR$/http/pages/home/test.html" />
         <option value="$PROJECT_DIR$/http/pages/test.html" />
         <option value="$PROJECT_DIR$/http/templates/http-browser-template.js" />
-        <option value="$PROJECT_DIR$/server/http-server.js" />
-        <option value="$PROJECT_DIR$/server/socket-server-command-proxies.js" />
-        <option value="$PROJECT_DIR$/client/client.js" />
-        <option value="$PROJECT_DIR$/server/socket-server.js" />
+        <option value="$PROJECT_DIR$/server/sockets.js" />
         <option value="$PROJECT_DIR$/chat/chat-templates.js" />
         <option value="$PROJECT_DIR$/chat/chat-client-commands.js" />
-        <option value="$PROJECT_DIR$/server/sockets.js" />
+        <option value="$PROJECT_DIR$/http/http-client-commands.js" />
+        <option value="$PROJECT_DIR$/http/feed/feed-client-commands.js" />
+        <option value="$PROJECT_DIR$/pgp/pgp-client-commands.js" />
+        <option value="$PROJECT_DIR$/server/http-server-command-proxies.js" />
+        <option value="$PROJECT_DIR$/client/client-command-proxies.js" />
         <option value="$PROJECT_DIR$/chat/chat-socket-commands.js" />
+        <option value="$PROJECT_DIR$/pgp/pgp-socket-commands.js" />
+        <option value="$PROJECT_DIR$/server/server-commands.js" />
+        <option value="$PROJECT_DIR$/server/socket-server-command-proxies.js" />
+        <option value="$PROJECT_DIR$/pgp/pgp-server-commands.js" />
+        <option value="$PROJECT_DIR$/server/http-server.js" />
+        <option value="$PROJECT_DIR$/server/socket-server.js" />
+        <option value="$PROJECT_DIR$/client/client.js" />
       </list>
     </option>
   </component>
@@ -191,102 +228,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server.old" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server.old" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="service" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server.old" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="service" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="command" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="relay" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server.old" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -572,7 +513,7 @@
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32953367" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2967942" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2967942" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33919063" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32746115" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -717,6 +658,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-16.36" vertical-offset="206430" max-vertical-offset="283985">
           <caret line="12167" column="13" selection-start-line="12167" selection-start-column="13" selection-end-line="12167" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -745,13 +687,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-8.2" vertical-offset="9349" max-vertical-offset="10302">
           <caret line="562" column="77" selection-start-line="562" selection-start-column="71" selection-end-line="562" selection-end-column="77" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/http/feed/feed-client-commands.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="780" max-vertical-offset="1411">
-          <caret line="59" column="31" selection-start-line="59" selection-start-column="31" selection-end-line="59" selection-end-column="31" />
         </state>
       </provider>
     </entry>
@@ -808,28 +743,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pgp/pgp-request-handlers.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="221">
-          <caret line="8" column="36" selection-start-line="8" selection-start-column="36" selection-end-line="8" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/http-server-command-proxies.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="714">
-          <caret line="16" column="21" selection-start-line="16" selection-start-column="21" selection-end-line="16" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/http/http-client-commands.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="592" max-vertical-offset="8789">
-          <caret line="53" column="27" selection-start-line="53" selection-start-column="27" selection-end-line="53" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/http/http.css">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="351" max-vertical-offset="1292">
@@ -858,61 +771,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/server/http-server.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="503" max-vertical-offset="1819">
-          <caret line="52" column="45" selection-start-line="52" selection-start-column="45" selection-end-line="53" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/socket-server-command-proxies.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="663">
-          <caret line="29" column="34" selection-start-line="29" selection-start-column="28" selection-end-line="29" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pgp/pgp-client-commands.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="11475">
-          <caret line="52" column="27" selection-start-line="52" selection-start-column="27" selection-end-line="52" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pgp/pgp-socket-commands.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1768">
-          <caret line="7" column="29" selection-start-line="7" selection-start-column="29" selection-end-line="7" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/chat/chat-templates.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1333" max-vertical-offset="2261">
-          <caret line="101" column="18" selection-start-line="101" selection-start-column="18" selection-end-line="101" selection-end-column="18" />
-          <folding>
-            <marker date="1443121712728" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1443121712728" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1443121712728" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1443121712728" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1443121712728" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1443121712728" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1443121712728" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1443121712728" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1443121712728" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1443121712728" expanded="false" signature="-1:-1" placeholder="..." />
-            <marker date="1443121712728" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1443121712728" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1443121712728" expanded="false" signature="-1:-1" placeholder="..." />
-            <marker date="1443121712728" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1443121712728" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1443121712728" expanded="true" signature="-1:-1" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/server.old/src/java/relay/service/WebSocketServer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-8.16" vertical-offset="0" max-vertical-offset="2516">
@@ -932,55 +790,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/client/client.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.08" vertical-offset="750" max-vertical-offset="2584">
-          <caret line="56" column="52" selection-start-line="56" selection-start-column="51" selection-end-line="56" selection-end-column="52" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/client-command-proxies.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1122">
-          <caret line="17" column="37" selection-start-line="17" selection-start-column="37" selection-end-line="17" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client/client-listeners.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.36" vertical-offset="862" max-vertical-offset="4335">
-          <caret line="63" column="13" selection-start-line="63" selection-start-column="13" selection-end-line="63" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/chat/chat-listeners.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-8.52" vertical-offset="637" max-vertical-offset="1564">
           <caret line="50" column="28" selection-start-line="50" selection-start-column="28" selection-end-line="50" selection-end-column="28" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/server-commands.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-15.32" vertical-offset="484" max-vertical-offset="1547">
-          <caret line="51" column="13" selection-start-line="51" selection-start-column="13" selection-end-line="51" selection-end-column="13" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/socket-server.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-15.64" vertical-offset="2873" max-vertical-offset="3502">
-          <caret line="192" column="20" selection-start-line="192" selection-start-column="20" selection-end-line="192" selection-end-column="20" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1000,21 +814,144 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/client/client-listeners.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="862" max-vertical-offset="4335">
+          <caret line="63" column="13" selection-start-line="63" selection-start-column="13" selection-end-line="63" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/chat/chat-templates.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="712" max-vertical-offset="2278">
+          <caret line="69" column="31" selection-start-line="69" selection-start-column="31" selection-end-line="72" selection-end-column="28" />
+          <folding>
+            <marker date="1443142449622" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443142449622" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443142449622" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443142449622" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443142449622" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443142449622" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443142449622" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443142449622" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443142449622" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443142449622" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1443142449622" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443142449622" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443142449622" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1443142449622" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443142449622" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443142449622" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/chat/chat-client-commands.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="41.04" vertical-offset="1604" max-vertical-offset="3383">
-          <caret line="34" column="62" selection-start-line="34" selection-start-column="54" selection-end-line="34" selection-end-column="62" />
+        <state vertical-scroll-proportion="-7.24" vertical-offset="40" max-vertical-offset="3638">
+          <caret line="13" column="0" selection-start-line="13" selection-start-column="0" selection-end-line="19" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/client-command-proxies.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1054">
+          <caret line="40" column="14" selection-start-line="40" selection-start-column="14" selection-end-line="40" selection-end-column="14" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/chat/chat-socket-commands.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3853211" vertical-offset="1108" max-vertical-offset="3519">
-          <caret line="80" column="0" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3621">
+          <caret line="163" column="67" selection-start-line="163" selection-start-column="67" selection-end-line="163" selection-end-column="67" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/socket-server-command-proxies.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="714">
+          <caret line="14" column="37" selection-start-line="14" selection-start-column="37" selection-end-line="14" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/http/feed/feed-client-commands.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="795" max-vertical-offset="1428">
+          <caret line="76" column="0" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/http/http-client-commands.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="8458" max-vertical-offset="9078">
+          <caret line="142" column="49" selection-start-line="142" selection-start-column="49" selection-end-line="144" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pgp/pgp-client-commands.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="6322" max-vertical-offset="11135">
+          <caret line="383" column="4" selection-start-line="383" selection-start-column="4" selection-end-line="383" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pgp/pgp-server-commands.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1887">
+          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/http-server-command-proxies.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="731">
+          <caret line="16" column="23" selection-start-line="16" selection-start-column="23" selection-end-line="16" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/server-commands.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1547">
+          <caret line="24" column="99" selection-start-line="24" selection-start-column="99" selection-end-line="26" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/http-server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="317" max-vertical-offset="1700">
+          <caret line="69" column="30" selection-start-line="69" selection-start-column="30" selection-end-line="69" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/socket-server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="912" max-vertical-offset="1921">
+          <caret line="96" column="16" selection-start-line="96" selection-start-column="16" selection-end-line="99" selection-end-column="31" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/client.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.28987068" vertical-offset="836" max-vertical-offset="2669">
+          <caret line="65" column="0" selection-start-line="65" selection-start-column="0" selection-end-line="65" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>

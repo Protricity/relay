@@ -11,48 +11,44 @@
 (function() {
 
     // HTTP Commands
-    Client.addCommand(/^(get|post|put|delete|patch|head|host-auth|host-auth-validate)/i, httpCommand);
-    function httpCommand(commandString, e) {
-        Client.removeCommand(httpCommand);
+    Client.addCommand(importHTTPCommands);
+    Client.addResponse(importHTTPCommands);
+    function importHTTPCommands(commandCallback, e) {
+        if(!/^(get|post|put|delete|patch|head|http|host-auth|host-auth-validate)/i.test(commandCallback))
+            return false;
+        Client.removeCommand(importHTTPCommands);
+        Client.removeResponse(importHTTPCommands);
         importScripts('http/http-client-commands.js');
-        Client.execute(commandString, e);
-    }
-    Client.addResponse(/^(http)/i, httpResponse);
-    function httpResponse(responseString, e) {
-        Client.removeResponse(httpResponse);
-        importScripts('http/http-client-commands.js');
-        Client.processResponse(responseString, e);
     }
 
     // Chat Commands
-    Client.addCommand(/^(join|leave|message|chat|nick)/i, chatCommand);
-    function chatCommand(commandString, e) {
-        Client.removeCommand(chatCommand);
+    Client.addCommand(importChatCommands);
+    Client.addResponse(importChatCommands);
+    function importChatCommands(commandCallback, e) {
+        if(!/^(join|leave|message|chat|nick)/i.test(commandCallback))
+            return false;
+        Client.removeCommand(importChatCommands);
+        Client.removeResponse(importChatCommands);
         importScripts('chat/chat-client-commands.js');
-        Client.execute(commandString, e);
-    }
-    Client.addResponse(/^(join|leave|message|chat|nick)/i, chatResponse);
-    function chatResponse(responseString, e) {
-        Client.removeResponse(chatResponse);
-        importScripts('http/http-client-commands.js');
-        Client.processResponse(responseString, e);
     }
 
 
     // Feed Commands
-    Client.addCommand(/^(feed)/i, feedCommand);
-    function feedCommand(commandString, e) {
-        Client.removeCommand(feedCommand);
+    Client.addCommand(importFeedCommands);
+    function importFeedCommands(commandCallback, e) {
+        if(!/^(feed)/i.test(commandCallback))
+            return false;
+        Client.removeCommand(importFeedCommands);
         importScripts('feed/feed-client-commands.js');
-        Client.execute(commandString, e);
     }
 
     // PGP Commands
-    Client.addCommand(/^(keygen|encrypt|register|unregister|manage|pgp-auth|pgp-auth-validate)/i, pgpCommand);
-    function pgpCommand(commandString, e) {
-        Client.removeCommand(pgpCommand);
+    Client.addCommand(importPGPCommands);
+    function importPGPCommands(commandCallback, e) {
+        if(!/^(keygen|encrypt|register|unregister|manage|pgp-auth|pgp-auth-validate)/i.test(commandCallback))
+            return false;
+        Client.removeCommand(importPGPCommands);
         importScripts('pgp/pgp-client-commands.js');
-        Client.execute(commandString, e);
     }
 
 })();

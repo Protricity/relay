@@ -2,20 +2,27 @@
  * Created by ari on 9/22/2015.
  */
 if(!exports) var exports = {};
-exports.initSocketCommands = function(SocketServer) {
-    //SocketServer.addCommand('idsig', messageClient);
+exports.initSocketServerCommands = function(SocketServer) {
+    //SocketServer.addCommand(function (commandString, client) {
+    //    if(commandString.substr(0, 3).toLowerCase() !== 'get')
+    //        return false;
+    //
+    //    handleFileRequest(commandString, function(responseBody, statusCode, statusMessage, headers) {
+    //        client.send('HTTP/1.1 ' + (statusCode || 200) + (statusMessage || 'OK') +
+    //            (headers ? "\n" + headers : ''),
+    //            "\n\n" + responseBody
+    //        );
+    //
+    //    });
+    //});
 
-    SocketServer.addEventListener('connection', onSocketClient);
-    //SocketServer.addCommand('identify', pgpAuthIdentify);
-    SocketServer.addCommand('pgp-auth', pgpAuth);
-    SocketServer.addCommand('pgp-auth-validate', pgpAuthValidate);
-
-
-    SocketServer.addCommand(/^get @pgp/i, function(commandString, client) {
-        console.log("OMG PGP" + commandString);
-        //require('../pgp/pgp-request-handlers.js').processSocketRequest(commandString, client);
-    });
+    SocketServer.addCommand(pgpAuth);
+    SocketServer.addCommand(pgpAuthValidate);
 };
+
+exports.initHTTPServerCommands = function(HTTPServer) {
+};
+
 
 function onSocketClient(newClient) {
     if(newClient.pgp)

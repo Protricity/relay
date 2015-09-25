@@ -17,8 +17,10 @@
      *
      * @param commandString FEED [public key id] [path prefix]
      */
-    Client.addCommand('feed', function (commandString) {
+    Client.addCommand(function (commandString) {
         var match = /^feed\s*(\S*)\s*(\S*)$/im.exec(commandString);
+        if(!match)
+            return false;
 
         var publicKeyID = match[1] || null;
         var pathPrefix = match[2] || '~';
@@ -69,9 +71,8 @@
                 });
         }
 
+        return true;
     });
-
-    //Client.addResponse('feed', Client.sendWithSocket);
 
 
 })();

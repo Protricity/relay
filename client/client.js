@@ -15,7 +15,7 @@ function Client() {
 
 (function() {
 
-    var responseList = [];
+    var responseHandlers = [];
     var commandHandlers = [];
 
     Client.sendWithSocket = function(commandString, e, withSocket) {
@@ -25,60 +25,65 @@ function Client() {
     };
 
 
-    Client.addCommand = function (commandPrefix, commandCallback) {
-        if(!(commandPrefix instanceof RegExp))
-            commandPrefix = new RegExp('^' + commandPrefix, 'i');
-        commandHandlers.push([commandPrefix, commandCallback]);
+    Client.addCommand = function (commandCallback) {
+        if(commandHandlers.indexOf(commandCallback) >= 0)
+            throw new Error("Callback already added: " + commandCallback);
+        commandHandlers.push(commandCallback);
     };
 
     Client.removeCommand = function (commandCallback) {
-        for(var i=0; i<commandHandlers.length; i++) {
-            if(commandHandlers[i][1] === commandCallback) {
-                commandHandlers.splice(i, 1);
-                return;
-            }
-        }
-        throw new Error("Command Callback not found");
+        var pos = commandHandlers.indexOf(commandCallback);
+        if(pos === -1)
+            throw new Error("Command Callback not added: " + commandCallback);
+        commandHandlers.splice(pos, 1);
     };
 
     Client.addResponse = function (responsePrefix, responseCallback) {
         if(!(responsePrefix instanceof RegExp))
             responsePrefix = new RegExp('^' + responsePrefix, 'i');
-        responseList.push([responsePrefix, responseCallback]);
+        responseHandlers.push([responsePrefix, responseCallback]);
     };
 
     Client.removeResponse = function (responseCallback) {
-        for(var i=0; i<responseList.length; i++) {
-            if(responseList[i][1] === responseCallback) {
-                responseList.splice(i, 1);
-                return;
-            }
-        }
-        throw new Error("Response Callback not found");
+        var pos = responseHandlers.indexOf(responseCallback);
+        if(pos === -1)
+            throw new Error("Response Callback not added: " + responseCallback);
+        responseHandlers.splice(pos, 1);
     };
 
     importScripts('client/client-command-proxies.js');
 
     Client.execute = function(commandString, e) {
-        for(var i=commandHandlers.length-1; i>=0; i--) {
-            if(commandHandlers[i][0].test(commandString)) {
-                return commandHandlers[i][1](commandString, e);
-            }
+        var oldLength = commandHandlers.length;
+        for(var i=commandHandlers.length-1; i>=0; i--)
+            if(commandHandlers[i](commandString, e))
+                return true;
+        if(commandHandlers.length > oldLength) {
+            return Client.execute(commandString, e);
+
+        } else {
+            var err = "Client Command Handlers (" + commandHandlers.length + ") could not handle: " + commandString;
+            console.error(err);
+            Client.postResponseToClient("ERROR " + err);
+            return false;
         }
-        throw new Error("Client Command Handler failed to load: " + commandString);
     };
 
     Client.processResponse = function(responseString, e) {
-        var responseFound = false;
-        for(var i=0; i<responseList.length; i++) {
-            if(responseList[i][0].test(responseString)) {
-                responseFound = true;
-                if(responseList[i][1](responseString, e) === true)
-                    break;
-            }
+        var oldLength = responseHandlers.length;
+        for(var i=responseHandlers.length-1; i>=0; i--)
+            if(responseHandlers[i](responseString, e))
+                return true;
+
+        if(responseHandlers.length > oldLength) {
+            return Client.processResponse(responseString, e);
+
+        } else {
+            var err = "Client Response Handlers (" + responseHandlers.length + ") could not handle: " + responseString;
+            console.error(err);
+            Client.postResponseToClient("ERROR " + err);
+            return false;
         }
-        if(!responseFound)
-            throw new Error("Command Response Handler failed to load: " + responseString);
     };
 
     Client.postResponseToClient = function(responseString) {
@@ -127,20 +132,20 @@ function Client() {
     //Client.addResponse(/^\w+/, defaultResponse);
 
 // Socket Client
-
-    Client.addResponse('info', function(commandResponse) { console.info(commandResponse); });
-    Client.addResponse('error', function(commandResponse) { console.error(commandResponse); });
-    Client.addResponse('assert', function(commandResponse) { console.assert(commandResponse); });
-    Client.addResponse('warn', function(commandResponse) { console.warn(commandResponse); });
+    Client.addResponse(function(commandResponse, e) {
+        if(!/^(info|error|assert|warn)/i.test(commandResponse))
+            return false;
+        console.info(commandResponse);
+        return true;
+    });
 
 
 // Window Client
-    function logToClient(commandString) {
-        // TODO: custom logic per window
-        return Client.postResponseToClient("LOG." + commandString);
-    }
-    Client.addCommand('minimize', logToClient);
-    Client.addCommand('maximize', logToClient);
-    Client.addCommand('close', logToClient);
+    Client.addCommand(function(commandString, e) {
+        if(!/^(minimize|maximize|close)/i.test(commandString))
+            return false;
+        Client.postResponseToClient("LOG." + commandString);
+        return true;
+    });
 
 })();

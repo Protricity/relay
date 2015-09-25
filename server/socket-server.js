@@ -69,132 +69,39 @@ function SocketServer() {
         clientEvents.push([type, listener]);
     };
 
-    SocketServer.addCommand = function (commandPrefix, commandCallback) {
-        if(!(commandPrefix instanceof RegExp))
-            commandPrefix = new RegExp('^' + commandPrefix, 'i');
-        commandHandlers.push([commandPrefix, commandCallback]);
+    SocketServer.addCommand = function (commandCallback) {
+        if(commandHandlers.indexOf(commandCallback) >= 0)
+            throw new Error("Callback already added: " + commandCallback);
+        commandHandlers.push(commandCallback);
     };
 
     SocketServer.removeCommand = function (commandCallback) {
-        for(var i=0; i<commandHandlers.length; i++) {
-            if(commandHandlers[i][1] === commandCallback) {
-                commandHandlers.splice(i, 1);
-                return;
-            }
-        }
-        throw new Error("Callback not found");
+        var pos = commandHandlers.indexOf(commandCallback);
+        if(pos === -1)
+            throw new Error("Command Callback not added: " + commandCallback);
+        commandHandlers.splice(pos, 1);
     };
-
 
     require('./socket-server-command-proxies.js')
         .initSocketServerCommandProxies(SocketServer);
 
     SocketServer.execute = function(commandString, client) {
-        for(var i=0; i<commandHandlers.length; i++) {
-            if(commandHandlers[i][0].test(commandString)) {
-                return commandHandlers[i][1](commandString, client);
-            }
+        var oldLength = commandHandlers.length;
+        for(var i=commandHandlers.length-1; i>=0; i--)
+            if(commandHandlers[i](commandString, client))
+                return true;
+
+        if(commandHandlers.length > oldLength) {
+            return SocketServer.execute(commandString, client);
+
+        } else {
+            var err = "Server Command Handlers (" + commandHandlers.length + ") could not handle: " + commandString;
+            client.send("ERROR " + err);
+            console.error(err);
+            return false;
         }
-        throw new Error("Command Handler failed to load: " + commandString);
     };
 
-
-
-    function handleURIRequest(commandString, client) {
-        var request = parseRequestBody(commandString);
-
-        //for(var j=0; j<requestHandlers.length; j++) {
-        //    var uriPrefix = requestHandlers[j][0];
-        //    if(!uriPrefix.test(request.uri))
-        //        continue;
-        //
-        //    var requestHandler = requestHandlers[j][1];
-        //    requestHandler(commandString, function(responseBody, statusCode, statusMessage, headers) {
-        //        client.send('HTTP/1.1 ' + (statusCode || 200) + (statusMessage || 'OK') +
-        //            (headers ? "\n" + headers : ''),
-        //            "\n\n" + responseBody
-        //        );
-        //    });
-        //    return true;
-        //}
-
-        var fs = require('fs');
-
-        var filePath = '.' + request.url;
-        if (filePath == './')
-            filePath = './index.html';
-
-        var contentType = getContentType(filePath);
-
-        fs.readFile(filePath, function (error, content) {
-            if (error) {
-                if (error.code == 'ENOENT') {
-                    fs.readFile('./404.html', function (error, content) {
-                        response.writeHead(200, {'Content-Type': contentType});
-                        response.end(content, 'utf-8');
-                    });
-                }
-                else {
-                    response.writeHead(500);
-                    response.end('Sorry, check with the site admin for error: ' + error.code + ' ..\n');
-                    response.end();
-                }
-            }
-            else {
-                response.writeHead(200, {'Content-Type': contentType});
-                response.end(content, 'utf-8');
-            }
-        });
-    }
-
-    function getContentType(filePath) {
-        var extname = filePath.split('?')[0].split('.').pop().toLowerCase();
-        switch (extname) {
-            case 'htm':
-            case 'html':
-                return 'text/html';
-            case 'js':
-                return 'text/javascript';
-            case 'css':
-                return 'text/css';
-            case 'json':
-                return 'application/json';
-            case 'png':
-                return 'image/png';
-            case 'jpg':
-                return 'image/jpg';
-            case 'wav':
-                return 'audio/wav';
-            default:
-                console.error("Unknown file type: " + filePath);
-                return 'application/octet-stream';
-        }
-    }
-
-    function parseRequestBody(requestText) {
-        var headers = requestText.split(/\n/);
-        var firstLine = headers.shift();
-        var headerValues = {};
-        for(var i=0; i<headers.length; i++) {
-            var splitHeader = headers[i].split(': ');
-            headerValues[splitHeader[0].toLowerCase()] = splitHeader.length > 0 ? splitHeader[1] : true;
-        }
-        var match = /^get\s*(\S*)(\s+HTTP\/1.1)?$/i.exec(firstLine);
-        if(!match)
-            throw new Error("Invalid GET Request: " + requestText);
-        return {
-            method: 'GET',
-            url: match[1],
-            http_version: match[2] || 'HTTP/1.1',
-            headers: headerValues
-        };
-    }
-
-    // HTTP Commands
-    SocketServer.addCommand('get', handleURIRequest);
-
-    //require('../pgp/pgp-socket-commands.js')
-    //    .initSocketServerCommands(SocketServer);
 
 })();
 

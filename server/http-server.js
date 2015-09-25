@@ -35,26 +35,17 @@ function HTTPServer() {
     //var proxyList = [];
     //var requestHandlers = [];
 
-    HTTPServer.addCommand = function (commandPrefix, requestHandler) {
-        if(commandPrefix instanceof Array) {
-            for(var i=0; i<commandPrefix.length; i++)
-                HTTPServer.addCommand(commandPrefix[i], requestHandler);
-
-        } else {
-            if(!(commandPrefix instanceof RegExp))
-                commandPrefix = new RegExp('^' + commandPrefix, 'i');
-            commandHandlers.push([commandPrefix, requestHandler]);
-        }
+    HTTPServer.addCommand = function (commandCallback) {
+        if(commandHandlers.indexOf(commandCallback) >= 0)
+            throw new Error("Callback already added: " + commandCallback);
+        commandHandlers.push(commandCallback);
     };
 
     HTTPServer.removeCommand = function (commandCallback) {
-        for(var i=0; i<commandHandlers.length; i++) {
-            if(commandHandlers[i][1] === commandCallback) {
-                commandHandlers.splice(i, 1);
-                return;
-            }
-        }
-        throw new Error("Callback not found");
+        var pos = commandHandlers.indexOf(commandCallback);
+        if(pos === -1)
+            throw new Error("Command Callback not added: " + commandCallback);
+        commandHandlers.splice(pos, 1);
     };
 
     require('./http-server-command-proxies.js')
@@ -64,20 +55,22 @@ function HTTPServer() {
 
     HTTPServer.execute = function(request, response) {
         var commandString = request.method + ' ' + request.url;
-        for(var i=0; i<commandHandlers.length; i++) {
-            if (commandHandlers[i][0].test(commandString)) {
-                return commandHandlers[i][1](request, response);
-            }
-        }
 
-        //if(tryProxy(commandString)) {
-        //    for(i=0; i<commandHandler.length; i++) {
-        //        if(commandHandler[i][0].test(commandString)) {
-        //            return commandHandler[i][1](request, response);
-        //        }
-        //    }
-        //}
-        throw new Error("Command Handler failed to load: " + commandString);
+        var oldLength = commandHandlers.length;
+        for(var i=commandHandlers.length-1; i>=0; i--)
+            if(commandHandlers[i](request, response))
+                return true;
+
+        if(commandHandlers.length > oldLength) {
+            return HTTPServer.execute(request, response);
+
+        } else {
+            var err = "Server Command Handlers (" + commandHandlers.length + ") could not handle: " + commandString;
+            response.writeHead(400, "Command Failed");
+            response.end(err);
+            console.error(err);
+            return false;
+        }
     };
 
 

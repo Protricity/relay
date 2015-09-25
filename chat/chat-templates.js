@@ -67,10 +67,11 @@ Templates.chat.message = function(commandResponse, callback) {
         '</div>';
 
     callback(MESSAGE_TEMPLATE
-            .replace(/{\$timestamp}/gi, timestamp+'')
-            .replace(/{\$channel}/gi, channelPath)
-            .replace(/{\$username}/gi, username)
-            .replace(/{\$content}/gi, content)
+        .replace(/{\$timestamp}/gi, timestamp+'')
+        .replace(/{\$channel}/gi, channelPath)
+        .replace(/{\$username}/gi, username)
+        .replace(/{\$content}/gi, content),
+        username
     );
 };
 

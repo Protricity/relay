@@ -85,6 +85,7 @@ function Sockets(socketURL) {
 
         }
         function onSocketMessage(e) {
+//             console.info("I " + e.data);
             Client.processResponse(e.data, e);
             var socket = e.target;
             if(socket instanceof WebSocket) {
