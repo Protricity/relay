@@ -176,7 +176,7 @@ RestDB.getContent = function(contentURI, callback) {
 
     match = /^([^.]*\.)?([a-f0-9]{16})\.ks$/i.exec(host);
     if(!match)
-        throw new Error("Host must match [PGP KEY ID].ks")
+        throw new Error("Host must match [PGP KEY ID (16)].ks: " + contentURI);
     var keyID = match[2];
     keyID = keyID.substr(keyID.length - 16);
 

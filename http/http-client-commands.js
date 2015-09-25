@@ -20,7 +20,7 @@
      *
      * @param commandString PUT [path] [content]
      */
-    Client.addCommand(function (commandString) {
+    Client.addCommand(function putCommand(commandString) {
         var match = /^put(?:\s+(\S+))?(?:\s+(\S+))?/im.exec(commandString);
         if(!match)
             return false;
@@ -70,7 +70,6 @@
     });
 
 
-    var httpBrowserID = 1;
     /**
      *
      * @param commandString GET [URL]
@@ -80,58 +79,67 @@
         if(!match)
             return false;
 
-        executeGETRequest(commandString, function(responseText) {
-            renderResponseText(responseText);
+        executeRemoteGETRequest(commandString, function(responseString) {
+            renderResponseString(responseString);
         });
     });
 
 // http://521D4941.ks/@pgp/@export
-    Client.addResponse(function(responseString) {
-        var match = /^get (?:socket:\/\/)?([a-f0-9]{8,})(?:\.ks)(\/@pgp.*)$/i.exec(responseString);
+    Client.addResponse(function(requestString) {
+        var match = /^get (?:socket:\/\/)?([a-f0-9]{8,})(?:\.ks)(\/@pgp.*)$/i.exec(requestString);
         if(!match)
             return false;
 
-        executeGETRequest(responseString, function(responseText) {
-            Client.sendWithSocket(responseText);
-        }, true, true);
+        executeLocalGETRequest(requestString, function(responseString) {
+            Client.sendWithSocket(responseString);
+        });
         return true;
     });
 
+    // TODO: default content on response http only?
     Client.addResponse(function(responseString) {
         if(responseString.substr(0,4).toLowerCase() !== 'http')
             return false;
 
         addURLsToDB(responseString);
 
-        var responseData = parseResponseText(responseString);
-        var requestURL = responseData.headers['request-url'];
-        if(!requestURL)
-            throw new Error("Unknown request-url for response: Header is missing");
-        var browserID = responseData.headers['browser-id'];
-        if(!browserID)
-            throw new Error("Unknown browser-id for response:\n" + responseString);
-        var commandString = "GET " + requestURL + "\n" +
-            "Browser-ID: " + browserID + "\n";
-        if(responseData.code === 404) {
-            // 404 so grab default content, grab default content
-            executeGETRequest(commandString, function(responseText) {
-                renderResponseText(responseText);
-            }, true);
+        var responseCode = getResponseStatus(responseString)[0];
+        if(responseCode === 200) {
+            renderResponseString(responseString);
 
         } else {
-            renderResponseText(responseString);
+            var requestURL = getContentHeader(responseString, 'Request-Url');
+            if(!requestURL)
+                throw new Error("Unknown request-url for response: Header is missing");
+            var browserID = getContentHeader(responseString, 'Browser-ID');
+            if(!browserID)
+                throw new Error("Unknown browser-id for response:\n" + responseString);
+            var requestString = "GET " + requestURL + "\n" +
+                "Browser-ID: " + browserID + "\n";
+
+            executeLocalGETRequest(requestString, function(responseString, responseCode) {
+                if (responseCode === 200) {
+                    responseString = protectHTMLContent(responseString);
+                    renderResponseString(responseString);
+
+                } else {
+                    processResponseWithDefaultContent(responseString, function (responseString) {
+                        renderResponseString(responseString);
+                    });
+                }
+            });
         }
+
 
         return true;
     });
 
-    function addURLsToDB(httpResponseText) {
-        var responseData = parseResponseText(httpResponseText);
-        var referrerURL = responseData.headers['request-url'];
+    function addURLsToDB(responseContent) {
+        var referrerURL = getContentHeader(responseContent, 'Request-Url');
         if(!referrerURL)
-            throw new Error("Unknown request-url for response: Header is missing");
+            throw new Error("Unknown Request-Url for response: Header is missing");
 
-        responseData.body.replace(/<a[^>]+href=['"]([^'">]+)['"][^>]*>([^<]+)<\/a>/gi, function(match, url, text, offset, theWholeThing) {
+        responseContent.replace(/<a[^>]+href=['"]([^'">]+)['"][^>]*>([^<]+)<\/a>/gi, function(match, url, text, offset, theWholeThing) {
             if(typeof RestDB !== 'function')
                 importScripts('http/http-db.js');
 
@@ -139,98 +147,147 @@
         });
     }
 
-
+    var httpBrowserID = 1;
     var requestIDCount = 0;
     var pendingGETRequests = {};
-    function executeGETRequest(requestString, callback, local_only, skip_default_content) {
-        var requestData = parseRequestString(requestString);
-        var browserID = requestData.headers['browser-id'] || (function() {
-            browserID = requestData.headers['browser-id'] = httpBrowserID++;
-            requestData.headersString = (requestData.headersString + "\nBrowser-ID: " + browserID).trim();
-            requestString = "GET " + requestData.url + " " + requestData.http_version + "\n" + requestData.headersString;
-            return browserID;
-        })();
+    function executeRemoteGETRequest(requestString, callback) {
+        var browserID = getContentHeader(requestString, 'Browser-ID');
+        if(!browserID)
+            requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
 
         if(typeof RestDB !== 'function')
             importScripts('http/http-db.js');
 
-        RestDB.getContent(requestData.url, function (contentData) {
+        // Send request regardless of local cache
+        var requestID = 'R' + requestIDCount++;
+        requestString = addContentHeader(requestString, 'Request-ID', requestID);
+        pendingGETRequests[requestID] = callback; // TODO: reuse same callback? should be fine.
+        Client.sendWithSocket(requestString);
+
+        // Check local cache to see what can be displayed while waiting
+        var requestURL = getRequestURL(requestString);
+        RestDB.getContent(requestURL, function (contentData) {
             if(contentData) {
                 var signedBody = protectHTMLContent(contentData.content_verified);
 
                 importScripts('http/templates/http-response-template.js');
                 Templates.rest.response.body(
                     signedBody,
-                    requestData.url,
+                    requestURL,
                     200,
                     "OK",
                     "Browser-ID: " + browserID,
-                    callback
+                    function(body, code, text, responseHeaders) {
+                        callback('HTTP/1.1 ' + code + ' ' + text + responseHeaders + "\n\n" + body, code, text);
+                    }
                 );
                 // Free up template resources
                 delete Templates.rest.response.body;
 
             } else {
-                if(local_only) {
-                    // No content found locally, grab default content
-                    if(skip_default_content) {
-
-                        importScripts('rest/pages/404.js');
-                        get404IndexTemplate(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
-                            importScripts('http/templates/http-response-template.js');
-                            Templates.rest.response.body(
-                                defaultResponseBody,
-                                requestData.url,
-                                responseCode,
-                                responseText,
-                                (responseHeaders + "\nBrowser-ID: " + browserID).trim(),
-                                callback);
-                            // Free up template resources
-                            delete Templates.rest.response.body;
-                        });
-
-                    } else {
-                        getDefaultContentResponse(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
-
-                            defaultResponseBody = protectHTMLContent(defaultResponseBody);
-
-                            importScripts('http/templates/http-response-template.js');
-                            Templates.rest.response.body(
-                                defaultResponseBody,
-                                requestData.url,
-                                responseCode,
-                                responseText,
-                                (responseHeaders + "\nBrowser-ID: " + browserID).trim(),
-                                callback);
-                            // Free up template resources
-                            delete Templates.rest.response.body;
-                        });
+                // If nothing found, show something, sheesh
+                importScripts('http/templates/http-response-template.js');
+                Templates.rest.response.body(
+                    "<p>Request sent...</p>",
+                    requestURL,
+                    202,
+                    "Request Sent",
+                    "Browser-ID: " + browserID,
+                    function(body, code, text, responseHeaders) {
+                        callback('HTTP/1.1 ' + code + ' ' + text + responseHeaders + "\n\n" + body, code, text);
                     }
+                );
+                // Free up template resources
+                delete Templates.rest.response.body;
+            }
+        });
+    }
 
-                } else {
-                    // If no local cache exists, request content from server
-                    var requestID = 'R' + requestIDCount++;
-                    pendingGETRequests[requestID] = callback;
-                    requestData.headers["Request-ID"] = requestID;
-                    requestData.headersString = (requestData.headersString + "\nRequest-ID: " + requestID).trim();
-                    requestString = "GET " + requestData.url + " " + requestData.http_version + "\n" + requestData.headersString;
-                    Client.sendWithSocket(requestString);
+    function executeLocalGETRequest(requestString, callback) {
+        var browserID = getContentHeader(requestString, 'Browser-ID');
+        if(!browserID)
+            requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
 
-                    // Show something, sheesh
+        if(typeof RestDB !== 'function')
+            importScripts('http/http-db.js');
+
+        var requestURL = getRequestURL(requestString);
+        RestDB.getContent(requestURL, function (contentData) {
+            if(contentData) {
+                var signedBody = protectHTMLContent(contentData.content_verified);
+
+                importScripts('http/templates/http-response-template.js');
+                Templates.rest.response.body(
+                    signedBody,
+                    requestURL,
+                    200,
+                    "OK",
+                    "Browser-ID: " + browserID,
+                    function(body, code, text, responseHeaders) {
+                        callback('HTTP/1.1 ' + code + ' ' + text + responseHeaders + "\n\n" + body, code, text);
+                    }
+                );
+                // Free up template resources
+                delete Templates.rest.response.body;
+
+            } else {
+
+                importScripts('rest/pages/404.js');
+                get404IndexTemplate(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
                     importScripts('http/templates/http-response-template.js');
                     Templates.rest.response.body(
-                        "<p>Request sent...</p>",
-                        requestData.url,
-                        200,
-                        "Request Sent",
-                        "Browser-ID: " + browserID,
-                        renderResponseText
+                        defaultResponseBody,
+                        requestURL,
+                        responseCode,
+                        responseText,
+                        (responseHeaders + "\nBrowser-ID: " + browserID).trim(),
+                        function(body, code, text, responseHeaders) {
+                            callback('HTTP/1.1 ' + code + ' ' + text + responseHeaders + "\n\n" + body, code, text);
+                        }
                     );
                     // Free up template resources
                     delete Templates.rest.response.body;
-                }
+                });
+
             }
         });
+    }
+
+
+    function processResponseWithDefaultContent(responseString, callback) {
+        var responseCode = getResponseStatus(responseString)[0];
+
+        if(responseCode === 200) {
+            callback(responseString);
+
+        } else {
+            var requestURL = getContentHeader(responseString, 'Request-Url');
+            if(!requestURL)
+                throw new Error("Unknown request-url for response: Header is missing");
+            var browserID = getContentHeader(responseString, 'Browser-ID');
+            if(!browserID)
+                throw new Error("Unknown browser-id for response:\n" + responseString);
+            var requestString = "GET " + requestURL + "\n" +
+                "Browser-ID: " + browserID + "\n";
+
+            // Non-200 so grab local version or default content
+            getDefaultContentResponse(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
+                importScripts('http/templates/http-response-template.js');
+                Templates.rest.response.body(
+                    defaultResponseBody,
+                    requestURL,
+                    responseCode,
+                    responseText,
+                    (responseHeaders + "\nBrowser-ID: " + browserID).trim(),
+                    function(body, code, text, responseHeaders) {
+                        callback('HTTP/1.1 ' + code + ' ' + text + responseHeaders + "\n\n" + body, code, text);
+                    }
+                );
+                // Free up template resources
+                delete Templates.rest.response.body;
+            });
+        }
+
     }
 
     // TODO default content public config
@@ -239,14 +296,21 @@
         [/^\/?$/, function(commandString, callback) { importScripts('rest/pages/index.js'); getRootIndexTemplate(commandString, callback); }]
     ];
     var getDefaultContentResponse = function(requestString, callback) {
-        var requestData = parseRequestString(requestString);
-        var urlData = parseURL(requestData.url);
-        var browserID = requestData.headers['browser-id'];
+        var requestURL = getRequestURL(requestString);
+        var urlData = parseURL(requestURL);
+        if(urlData.path === '~')
+            urlData.path = '~/';
+
+        var browserID = getContentHeader(requestString, 'Browser-ID');
+        if(!browserID)
+            throw new Error("No Browser-ID Header");
 
         function fixedCallback(defaultResponseBody, responseCode, responseText, responseHeaders) {
-            responseHeaders = (responseHeaders ? responseHeaders + "\n" : "") +
-            "Browser-ID: " + browserID;
-            return callback(defaultResponseBody, responseCode, responseText, responseHeaders);
+            return callback(defaultResponseBody,
+                responseCode,
+                responseText,
+                addContentHeader(responseHeaders, 'Browser-ID', browserID)
+            );
         }
 
 
@@ -262,51 +326,21 @@
         get404IndexTemplate(requestString, fixedCallback);
     };
 
-    function parseResponseText(responseText) {
-        var headerBody = responseText;
-        var responseBody = '';
-        var splitPos = headerBody.indexOf("\n\n");
-        if(splitPos !== -1) {
-            headerBody = responseText.substr(0, splitPos);
-            responseBody = responseText.substr(splitPos).trim();
-        }
-        var headers = headerBody.split(/\n/);
-        var headerFirstLine = headers.shift();
-        var headerValues = {};
-        for(var i=0; i<headers.length; i++) {
-            var splitHeader = headers[i].split(': ');
-            headerValues[splitHeader[0].toLowerCase()] = splitHeader.length > 0 ? splitHeader[1] : true;
-        }
-        var match = /^http\/1.1 (\d+) ?(.*)$/i.exec(headerFirstLine);
-        if(!match)
-            throw new Error("Invalid HTTP Response: " + headerFirstLine);
-        var responseCode = parseInt(match[1]);
-        var responseCodeText = match[2];
-        return {
-            body: responseBody,
-            code: responseCode,
-            text: responseCodeText,
-            headers: headerValues,
-            header_body: headerBody
-        }
-    }
-
-    function renderResponseText(responseText) {
-        var response = parseResponseText(responseText);
-        var requestUrl = response.headers['request-url'];
-        if(!requestUrl)
+    function renderResponseString(responseString) {
+        var requestURL = getContentHeader(responseString, 'Request-URL');
+        if(!requestURL)
             throw new Error("Unknown request-url for response: Header is missing");
 
-        var urlData = parseURL(requestUrl);
-        if(!urlData.host)
-            throw new Error("Invalid Host: " + requestUrl);
+        //var urlData = parseURL(requestURL);
+        //if(!urlData.host)
+        //    throw new Error("Invalid Host: " + requestURL);
 
-        var browserID = response.headers['browser-id'];
+        var browserID = getContentHeader(responseString, 'Request-URL');
         if(!browserID)
             throw new Error("Invalid Browser ID");
 
         importScripts('http/templates/test-browser-template.js');
-        Templates.rest.browser(responseText, function(html) {
+        Templates.rest.browser(responseString, function(html) {
             Client.postResponseToClient("LOG.REPLACE http-browser:" + browserID + ' ' + html);
         });
         // Free up template resources
@@ -321,42 +355,42 @@
         return htmlContent;
     }
 
-    function parseRequestString(requestString) {
-        var headers = requestString.split(/\n/);
-        var firstLine = headers.shift();
-        var headerValues = {};
-        for(var i=0; i<headers.length; i++) {
-            var splitHeader = headers[i].split(': ');
-            headerValues[splitHeader[0].toLowerCase()] = splitHeader.length > 0 ? splitHeader[1] : true;
-        }
+    // Request/Response methods
+
+    function parseURL(url) {
+        var matches = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(url);
+        return {url: url, scheme: matches[2], host: matches[4], path: matches[5] || '', query: matches[7], fragment: matches[9]};
+    }
+
+    function getResponseStatus(responseString) {
+        var match = /^http\/1.1 (\d+) ?(.*)$/im.exec(responseString);
+        if(!match)
+            throw new Error("Invalid HTTP Response: " + responseString);
+        return [parseInt(match[1]), match[2]];
+    }
+
+    function getRequestURL(requestString) {
+        var firstLine = requestString.split(/\n/)[0];
         var match = /^get\s*(\S*)(\s+HTTP\/1.1)?$/i.exec(firstLine);
         if(!match)
             throw new Error("Invalid GET Request: " + requestString);
-        return {
-            url: match[1],
-            http_version: match[2] || 'HTTP/1.1',
-            headers: headerValues,
-            headersString: headers.join("\n")
-        };
+        return match[1];
     }
 
-    function parseURL(url) {
-        var pattern = new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
-        var matches = url.match(pattern);
-        var data = {
-            url: url,
-            scheme: matches[2],
-            host: matches[4],
-            path: matches[5] || '',
-            query: matches[7],
-            fragment: matches[9],
-            is_local: false
-        };
-        if(data.path === '~')
-            data.path = '~/';
-        return data;
+    function getContentHeader(contentString, headerName) {
+        var match = new RegExp('^' + headerName + ': ([^$]+)$', 'mi').exec(contentString.split(/\n\n/)[0]);
+        if(!match)
+            return null;
+        return match[1];
     }
 
+    function addContentHeader(contentString, headerName, headerValue) {
+        if(getContentHeader(contentString, headerName))
+            throw new Error("Content already has Header: " + headerName);
+        var lines = contentString.split(/\n/);
+        lines.splice(lines.length >= 1 ? 1 : 0, 0, headerName + ": " + headerValue);
+        return lines.join("\n");
+    }
 
 
 
