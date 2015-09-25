@@ -32,7 +32,8 @@
     Client.addCommand(function(commandString) {
         var match = /^chat\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandString);
         if(!match)
-            return false; // throw new Error("Invalid Chat Command: " + commandString);
+            return false;
+
         var channelPath = match[1];
         var channelMessage = match[2];
         commandString = "CHAT " + channelPath + " " + Date.now() + " " + channelMessage;
@@ -43,7 +44,8 @@
     Client.addResponse(function(commandResponse, e) {
         var match = /^(chat)\s+(\S+)/im.exec(commandResponse);
         if(!match)
-            return false; // throw new Error("Invalid Chat Response: " + commandResponse);
+            return false; 
+
         var channelPath = match[2];
         getChannelUsers(channelPath);
         Templates.chat.message(commandResponse, function(html) {
@@ -57,6 +59,7 @@
         var match = /^(join)\s+(\S+)\s+(\S+)\s+/im.exec(commandResponse);
         if(!match)
             return false;
+
         var args = commandResponse.split(/\s/);
         var channelPath = match[2];
         var channelPathLowerCase = channelPath.toLowerCase();
@@ -114,10 +117,11 @@
         Templates.chat.userList(channelPath, userList, function(html) {
             Client.postResponseToClient('LOG.REPLACE chat-active-users:' + channelPath.toLowerCase() + ' ' + html);
         });
+        return true;
     });
 
     Client.addResponse(function(commandResponse) {
-        var match = /^(nick)\s+(\S+)\s+(\S+)\s+/im.exec(commandResponse);
+        var match = /^(nick)\s+(\S+)\s+(\S+)/im.exec(commandResponse);
         if(!match)
             return false;
         var old_username = match[2];
@@ -139,6 +143,7 @@
                 })(channelPath);
             }
         }
+        return true;
     });
 
     Client.addResponse(function(commandResponse) {
@@ -149,6 +154,7 @@
         Templates.chat.message(commandResponse, function(html, username) {
             Client.postResponseToClient('LOG message:' + username + ' ' + html);
         });
+        return true;
     });
 
     function getChannelUsers(channelPath) {

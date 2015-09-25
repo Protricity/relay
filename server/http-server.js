@@ -37,14 +37,14 @@ function HTTPServer() {
 
     HTTPServer.addCommand = function (commandCallback) {
         if(commandHandlers.indexOf(commandCallback) >= 0)
-            throw new Error("Callback already added: " + commandCallback);
+            throw new Error("HTTP Server Command Callback already added: " + commandCallback);
         commandHandlers.push(commandCallback);
     };
 
     HTTPServer.removeCommand = function (commandCallback) {
         var pos = commandHandlers.indexOf(commandCallback);
         if(pos === -1)
-            throw new Error("Command Callback not added: " + commandCallback);
+            throw new Error("HTTP Server Command Callback not added: " + commandCallback);
         commandHandlers.splice(pos, 1);
     };
 
@@ -54,23 +54,21 @@ function HTTPServer() {
     //require('./http-defaults.js').initHTTPServerCommands(HTTPServer);
 
     HTTPServer.execute = function(request, response) {
-        var commandString = request.method + ' ' + request.url;
-
         var oldLength = commandHandlers.length;
-        for(var i=commandHandlers.length-1; i>=0; i--)
+        for(var i=0; i<oldLength; i++)
             if(commandHandlers[i](request, response))
                 return true;
 
-        if(commandHandlers.length > oldLength) {
-            return HTTPServer.execute(request, response);
+        if(commandHandlers.length > oldLength)
+            for(i=oldLength; i<commandHandlers.length; i++)
+                if(commandHandlers[i](request, response) === true)
+                    return true;
 
-        } else {
-            var err = "Server Command Handlers (" + commandHandlers.length + ") could not handle: " + commandString;
-            response.writeHead(400, "Command Failed");
-            response.end(err);
-            console.error(err);
-            return false;
-        }
+        var err = "HTTP Server Command Handlers (" + commandHandlers.length + ") could not handle: " + request.method + ' ' + request.url;
+        response.writeHead(400, "Command Failed");
+        response.end(err);
+        console.error(err);
+        return false;
     };
 
 

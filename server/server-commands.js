@@ -4,10 +4,13 @@
 if(!exports) var exports = {};
 exports.initSocketServerCommands = function(SocketServer) {
     SocketServer.addCommand(function (commandString, client) {
-        if(commandString.substr(0, 3).toLowerCase() !== 'get')
+        var match = /^get\s+([\S\s]+)$/im.exec(commandString);
+        if(!match)
             return false;
 
-        handleFileRequest(commandString, function(responseBody, statusCode, statusMessage, headers) {
+        console.log(commandString);
+        var requestURL = match[1];
+        handleFileRequest(requestURL, function(responseBody, statusCode, statusMessage, headers) {
             client.send('HTTP/1.1 ' + (statusCode || 200) + (statusMessage || 'OK') +
                 (headers ? "\n" + headers : ''),
                 "\n\n" + responseBody
@@ -19,13 +22,15 @@ exports.initSocketServerCommands = function(SocketServer) {
 
 exports.initHTTPServerCommands = function(HTTPServer) {
     HTTPServer.addCommand(function (request, response) {
-        //if(request.method.toLowerCase() !== 'get')
-        //    return false;
+        if(request.method.toLowerCase() !== 'get')
+            return false;
 
+        console.log(request.method, request.url);
         handleFileRequest(request.url, function(responseBody, statusCode, statusMessage, headers) {
             response.writeHead(statusCode || 200, statusMessage || 'OK', headers);
             response.end(responseBody);
         });
+        return true;
     });
 };
 

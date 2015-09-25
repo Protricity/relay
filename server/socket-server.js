@@ -71,14 +71,14 @@ function SocketServer() {
 
     SocketServer.addCommand = function (commandCallback) {
         if(commandHandlers.indexOf(commandCallback) >= 0)
-            throw new Error("Callback already added: " + commandCallback);
+            throw new Error("Socket Server Command Callback already added: " + commandCallback);
         commandHandlers.push(commandCallback);
     };
 
     SocketServer.removeCommand = function (commandCallback) {
         var pos = commandHandlers.indexOf(commandCallback);
         if(pos === -1)
-            throw new Error("Command Callback not added: " + commandCallback);
+            throw new Error("Socket Server Command Callback not added: " + commandCallback);
         commandHandlers.splice(pos, 1);
     };
 
@@ -87,19 +87,19 @@ function SocketServer() {
 
     SocketServer.execute = function(commandString, client) {
         var oldLength = commandHandlers.length;
-        for(var i=commandHandlers.length-1; i>=0; i--)
-            if(commandHandlers[i](commandString, client))
+        for(var i=0; i<oldLength; i++)
+            if(commandHandlers[i](commandString, client) !== false)
                 return true;
 
-        if(commandHandlers.length > oldLength) {
-            return SocketServer.execute(commandString, client);
+        if(commandHandlers.length > oldLength)
+            for(i=oldLength-1; i<commandHandlers.length; i++)
+                if(commandHandlers[i](commandString, client) !== false)
+                    return true;
 
-        } else {
-            var err = "Server Command Handlers (" + commandHandlers.length + ") could not handle: " + commandString;
-            client.send("ERROR " + err);
-            console.error(err);
-            return false;
-        }
+        var err = "Socket Server Command Handlers (" + commandHandlers.length + ">" + oldLength + ") could not handle: " + commandString;
+        client.send("ERROR " + err);
+        console.error(err);
+        return false;
     };
 
 

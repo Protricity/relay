@@ -21,9 +21,9 @@
      * @param commandString PUT [path] [content]
      */
     Client.addCommand(function (commandString) {
-        var match = /^put\s*(\S*)\s*([\S\s]+)?$/im.exec(commandString);
+        var match = /^put(?:\s+(\S+))?(?:\s+(\S+))?/im.exec(commandString);
         if(!match)
-            return false; // throw new Error("Invalid PUT: " + commandString);
+            return false;
 
         var path = match[1] || '~';
         var content = match[2] || '';

@@ -13,6 +13,8 @@ exports.initSocketServerCommandProxies = function(SocketServer) {
         SocketServer.removeCommand(httpCommand);
         require('../server/server-commands.js')
             .initSocketServerCommands(SocketServer);
+        console.log("Loaded server/server-commands.js");
+        return false;
     }
 
     // Chat Commands
@@ -21,8 +23,10 @@ exports.initSocketServerCommandProxies = function(SocketServer) {
         if(!/^(join|leave|message|chat|nick)/i.test(commandString))
             return false;
         SocketServer.removeCommand(chatCommand);
-        require('../chat/chat-socket-commands.js')
+        require('../chat/chat-server-commands.js')
             .initSocketServerCommands(SocketServer);
+        console.log("Loaded chat/chat-server-commands.js");
+        return false;
     }
 
     // PGP Commands
@@ -31,8 +35,10 @@ exports.initSocketServerCommandProxies = function(SocketServer) {
         if(!/^(pgp-auth|pgp-auth-validate|get @pgp)/i.test(commandString))
             return false;
         SocketServer.removeCommand(pgpCommand);
-        require('../pgp/pgp-socket-commands.js')
+        require('../pgp/pgp-server-commands.js')
             .initSocketServerCommands(SocketServer);
+        console.log("Loaded pgp/pgp-server-commands.js");
+        return false;
     }
 
 };

@@ -3,18 +3,16 @@
  */
 if(!exports) var exports = {};
 exports.initHTTPServerCommandProxies = function(HTTPServer) {
-    // Socket Command Proxies
-
-
 
     // HTTP Commands
     HTTPServer.addCommand(httpCommand);
     function httpCommand(request, response) {
-        if(!/^(get|post|put|delete|patch|head|http|host-auth|host-auth-validate)/i.test(request.url))
+        if(!/(get|post|put|delete|patch|head|http)/i.test(request.method))
             return false;
         HTTPServer.removeCommand(httpCommand);
         require('../server/server-commands.js')
             .initHTTPServerCommands(HTTPServer);
+        return false;
     }
 
     //// Chat Commands
@@ -29,11 +27,12 @@ exports.initHTTPServerCommandProxies = function(HTTPServer) {
     // PGP Commands
     HTTPServer.addCommand(pgpCommand);
     function pgpCommand(request, response) {
-        if(!/^get @pgp/i.test(request.url))
+        if(!/^get @pgp/i.test(request.method + ' ' + request.url))
             return false;
         HTTPServer.removeCommand(pgpCommand);
         require('../pgp/pgp-server-commands.js')
             .initHTTPServerCommands(HTTPServer);
+        return false;
     }
 
 };

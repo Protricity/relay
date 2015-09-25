@@ -19,6 +19,7 @@
         Client.removeCommand(importHTTPCommands);
         Client.removeResponse(importHTTPCommands);
         importScripts('http/http-client-commands.js');
+        return false;
     }
 
     // Chat Commands
@@ -30,6 +31,7 @@
         Client.removeCommand(importChatCommands);
         Client.removeResponse(importChatCommands);
         importScripts('chat/chat-client-commands.js');
+        return false;
     }
 
 
@@ -40,6 +42,7 @@
             return false;
         Client.removeCommand(importFeedCommands);
         importScripts('feed/feed-client-commands.js');
+        return false;
     }
 
     // PGP Commands
@@ -49,6 +52,7 @@
             return false;
         Client.removeCommand(importPGPCommands);
         importScripts('pgp/pgp-client-commands.js');
+        return false;
     }
 
 })();

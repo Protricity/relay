@@ -27,7 +27,7 @@ function Client() {
 
     Client.addCommand = function (commandCallback) {
         if(commandHandlers.indexOf(commandCallback) >= 0)
-            throw new Error("Callback already added: " + commandCallback);
+            throw new Error("Command Callback already added: " + commandCallback);
         commandHandlers.push(commandCallback);
     };
 
@@ -38,10 +38,10 @@ function Client() {
         commandHandlers.splice(pos, 1);
     };
 
-    Client.addResponse = function (responsePrefix, responseCallback) {
-        if(!(responsePrefix instanceof RegExp))
-            responsePrefix = new RegExp('^' + responsePrefix, 'i');
-        responseHandlers.push([responsePrefix, responseCallback]);
+    Client.addResponse = function (responseCallback) {
+        if(responseHandlers.indexOf(responseCallback) >= 0)
+            throw new Error("Response Callback already added: " + responseCallback);
+        responseHandlers.push(responseCallback);
     };
 
     Client.removeResponse = function (responseCallback) {
@@ -64,7 +64,7 @@ function Client() {
         } else {
             var err = "Client Command Handlers (" + commandHandlers.length + ") could not handle: " + commandString;
             console.error(err);
-            Client.postResponseToClient("ERROR " + err);
+            //Client.postResponseToClient("ERROR " + err);
             return false;
         }
     };
@@ -81,7 +81,7 @@ function Client() {
         } else {
             var err = "Client Response Handlers (" + responseHandlers.length + ") could not handle: " + responseString;
             console.error(err);
-            Client.postResponseToClient("ERROR " + err);
+            //Client.postResponseToClient("ERROR " + err);
             return false;
         }
     };
@@ -133,9 +133,12 @@ function Client() {
 
 // Socket Client
     Client.addResponse(function(commandResponse, e) {
-        if(!/^(info|error|assert|warn)/i.test(commandResponse))
+        var match = /^(info|error|assert|warn)/i.exec(commandResponse);
+        if(!match)
             return false;
-        console.info(commandResponse);
+
+        var command = match[1].toLowerCase();
+        console[command](commandResponse);
         return true;
     });
 

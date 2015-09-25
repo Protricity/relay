@@ -47,23 +47,27 @@ function generateUID(format) {
 function pgpAuth(commandString, client) {
     var match = /^pgp-auth\s+(.*)?$/i.exec(commandString);
     if(!match)
-        throw new Error("Invalid command: " + commandString);
+        return false;
 
     var ids = match[1].split(/\W+/);
     for(var i=0; i<ids.length; i++) {
         var id = ids[i];
         console.log("PGP IDENTIFY " + id);
     }
-
+    return true;
 }
 
 function pgpAuthValidate(commandString, client) {
+    var match = /^pgp-auth-validate\s+(.*)?$/i.exec(commandString);
+    if(!match)
+        return false;
     //var publicKeyBlock = parsePublicKeyBlock(commandString);
     //var signedIDSIGBlock = parseSignedMessage(commandString);
     //var publicKeys = openpgp.key.readArmored(commandString);
     //var clearSignedMessages = openpgp.cleartext.readArmored(commandString);
     console.log(commandString);
     //send(client, "IDENTIFY " + client.pgp.uid);
+    return true;
 }
 
 function send(client, message) {

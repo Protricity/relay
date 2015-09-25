@@ -2,7 +2,7 @@
  * Created by ari on 9/22/2015.
  */
 if(!exports) var exports = {};
-exports.initSocketCommands = function(SocketServer) {
+exports.initSocketServerCommands = function(SocketServer) {
     //SocketServer.addEventListener('connection', initClient);
     SocketServer.addCommand(messageClient);
     SocketServer.addCommand(joinChannel);
@@ -66,6 +66,8 @@ function nickClient(commandString, client) {
     var oldNick = clientInfo.username;
     var now = Date.now();
 
+    clientInfo.username = newNick;
+    
     var nickedClients = [];
     for(var i=0; i<clientInfo.channels.length; i++) {
         var channel = clientInfo.channels[i];
