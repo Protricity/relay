@@ -76,67 +76,24 @@
      * @param commandString GET [URL]
      */
     Client.addCommand(function (commandString) {
-        if(commandString.substr(0,3).toLowerCase() !== 'get')
-            return false; // throw new Error("Invalid GET: " + commandString);
-        var requestData = parseRequestBody(commandString);
-        if(!requestData.headers['browser-id'])
-            requestData.headers['browser-id'] = httpBrowserID++;
-
-
-        parseURLWithDefaultHost(requestData.url, function(parsedUrlData) {
-            var formattedCommandString = "GET " + parsedUrlData.url_fixed + " " + requestData.http_version + requestData.createRequestHeaderString();
-            if(parsedUrlData.is_local) {
-                // If local, output content to client
-                executeLocalGETRequest(formattedCommandString, function(responseText) {
-                    renderResponseText(responseText);
-                });
-
-            } else {
-                // If remote, request content from server
-                Client.sendWithSocket(formattedCommandString);
-
-                importScripts('http/templates/http-response-template.js');
-                // Show something, sheesh
-                Templates.rest.response.body(
-                    "<p>Request sent...</p>",
-                    requestData.url,
-                    200,
-                    "Request Sent",
-                    requestData.createResponseHeaderString(),
-                    function(html) {
-                        renderResponseText(html);
-                    }
-                );
-                // Free up template resources
-                delete Templates.rest.response.body;
-
-            }
-        }, function(err) {
-            importScripts('http/templates/http-response-template.js');
-            Templates.rest.response.body(
-                '',
-                requestData.url,
-                400,
-                "Missing Default PGP Identity: " + err,
-                requestData.createResponseHeaderString(),
-                function(html) {
-                    renderResponseText(html);
-                }
-            );
-            // Free up template resources
-            delete Templates.rest.response.body;
-
-        });
-        return true;
-    });
-
-    Client.addResponse(function(responseString) {
-        if(responseString.substr(0,3).toLowerCase() !== 'get')
+        var match = /^get\s+/i.exec(commandString);
+        if(!match)
             return false;
 
-        executeLocalGETRequest(responseString, function(responseText) {
-            Client.sendWithSocket(responseText);
+        executeGETRequest(commandString, function(responseText) {
+            renderResponseText(responseText);
         });
+    });
+
+// http://521D4941.ks/@pgp/@export
+    Client.addResponse(function(responseString) {
+        var match = /^get (?:socket:\/\/)?([a-f0-9]{8,})(?:\.ks)(\/@pgp.*)$/i.exec(responseString);
+        if(!match)
+            return false;
+
+        executeGETRequest(responseString, function(responseText) {
+            Client.sendWithSocket(responseText);
+        }, true, true);
         return true;
     });
 
@@ -144,7 +101,8 @@
         if(responseString.substr(0,4).toLowerCase() !== 'http')
             return false;
 
-        parseResponseURLs(responseString);
+        addURLsToDB(responseString);
+
         var responseData = parseResponseText(responseString);
         var requestURL = responseData.headers['request-url'];
         if(!requestURL)
@@ -155,9 +113,10 @@
         var commandString = "GET " + requestURL + "\n" +
             "Browser-ID: " + browserID + "\n";
         if(responseData.code === 404) {
-            executeLocalGETRequest(commandString, function(responseText) {
+            // 404 so grab default content, grab default content
+            executeGETRequest(commandString, function(responseText) {
                 renderResponseText(responseText);
-            });
+            }, true);
 
         } else {
             renderResponseText(responseString);
@@ -166,52 +125,73 @@
         return true;
     });
 
-    function parseResponseURLs(httpResponseText) {
+    function addURLsToDB(httpResponseText) {
         var responseData = parseResponseText(httpResponseText);
         var referrerURL = responseData.headers['request-url'];
         if(!referrerURL)
             throw new Error("Unknown request-url for response: Header is missing");
 
         responseData.body.replace(/<a[^>]+href=['"]([^'">]+)['"][^>]*>([^<]+)<\/a>/gi, function(match, url, text, offset, theWholeThing) {
-            getRestDB().addURLToDB(url, referrerURL);
+            if(typeof RestDB !== 'function')
+                importScripts('http/http-db.js');
+
+            RestDB.addURLToDB(url, referrerURL);
         });
     }
 
-    function executeLocalGETRequest(commandString, callback) {
-        var requestData = parseRequestBody(commandString);
-        parseURLWithDefaultHost(requestData.url, function(urlData) {
-//             console.log(urlData);
-            if(!urlData.host)
-                throw new Error("Invalid Host: " + commandString);
-            var formattedCommandString = requestData.createRequestString(); // "GET " + urlData.url + "\n" + requestHeaders.join("\n");
-            getRestDB().getContent(urlData.path_fixed, onContent);
 
-            function onContent(err, contentData) {
-                if(err)
-                    throw new Error(err);
+    var requestIDCount = 0;
+    var pendingGETRequests = {};
+    function executeGETRequest(requestString, callback, local_only, skip_default_content) {
+        var requestData = parseRequestString(requestString);
+        var browserID = requestData.headers['browser-id'] || (function() {
+            browserID = requestData.headers['browser-id'] = httpBrowserID++;
+            requestData.headersString = (requestData.headersString + "\nBrowser-ID: " + browserID).trim();
+            requestString = "GET " + requestData.url + " " + requestData.http_version + "\n" + requestData.headersString;
+            return browserID;
+        })();
 
+        if(typeof RestDB !== 'function')
+            importScripts('http/http-db.js');
 
-                if(contentData) {
+        RestDB.getContent(requestData.url, function (contentData) {
+            if(contentData) {
+                var signedBody = protectHTMLContent(contentData.content_verified);
 
-                    var signedBody = protectHTMLContent(contentData.content_verified);
+                importScripts('http/templates/http-response-template.js');
+                Templates.rest.response.body(
+                    signedBody,
+                    requestData.url,
+                    200,
+                    "OK",
+                    "Browser-ID: " + browserID,
+                    callback
+                );
+                // Free up template resources
+                delete Templates.rest.response.body;
 
-                    importScripts('http/templates/http-response-template.js');
-                    Templates.rest.response.body(
-                        signedBody,
-                        requestData.url,
-                        200,
-                        "OK",
-                        requestData.createResponseHeaderString(),
-                        callback
-                    );
+            } else {
+                if(local_only) {
+                    // No content found locally, grab default content
+                    if(skip_default_content) {
 
-                    // Free up template resources
-                    delete Templates.rest.response.body;
+                        importScripts('rest/pages/404.js');
+                        get404IndexTemplate(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
+                            importScripts('http/templates/http-response-template.js');
+                            Templates.rest.response.body(
+                                defaultResponseBody,
+                                requestData.url,
+                                responseCode,
+                                responseText,
+                                (responseHeaders + "\nBrowser-ID: " + browserID).trim(),
+                                callback);
+                            // Free up template resources
+                            delete Templates.rest.response.body;
+                        });
 
-                } else {
-                    (function() {
-                        getDefaultContentResponse(formattedCommandString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
-                            responseHeaders = (responseHeaders ? responseHeaders + "\n" : "") + requestData.createResponseHeaderString();
+                    } else {
+                        getDefaultContentResponse(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
+
                             defaultResponseBody = protectHTMLContent(defaultResponseBody);
 
                             importScripts('http/templates/http-response-template.js');
@@ -220,85 +200,67 @@
                                 requestData.url,
                                 responseCode,
                                 responseText,
-                                responseHeaders,
+                                (responseHeaders + "\nBrowser-ID: " + browserID).trim(),
                                 callback);
-
                             // Free up template resources
                             delete Templates.rest.response.body;
                         });
-                    })();
+                    }
+
+                } else {
+                    // If no local cache exists, request content from server
+                    var requestID = 'R' + requestIDCount++;
+                    pendingGETRequests[requestID] = callback;
+                    requestData.headers["Request-ID"] = requestID;
+                    requestData.headersString = (requestData.headersString + "\nRequest-ID: " + requestID).trim();
+                    requestString = "GET " + requestData.url + " " + requestData.http_version + "\n" + requestData.headersString;
+                    Client.sendWithSocket(requestString);
+
+                    // Show something, sheesh
+                    importScripts('http/templates/http-response-template.js');
+                    Templates.rest.response.body(
+                        "<p>Request sent...</p>",
+                        requestData.url,
+                        200,
+                        "Request Sent",
+                        "Browser-ID: " + browserID,
+                        renderResponseText
+                    );
+                    // Free up template resources
+                    delete Templates.rest.response.body;
                 }
             }
         });
     }
 
-
-    //importScripts('template/template-defaults.js');
     // TODO default content public config
     var defaultContentResponses = [
         [/^\/?home\/?$/i, function(commandString, callback) { importScripts('rest/pages/home/user-index.js'); getUserIndexTemplate(commandString, callback); }],
         [/^\/?$/, function(commandString, callback) { importScripts('rest/pages/index.js'); getRootIndexTemplate(commandString, callback); }]
     ];
+    var getDefaultContentResponse = function(requestString, callback) {
+        var requestData = parseRequestString(requestString);
+        var urlData = parseURL(requestData.url);
+        var browserID = requestData.headers['browser-id'];
 
-    var getDefaultContentResponse = function(commandString, callback) {
-        var headers = commandString.split(/\n/);
-        var firstLine = headers.shift();
-        var match = /^get\s*(.*)$/i.exec(firstLine);
-        if(!match)
-            throw new Error("Invalid GET Request: " + contentURL);
-        var contentURL = match[1];
+        function fixedCallback(defaultResponseBody, responseCode, responseText, responseHeaders) {
+            responseHeaders = (responseHeaders ? responseHeaders + "\n" : "") +
+            "Browser-ID: " + browserID;
+            return callback(defaultResponseBody, responseCode, responseText, responseHeaders);
+        }
 
-        match = contentURL.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
-        var contentURLHost = match[4];
-        var contentURLPath = (match[5] || '')
-            .replace(/^\/~/, '/home/' + contentURLHost)
-            .toLowerCase();
 
         for(var i=0; i<defaultContentResponses.length; i++) {
             //console.log(defaultContentResponses[i], contentURLPath, contentURL);
-            if(defaultContentResponses[i][0].test(contentURLPath)) {
-                defaultContentResponses[i][1](commandString, callback);
+            if(defaultContentResponses[i][0].test(urlData.path)) {
+                defaultContentResponses[i][1](requestString, fixedCallback);
                 return;
             }
         }
 
         importScripts('rest/pages/404.js');
-        get404IndexTemplate(commandString, callback);
+        get404IndexTemplate(requestString, fixedCallback);
     };
-
-    function getPathIterator(urlPrefix, callback, onFinish) {
-        var match = urlPrefix.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
-        var scheme = match[2] || 'socket';
-        var host = match[4];
-        var pathPrefix = (match[5] || '')
-            .replace(/^\/~/, '/home/' + host);
-
-        var query = match[7];
-        var fragment = match[9];
-
-        RestDB(function(db) {
-            urlPrefix = (scheme + "://" + host + pathPrefix).toLowerCase();
-            if(urlPrefix[urlPrefix.length-1] !== '/')
-                urlPrefix += '/';
-            var transaction = db.transaction([RestDB.DB_TABLE_HTTP_URL], "readonly");
-            var urlStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_URL);
-
-            var boundKeyRange = IDBKeyRange.bound(urlPrefix, urlPrefix + '\uffff', true, true);
-            //console.log(urlPrefix, boundKeyRange);
-
-            urlStore.openCursor(boundKeyRange)
-                .onsuccess = function (e) {
-                    var cursor = e.target.result;
-                    if(!cursor)
-                        return (onFinish ? onFinish() : null);
-
-                    var ret = callback(cursor.value);
-                    if(ret === false)
-                        return (onFinish ? onFinish() : null);
-                    cursor.continue();
-                };
-        });
-    }
 
     function parseResponseText(responseText) {
         var headerBody = responseText;
@@ -336,62 +298,19 @@
             throw new Error("Unknown request-url for response: Header is missing");
 
         var urlData = parseURL(requestUrl);
-        if(urlData.host) {
-            r(urlData);
-        } else {
-            parseURLWithDefaultHost(requestUrl, r);
-        }
+        if(!urlData.host)
+            throw new Error("Invalid Host: " + requestUrl);
 
-        function r(urlData) {
-            requestUrl = urlData.url;
-            var browserID = response.headers['browser-id'] || httpBrowserID++;
+        var browserID = response.headers['browser-id'];
+        if(!browserID)
+            throw new Error("Invalid Browser ID");
 
-            importScripts('http/templates/test-browser-template.js');
-            Templates.rest.browser(responseText, function(html) {
-                parseHTMLBody(html, requestUrl, function(parsedResponseBody) {
-                    Client.postResponseToClient("LOG.REPLACE http-browser:" + browserID + ' ' + parsedResponseBody);
-                });
-            });
-            // Free up template resources
-            delete Templates.rest.browser;
-
-        }
-    }
-
-    function parseHTMLBody(htmlBody, contentURL, callback) {
-        var match = contentURL.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
-        var contentURLHost = match[4];
-        var contentURLPath = (match[5] || '')
-            .replace(/^\/~/, '/home/' + contentURLHost);
-        var parentPath = contentURLPath.replace(/[^\/]+\/$/, '') || '/';
-
-        // TODO: move to template system
-        if(htmlBody.indexOf("{$html_ul_index}") !== -1) {
-            var paths = [[contentURL, '.']];
-            var parentURL = 'socket://' + contentURLHost + parentPath;
-            if(contentURL !== parentURL)
-                paths.push([parentURL, '..']);
-            getPathIterator(contentURL, function(data) {
-                var matchedURL = (data.url_original_case || data.url);
-                var urlData = parseURL(matchedURL);
-                if(urlData.host)
-                    urlData.path = urlData.path
-                        .replace(/^\/~/, '/home/' + urlData.host);
-                paths.push([matchedURL, urlData.path]);
-
-            }, function() {
-                var pathHTML = "<ul class='path-index'>";
-
-                for(var i=0; i<paths.length; i++)
-                    pathHTML += "\t<li><a href='" + paths[i][0] + "'>" + paths[i][1] + "</a></li>";
-                pathHTML += "</ul>";
-                htmlBody = htmlBody.replace(/{\$html_ul_index}/gi, pathHTML);
-                callback(htmlBody);
-            });
-
-        } else {
-            callback(htmlBody);
-        }
+        importScripts('http/templates/test-browser-template.js');
+        Templates.rest.browser(responseText, function(html) {
+            Client.postResponseToClient("LOG.REPLACE http-browser:" + browserID + ' ' + html);
+        });
+        // Free up template resources
+        delete Templates.rest.browser;
     }
 
     function protectHTMLContent(htmlContent) {
@@ -402,8 +321,8 @@
         return htmlContent;
     }
 
-    function parseRequestBody(requestText) {
-        var headers = requestText.split(/\n/);
+    function parseRequestString(requestString) {
+        var headers = requestString.split(/\n/);
         var firstLine = headers.shift();
         var headerValues = {};
         for(var i=0; i<headers.length; i++) {
@@ -412,38 +331,13 @@
         }
         var match = /^get\s*(\S*)(\s+HTTP\/1.1)?$/i.exec(firstLine);
         if(!match)
-            throw new Error("Invalid GET Request: " + requestText);
-        var data = {
+            throw new Error("Invalid GET Request: " + requestString);
+        return {
             url: match[1],
             http_version: match[2] || 'HTTP/1.1',
-            headers: headerValues
+            headers: headerValues,
+            headersString: headers.join("\n")
         };
-        data.createResponseHeaderString = function() {
-            var headers = '';
-            for (var header in data.headers) {
-                if (data.headers.hasOwnProperty(header)) {
-                    switch (header.toLowerCase()) {
-                        case 'browser-id':
-                            headers += "\n" + header + ": " + data.headers[header];
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-            return headers;
-        };
-        data.createRequestHeaderString = function() {
-            var headers = '';
-            for(var header in data.headers)
-                if(data.headers.hasOwnProperty(header))
-                    headers += "\n" + header + ": " + data.headers[header];
-            return headers;
-        };
-        data.createRequestString = function() {
-            return "GET " + data.url + " " + data.http_version + data.createRequestHeaderString();
-        };
-        return data;
     }
 
     function parseURL(url) {
@@ -463,66 +357,8 @@
         return data;
     }
 
-    function parseURLWithDefaultHost(url, callback, onError) {
-        var urlData = parseURL(url);
-        getPGPDB(function (db) {
-            var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readonly");
-            var privateKeyStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
 
-            var req = privateKeyStore.index('default').get('1');
-            req.onsuccess = function (evt) {
-                var privateKeyData = evt.target.result;
-                if(!privateKeyData) {
-                    if(onError)
-                        onError("No default PGP Identity Found");
-                    throw new Error("No default PGP Identity Found");
-                }
 
-                var id_public_short = privateKeyData.id_public.substr(privateKeyData.id_public.length-8);
-                if(!urlData.host) {
-                    urlData.host = id_public_short;
-                    urlData.is_local = true;
-                } else {
-                    urlData.is_local = urlData.host === id_public_short;
-                }
-                urlData.path_fixed = urlData.path
-                    .replace(/^\/~/, '/home/' + urlData.host);
-                urlData.url_fixed = (urlData.scheme || 'socket') + '://' + urlData.host +
-                    (urlData.path[0] === '/' ? '' : '/') + urlData.path +
-                    (urlData.query ? '?' + urlData.query : '') +
-                    (urlData.fragment ? '?' + urlData.fragment : '');
-
-                callback(urlData);
-            };
-        });
-    }
-
-    function getKBPGP() {
-        if(typeof self.kbpgp !== 'undefined')
-            return self.kbpgp;
-        importScripts('pgp/lib/kbpgp/kbpgp.js');
-        console.log("Loaded: ", self.kbpgp);
-        return self.kbpgp;
-    }
-
-    // Database
-
-    function getRestDB(callback) {
-        if(typeof RestDB !== 'function')
-            importScripts('http/http-db.js');
-
-        if(callback)
-            RestDB(callback);
-
-        return RestDB;
-    }
-
-    function getPGPDB(callback) {
-        if(typeof self.PGPDB !== 'function')
-            importScripts('pgp/pgp-db.js');
-
-        self.PGPDB(callback);
-    }
 
 
 })();

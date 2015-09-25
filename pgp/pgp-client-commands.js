@@ -51,6 +51,17 @@
         return true;
     });
 
+    Client.addResponse(function (responseString) {
+        var match = /^get (?:socket:\/\/)?([a-f0-9]{8,})(?:\.ks)(\/@pgp.*)$/i.exec(responseString);
+        if(!match)
+            return false;
+
+        var keyID = match[1];
+        var path = match[2];
+
+        console.log("PUBLIC KEY", match);
+        return true;
+    }, true);
 
     /**
      * @param commandString

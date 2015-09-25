@@ -25,10 +25,10 @@ function Client() {
     };
 
 
-    Client.addCommand = function (commandCallback) {
+    Client.addCommand = function (commandCallback, prepend) {
         if(commandHandlers.indexOf(commandCallback) >= 0)
             throw new Error("Command Callback already added: " + commandCallback);
-        commandHandlers.push(commandCallback);
+        commandHandlers[prepend ? 'unshift' : 'push'](commandCallback);
     };
 
     Client.removeCommand = function (commandCallback) {
@@ -38,10 +38,10 @@ function Client() {
         commandHandlers.splice(pos, 1);
     };
 
-    Client.addResponse = function (responseCallback) {
+    Client.addResponse = function (responseCallback, prepend) {
         if(responseHandlers.indexOf(responseCallback) >= 0)
             throw new Error("Response Callback already added: " + responseCallback);
-        responseHandlers.push(responseCallback);
+        responseHandlers[prepend ? 'unshift' : 'push'](responseCallback);
     };
 
     Client.removeResponse = function (responseCallback) {

@@ -3,45 +3,35 @@
  */
 if(!exports) var exports = {};
 exports.initSocketServerCommands = function(SocketServer) {
-    //SocketServer.addCommand(function (commandString, client) {
-    //    if(commandString.substr(0, 3).toLowerCase() !== 'get')
-    //        return false;
-    //
-    //    handleFileRequest(commandString, function(responseBody, statusCode, statusMessage, headers) {
-    //        client.send('HTTP/1.1 ' + (statusCode || 200) + (statusMessage || 'OK') +
-    //            (headers ? "\n" + headers : ''),
-    //            "\n\n" + responseBody
-    //        );
-    //
-    //    });
-    //});
-
     SocketServer.addCommand(pgpAuth);
     SocketServer.addCommand(pgpAuthValidate);
+    SocketServer.addCommand(getPGPPublicKey);
 };
 
 exports.initHTTPServerCommands = function(HTTPServer) {
 };
 
+// TODO listings and variables
+// http://521D4941.ks/@pgp/@export
+// http://521D4941.ks/@pgp/index.html
+// http://521D4941.ks/@chat/@username
 
-function onSocketClient(newClient) {
-    if(newClient.pgp)
-        throw new Error("PGP Client already initiated");
+// http://@521D4941/@pgp/@export
+// http://@521D4941/@pgp/@export
+// socket://521D4941.pks/@pgp/@export
+// socket://@D4819140521D4941/@pgp/@export
+// socket://D4819140521D4941.pks/@pgp/@export
+// socket://2059093A15CD3775648464B6D4819140521D4941.ks/@pgp/@export
 
-    newClient.pgp = {};
-    newClient.pgp.id_public = '_';
-    newClient.pgp.uid = generateUID(SESSION_UID);
-    console.log("Initiated new PGP Client: " + newClient);
-    send(newClient, "UID " + newClient.pgp.uid);
-}
+function getPGPPublicKey(commandString, client) {
+    var match = /^get (?:socket:\/\/)?([a-f0-9]{8,})(?:\.ks)(\/@pgp.*)$/i.exec(commandString);
+    if(!match)
+        return false;
 
+    var keyID = match[1];
+    var path = match[2];
 
-var SESSION_UID = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
-function generateUID(format) {
-    return (format).replace(/[xy]/g, function(c) {
-        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-        return v.toString(16);
-    });
+    console.log("PUBLIC KEY", match);
 }
 
 function pgpAuth(commandString, client) {
@@ -52,7 +42,7 @@ function pgpAuth(commandString, client) {
     var ids = match[1].split(/\W+/);
     for(var i=0; i<ids.length; i++) {
         var id = ids[i];
-        console.log("PGP IDENTIFY " + id);
+        console.log("     PGP IDENTIFY " + id);
     }
     return true;
 }
@@ -61,6 +51,7 @@ function pgpAuthValidate(commandString, client) {
     var match = /^pgp-auth-validate\s+(.*)?$/i.exec(commandString);
     if(!match)
         return false;
+
     //var publicKeyBlock = parsePublicKeyBlock(commandString);
     //var signedIDSIGBlock = parseSignedMessage(commandString);
     //var publicKeys = openpgp.key.readArmored(commandString);
@@ -76,37 +67,47 @@ function send(client, message) {
 }
 
 
-function parsePublicKeyBlock(content) {
+//
+//var SESSION_UID = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
+//function generateUID(format) {
+//    return (format).replace(/[xy]/g, function(c) {
+//        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+//        return v.toString(16);
+//    });
+//}
 
-    var tag = "-----BEGIN PGP PUBLIC KEY BLOCK-----";
-    var sPos = content.indexOf(tag);
-    if(sPos == -1)
-        throw new Error("No " + tag + " found");
-
-    tag = "-----END PGP PUBLIC KEY BLOCK-----";
-    var fPos = content.indexOf(tag, sPos);
-    if(fPos == -1)
-        throw new Error("No " + tag + " found");
-    fPos += tag.length;
-    return content.substring(sPos, fPos);
-}
-
-function parseSignedMessage(content, pos) {
-    var tag = "-----BEGIN PGP SIGNED MESSAGE-----";
-    var sPos = content.indexOf(tag, pos);
-    if(sPos == -1)
-        throw new Error("No " + tag + " found");
-
-    tag = "-----BEGIN PGP SIGNATURE-----";
-    var mPos = content.indexOf(tag, sPos);
-    if(mPos == -1)
-        throw new Error("No " + tag + " found");
-
-    tag = "-----END PGP SIGNATURE-----";
-    var fPos = content.indexOf(tag, mPos);
-    if(fPos == -1)
-        throw new Error("No " + tag + " found");
-    fPos += tag.length;
-
-    return content.substring(mPos, fPos);
-}
+//
+//function parsePublicKeyBlock(content) {
+//
+//    var tag = "-----BEGIN PGP PUBLIC KEY BLOCK-----";
+//    var sPos = content.indexOf(tag);
+//    if(sPos == -1)
+//        throw new Error("No " + tag + " found");
+//
+//    tag = "-----END PGP PUBLIC KEY BLOCK-----";
+//    var fPos = content.indexOf(tag, sPos);
+//    if(fPos == -1)
+//        throw new Error("No " + tag + " found");
+//    fPos += tag.length;
+//    return content.substring(sPos, fPos);
+//}
+//
+//function parseSignedMessage(content, pos) {
+//    var tag = "-----BEGIN PGP SIGNED MESSAGE-----";
+//    var sPos = content.indexOf(tag, pos);
+//    if(sPos == -1)
+//        throw new Error("No " + tag + " found");
+//
+//    tag = "-----BEGIN PGP SIGNATURE-----";
+//    var mPos = content.indexOf(tag, sPos);
+//    if(mPos == -1)
+//        throw new Error("No " + tag + " found");
+//
+//    tag = "-----END PGP SIGNATURE-----";
+//    var fPos = content.indexOf(tag, mPos);
+//    if(fPos == -1)
+//        throw new Error("No " + tag + " found");
+//    fPos += tag.length;
+//
+//    return content.substring(mPos, fPos);
+//}

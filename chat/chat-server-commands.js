@@ -67,7 +67,7 @@ function nickClient(commandString, client) {
     var now = Date.now();
 
     clientInfo.username = newNick;
-    
+
     var nickedClients = [];
     for(var i=0; i<clientInfo.channels.length; i++) {
         var channel = clientInfo.channels[i];

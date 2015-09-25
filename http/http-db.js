@@ -163,20 +163,32 @@ RestDB.verifyAndAddContentToDB = function(pgpSignedPost, callback) {
     );
 };
 
-RestDB.getContent = function(path, callback) {
+RestDB.getContent = function(contentURI, callback) {
+    var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(contentURI);
+    if(!match)
+        throw new Error("Invalid URI: " + contentURI);
+
+    var scheme = match[2],
+        host = match[4],
+        contentPath = match[5].toLowerCase() || '';
+    if(!host)
+        throw new Error("Invalid Host: " + contentURI);
+
+    match = /^([^.]*\.)?([a-f0-9]{16})\.ks$/i.exec(host);
+    if(!match)
+        throw new Error("Host must match [PGP KEY ID].ks")
+    var keyID = match[2];
+    keyID = keyID.substr(keyID.length - 16);
+
     RestDB(function(db) {
         var transaction = db.transaction([RestDB.DB_TABLE_HTTP_CONTENT], "readonly");
         var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_CONTENT);
 
-        var pathIndex = httpContentStore.index('path');
-        var getRequest = pathIndex.get(path);
+        var pathIndex = httpContentStore.index(RestDB.DB_INDEX_ID_PATH);
+        var getRequest = pathIndex.get([keyID, contentPath]);
         getRequest.onsuccess = function (e) {
             var httpContentData = e.target.result;
-            callback(null, httpContentData);
-        };
-        getRequest.onerror = function (e) {
-            var err = event.currentTarget.error;
-            callback(err, null);
+            callback(httpContentData);
         };
     });
 };

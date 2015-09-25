@@ -34,6 +34,8 @@ function SocketServer() {
         server.on('connection', function (client) {
             for(var i=0; i<clientEvents.length; i++)
                 client.on(clientEvents[i][0], clientEvents[i][1]);
+            client.send("GET socket://521D4941.ks/@pgp/@export");
+
         });
 
         for(var i=0; i<serverEvents.length; i++)
