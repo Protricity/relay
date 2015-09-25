@@ -12,14 +12,12 @@ exports.initHTTPServerCommands = function(HTTPServer) {
 };
 
 // TODO listings and variables
-// http://521D4941.ks/@pgp/@export
-// http://521D4941.ks/@pgp/index.html
-// http://521D4941.ks/@chat/@username
+// TODO: calculate domain names that resolve to key ids
+// TODO: D4819140521D4941.ks + [] => myspace.az12332432523.nks - [] => D4819140521D4941.ks
+// http://D4819140521D4941.ks/@pgp/@export
+// http://D4819140521D4941.ks/@pgp/index.html
+// http://D4819140521D4941.ks/@chat/@username
 
-// http://@521D4941/@pgp/@export
-// http://@521D4941/@pgp/@export
-// socket://521D4941.pks/@pgp/@export
-// socket://@D4819140521D4941/@pgp/@export
 // socket://D4819140521D4941.pks/@pgp/@export
 // socket://2059093A15CD3775648464B6D4819140521D4941.ks/@pgp/@export
 
