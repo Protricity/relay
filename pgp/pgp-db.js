@@ -170,7 +170,6 @@ PGPDB.getPrivateKeyData = function(id_private, callback) {
 
 PGPDB.getPublicKeyData = function(id_public, callback) {
     id_public = id_public.substr(id_public.length - 16);
-
     PGPDB(function (db) {
         var transaction = db.transaction([PGPDB.DB_TABLE_PUBLIC_KEYS], "readonly");
         var dbStore = transaction.objectStore(PGPDB.DB_TABLE_PUBLIC_KEYS);

@@ -5,17 +5,6 @@
 if(!exports) var exports = {};
 exports.RestDB = KeySpaceDB;
 
-KeySpaceDB.DB_VERSION               = 1;
-KeySpaceDB.DB_NAME                  = 'rest';
-KeySpaceDB.DB_TABLE_HTTP_CONTENT    = 'content';
-KeySpaceDB.DB_TABLE_HTTP_URL        = 'url';
-
-KeySpaceDB.DB_INDEX_PATH            = 'path';
-KeySpaceDB.DB_INDEX_ID_PATH         = 'id_path';
-KeySpaceDB.DB_INDEX_PATH_TIMESTAMP  = 'path_timestamp';
-//KeySpaceDB.DB_INDEX_PGP_ID_PUBLIC   = 'pgp_id_public';
-//KeySpaceDB.DB_INDEX_TIMESTAMP       = 'timestamp';
-
 if(typeof indexedDB === 'undefined') {
     var sqlite3     = require('sqlite3');
     var indexeddbjs = require('indexeddb-js');
@@ -26,9 +15,22 @@ if(typeof indexedDB === 'undefined') {
     var IDBKeyRange = scope.IDBKeyRange;
 }
 
+if(typeof openpgp === 'undefined') {
+    var openpgp = require('openpgp');
+}
+
+
+KeySpaceDB.DB_VERSION               = 1;
+KeySpaceDB.DB_NAME                  = 'ks';
+KeySpaceDB.DB_TABLE_HTTP_CONTENT    = 'content';
+KeySpaceDB.DB_TABLE_HTTP_URL        = 'url';
+
+KeySpaceDB.DB_INDEX_PATH            = 'path';
+KeySpaceDB.DB_INDEX_ID_PATH         = 'id_path';
+KeySpaceDB.DB_INDEX_PATH_TIMESTAMP  = 'path_timestamp';
+
 // Config Database
 function KeySpaceDB(dbReadyCallback) {
-
 
     if (typeof KeySpaceDB.getDBRequest === 'undefined') {
         // First Time
@@ -61,13 +63,13 @@ function KeySpaceDB(dbReadyCallback) {
                 //postStore.createIndex(KeySpaceDB.DB_INDEX_PGP_ID_PUBLIC, "pgp_id_public", { unique: false });
                 //postStore.createIndex(KeySpaceDB.DB_INDEX_TIMESTAMP, "timestamp", { unique: false });
 
-                console.log('Upgraded Table: ', postStore.name);
+                console.log('Upgraded Table: ' + KeySpaceDB.DB_NAME + '.' + postStore.name);
             }
 
             if(upgradeDB.objectStoreNames.indexOf(KeySpaceDB.DB_TABLE_HTTP_URL) === -1) {
                 var urlStore = upgradeDB.createObjectStore(KeySpaceDB.DB_TABLE_HTTP_URL, { keyPath: "url"});
 
-                console.log('Upgraded Table: ', urlStore.name);
+                console.log('Upgraded Table: ' + KeySpaceDB.DB_NAME + '.' + urlStore.name);
             }
 
         };
@@ -84,13 +86,6 @@ function KeySpaceDB(dbReadyCallback) {
 // Database Methods
 
 KeySpaceDB.verifySignedContent = function(pgpMessageContent, callback) {
-
-    if(typeof self.openpgp === 'undefined') {
-        importScripts('pgp/lib/support/polycrypt.js');
-        importScripts('pgp/lib/openpgpjs/openpgp.js');
-        console.log("Loaded: ", self.openpgp);
-    }
-    
     var pgpSignedMessage = openpgp.cleartext.readArmored(pgpMessageContent);
     var encIDs = pgpSignedMessage.getSigningKeyIds();
     var feedKeyID = encIDs[0].toHex().toUpperCase();
@@ -114,11 +109,12 @@ KeySpaceDB.verifySignedContent = function(pgpMessageContent, callback) {
 
 };
 
-KeySpaceDB.addVerifiedContentToDB = function(verifiedContent, callback) {
-    var verifiedText = verifiedContent.text;
-    var pgpSignedContent = verifiedContent.encrypted;
-    var pgp_id_public = verifiedContent.signingKeyId;
-    //var pgp_id_public_short = pgp_id_public.substr(pgp_id_public.length - 8);
+KeySpaceDB.addVerifiedContentToDB = function(pgpSignedContent, callback) {
+    var pgpSignedMessage = openpgp.cleartext.readArmored(pgpSignedContent);
+    var encIDs = pgpSignedMessage.getSigningKeyIds();
+    var pgp_id_public = encIDs[0].toHex().toUpperCase();
+
+    var verifiedText = pgpSignedMessage.text;
     var path = /data-path=["'](\S+)["']/i.exec(verifiedText)[1];
     var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(verifiedText)[1]);
     if(!path)
@@ -126,29 +122,21 @@ KeySpaceDB.addVerifiedContentToDB = function(verifiedContent, callback) {
     if(!timestamp)
         throw new Error("Invalid Timestamp");
 
-    var pgpSignedMessage = openpgp.cleartext.readArmored(pgpSignedContent);
-    console.log(pgpSignedMessage);
-    //var pathLevel = -1;
-    //path.replace(/\/+/g, function() { pathLevel++; });
-
     KeySpaceDB(function(db) {
 
         var transaction = db.transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readwrite");
         var httpContentStore = transaction.objectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
 
         var insertData = {
-            //'uid': pgp_id_public + '-' + timestamp,
             'pgp_id_public': pgp_id_public,
-            //'pgp_id_public_short': pgp_id_public_short,
             'path': path,
-            //'path_level': pathLevel,
             'timestamp': timestamp,
             'content_signed': pgpSignedContent,
             'content_verified': verifiedText
         };
 
         var insertRequest = httpContentStore.add(insertData);
-        insertRequest.onsuccess = function(event) {
+        insertRequest.onsuccess = function(e) {
             console.log("Added http content to database: " + path, insertData);
 
             var url = ('socket://' + pgp_id_public + path);
@@ -156,10 +144,10 @@ KeySpaceDB.addVerifiedContentToDB = function(verifiedContent, callback) {
             if(callback)
                 callback(null, insertData, insertRequest);
         };
-        insertRequest.onerror = function(event) {
-            var err = event.target.error;
+        insertRequest.onerror = function(e) {
+            var err = e.target.error;
             var status_content = "Error adding content post to database: " + err.message;
-            console.error(status_content, event);
+            console.error(status_content, e);
             if(callback)
                 callback(err, null);
         };
@@ -171,7 +159,7 @@ KeySpaceDB.verifyAndAddContentToDB = function(pgpSignedPost, callback) {
         function(err, verifiedContent) {
             if(err)
                 throw new Error(err);
-            KeySpaceDB.addVerifiedContentToDB(verifiedContent, callback);
+            KeySpaceDB.addVerifiedContentToDB(pgpSignedPost, callback);
         }
     );
 };
@@ -341,8 +329,33 @@ KeySpaceDB.listURLIndex = function(currentURL, callback) {
 };
 
 exports.test = function() {
-    KeySpaceDB(function(db) {
-        KeySpaceDB.queryContentFeedByPath('', [0, 1]);
+    var options = {
+        numBits: 512,
+        userId: 'Test <test@example.org>',
+        passphrase: 'test'
+    };
+
+    //console.log("Generating test keypair...");
+    openpgp.generateKeyPair(options)
+        .then(function(keypair) {
+        // success
+        var privateKey = keypair.key;
+        privateKey.decrypt('test');
+
+        var postContent = '<article data-path="http://test.ks/path" data-timestamp="' + Date.now() + '"></article>';
+            openpgp.signClearMessage(privateKey, postContent)
+                .then(function(pgpSignedContent) {
+                    console.log(pgpSignedContent);
+                    KeySpaceDB.addVerifiedContentToDB(pgpSignedContent, function () {
+
+                    })
+                });
+            openpgp.encryptMessage(privateKey, postContent)
+                .then(function(pgpEncryptedContent) {
+                    console.log(pgpEncryptedContent);
+                });
+        KeySpaceDB.addURLToDB('http://test.ks/path', 'http://test.ks/referrer');
         console.log('Test Complete: ' + __filename);
-    });
+
+    })
 };
