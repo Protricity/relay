@@ -1,6 +1,7 @@
 /**
  * Created by ari ooccurred015.
  */
+if(!exports) var exports = {};
 (function() {
 
     var PATH_PUT = 'put';
@@ -394,5 +395,8 @@
 
 
 
+    exports.test = function() {
+
+    };
 
 })();

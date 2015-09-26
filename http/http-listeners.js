@@ -12,6 +12,7 @@
     self.addEventListener('change', onFormEvent);
     self.addEventListener('click', onClickEvent);
     self.addEventListener('dragstart', onDragEvent);
+    self.addEventListener('test', onUnitTestEvent);
     //self.addEventListener('drop', onDragEvent);
     //self.addEventListener('dragover', onDragEvent);
 

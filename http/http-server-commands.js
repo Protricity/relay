@@ -2,6 +2,7 @@
  * Created by ari on 9/22/2015.
  */
 if(!exports) var exports = {};
+
 exports.initSocketServerCommands = function(SocketServer) {
     SocketServer.addCommand(function (commandString, client) {
         var match = /^get\s+([\S\s]+)$/im.exec(commandString);
@@ -19,4 +20,9 @@ exports.initHTTPServerCommands = function(HTTPServer) {
 
         return false;
     });
+};
+
+
+exports.test = function() {
+
 };

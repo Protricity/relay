@@ -2,6 +2,8 @@
  * Created by ari on 7/2/2015.
  */
 "use strict";
+if(!exports) var exports = {};
+exports.RestDB = RestDB;
 
 RestDB.DB_VERSION               = 1;
 RestDB.DB_NAME                  = 'rest';
@@ -325,4 +327,8 @@ RestDB.listURLIndex = function(currentURL, callback) {
             }
         };
     });
+};
+
+exports.test = function() {
+
 };
