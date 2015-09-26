@@ -8,7 +8,9 @@
 //var proxy['get'] = 'rest.get';
 //var proxy['post'] = 'rest.post';
 
-(function() {
+
+if(!exports) var exports = {};
+exports.initClientCommands = function(Client) {
 
     // HTTP Commands
     Client.addCommand(importHTTPCommands);
@@ -55,6 +57,5 @@
         return false;
     }
 
-})();
-
+}
 

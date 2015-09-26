@@ -51,7 +51,13 @@ function Client() {
         responseHandlers.splice(pos, 1);
     };
 
-    importScripts('client/client-command-proxies.js');
+
+    if(typeof require !== 'undefined')
+        var exports = require('./client-command-proxies.js')
+    else
+        importScripts('client/client-command-proxies.js');
+    exports.initClientCommands(Client);
+
 
     Client.execute = function(commandString, e) {
         var oldLength = commandHandlers.length;

@@ -4,6 +4,9 @@
 if(!exports) var exports = {};
 (function() {
 
+    if(typeof Client === 'undefined')
+        var Client = require('../client/client.js').Client;
+
     var PATH_PUT = 'put';
     var PATH_PREFIX_GET = 'get:';
 
@@ -393,10 +396,8 @@ if(!exports) var exports = {};
         return lines.join("\n");
     }
 
-
-
     exports.test = function() {
-
+        console.log('Test Complete: ' + __filename);
     };
 
 })();

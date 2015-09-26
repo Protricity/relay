@@ -4,11 +4,6 @@
 
 if(!exports) var exports = {};
 exports.test = function() {
-    var tests = [
-        require('./http/http-tests.js').test
-    ];
-
-    for(var i=0; i<tests.length; i++)
-        setTimeout(tests[i], 1);
+    require('./http/http-tests.js').test();
 };
 exports.test();

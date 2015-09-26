@@ -24,5 +24,5 @@ exports.initHTTPServerCommands = function(HTTPServer) {
 
 
 exports.test = function() {
-
+    console.log('Test Complete: ' + __filename);
 };

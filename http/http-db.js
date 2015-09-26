@@ -330,5 +330,5 @@ RestDB.listURLIndex = function(currentURL, callback) {
 };
 
 exports.test = function() {
-
+    console.log('Test Complete: ' + __filename);
 };
