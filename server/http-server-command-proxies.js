@@ -12,7 +12,7 @@ exports.initHTTPServerCommandProxies = function(HTTPServer) {
         HTTPServer.removeCommand(httpCommand);
         require('../server/server-commands.js')
             .initHTTPServerCommands(HTTPServer);
-        require('../http/http-server-commands.js')
+        require('../ks/ks-server-commands.js')
             .initHTTPServerCommands(HTTPServer);
         return false;
     }

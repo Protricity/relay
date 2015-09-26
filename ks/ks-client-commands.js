@@ -43,7 +43,7 @@ if(!exports) var exports = {};
         if(content) {
             // todo http format
             if(preview) {
-                importScripts('http/templates/http-put-template.js');
+                importScripts('http/templates/ks-put-template.js');
                 Templates.rest.put.preview(content, function(html) {
                     Client.postResponseToClient("LOG.REPLACE put-preview: " + html);
                 });
@@ -55,7 +55,7 @@ if(!exports) var exports = {};
             }
 
         } else {
-            importScripts('http/templates/http-put-template.js');
+            importScripts('http/templates/ks-put-template.js');
             Templates.rest.put.form(content, function(html) {
                 Client.postResponseToClient("LOG.REPLACE put: " + html);
             });
@@ -145,7 +145,7 @@ if(!exports) var exports = {};
 
         responseContent.replace(/<a[^>]+href=['"]([^'">]+)['"][^>]*>([^<]+)<\/a>/gi, function(match, url, text, offset, theWholeThing) {
             if(typeof RestDB !== 'function')
-                importScripts('http/http-db.js');
+                importScripts('ks/ks-db.js');
 
             RestDB.addURLToDB(url, referrerURL);
         });
@@ -160,7 +160,7 @@ if(!exports) var exports = {};
             requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
 
         if(typeof RestDB !== 'function')
-            importScripts('http/http-db.js');
+            importScripts('ks/ks-db.js');
 
         // Send request regardless of local cache
         var requestID = 'R' + requestIDCount++;
@@ -174,7 +174,7 @@ if(!exports) var exports = {};
             if(contentData) {
                 var signedBody = protectHTMLContent(contentData.content_verified);
 
-                importScripts('http/templates/http-response-template.js');
+                importScripts('http/templates/ks-response-template.js');
                 Templates.rest.response.body(
                     signedBody,
                     requestURL,
@@ -190,7 +190,7 @@ if(!exports) var exports = {};
 
             } else {
                 // If nothing found, show something, sheesh
-                importScripts('http/templates/http-response-template.js');
+                importScripts('http/templates/ks-response-template.js');
                 Templates.rest.response.body(
                     "<p>Request sent...</p>",
                     requestURL,
@@ -213,14 +213,14 @@ if(!exports) var exports = {};
             requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
 
         if(typeof RestDB !== 'function')
-            importScripts('http/http-db.js');
+            importScripts('ks/ks-db.js');
 
         var requestURL = getRequestURL(requestString);
         RestDB.getContent(requestURL, function (contentData) {
             if(contentData) {
                 var signedBody = protectHTMLContent(contentData.content_verified);
 
-                importScripts('http/templates/http-response-template.js');
+                importScripts('http/templates/ks-response-template.js');
                 Templates.rest.response.body(
                     signedBody,
                     requestURL,
@@ -238,7 +238,7 @@ if(!exports) var exports = {};
 
                 importScripts('rest/pages/404.js');
                 get404IndexTemplate(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
-                    importScripts('http/templates/http-response-template.js');
+                    importScripts('http/templates/ks-response-template.js');
                     Templates.rest.response.body(
                         defaultResponseBody,
                         requestURL,
@@ -276,7 +276,7 @@ if(!exports) var exports = {};
 
             // Non-200 so grab local version or default content
             getDefaultContentResponse(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
-                importScripts('http/templates/http-response-template.js');
+                importScripts('http/templates/ks-response-template.js');
                 Templates.rest.response.body(
                     defaultResponseBody,
                     requestURL,
@@ -345,7 +345,7 @@ if(!exports) var exports = {};
 
         importScripts('http/templates/test-browser-template.js');
         Templates.rest.browser(responseString, function(html) {
-            Client.postResponseToClient("LOG.REPLACE http-browser:" + browserID + ' ' + html);
+            Client.postResponseToClient("LOG.REPLACE ks-browser:" + browserID + ' ' + html);
         });
         // Free up template resources
         delete Templates.rest.browser;

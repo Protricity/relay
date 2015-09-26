@@ -20,7 +20,7 @@ exports.initClientCommands = function(Client) {
             return false;
         Client.removeCommand(importHTTPCommands);
         Client.removeResponse(importHTTPCommands);
-        importScripts('http/http-client-commands.js');
+        importScripts('ks/ks-client-commands.js');
         return false;
     }
 

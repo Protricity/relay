@@ -58,10 +58,10 @@
                 Client.postResponseToClient("LOG.REPLACE feed:" + pathPrefix + ' ' + html);
             });
 
-            if(typeof RestDB !== 'function')
-                importScripts('http/http-db.js');
+            if(typeof KeySpaceDB !== 'function')
+                importScripts('ks/ks-db.js');
 
-            RestDB.queryContentFeedByID(
+            KeySpaceDB.queryContentFeedByID(
                 publicKeyID,
                 [feedStartTime, feedEndTime],
                 function(data) {

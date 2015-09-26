@@ -44,7 +44,7 @@
         });
         e.target.dispatchEvent(commandEvent);
 
-        // TODO: pending action status with .http-browser
+        // TODO: pending action status with .ks-browser
 
     }
 
@@ -92,14 +92,14 @@
             return false;
 
         switch(formElm.getAttribute('name')) {
-            case 'http-put-form':
+            case 'ks-put-form':
                 refreshHTTPPutForm(e, formElm);
                 if(e.type === 'submit')
                     e.preventDefault() ||
                     submitHTTPPutForm(e, formElm);
                 return true;
 
-            case 'http-browser-navigation-form':
+            case 'ks-browser-navigation-form':
                 if(e.type === 'submit')
                     e.preventDefault() ||
                     submitHTTPBrowserNavigationForm(e, formElm);
@@ -259,7 +259,7 @@
                 .then(function(pgpSignedContent) {
 
                     setStatus(formElm, "Adding post to database...");
-                    RestDB.verifyAndAddContentToDB(pgpSignedContent, function() {
+                    KeySpaceDB.verifyAndAddContentToDB(pgpSignedContent, function() {
                         //setStatus(formElm, "<span class='command'>Message</span>ing channel [" + homeChannel + "]");
 
                         var commandString = "PUT " + fixedPostPath + " " + pgpSignedContent;
@@ -372,7 +372,7 @@
     includeScript('pgp/pgp-db.js');
 
     // For HTTP Content Database access
-    includeScript('http/http-db.js');
+    includeScript('ks/ks-db.js');
 
     // For PGP Decryption in chat rooms
     var openPGPScriptPath = 'pgp/lib/openpgpjs/openpgp.js';

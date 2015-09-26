@@ -9,15 +9,15 @@ Templates.rest.put = Templates.rest.put || {};
 Templates.rest.put.form = function(content, callback) {
     var PUT_FORM_TEMPLATE = "\
         <article class='channel put:'>\n\
-            <script src='http/http-listeners.js'></script>\n\
-            <link rel='stylesheet' href='http/http.css' type='text/css'>\n\
+            <script src='ks/ks-listeners.js'></script>\n\
+            <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
             <legend class='title'><span class='command'>Put</span> content in your <strong>User Space</strong></legend>\n\
             <div class='title-commands'>\n\
                 <a class='title-command-minimize' href='#MINIMIZE put:'>[-]</a><!--\
              --><a class='title-command-maximize' href='#MAXIMIZE put:'>[+]</a><!--\
              --><a class='title-command-close' href='#CLOSE put:'>[x]</a>\n\
             </div>\n\
-            <form name='http-put-form' class='compact' style='float:left;'>\n\
+            <form name='ks-put-form' class='compact' style='float:left;'>\n\
                 <label class='label-content'>Create new <span class='html'>HTML</span> content for your <strong>User Space</strong>:<br/>\n\
                     <textarea cols='50' rows='8' class='focus' name='content' required='required' placeholder='Type anything you like.\n\n\t<i>most</i>\n\t<code>html tags</code>\n\t<strong>allowed!</strong>'>{$content}</textarea>\n\
                 <br/><br/></label>\n\
@@ -90,8 +90,8 @@ Templates.rest.put.preview = function(content, callback) {
 
     var PUT_FORM_PREVIEW_TEMPLATE = "\
         <article class='channel put-preview:'>\n\
-            <script src='http/http-listeners.js'></script>\n\
-            <link rel='stylesheet' href='http/http.css' type='text/css'>\n\
+            <script src='ks/ks-listeners.js'></script>\n\
+            <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
             <legend class='title'><span class='command'>Preview</span></legend>\n\
             <div class='title-commands'>\n\
                 <a class='title-command-minimize' href='#MINIMIZE put:'>[-]</a><!--\
@@ -100,7 +100,7 @@ Templates.rest.put.preview = function(content, callback) {
             </div>\n\
             <section class='put-preview-content:' style='position:relative;'>{$content}</section>\n\
             <br/>\n\
-            <form name='http-put-preview-form' >\n\
+            <form name='ks-put-preview-form' >\n\
                 <fieldset>\n\
                     <legend>Drag and Drop Suggested Content</legend>\n\
                     <div class='put-preview-template-content:'>\n\

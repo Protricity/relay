@@ -4,9 +4,9 @@
 
 if(!exports) var exports = {};
 exports.test = function() {
-    require('./http-server-commands.js').test();
-    require('./http-client-commands.js').test();
+    require('./ks-server-commands.js').test();
+    require('./ks-client-commands.js').test();
     //require('http-listeners').test();
-    require('./http-db.js').test();
+    require('./ks-db.js').test();
     console.log('Test Complete: ' + __filename);
 };

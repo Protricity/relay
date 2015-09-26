@@ -1,41 +1,41 @@
 
 
 
-form[name=http-put-preview-form] {
+form[name=ks-put-preview-form] {
     min-width: 30em;
 }
 
-form[name=http-put-form] {
+form[name=ks-put-form] {
     /*min-width: 30em;*/
 }
 
-form[name=http-put-form] input[type=submit] {
+form[name=ks-put-form] input[type=submit] {
     padding: 0.5em 1em;
     margin: 0.5em;
 }
 
-.channel.http-response-400 {
+.channel.ks-response-400 {
     border: 1px solid red;
 }
 
-.channel.http-browser {
+.channel.ks-browser {
     min-height: 15em;
 }
 
-.channel.http-browser nav {
+.channel.ks-browser nav {
     background-color: lightgray;
     border: 1px outset;
 }
 
-.channel.http-browser input[name=url] {
+.channel.ks-browser input[name=url] {
     width: 21em;
 }
 
-.channel.http-browser nav input[name=url] {
+.channel.ks-browser nav input[name=url] {
     padding: 1px 5px;
 }
 
-.channel.http-browser nav button {
+.channel.ks-browser nav button {
     /* height: 24px; */
     /* vertical-align: top; */
     margin: 1px;
@@ -46,11 +46,11 @@ form[name=http-put-form] input[type=submit] {
     background-color: transparent;
 }
 
-.channel.http-browser .http-body {
+.channel.ks-browser .ks-body {
     min-height: 11em;
 }
 
-.channel.http-browser .http-status {
+.channel.ks-browser .ks-status {
     background-color: lightgrey;
     padding: 0 0.5em;
     color: #666;
@@ -65,6 +65,6 @@ form[name=http-put-form] input[type=submit] {
     display: none;
 }
 
-form[name=http-put-form].no-passphrase-required .hide-on-no-passphrase-required {
+form[name=ks-put-form].no-passphrase-required .hide-on-no-passphrase-required {
     display: none;
 }

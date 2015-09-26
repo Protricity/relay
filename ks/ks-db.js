@@ -3,29 +3,40 @@
  */
 "use strict";
 if(!exports) var exports = {};
-exports.RestDB = RestDB;
+exports.RestDB = KeySpaceDB;
 
-RestDB.DB_VERSION               = 1;
-RestDB.DB_NAME                  = 'rest';
-RestDB.DB_TABLE_HTTP_CONTENT    = 'content';
-RestDB.DB_TABLE_HTTP_URL        = 'url';
+KeySpaceDB.DB_VERSION               = 1;
+KeySpaceDB.DB_NAME                  = 'rest';
+KeySpaceDB.DB_TABLE_HTTP_CONTENT    = 'content';
+KeySpaceDB.DB_TABLE_HTTP_URL        = 'url';
 
-RestDB.DB_INDEX_PATH            = 'path';
-RestDB.DB_INDEX_ID_PATH         = 'id_path';
-RestDB.DB_INDEX_PATH_TIMESTAMP  = 'path_timestamp';
-//RestDB.DB_INDEX_PGP_ID_PUBLIC   = 'pgp_id_public';
-//RestDB.DB_INDEX_TIMESTAMP       = 'timestamp';
+KeySpaceDB.DB_INDEX_PATH            = 'path';
+KeySpaceDB.DB_INDEX_ID_PATH         = 'id_path';
+KeySpaceDB.DB_INDEX_PATH_TIMESTAMP  = 'path_timestamp';
+//KeySpaceDB.DB_INDEX_PGP_ID_PUBLIC   = 'pgp_id_public';
+//KeySpaceDB.DB_INDEX_TIMESTAMP       = 'timestamp';
+
+if(typeof indexedDB === 'undefined') {
+    var sqlite3     = require('sqlite3');
+    var indexeddbjs = require('indexeddb-js');
+
+    var engine    = new sqlite3.Database(':memory:');
+    var scope     = indexeddbjs.makeScope('sqlite3', engine);
+    var indexedDB   = new indexeddbjs.indexedDB('sqlite3', engine);
+    var IDBKeyRange = scope.IDBKeyRange;
+}
 
 // Config Database
-function RestDB(dbReadyCallback) {
+function KeySpaceDB(dbReadyCallback) {
 
-    if (typeof RestDB.getDBRequest === 'undefined') {
+
+    if (typeof KeySpaceDB.getDBRequest === 'undefined') {
         // First Time
-        var openRequest = indexedDB.open(RestDB.DB_NAME, RestDB.DB_VERSION);
+        var openRequest = indexedDB.open(KeySpaceDB.DB_NAME, KeySpaceDB.DB_VERSION);
         var onDBCallbacks = [];
-        RestDB.getDBRequest = function() { return openRequest; };
-        RestDB.getCallbacks = function () { return onDBCallbacks; };
-        RestDB.addCallback = function (callback) { onDBCallbacks.push(callback); };
+        KeySpaceDB.getDBRequest = function() { return openRequest; };
+        KeySpaceDB.getCallbacks = function () { return onDBCallbacks; };
+        KeySpaceDB.addCallback = function (callback) { onDBCallbacks.push(callback); };
 
         openRequest.onsuccess = function (e) {
             for (var i = 0; i < onDBCallbacks.length; i++)
@@ -34,45 +45,45 @@ function RestDB(dbReadyCallback) {
         };
 
         openRequest.onerror = function (e) {
-            var err = e.currentTarget.result;
+            var err = e.target.result;
             throw new Error(err);
         };
 
         openRequest.onupgradeneeded = function (e) {
-            var upgradeDB = e.currentTarget.result;
-            var transaction = e.currentTarget.transaction;
+            var upgradeDB = e.target.result;
+            var transaction = e.target.transaction;
 
-            if(!upgradeDB.objectStoreNames.contains(RestDB.DB_TABLE_HTTP_CONTENT)) {
-                var postStore = upgradeDB.createObjectStore(RestDB.DB_TABLE_HTTP_CONTENT, { keyPath: ["pgp_id_public", "timestamp"] });
-                postStore.createIndex(RestDB.DB_INDEX_PATH, "path", { unique: false });
-                postStore.createIndex(RestDB.DB_INDEX_ID_PATH, ["pgp_id_public", "path"], { unique: false });
-                postStore.createIndex(RestDB.DB_INDEX_PATH_TIMESTAMP, ["path", "timestamp"], { unique: false });
-                //postStore.createIndex(RestDB.DB_INDEX_PGP_ID_PUBLIC, "pgp_id_public", { unique: false });
-                //postStore.createIndex(RestDB.DB_INDEX_TIMESTAMP, "timestamp", { unique: false });
+            if(upgradeDB.objectStoreNames.indexOf(KeySpaceDB.DB_TABLE_HTTP_CONTENT) === -1) {
+                var postStore = upgradeDB.createObjectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT, { keyPath: ["pgp_id_public", "timestamp"] });
+                postStore.createIndex(KeySpaceDB.DB_INDEX_PATH, "path", { unique: false });
+                postStore.createIndex(KeySpaceDB.DB_INDEX_ID_PATH, ["pgp_id_public", "path"], { unique: false });
+                postStore.createIndex(KeySpaceDB.DB_INDEX_PATH_TIMESTAMP, ["path", "timestamp"], { unique: false });
+                //postStore.createIndex(KeySpaceDB.DB_INDEX_PGP_ID_PUBLIC, "pgp_id_public", { unique: false });
+                //postStore.createIndex(KeySpaceDB.DB_INDEX_TIMESTAMP, "timestamp", { unique: false });
 
-                console.log('Upgraded Table: ', postStore.name, postStore);
+                console.log('Upgraded Table: ', postStore.name);
             }
 
-            if(!upgradeDB.objectStoreNames.contains(RestDB.DB_TABLE_HTTP_URL)) {
-                var urlStore = upgradeDB.createObjectStore(RestDB.DB_TABLE_HTTP_URL, { keyPath: "url"});
+            if(upgradeDB.objectStoreNames.indexOf(KeySpaceDB.DB_TABLE_HTTP_URL) === -1) {
+                var urlStore = upgradeDB.createObjectStore(KeySpaceDB.DB_TABLE_HTTP_URL, { keyPath: "url"});
 
-                console.log('Upgraded Table: ', urlStore.name, urlStore);
+                console.log('Upgraded Table: ', urlStore.name);
             }
 
         };
     }
 
-    var dbRequest = RestDB.getDBRequest();
+    var dbRequest = KeySpaceDB.getDBRequest();
     if (dbRequest.readyState === "done") {
         dbReadyCallback(dbRequest.result);
         return;
     }
-    RestDB.addCallback(dbReadyCallback);
+    KeySpaceDB.addCallback(dbReadyCallback);
 }
 
 // Database Methods
 
-RestDB.verifySignedContent = function(pgpMessageContent, callback) {
+KeySpaceDB.verifySignedContent = function(pgpMessageContent, callback) {
 
     if(typeof self.openpgp === 'undefined') {
         importScripts('pgp/lib/support/polycrypt.js');
@@ -103,7 +114,7 @@ RestDB.verifySignedContent = function(pgpMessageContent, callback) {
 
 };
 
-RestDB.addVerifiedContentToDB = function(verifiedContent, callback) {
+KeySpaceDB.addVerifiedContentToDB = function(verifiedContent, callback) {
     var verifiedText = verifiedContent.text;
     var pgpSignedContent = verifiedContent.encrypted;
     var pgp_id_public = verifiedContent.signingKeyId;
@@ -120,10 +131,10 @@ RestDB.addVerifiedContentToDB = function(verifiedContent, callback) {
     //var pathLevel = -1;
     //path.replace(/\/+/g, function() { pathLevel++; });
 
-    RestDB(function(db) {
+    KeySpaceDB(function(db) {
 
-        var transaction = db.transaction([RestDB.DB_TABLE_HTTP_CONTENT], "readwrite");
-        var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_CONTENT);
+        var transaction = db.transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readwrite");
+        var httpContentStore = transaction.objectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
 
         var insertData = {
             //'uid': pgp_id_public + '-' + timestamp,
@@ -141,12 +152,12 @@ RestDB.addVerifiedContentToDB = function(verifiedContent, callback) {
             console.log("Added http content to database: " + path, insertData);
 
             var url = ('socket://' + pgp_id_public + path);
-            RestDB.addURLToDB(url, null);
+            KeySpaceDB.addURLToDB(url, null);
             if(callback)
                 callback(null, insertData, insertRequest);
         };
         insertRequest.onerror = function(event) {
-            var err = event.currentTarget.error;
+            var err = event.target.error;
             var status_content = "Error adding content post to database: " + err.message;
             console.error(status_content, event);
             if(callback)
@@ -155,17 +166,17 @@ RestDB.addVerifiedContentToDB = function(verifiedContent, callback) {
     });
 };
 
-RestDB.verifyAndAddContentToDB = function(pgpSignedPost, callback) {
-    RestDB.verifySignedContent(pgpSignedPost,
+KeySpaceDB.verifyAndAddContentToDB = function(pgpSignedPost, callback) {
+    KeySpaceDB.verifySignedContent(pgpSignedPost,
         function(err, verifiedContent) {
             if(err)
                 throw new Error(err);
-            RestDB.addVerifiedContentToDB(verifiedContent, callback);
+            KeySpaceDB.addVerifiedContentToDB(verifiedContent, callback);
         }
     );
 };
 
-RestDB.getContent = function(contentURI, callback) {
+KeySpaceDB.getContent = function(contentURI, callback) {
     var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(contentURI);
     if(!match)
         throw new Error("Invalid URI: " + contentURI);
@@ -182,11 +193,11 @@ RestDB.getContent = function(contentURI, callback) {
     var keyID = match[2];
     keyID = keyID.substr(keyID.length - 16);
 
-    RestDB(function(db) {
-        var transaction = db.transaction([RestDB.DB_TABLE_HTTP_CONTENT], "readonly");
-        var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_CONTENT);
+    KeySpaceDB(function(db) {
+        var transaction = db.transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readonly");
+        var httpContentStore = transaction.objectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
 
-        var pathIndex = httpContentStore.index(RestDB.DB_INDEX_ID_PATH);
+        var pathIndex = httpContentStore.index(KeySpaceDB.DB_INDEX_ID_PATH);
         var getRequest = pathIndex.get([keyID, contentPath]);
         getRequest.onsuccess = function (e) {
             var httpContentData = e.target.result;
@@ -195,30 +206,30 @@ RestDB.getContent = function(contentURI, callback) {
     });
 };
 
-RestDB.getContentByPublicKeyID = function(path, publicKeyID, callback) {
-    RestDB(function(db) {
-        var transaction = db.transaction([RestDB.DB_TABLE_HTTP_CONTENT], "readonly");
-        var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_CONTENT);
+KeySpaceDB.getContentByPublicKeyID = function(path, publicKeyID, callback) {
+    KeySpaceDB(function(db) {
+        var transaction = db.transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readonly");
+        var httpContentStore = transaction.objectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
 
-        var pathIndex = httpContentStore.index(RestDB.DB_INDEX_ID_PATH);
+        var pathIndex = httpContentStore.index(KeySpaceDB.DB_INDEX_ID_PATH);
         var getRequest = pathIndex.get([path, publicKeyID]);
         getRequest.onsuccess = function(e) {
             var httpContentData = e.target.result;
             callback(null, httpContentData);
         };
         getRequest.onerror = function(e) {
-            var err = event.currentTarget.error;
+            var err = event.target.error;
             callback(err, null);
         };
     });
 };
 
-RestDB.queryContentFeedByID = function(publicKeyID, timespan, callback) {
+KeySpaceDB.queryContentFeedByID = function(publicKeyID, timespan, callback) {
     //var id_public_short = publicKeyID.toUpperCase().substr(publicKeyID.length - 8);
 
-    RestDB(function(db) {
-        var transaction = db.transaction([RestDB.DB_TABLE_HTTP_CONTENT], "readonly");
-        var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_CONTENT);
+    KeySpaceDB(function(db) {
+        var transaction = db.transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readonly");
+        var httpContentStore = transaction.objectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
 
         var boundKeyRange = IDBKeyRange.bound([publicKeyID, timespan[0]], [publicKeyID, timespan[1]], true, true);
 
@@ -234,12 +245,12 @@ RestDB.queryContentFeedByID = function(publicKeyID, timespan, callback) {
 };
 
 
-RestDB.queryContentFeedByPath = function(pathPrefix, timespan, callback) {
-    RestDB(function(db) {
-        var transaction = db.transaction([RestDB.DB_TABLE_HTTP_CONTENT], "readonly");
-        var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_CONTENT);
+KeySpaceDB.queryContentFeedByPath = function(pathPrefix, timespan, callback) {
+    KeySpaceDB(function(db) {
+        var transaction = db.transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readonly");
+        var httpContentStore = transaction.objectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
 
-        var pathTimeStampIndex = httpContentStore.index(RestDB.DB_INDEX_PATH_TIMESTAMP);
+        var pathTimeStampIndex = httpContentStore.index(KeySpaceDB.DB_INDEX_PATH_TIMESTAMP);
         var boundKeyRange = IDBKeyRange.bound([pathPrefix, timespan[0]], [pathPrefix + '\uffff', timespan[1]], true, true);
         pathTimeStampIndex.openCursor(boundKeyRange)
             .onsuccess = function (e) {
@@ -253,7 +264,7 @@ RestDB.queryContentFeedByPath = function(pathPrefix, timespan, callback) {
 };
 
 
-RestDB.addURLToDB = function(url, referrerURL, callback) {
+KeySpaceDB.addURLToDB = function(url, referrerURL, callback) {
     if(!callback)
         callback = function(err, insertData) {
             if(err) {
@@ -264,9 +275,9 @@ RestDB.addURLToDB = function(url, referrerURL, callback) {
             }
         };
 
-    RestDB(function(db) {
-        var transaction = db.transaction([RestDB.DB_TABLE_HTTP_URL], "readwrite");
-        var httpContentStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_URL);
+    KeySpaceDB(function(db) {
+        var transaction = db.transaction([KeySpaceDB.DB_TABLE_HTTP_URL], "readwrite");
+        var httpContentStore = transaction.objectStore(KeySpaceDB.DB_TABLE_HTTP_URL);
 
         var insertData = {
             'url': url.toLowerCase(),
@@ -280,13 +291,13 @@ RestDB.addURLToDB = function(url, referrerURL, callback) {
             callback(null, insertData);
         };
         insertRequest.onerror = function(event) {
-            var err = event.currentTarget.error;
+            var err = event.target.error;
             callback(err, null);
         };
     });
 };
 
-RestDB.listURLIndex = function(currentURL, callback) {
+KeySpaceDB.listURLIndex = function(currentURL, callback) {
 
     var match = currentURL.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
     var contentURLHost = match[4];
@@ -301,12 +312,12 @@ RestDB.listURLIndex = function(currentURL, callback) {
     if(currentURL !== parentURL)
         paths.push([parentURL, '..']);
 
-    RestDB(function(db) {
+    KeySpaceDB(function(db) {
         var urlPrefix = currentURL.toLowerCase();
         if(urlPrefix[urlPrefix.length-1] !== '/')
             urlPrefix += '/';
-        var transaction = db.transaction([RestDB.DB_TABLE_HTTP_URL], "readonly");
-        var urlStore = transaction.objectStore(RestDB.DB_TABLE_HTTP_URL);
+        var transaction = db.transaction([KeySpaceDB.DB_TABLE_HTTP_URL], "readonly");
+        var urlStore = transaction.objectStore(KeySpaceDB.DB_TABLE_HTTP_URL);
 
         var boundKeyRange = IDBKeyRange.bound(urlPrefix, urlPrefix + '\uffff', true, true);
 
@@ -330,5 +341,8 @@ RestDB.listURLIndex = function(currentURL, callback) {
 };
 
 exports.test = function() {
-    console.log('Test Complete: ' + __filename);
+    KeySpaceDB(function(db) {
+        KeySpaceDB.queryContentFeedByPath('', [0, 1]);
+        console.log('Test Complete: ' + __filename);
+    });
 };

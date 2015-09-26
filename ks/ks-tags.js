@@ -6,10 +6,10 @@ tagCallbacks['rest'] = function(tagString, callback) {
     var found = false;
     tagString.replace(/\{rest::index\s+([^}]+)}/i, function(tagString, pathString) {
         found = true;
-        if(typeof RestDB !== 'function')
-            importScripts('http/http-db.js');
+        if(typeof KeySpaceDB !== 'function')
+            importScripts('ks/ks-db.js');
 
-        RestDB.listURLIndex(pathString, function(urls) {
+        KeySpaceDB.listURLIndex(pathString, function(urls) {
             var pathHTML = "<ul class='path-index'>";
             for(var i=0; i<urls.length; i++)
                 pathHTML += "\t<li><a href='" + urls[i][0] + "'>" + urls[i][1] + "</a></li>";
