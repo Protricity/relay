@@ -254,15 +254,15 @@
 
             postContent = protectHTMLContent(postContent, formElm);
 
-            setStatus(formElm, "<span class='command'>Sign</span>ing content...");
-            openpgp.signClearMessage(privateKey, postContent)
-                .then(function(pgpSignedContent) {
+            setStatus(formElm, "<span class='command'>Encrypt</span>ing content...");
+            openpgp.encryptMessage(privateKey, postContent)
+                .then(function(pgpEncryptedMessage) {
 
                     setStatus(formElm, "Adding post to database...");
-                    KeySpaceDB.verifyAndAddContentToDB(pgpSignedContent, function() {
+                    KeySpaceDB.verifyAndAddContentToDB(pgpEncryptedMessage, function() {
                         //setStatus(formElm, "<span class='command'>Message</span>ing channel [" + homeChannel + "]");
 
-                        var commandString = "PUT " + fixedPostPath + " " + pgpSignedContent;
+                        var commandString = "PUT " + fixedPostPath + " " + pgpEncryptedMessage;
 
                         var socketEvent = new CustomEvent('socket', {
                             detail: commandString,

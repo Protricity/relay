@@ -94,7 +94,7 @@ Templates.feed.entry = function(entryData, callback) {
             .replace(/{\$timestamp}/gi, entryData.timestamp)
             .replace(/{\$timestamp_formatted}/gi, Templates.feed.timeSince(entryData.timestamp) + ' ago')
             //.replace(/{\$content}/gi, data.content)
-            .replace(/{\$content_signed}/gi, Templates.feed.escapeHTML(entryData.content_signed))
+            .replace(/{\$content_encrypted}/gi, Templates.feed.escapeHTML(entryData.content_encrypted))
             .replace(/{\$content_verified}/gi, entryData.content_verified)
         //.replace(/{\$[^}]+}/gi, '')
     );
@@ -143,7 +143,7 @@ Templates.feed.comment = function(entryData, callback) {
             .replace(/{\$timestamp}/gi, entryData.timestamp)
             .replace(/{\$timestamp_formatted}/gi, Templates.feed.timeSince(entryData.timestamp) + ' ago')
             //.replace(/{\$content}/gi, data.content)
-            .replace(/{\$content_signed}/gi, Templates.feed.escapeHTML(entryData.content_signed))
+            .replace(/{\$content_encrypted}/gi, Templates.feed.escapeHTML(entryData.content_encrypted))
             .replace(/{\$content_verified}/gi, entryData.content_verified)
         //.replace(/{\$[^}]+}/gi, '')
     );

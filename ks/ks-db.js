@@ -3,7 +3,7 @@
  */
 "use strict";
 if(!exports) var exports = {};
-exports.RestDB = KeySpaceDB;
+exports.KeySpaceDB = KeySpaceDB;
 
 if(typeof indexedDB === 'undefined') {
     var sqlite3     = require('sqlite3');
@@ -85,8 +85,8 @@ function KeySpaceDB(dbReadyCallback) {
 
 // Database Methods
 
-KeySpaceDB.verifySignedContent = function(pgpMessageContent, callback) {
-    var pgpSignedMessage = openpgp.cleartext.readArmored(pgpMessageContent);
+KeySpaceDB.verifyEncryptedContent = function(pgpMessageContent, callback) {
+    var pgpSignedMessage = openpgp.message.readArmored(pgpMessageContent);
     var encIDs = pgpSignedMessage.getSigningKeyIds();
     var feedKeyID = encIDs[0].toHex().toUpperCase();
 
@@ -104,19 +104,22 @@ KeySpaceDB.verifySignedContent = function(pgpMessageContent, callback) {
             verifiedContent.encrypted = pgpMessageContent;
             verifiedContent.signingKeyId = feedKeyID;
             callback(null, verifiedContent);
+        })
+        .catch(function(err) {
+            callback(err, null);
         });
     });
 
 };
 
-KeySpaceDB.addVerifiedContentToDB = function(pgpSignedContent, callback) {
-    var pgpSignedMessage = openpgp.cleartext.readArmored(pgpSignedContent);
-    var encIDs = pgpSignedMessage.getSigningKeyIds();
+KeySpaceDB.addVerifiedContentToDB = function(encryptedContent, verifiedContent, callback) {
+
+    var pgpMessage = openpgp.message.readArmored(encryptedContent);
+    var encIDs = pgpMessage.getEncryptionKeyIds();
     var pgp_id_public = encIDs[0].toHex().toUpperCase();
 
-    var verifiedText = pgpSignedMessage.text;
-    var path = /data-path=["'](\S+)["']/i.exec(verifiedText)[1];
-    var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(verifiedText)[1]);
+    var path = /data-path=["'](\S+)["']/i.exec(verifiedContent)[1];
+    var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(verifiedContent)[1]);
     if(!path)
         throw new Error("Invalid Channel");
     if(!timestamp)
@@ -131,8 +134,8 @@ KeySpaceDB.addVerifiedContentToDB = function(pgpSignedContent, callback) {
             'pgp_id_public': pgp_id_public,
             'path': path,
             'timestamp': timestamp,
-            'content_signed': pgpSignedContent,
-            'content_verified': verifiedText
+            'content_encrypted': encryptedContent,
+            'content_verified': verifiedContent
         };
 
         var insertRequest = httpContentStore.add(insertData);
@@ -154,12 +157,12 @@ KeySpaceDB.addVerifiedContentToDB = function(pgpSignedContent, callback) {
     });
 };
 
-KeySpaceDB.verifyAndAddContentToDB = function(pgpSignedPost, callback) {
-    KeySpaceDB.verifySignedContent(pgpSignedPost,
+KeySpaceDB.verifyAndAddContentToDB = function(pgpEncryptedPost, callback) {
+    KeySpaceDB.verifyEncryptedContent(pgpEncryptedPost,
         function(err, verifiedContent) {
             if(err)
                 throw new Error(err);
-            KeySpaceDB.addVerifiedContentToDB(pgpSignedPost, callback);
+            KeySpaceDB.addVerifiedContentToDB(pgpEncryptedPost, verifiedContent, callback);
         }
     );
 };
@@ -331,8 +334,7 @@ KeySpaceDB.listURLIndex = function(currentURL, callback) {
 exports.test = function() {
     var options = {
         numBits: 512,
-        userId: 'Test <test@example.org>',
-        passphrase: 'test'
+        userId: 'Test <test@example.org>'
     };
 
     //console.log("Generating test keypair...");
@@ -340,22 +342,15 @@ exports.test = function() {
         .then(function(keypair) {
         // success
         var privateKey = keypair.key;
-        privateKey.decrypt('test');
 
         var postContent = '<article data-path="http://test.ks/path" data-timestamp="' + Date.now() + '"></article>';
-            openpgp.signClearMessage(privateKey, postContent)
-                .then(function(pgpSignedContent) {
-                    console.log(pgpSignedContent);
-                    KeySpaceDB.addVerifiedContentToDB(pgpSignedContent, function () {
-
-                    })
-                });
-            openpgp.encryptMessage(privateKey, postContent)
-                .then(function(pgpEncryptedContent) {
-                    console.log(pgpEncryptedContent);
-                });
+        openpgp.encryptMessage(privateKey, postContent)
+            .then(function(pgpEncryptedContent) {
+                setTimeout(function() {
+                    KeySpaceDB.addVerifiedContentToDB(pgpEncryptedContent, postContent);
+                },1);
+            });
         KeySpaceDB.addURLToDB('http://test.ks/path', 'http://test.ks/referrer');
         console.log('Test Complete: ' + __filename);
-
     })
 };

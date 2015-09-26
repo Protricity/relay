@@ -24,7 +24,8 @@ if(!exports) var exports = {};
      *
      * @param commandString PUT [path] [content]
      */
-    Client.addCommand(function putCommand(commandString) {
+    Client.addCommand(putCommand);
+    function putCommand(commandString) {
         var match = /^put(?:\s+(\S+))?(?:\s+(\S+))?/im.exec(commandString);
         if(!match)
             return false;
@@ -64,21 +65,23 @@ if(!exports) var exports = {};
         }
 
         return true;
-    });
+    }
 
-    Client.addResponse(function(commandString) {
+    Client.addResponse(putResponse);
+    function putResponse(commandString) {
         if(commandString.substr(0,3).toLowerCase() !== 'put')
             return false; // throw new Error("Invalid PUT: " + commandString);
         Client.postResponseToClient(commandString);
         return true;
-    });
+    }
 
 
     /**
      *
      * @param commandString GET [URL]
      */
-    Client.addCommand(function (commandString) {
+    Client.addCommand(getCommand);
+    function getCommand(commandString) {
         var match = /^get\s+/i.exec(commandString);
         if(!match)
             return false;
@@ -86,10 +89,11 @@ if(!exports) var exports = {};
         executeRemoteGETRequest(commandString, function(responseString) {
             renderResponseString(responseString);
         });
-    });
+    }
 
 // http://521D4941.ks/@pgp/@export
-    Client.addResponse(function(requestString) {
+    Client.addResponse(getResponse);
+    function getResponse(requestString) {
         var match = /^get (?:socket:\/\/)?([a-f0-9]{8,})(?:\.ks)(\/@pgp.*)$/i.exec(requestString);
         if(!match)
             return false;
@@ -98,10 +102,11 @@ if(!exports) var exports = {};
             Client.sendWithSocket(responseString);
         });
         return true;
-    });
+    }
 
     // TODO: default content on response http only?
-    Client.addResponse(function(responseString) {
+    Client.addResponse(httpResponse);
+    function httpResponse(responseString) {
         if(responseString.substr(0,4).toLowerCase() !== 'http')
             return false;
 
@@ -133,10 +138,8 @@ if(!exports) var exports = {};
                 }
             });
         }
-
-
         return true;
-    });
+    }
 
     function addURLsToDB(responseContent) {
         var referrerURL = getContentHeader(responseContent, 'Request-Url');
@@ -147,7 +150,9 @@ if(!exports) var exports = {};
             if(typeof RestDB !== 'function')
                 importScripts('ks/ks-db.js');
 
-            RestDB.addURLToDB(url, referrerURL);
+            if(typeof KeySpaceDB === 'undefined')
+                var KeySpaceDB = require('./ks-db.js');
+            KeySpaceDB.addURLToDB(url, referrerURL);
         });
     }
 
@@ -159,8 +164,8 @@ if(!exports) var exports = {};
         if(!browserID)
             requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
 
-        if(typeof RestDB !== 'function')
-            importScripts('ks/ks-db.js');
+        if(typeof KeySpaceDB === 'undefined')
+            var KeySpaceDB = require('./ks-db.js');
 
         // Send request regardless of local cache
         var requestID = 'R' + requestIDCount++;
@@ -170,7 +175,7 @@ if(!exports) var exports = {};
 
         // Check local cache to see what can be displayed while waiting
         var requestURL = getRequestURL(requestString);
-        RestDB.getContent(requestURL, function (contentData) {
+        KeySpaceDB.getContent(requestURL, function (contentData) {
             if(contentData) {
                 var signedBody = protectHTMLContent(contentData.content_verified);
 
@@ -212,11 +217,11 @@ if(!exports) var exports = {};
         if(!browserID)
             requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
 
-        if(typeof RestDB !== 'function')
-            importScripts('ks/ks-db.js');
+        if(typeof KeySpaceDB === 'undefined')
+            var KeySpaceDB = require('./ks-db.js');
 
         var requestURL = getRequestURL(requestString);
-        RestDB.getContent(requestURL, function (contentData) {
+        KeySpaceDB.getContent(requestURL, function (contentData) {
             if(contentData) {
                 var signedBody = protectHTMLContent(contentData.content_verified);
 
@@ -397,6 +402,7 @@ if(!exports) var exports = {};
     }
 
     exports.test = function() {
+        putCommand();
         console.log('Test Complete: ' + __filename);
     };
 
