@@ -43,7 +43,7 @@
 
         if (document.location.host === 'localhost') {
             send('feed');
-            send('put');
+            send('keygen');
 
 
         } else {

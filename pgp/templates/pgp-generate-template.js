@@ -6,7 +6,7 @@
 var Templates = Templates || {};
 Templates.pgp = Templates.pgp || {};
 Templates.pgp.generate = Templates.pgp.generate || {};
-Templates.pgp.generate.form = function(user_id, send_as_socket_command, callback) {
+Templates.pgp.generate.form = function(user_id, callback) {
     var GENERATE_TEMPLATE = "\
         <article class='channel pgp:'>\n\
             <script src='pgp/pgp-listeners.js'></script>\n\
@@ -33,13 +33,12 @@ Templates.pgp.generate.form = function(user_id, send_as_socket_command, callback
                 <br/><br/>Generate:<br/> \n\
                 <input type='submit' value='Generate'  name='submit-generate' />\n\
                 or <a href='#REGISTER'>Load your own PGP private key</a>\n\
-                <input type='hidden' name='send_as_socket_command' value='{$send_as_socket_command}' />\n\
             </form>\n\
         </article>";
 
     // Callback
     callback(GENERATE_TEMPLATE
         .replace(/{\$user_id}/gi, user_id.replace(/</, '&lt;'))
-        .replace(/{\$send_as_socket_command}/gi, send_as_socket_command ? '1' : '0')
+        //.replace(/{\$send_as_socket_command}/gi, send_as_socket_command ? '1' : '0')
     );
 };

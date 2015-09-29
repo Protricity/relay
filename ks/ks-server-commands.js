@@ -4,22 +4,24 @@
 if(!exports) var exports = {};
 
 exports.initSocketServerCommands = function(SocketServer) {
-    SocketServer.addCommand(function (commandString, client) {
+    SocketServer.addCommand(getSocketCommand);
+    function getSocketCommand(commandString, client) {
         var match = /^get\s+([\S\s]+)$/im.exec(commandString);
         if(!match)
             return false;
 
         return false;
-    });
+    }
 };
 
 exports.initHTTPServerCommands = function(HTTPServer) {
-    HTTPServer.addCommand(function (request, response) {
+    HTTPServer.addCommand(getHTTPCommand);
+    function getHTTPCommand(request, response) {
         if(request.method.toLowerCase() !== 'get')
             return false;
 
         return false;
-    });
+    }
 };
 
 

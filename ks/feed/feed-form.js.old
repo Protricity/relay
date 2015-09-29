@@ -320,7 +320,7 @@
     });
 
     // For Public/Private Key Database access
-    includeScript('pgp/pgp-db.js');
+    includeScript('pgp/pgp-db.js.old');
 
     // For Public/Private Key Decryption Events
     includeScript('pgp/pgp-listeners.js');
@@ -329,7 +329,7 @@
     includeScript('rest/ks-db.js');
 
     // For Content Events
-    includeScript('rest/feed/feed-listeners.js');
+    includeScript('ks/feed/feed-listeners.js');
 
 })();
 //
@@ -356,7 +356,7 @@
 //
 //// For Public/Private Key Database access
 //(function() {
-//    var SCRIPT_PATH = 'pgp/pgp-db.js';
+//    var SCRIPT_PATH = 'pgp/pgp-db.js.old';
 //    var head = document.getElementsByTagName('head')[0];
 //    if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
 //        var newScript = document.createElement('script');
@@ -370,7 +370,7 @@
 //
 //// For Feed Database access
 //(function() {
-//    var SCRIPT_PATH = 'rest/feed/feed-db.js';
+//    var SCRIPT_PATH = 'ks/feed/feed-db.js';
 //    var head = document.getElementsByTagName('head')[0];
 //    if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
 //        var newScript = document.createElement('script');
@@ -394,7 +394,7 @@
 //
 //// For PGP Decryption in chat rooms
 //(function() {
-//    var SCRIPT_PATH = 'rest/feed/feed-listeners.js';
+//    var SCRIPT_PATH = 'ks/feed/feed-listeners.js';
 //    var head = document.getElementsByTagName('head')[0];
 //    if (head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
 //        var newScript = document.createElement('script');

@@ -3,7 +3,8 @@
  */
 if(!exports) var exports = {};
 exports.initSocketServerCommands = function(SocketServer) {
-    SocketServer.addCommand(function (commandString, client) {
+    SocketServer.addCommand(getStaticSocketCommand);
+    function getStaticSocketCommand(commandString, client) {
         var match = /^get\s+([\S\s]+)$/im.exec(commandString);
         if(!match)
             return false;
@@ -17,11 +18,12 @@ exports.initSocketServerCommands = function(SocketServer) {
             );
 
         });
-    });
+    }
 };
 
 exports.initHTTPServerCommands = function(HTTPServer) {
-    HTTPServer.addCommand(function (request, response) {
+    HTTPServer.addCommand(getStaticHTTPCommand);
+    function getStaticHTTPCommand(request, response) {
         if(request.method.toLowerCase() !== 'get')
             return false;
 
@@ -31,7 +33,7 @@ exports.initHTTPServerCommands = function(HTTPServer) {
             response.end(responseBody);
         });
         return true;
-    });
+    }
 };
 
 function handleFileRequest(requestURI, responseCallback) {

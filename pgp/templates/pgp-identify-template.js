@@ -94,59 +94,62 @@ Templates.pgp.identify.form = function(responseString, socket_url, CONFIG, callb
     if(typeof PGPDB !== 'function')
         importScripts('pgp/pgp-db.js');
 
-    PGPDB.queryPrivateKeys(function(privateKeyData) {
-        var defaultUsername = privateKeyData.user_name || privateKeyData.user_id;
-        defaultUsername = defaultUsername.trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
-        var optionValue = privateKeyData.id_private + "," + privateKeyData.id_public + "," + defaultUsername + (privateKeyData.passphrase_required ? ',1' : ',0');
+    // TODO: refactor using ks
+    PGPDB.queryPrivateKeys(function(err, privateKeyData) {
+        if(privateKeyData) {
+            var defaultUsername = privateKeyData.user_name || privateKeyData.user_id;
+            defaultUsername = defaultUsername.trim().split(/@/, 2)[0].replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_');
+            var optionValue = privateKeyData.id_private + "," + privateKeyData.id_public + "," + defaultUsername + (privateKeyData.passphrase_required ? ',1' : ',0');
 
-        if(privateKeyData.default === '1') {
-            selectedPGPDefaultUsername = defaultUsername;
-            if(!selectedPGPPrivateKeyID)
-                selectedPGPPrivateKeyID = privateKeyData.id_private;
-            if(!privateKeyData.passphrase_required) {
-                if(CONFIG) {
-                    var autoIdentify = CONFIG.autoIdentify || CONFIG['autoIdentifyHost:' + socket_host] || false;
-                    if (autoIdentify) {
-                        selectedPGPPrivateKeyID = autoIdentify;
-                        form_classes.push('auto-identify');
+            if(privateKeyData.default === '1') {
+                selectedPGPDefaultUsername = defaultUsername;
+                if(!selectedPGPPrivateKeyID)
+                    selectedPGPPrivateKeyID = privateKeyData.id_private;
+                if(!privateKeyData.passphrase_required) {
+                    if(CONFIG) {
+                        var autoIdentify = CONFIG.autoIdentify || CONFIG['autoIdentifyHost:' + socket_host] || false;
+                        if (autoIdentify) {
+                            selectedPGPPrivateKeyID = autoIdentify;
+                            form_classes.push('auto-identify');
+                        }
+                        if (CONFIG['autoIdentifyHost:' + socket_host])
+                            auto_identify_host_attr = "selected='selected'";
+                        else if (CONFIG['autoIdentify'])
+                            auto_identify_all_attr = "selected='selected'";
                     }
-                    if (CONFIG['autoIdentifyHost:' + socket_host])
-                        auto_identify_host_attr = "selected='selected'";
-                    else if (CONFIG['autoIdentify'])
-                        auto_identify_all_attr = "selected='selected'";
-                }
 
-            } else {
-                console.info("Passphrase required for: ", privateKeyData);
-                form_classes.push('passphrase-required');
+                } else {
+                    console.info("Passphrase required for: ", privateKeyData);
+                    form_classes.push('passphrase-required');
+                }
             }
+
+            html_pgp_id_private_html +=
+                '<option' + (privateKeyData.id_private === selectedPGPPrivateKeyID ? ' selected="selected"' : '') + ' value="' + optionValue + '">' +
+                (privateKeyData.passphrase_required ? '(*) ' : '') + privateKeyData.user_id.replace(/</, '&lt;') +
+                '</option>';
+
+            pgpIDCount++;
+        } else {
+            if(pgpIDCount === 0)
+                status_content += "<br/><span class='error'>No PGP Private Keys found on the client. Please import or <a href='#KEYGEN' onclick='send(\"KEYGEN\");'>generate</a> a new PGP Key and re-<a href='#IDENTIFY' onclick='send(\"IDENTIFY\");'>identify</a>.</span>";
+
+
+            // Callback
+            callback(IDENTIFY_TEMPLATE
+                    .replace(/{\$form_class}/gi, form_classes.join(' '))
+                    .replace(/{\$status_content}/gi, status_content || '')
+                    .replace(/{\$id_signature}/gi, '')
+                    .replace(/{\$socket_url}/gi, socket_url || '')
+                    .replace(/{\$socket_host}/gi, socket_host || '')
+                    .replace(/{\$html_pgp_id_private}/gi, html_pgp_id_private_html || '')
+                    .replace(/{\$session_uid}/gi, session_uid || '')
+                    .replace(/{\$auto_identify_host_attr}/gi, auto_identify_host_attr || '')
+                    .replace(/{\$auto_identify_all_attr}/gi, auto_identify_all_attr || '')
+                    .replace(/{\$username}/gi, selectedPGPDefaultUsername) // username.replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_') || '')
+            );
         }
 
-        html_pgp_id_private_html +=
-            '<option' + (privateKeyData.id_private === selectedPGPPrivateKeyID ? ' selected="selected"' : '') + ' value="' + optionValue + '">' +
-            (privateKeyData.passphrase_required ? '(*) ' : '') + privateKeyData.user_id.replace(/</, '&lt;') +
-            '</option>';
-
-        pgpIDCount++;
-
-    }, function() {
-        if(pgpIDCount === 0)
-            status_content += "<br/><span class='error'>No PGP Private Keys found on the client. Please import or <a href='#KEYGEN' onclick='send(\"KEYGEN\");'>generate</a> a new PGP Key and re-<a href='#IDENTIFY' onclick='send(\"IDENTIFY\");'>identify</a>.</span>";
-
-
-        // Callback
-        callback(IDENTIFY_TEMPLATE
-                .replace(/{\$form_class}/gi, form_classes.join(' '))
-                .replace(/{\$status_content}/gi, status_content || '')
-                .replace(/{\$id_signature}/gi, '')
-                .replace(/{\$socket_url}/gi, socket_url || '')
-                .replace(/{\$socket_host}/gi, socket_host || '')
-                .replace(/{\$html_pgp_id_private}/gi, html_pgp_id_private_html || '')
-                .replace(/{\$session_uid}/gi, session_uid || '')
-                .replace(/{\$auto_identify_host_attr}/gi, auto_identify_host_attr || '')
-                .replace(/{\$auto_identify_all_attr}/gi, auto_identify_all_attr || '')
-                .replace(/{\$username}/gi, selectedPGPDefaultUsername) // username.replace(/[^a-zA-Z0-9_-]+/ig, ' ').trim().replace(/\s+/g, '_') || '')
-        );
     });
 
 };

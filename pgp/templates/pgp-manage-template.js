@@ -48,7 +48,7 @@ Templates.pgp.manage.form = function(status_content, callback) {
 };
 
 
-Templates.pgp.manage.entry = function(privateKeyData, callback) {
+Templates.pgp.manage.entry = function(privateKeyBlock, callback) {
 
     var MANAGE_TEMPLATE_ENTRY = "\
         <label>\n\

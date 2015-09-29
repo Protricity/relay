@@ -1,0 +1,333 @@
+/**
+ * Created by ari on 7/2/2015.
+ */
+
+PGPDB.DB_VERSION             = 2;
+PGPDB.DB_NAME                = 'pgp';
+PGPDB.DB_TABLE_PUBLIC_KEYS   = 'public-keys';
+PGPDB.DB_TABLE_PRIVATE_KEYS  = 'private-keys';
+
+// PGP Database
+function PGPDB(dbReadyCallback) {
+    return PGPDB.getDBInstance(dbReadyCallback);
+}
+
+(function() {
+
+    // Database Methods
+
+    //PGPDB.queryPrivateKeys = function(callback) {
+    //    PGPDB(function (db) {
+    //
+    //        if(typeof IDBDatabase !== 'undefined' && db instanceof IDBDatabase) {
+    //
+    //            var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readonly");
+    //            var dbStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
+    //
+    //            dbStore.openCursor().onsuccess = function (evt) {
+    //                var cursor = evt.target.result;
+    //                if (cursor) {
+    //                    dbStore.get(cursor.key).onsuccess = function (evt) {
+    //                        var privateKeyData = evt.target.result;
+    //                        if(callback(null, privateKeyData) !== true)
+    //                            cursor.continue();
+    //                    };
+    //                } else {
+    //                    callback(null, null);
+    //                }
+    //            };
+    //
+    //            // TODO: need server support for this?
+    //        } else if (typeof mongodb !== 'undefined' && db instanceof mongodb.Db) {
+    //            var dbCollection = db.collection(PGPDB.DB_TABLE_PRIVATE_KEYS);
+    //            var cursor = dbCollection.find({});
+    //            cursor.forEach(callback);
+    //
+    //        } else {
+    //            throw new Error("Invalid Database");
+    //        }
+    //    });
+    //};
+
+
+
+    //PGPDB.getDefaultPrivateKeyData = function (callback) {
+    //    PGPDB(function (db) {
+    //        var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readonly");
+    //        var privateKeyStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
+    //
+    //        var index = privateKeyStore.index('default');
+    //        var req = index.get('1');
+    //        req.onsuccess = function (evt) {
+    //            var privateKeyData = evt.target.result;
+    //            callback(privateKeyData);
+    //        };
+    //    });
+    //};
+    //
+    //PGPDB.getPrivateKeyData = function(id_private, callback) {
+    //    id_private = id_private.substr(id_private.length - 16);
+    //
+    //    PGPDB(function (db) {
+    //        if(typeof IDBDatabase !== 'undefined' && db instanceof IDBDatabase) {
+    //            var transaction = db.transaction([PGPDB.DB_TABLE_PRIVATE_KEYS], "readonly");
+    //            var dbStore = transaction.objectStore(PGPDB.DB_TABLE_PRIVATE_KEYS);
+    //
+    //            var req = dbStore.get(id_private);
+    //            req.onsuccess = function (evt) {
+    //                callback(evt.target.result);
+    //            };
+    //
+    //        } else if (typeof mongodb !== 'undefined' && db instanceof mongodb.Db) {
+    //            var dbCollection = db.collection(PGPDB.DB_TABLE_PRIVATE_KEYS);
+    //            dbCollection.findOne({
+    //                id_private: id_private
+    //            }, callback);
+    //
+    //        } else {
+    //            throw new Error("Invalid Database Driver");
+    //
+    //        }
+    //    });
+    //};
+
+    //PGPDB.getPrivateKey = function(id_private, callback) {
+    //    id_private = id_private.substr(id_private.length - 16);
+    //
+    //    PGPDB.getPrivateKeyData(id_private, function (err, privateKeyData) {
+    //
+    //        var kbpgp = PGPDB.getKBPGP();
+    //
+    //        kbpgp.KeyManager.import_from_armored_pgp({
+    //            armored: privateKeyData.block_private
+    //        }, function(err, alice) {
+    //
+    //            var privateKey = alice.find_signing_pgp_key();
+    //            var privateKeyFingerprint = privateKey.get_fingerprint().toString('hex').toUpperCase();
+    //            callback(err, privateKey, privateKeyData, alice);
+    //
+    //        });
+    //    });
+    //
+    //};
+
+
+    //PGPDB.getPublicKeyData = function(id_public, callback) {
+    //    id_public = id_public.substr(id_public.length - 16);
+    //    PGPDB(function (db) {
+    //        if(typeof IDBDatabase !== 'undefined' && db instanceof IDBDatabase) {
+    //            var transaction = db.transaction([PGPDB.DB_TABLE_PUBLIC_KEYS], "readonly");
+    //            var dbStore = transaction.objectStore(PGPDB.DB_TABLE_PUBLIC_KEYS);
+    //
+    //            var req = dbStore.get(id_public);
+    //            req.onsuccess = function (evt) {
+    //                callback(evt.target.result);
+    //            };
+    //
+    //        } else if (typeof mongodb !== 'undefined' && db instanceof mongodb.Db) {
+    //            var dbCollection = db.collection(PGPDB.DB_TABLE_PUBLIC_KEYS);
+    //            dbCollection.findOne({
+    //                id_public: id_public
+    //            }, callback);
+    //
+    //        } else {
+    //            throw new Error("Invalid Database Driver");
+    //
+    //        }
+    //    });
+    //};
+
+
+    //PGPDB.addPrivateKeyBlock = function(privateKeyBlock, callback) {
+    //    if(privateKeyBlock.indexOf("-----BEGIN PGP PRIVATE KEY BLOCK-----") === -1)
+    //        throw new Error("PGP PRIVATE KEY BLOCK not found");
+    //
+    //    var privateKey = openpgp.key.readArmored(privateKeyBlock).keys[0];
+    //    if(!privateKey)
+    //        throw new Error("PGP PRIVATE KEY BLOCK not found");
+    //    privateKeyBlock = privateKey.armor();
+    //    var privateKeyID = privateKey.getKeyId().toHex().toUpperCase();
+    //
+    //    var userIDString = privateKey.getUserIds().join('; ');
+    //
+    //    var publicKey = privateKey.toPublic();
+    //    var publicKeyID = publicKey.getKeyId().toHex().toUpperCase();
+    //    var publicKeyBlock = publicKey.armor();
+    //
+    //    var insertData = {
+    //        'id_private': privateKeyID,
+    //        'id_public': publicKeyID,
+    //        'block_private': privateKeyBlock,
+    //        'block_public': publicKeyBlock,
+    //        'passphrase_required': privateKey.primaryKey.isDecrypted() ? true : false,
+    //        'user_id': userIDString
+    //
+    //        //'default': '1',
+    //        //'fp_private': privateKeyFingerprint,
+    //        //'fp_public': publicKeyFingerprint,
+    //        //'user_profile_signed': signedUserProfile,
+    //    };
+    //
+    //    var path = '.private/id';
+    //    KeySpaceDB.addVerifiedContentToDB(privateKeyBlock, publicKeyID, path, Date.now(), function() {
+    //        
+    //    });
+    //
+    //    //PGPDB.insert(PGPDB.DB_TABLE_PRIVATE_KEYS, insertData, function(err) {
+    //    //    if(!err)
+    //    //        console.log("Added private key block to database: " + privateKeyID, insertData);
+    //    //
+    //    //    //PGPDB.addPublicKeyBlock(publicKeyBlock, callback);
+    //    //    //callback(err, insertData);
+    //    //});
+    //};
+
+    //PGPDB.addPublicKeyBlock = function(publicKeyBlock, callback) {
+    //    var publicKey = openpgp.key.readArmored(publicKeyBlock).keys[0];
+    //    if(!publicKey) // publicKeyBlock.indexOf("-----BEGIN PGP PUBLIC KEY BLOCK-----") === -1)
+    //        throw new Error("PGP PUBLIC KEY BLOCK not found");
+    //
+    //    var publicKeyID = publicKey.getKeyId().toHex().toUpperCase();
+    //    var userID = publicKey.getUserIds().join('; ');
+    //
+    //
+    //    // http://ABCD1234.ks/public/config
+    //    // http://ABCD1234.ks/public/id        <- based on public key id
+    //    // http://ABCD1234.ks/private/id       <- also based on public key id. Can be associated with several public keys
+    //    var insertData = {
+    //        'id_public': publicKeyID,
+    //        'user_id': userID,
+    //        'block_public': publicKeyBlock
+    //    };
+    //    PGPDB.insert(PGPDB.DB_TABLE_PUBLIC_KEYS, insertData, function(err) {
+    //        if(!err)
+    //            console.log("Added public key block to database: " + publicKeyID, insertData);
+    //
+    //        callback(err, insertData);
+    //    })
+    //};
+
+
+
+
+    // Database Drivers
+
+    if(typeof indexedDB === 'undefined') {
+        var mongodb     = require('mongodb'),
+            MongoClient = mongodb.MongoClient;
+    }
+
+    var dbInst = null;
+    var onDBCallbacks = [];
+    var connecting = false;
+    PGPDB.getDBInstance = function(callback) {
+        if(dbInst)
+            return callback(dbInst);
+        if(callback)
+            onDBCallbacks.push(callback);
+        if(connecting)
+            return;
+        connecting = true;
+
+        // First Time
+        if (typeof indexedDB !== 'undefined') {
+            console.info("indexedDB.open(", PGPDB.DB_NAME, PGPDB.DB_VERSION, ")");
+            var openRequest = indexedDB.open(PGPDB.DB_NAME, PGPDB.DB_VERSION);
+
+            openRequest.onsuccess = function (e) {
+                dbInst = e.target.result;
+                for (var i = 0; i < onDBCallbacks.length; i++)
+                    onDBCallbacks[i](dbInst);
+                onDBCallbacks = [];
+            };
+            openRequest.onerror = function(e) {
+                throw new Error(openRequest.error.message);
+            };
+
+            openRequest.onupgradeneeded = function (e) {
+                var upgradeDB = e.target.result;
+
+                if(!upgradeDB.objectStoreNames.contains(PGPDB.DB_TABLE_PRIVATE_KEYS)) {
+                    console.log('Upgrading Table: ', PGPDB.DB_TABLE_PRIVATE_KEYS);
+                    var postDBStore = upgradeDB.createObjectStore(PGPDB.DB_TABLE_PRIVATE_KEYS, { keyPath: "id_private" });
+                    postDBStore.createIndex("id_public", "id_public", { unique: true });
+                    //postDBStore.createIndex("default", "default", { unique: false });
+                }
+
+                if(!upgradeDB.objectStoreNames.contains(PGPDB.DB_TABLE_PUBLIC_KEYS)) {
+                    console.log('Upgrading Table: ', PGPDB.DB_TABLE_PUBLIC_KEYS);
+                    var publicKeyDBStore = upgradeDB.createObjectStore(PGPDB.DB_TABLE_PUBLIC_KEYS, { keyPath: "id_public" });
+                    publicKeyDBStore.createIndex("user_id", "user_id", { unique: false });
+                }
+            };
+
+        } else if (typeof mongodb !== 'undefined') {
+            var url = 'mongodb://localhost:27017/';
+            console.info("MongoClient.connect(", url, ")");
+
+            MongoClient.connect(url, function(err, dbInst) {
+                if(err)
+                    throw new Error(err);
+                console.log("Connected: " + url);
+
+                var dbCollection = dbInst.collection(PGPDB.DB_TABLE_PRIVATE_KEYS);
+                //dbCollection.createIndex({"path", { unique: false });
+                dbCollection.createIndex({"id_public": 1}, { unique: true });
+                dbCollection.createIndex({"user_id": 1});
+
+
+                dbCollection = dbInst.collection(PGPDB.DB_TABLE_PUBLIC_KEYS);
+                //dbCollection.createIndex({"path", { unique: false });
+                dbCollection.createIndex({"id_private": 1}, { unique: true });
+                dbCollection.createIndex({"id_public": 1});
+                dbCollection.createIndex({"user_id": 1});
+                //dbCollection.createIndex({"default": 1});
+
+                //dbInst.close();
+                for (var i = 0; i < onDBCallbacks.length; i++)
+                    onDBCallbacks[i](dbInst);
+                onDBCallbacks = [];
+            });
+        }
+
+    };
+
+
+    PGPDB.insert = function(tableName, insertData, callback) {
+        PGPDB(function(db) {
+            if(typeof IDBDatabase !== 'undefined' && db instanceof IDBDatabase) {
+                var dbStore = db
+                    .transaction([tableName], "readwrite")
+                    .objectStore(tableName);
+
+                var insertRequest = dbStore.add(insertData);
+                insertRequest.onsuccess = function(e) {
+                    if(callback)
+                        callback(null, insertData, insertRequest);
+                };
+                insertRequest.onerror = function(e) {
+                    if(callback)
+                        callback(e.target.error, null);
+                };
+
+            } else if (typeof mongodb !== 'undefined' && db instanceof mongodb.Db) {
+                var dbCollection = db.collection(tableName);
+                dbCollection.insert(insertData);
+                callback(null, insertData);
+
+            } else {
+                throw new Error("Invalid Database Driver");
+            }
+        });
+    };
+
+
+    PGPDB.getKBPGP = function() {
+        if(typeof self.kbpgp !== 'undefined')
+            return self.kbpgp;
+        importScripts('pgp/lib/kbpgp/kbpgp.js');
+        console.log("Loaded: ", self.kbpgp);
+        return self.kbpgp;
+    };
+
+})();

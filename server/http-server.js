@@ -86,7 +86,7 @@ function HTTPServer() {
     //// Feed Commands
     //HTTPServer.addCommandProxy(
     //    ['feed'],
-    //    'rest/feed/feed-server-commands.js');
+    //    'ks/feed/feed-server-commands.js');
     //
 
 

@@ -111,12 +111,13 @@
                     userId:userID,
                     passphrase:passphrase
 
-                }).then(function(NewKey) {
-                    var newKeyID = NewKey.key.getKeyIds()[0].toHex();
-                    console.log("New PGP Key Generated: " + newKeyID);
+                }).then(function(keyPair) {
+                    var newPrivateKeyID = keyPair.key.primaryKey.getKeyId().toHex().toUpperCase();
+                    var newPublicKeyID = keyPair.key.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+                    console.log("New PGP Key Generated: ", newPrivateKeyID, newPublicKeyID);
 
                     var messageEvent = new CustomEvent('socket', {
-                        detail: "REGISTER --show-form " + NewKey.privateKeyArmored,
+                        detail: "REGISTER " + keyPair.privateKeyArmored,
                         cancelable:true
                     });
                     document.dispatchEvent(messageEvent);
@@ -142,12 +143,38 @@
                 throw new Error("PGP PRIVATE KEY BLOCK not found");
 
             var privateKey = window.openpgp.key.readArmored(privateKeyValue).keys[0];
+            var privateKeyBlock = privateKey.armor();
+            var privateKeyID = privateKey.getKeyId().toHex().toUpperCase();
 
-            var messageEvent = new CustomEvent('socket', {
-                detail: "REGISTER " + privateKey.armor(),
-                cancelable:true
+            var publicKey = privateKey.toPublic();
+            var publicKeyID = publicKey.getKeyId().toHex().toUpperCase();
+            var publicKeyBlock = publicKey.armor();
+
+            var userIDString = privateKey.getUserIds().join('; ');
+
+            var path = '.private/id';
+            KeySpaceDB.addVerifiedContentToDB(privateKeyBlock, publicKeyID, path, Date.now(), function(err) {
+                console.log(arguments);
+                if(err)
+                    throw new Error(err);
+
+
+                var path = 'public/id';
+                KeySpaceDB.addVerifiedContentToDB(publicKeyBlock, publicKeyID, path, Date.now(), function(err) {
+                    console.log(arguments);
+                    if(err)
+                        throw new Error(err);
+
+                    var messageEvent = new CustomEvent('socket', {
+                        detail: "MANAGE",
+                        cancelable:true
+                    });
+                    document.dispatchEvent(messageEvent);
+                    Client.manage("MANAGE");
+                });
+
             });
-            document.dispatchEvent(messageEvent);
+
         }
 
         function refreshPGPManageForm() {

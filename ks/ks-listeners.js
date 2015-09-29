@@ -12,7 +12,7 @@
     self.addEventListener('change', onFormEvent);
     self.addEventListener('click', onClickEvent);
     self.addEventListener('dragstart', onDragEvent);
-    self.addEventListener('test', onUnitTestEvent);
+//     self.addEventListener('test', onUnitTestEvent);
     //self.addEventListener('drop', onDragEvent);
     //self.addEventListener('dragover', onDragEvent);
 
@@ -199,6 +199,10 @@
 
         var passphraseElm = formElm.querySelector('*[name=passphrase][type=password], [type=password]');
         var postContentElm = formElm.querySelector('textarea[name=content]');
+        var postContent = postContentElm.value.trim();
+        if(!postContent.length)
+            throw new Error ("Empty post content");
+
         var pgpIDPrivateElm = formElm.querySelector('*[name=pgp_id_private]');
         if(!pgpIDPrivateElm.value)
             throw new Error("Invalid Private Key ID");
@@ -207,13 +211,16 @@
             throw new Error("No channel field found");
         var optionSplit = pgpIDPrivateElm.value.split(',');
         var selectedPrivateKeyID = optionSplit[0];
+        var selectedPublicKeyID = optionSplit[1];
 
-        PGPDB.getPrivateKeyData(selectedPrivateKeyID, function(privateKeyData) {
-            if(!privateKeyData)
+        // Query private key
+        var path = 'http://' + selectedPublicKeyID + '.ks/.private/id';
+        KeySpaceDB.queryContent(path, function(privateKeyBlock) {
+            if(!privateKeyBlock)
                 throw new Error("Private key not found: " + selectedPrivateKeyID);
 
             var passphrase = passphraseElm.value || '';
-            var privateKey = openpgp.key.readArmored(privateKeyData.block_private).keys[0];
+            var privateKey = openpgp.key.readArmored(privateKeyBlock).keys[0];
             if(!privateKey.primaryKey.isDecrypted)
                 if (passphrase)
                     privateKey.primaryKey.decrypt(passphrase);
@@ -227,19 +234,10 @@
                 throw new Error(errMSG);
             }
 
-
-            var publicKeyID = privateKeyData.id_public;
-            publicKeyID = publicKeyID.substr(publicKeyID.length - 8);
-            var author = privateKeyData.user_id;
-
-            //var postPath = pathElm.value;
-            var fixedPostPath = fixHomePath(pathElm.value, publicKeyID);
-            //var homeChannel = fixHomePath('~', publicKeyID);
+            var author = privateKey.getUserIds()[0];
+            var fixedPostPath = fixHomePath(pathElm.value, selectedPublicKeyID);
             var timestamp = Date.now();
 
-            var postContent = postContentElm.value.trim();
-            if(!postContent.length)
-                throw new Error ("Empty post content");
             var contentDiv = document.createElement('div');
             contentDiv.innerHTML = postContent;
             var articleElm = contentDiv.querySelector('article');
@@ -251,34 +249,35 @@
             articleElm.setAttribute('data-path', fixedPostPath);
             articleElm.setAttribute('data-timestamp', timestamp.toString());
             postContent = articleElm.outerHTML;
-
             postContent = protectHTMLContent(postContent, formElm);
 
             setStatus(formElm, "<span class='command'>Encrypt</span>ing content...");
             openpgp.encryptMessage(privateKey, postContent)
-                .then(function(pgpEncryptedMessage) {
+                .then(function(pgpEncryptedString) {
+                setStatus(formElm, "Adding post to database...");
 
-                    setStatus(formElm, "Adding post to database...");
-                    KeySpaceDB.verifyAndAddContentToDB(pgpEncryptedMessage, function() {
-                        //setStatus(formElm, "<span class='command'>Message</span>ing channel [" + homeChannel + "]");
+                var pgpEncryptedMessage = openpgp.message.readArmored(pgpEncryptedString);
 
-                        var commandString = "PUT " + fixedPostPath + " " + pgpEncryptedMessage;
+                KeySpaceDB.addVerifiedContentToDB(pgpEncryptedString, selectedPublicKeyID, fixedPostPath, timestamp, function(err, insertData) {
+                    if(err)
+                        throw new Error(err);
 
-                        var socketEvent = new CustomEvent('socket', {
-                            detail: commandString,
-                            cancelable:true,
-                            bubbles:true
-                        });
-                        formElm.dispatchEvent(socketEvent);
+                    var commandString = "PUT " + fixedPostPath + " " + pgpEncryptedString;
 
-                        if(!socketEvent.defaultPrevented)
-                            throw new Error("Socket event for new post was not handled");
-
-                        setStatus(formElm, "<span class='command'>Put</span> <span class='success'>Successful</span>");
-                        postContentElm.value = '';
+                    var socketEvent = new CustomEvent('socket', {
+                        detail: commandString,
+                        cancelable:true,
+                        bubbles:true
                     });
-                });
+                    formElm.dispatchEvent(socketEvent);
 
+                    if(!socketEvent.defaultPrevented)
+                        throw new Error("Socket event for new post was not handled");
+
+                    setStatus(formElm, "<span class='command'>Put</span> <span class='success'>Successful</span>");
+                    postContentElm.value = '';
+                });
+            });
         });
     }
 
@@ -307,6 +306,63 @@
         e.target.dispatchEvent(commandEvent);
 
     }
+
+
+    function verifyEncryptedContent(pgpMessageContent, callback) {
+        var openpgp = self.openpgp;
+        if(typeof self.openpgp === 'undefined')
+            openpgp = require('openpgp');
+
+        var pgpEncryptedMessage = openpgp.message.readArmored(pgpMessageContent);
+        var encIDs = pgpEncryptedMessage.getEncryptionKeyIds();
+        var pgp_id_public = encIDs[0].toHex().toUpperCase();
+
+        // Query public key
+        var path = 'http://' + pgp_id_public + '.ks/public/id';
+        KeySpaceDB.queryContent(path, function(publicKeyBlock) {
+            if(!publicKeyBlock)
+                throw new Error("Public key not found: " + pgp_id_public);
+
+            var publicKey = openpgp.key.readArmored(publicKeyBlock);
+
+            openpgp.verifyClearSignedMessage(publicKey.keys, pgpEncryptedMessage)
+                .then(function(verifiedContent) {
+                    for(var i=0; i<verifiedContent.signatures.length; i++)
+                        if(!verifiedContent.signatures[i].valid)
+                            throw new Error("Invalid Signature: " + verifiedContent.signatures[i].keyid.toHex().toUpperCase());
+
+                    verifiedContent.encrypted = pgpMessageContent;
+                    verifiedContent.signingKeyId = pgp_id_public;
+                    callback(null, verifiedContent);
+                })
+                .catch(function(err) {
+                    callback(err, null);
+                });
+        });
+    }
+
+    function verifyAndAddContentToDB(pgpEncryptedPost, callback) {
+        verifyEncryptedContent(pgpEncryptedPost,
+            function(err, verifiedContent) {
+                if(err)
+                    throw new Error(err);
+
+                var openpgp = self.openpgp;
+                if(typeof openpgp === 'undefined')
+                    openpgp = require('openpgp');
+
+                var pgpEncryptedMessage = openpgp.message.readArmored(pgpEncryptedPost);
+                var encIDs = pgpEncryptedMessage.getEncryptionKeyIds();
+                var pgp_id_public = encIDs[0].toHex().toUpperCase();
+
+                var path = /data-path=["'](\S+)["']/i.exec(verifiedContent)[1];
+                var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(verifiedContent)[1]);
+
+                KeySpaceDB.addVerifiedContentToDB(pgpEncryptedPost, pgp_id_public, path, timestamp, callback);
+            }
+        );
+    }
+
 
     function protectHTMLContent(htmlContent) {
         var match = /(lt;|<)[^>]+(on\w+)=/ig.exec(htmlContent);
@@ -367,9 +423,6 @@
 
     // For Config Access
     includeScript('config/config-db.js');
-
-    // For Public/Private Key Database access
-    includeScript('pgp/pgp-db.js');
 
     // For HTTP Content Database access
     includeScript('ks/ks-db.js');

@@ -12,12 +12,13 @@
 
     var activeChannels = [];
 
-    Client.addCommand(function(commandString, e) {
+    Client.addCommand(channelCommand);
+    function channelCommand(commandString, e) {
         if(!/^(message|join|leave)/i.test(commandString))
             return false;
         Client.sendWithSocket(commandString, e);
         return true;
-    });
+    }
 //    function(commandString) {
 //        var args = commandString.split(/\s+/, 3);
 //        var channelPath = args[1];
@@ -29,7 +30,8 @@
 //    });
 
 
-    Client.addCommand(function(commandString) {
+    Client.addCommand(chatCommand);
+    function chatCommand(commandString) {
         var match = /^chat\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandString);
         if(!match)
             return false;
@@ -39,9 +41,10 @@
         commandString = "CHAT " + channelPath + " " + Date.now() + " " + channelMessage;
         Client.sendWithSocket(commandString);
         return true;
-    });
+    }
 
-    Client.addResponse(function(commandResponse, e) {
+    Client.addResponse(chatResponse);
+    function chatResponse(commandResponse) {
         var match = /^(chat)\s+(\S+)/im.exec(commandResponse);
         if(!match)
             return false; 
@@ -52,10 +55,11 @@
             Client.postResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
         });
         return true;
-    });
+    }
 
     var channelUsers = {};
-    Client.addResponse(function(commandResponse) {
+    Client.addResponse(joinCommand);
+    function joinCommand(commandResponse) {
         var match = /^(join)\s+(\S+)\s+(\S+)\s+/im.exec(commandResponse);
         if(!match)
             return false;
@@ -78,9 +82,10 @@
             });
         }
         return true;
-    });
+    }
 
-    Client.addResponse(function(commandResponse) {
+    Client.addResponse(userlistResponse);
+    function userlistResponse(commandResponse) {
         var match = /^(userlist)\s+(\S+)\s+([\s\S]+)$/im.exec(commandResponse);
         if(!match)
             return false;
@@ -93,9 +98,10 @@
             Client.postResponseToClient('LOG.REPLACE chat-active-users:' + channelPath.toLowerCase() + ' ' + html);
         });
         return true;
-    });
+    }
 
-    Client.addResponse(function(commandResponse) {
+    Client.addResponse(leaveResponse);
+    function leaveResponse(commandResponse) {
         var match = /^(leave)\s+(\S+)\s+(\S+)\s+/im.exec(commandResponse);
         if(!match)
             return false;
@@ -118,9 +124,10 @@
             Client.postResponseToClient('LOG.REPLACE chat-active-users:' + channelPath.toLowerCase() + ' ' + html);
         });
         return true;
-    });
+    }
 
-    Client.addResponse(function(commandResponse) {
+    Client.addResponse(nickResponse);
+    function nickResponse(commandResponse) {
         var match = /^(nick)\s+(\S+)\s+(\S+)/im.exec(commandResponse);
         if(!match)
             return false;
@@ -144,10 +151,11 @@
             }
         }
         return true;
-    });
+    }
 
-    Client.addResponse(function(commandResponse) {
-        if(!/^(msg|message)/im.test(commandResponse))
+    Client.addResponse(messageCommand);
+    function messageCommand(commandResponse) {
+        if(!/^(message)/im.test(commandResponse))
             return false;
         //var username = match[2];
         //var content = fixPGPMessage(match[3]);
@@ -155,7 +163,7 @@
             Client.postResponseToClient('LOG message:' + username + ' ' + html);
         });
         return true;
-    });
+    }
 
     function getChannelUsers(channelPath) {
         if(!channelPath)

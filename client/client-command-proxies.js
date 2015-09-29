@@ -9,14 +9,15 @@
 //var proxy['post'] = 'rest.post';
 
 
-if(!exports) var exports = {};
+if(!exports) var exports = {}; 
+
 exports.initClientCommands = function(Client) {
 
     // HTTP Commands
     Client.addCommand(importHTTPCommands);
     Client.addResponse(importHTTPCommands);
-    function importHTTPCommands(commandCallback, e) {
-        if(!/^(get|post|put|delete|patch|head|http|host-auth|host-auth-validate)/i.test(commandCallback))
+    function importHTTPCommands(commandString, e) {
+        if(!/^(get|post|put|delete|patch|head|http|host-auth|host-auth-validate)/i.test(commandString))
             return false;
         Client.removeCommand(importHTTPCommands);
         Client.removeResponse(importHTTPCommands);
@@ -27,8 +28,8 @@ exports.initClientCommands = function(Client) {
     // Chat Commands
     Client.addCommand(importChatCommands);
     Client.addResponse(importChatCommands);
-    function importChatCommands(commandCallback, e) {
-        if(!/^(join|leave|message|chat|nick)/i.test(commandCallback))
+    function importChatCommands(commandString, e) {
+        if(!/^(join|leave|message|chat|nick)/i.test(commandString))
             return false;
         Client.removeCommand(importChatCommands);
         Client.removeResponse(importChatCommands);
@@ -39,18 +40,18 @@ exports.initClientCommands = function(Client) {
 
     // Feed Commands
     Client.addCommand(importFeedCommands);
-    function importFeedCommands(commandCallback, e) {
-        if(!/^(feed)/i.test(commandCallback))
+    function importFeedCommands(commandString, e) {
+        if(!/^feed/i.test(commandString))
             return false;
         Client.removeCommand(importFeedCommands);
-        importScripts('feed/feed-client-commands.js');
+        importScripts('ks/feed/feed-client-commands.js');
         return false;
     }
 
     // PGP Commands
     Client.addCommand(importPGPCommands);
-    function importPGPCommands(commandCallback, e) {
-        if(!/^(keygen|encrypt|register|unregister|manage|pgp-auth|pgp-auth-validate)/i.test(commandCallback))
+    function importPGPCommands(commandString, e) {
+        if(!/^(keygen|encrypt|register|unregister|manage|pgp-auth|pgp-auth-validate)/i.test(commandString))
             return false;
         Client.removeCommand(importPGPCommands);
         importScripts('pgp/pgp-client-commands.js');

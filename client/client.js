@@ -9,9 +9,7 @@ exports.Client = Client;
 var tagCallbacks = {};
 
 function Client() {
-    //return Client.execute(commandString);
 }
-
 
 (function() {
 
@@ -56,20 +54,21 @@ function Client() {
         var exports = require('./client-command-proxies.js')
     else
         importScripts('client/client-command-proxies.js');
-    exports.initClientCommands(Client);
+    self.exports.initClientCommands(Client);
 
 
     Client.execute = function(commandString, e) {
         var oldLength = commandHandlers.length;
-        for(var i=commandHandlers.length-1; i>=0; i--)
+        for(var i=0; i<commandHandlers.length; i++)
             if(commandHandlers[i](commandString, e))
                 return true;
+
         if(commandHandlers.length > oldLength) {
             return Client.execute(commandString, e);
 
         } else {
             var err = "Client Command Handlers (" + commandHandlers.length + ") could not handle: " + commandString;
-            console.error(err);
+            console.error(err, commandHandlers);
             //Client.postResponseToClient("ERROR " + err);
             return false;
         }
@@ -77,7 +76,7 @@ function Client() {
 
     Client.processResponse = function(responseString, e) {
         var oldLength = responseHandlers.length;
-        for(var i=responseHandlers.length-1; i>=0; i--)
+        for(var i=0; i<responseHandlers.length; i++)
             if(responseHandlers[i](responseString, e))
                 return true;
 
@@ -138,7 +137,8 @@ function Client() {
     //Client.addResponse(/^\w+/, defaultResponse);
 
 // Socket Client
-    Client.addResponse(function(commandResponse, e) {
+    Client.addResponse(consoleResponse);
+    function consoleResponse(commandResponse, e) {
         var match = /^(info|error|assert|warn)/i.exec(commandResponse);
         if(!match)
             return false;
@@ -146,15 +146,16 @@ function Client() {
         var command = match[1].toLowerCase();
         console[command](commandResponse);
         return true;
-    });
+    }
 
 
 // Window Client
-    Client.addCommand(function(commandString, e) {
+    Client.addCommand(channelButtonCommand);
+    function channelButtonCommand(commandString, e) {
         if(!/^(minimize|maximize|close)/i.test(commandString))
             return false;
         Client.postResponseToClient("LOG." + commandString);
         return true;
-    });
+    }
 
 })();

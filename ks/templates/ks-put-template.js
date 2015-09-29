@@ -61,26 +61,35 @@ Templates.rest.put.form = function(content, callback) {
     var form_classes = [];
     var html_pgp_id_private_html = '';
     var html_path_options = '';
-    PGPDB.queryPrivateKeys(function(privateKeyData) {
-        var optionValue = privateKeyData.id_private + "," + privateKeyData.id_public + (privateKeyData.passphrase_required ? ',1' : ',0');
 
-        if(privateKeyData.default)
-            form_classes.push(privateKeyData.passphrase_required ? 'passphrase-required' : 'no-passphrase-required');
+    // Query private key(s)
+    var path = '.private/id';
+    KeySpaceDB.queryContent(path, function(privateKeyBlock) {
+        if(privateKeyBlock) {
+            var privateKey = openpgp.key.readArmored(privateKeyBlock).keys[0];
+            var privateKeyID = privateKey.getKeyId().toHex().toUpperCase();
+            var userIDString = privateKey.getUserIds().join('; ');
+            var publicKey = privateKey.toPublic();
+            var publicKeyID = publicKey.getKeyId().toHex().toUpperCase();
 
-        html_pgp_id_private_html +=
-            '<option' + (privateKeyData.default ? ' selected="selected"' : '') + ' value="' + optionValue + '">' +
-            (privateKeyData.passphrase_required ? '(*) ' : '') + privateKeyData.user_id.replace(/</, '&lt;') +
-            '</option>';
-    }, function() {
+            var optionValue = privateKeyID + "," + publicKeyID + (privateKey.primaryKey.isDecrypted() ? ',1' : ',0');
 
-        // Callback
-        callback(PUT_FORM_TEMPLATE
-                .replace(/{\$content}/gi, content || '')
-                .replace(/{\$html_pgp_id_private}/gi, html_pgp_id_private_html || '')
-                .replace(/{\$form_class}/gi, form_classes.join(' '))
-                .replace(/{\$html_path_options}/gi, html_path_options || '')
-                .replace(/{\$attr_preview_checked}/gi, "checked='checked'") // TODO: get from config
-        );
+            html_pgp_id_private_html +=
+                '<option value="' + optionValue + '">' +
+                (privateKey.primaryKey.isDecrypted() ? '(*) ' : '') + userIDString.replace(/</, '&lt;') +
+                '</option>';
+
+        } else {
+            // Callback
+            callback(PUT_FORM_TEMPLATE
+                    .replace(/{\$content}/gi, content || '')
+                    .replace(/{\$html_pgp_id_private}/gi, html_pgp_id_private_html || '')
+                    .replace(/{\$form_class}/gi, form_classes.join(' '))
+                    .replace(/{\$html_path_options}/gi, html_path_options || '')
+                    .replace(/{\$attr_preview_checked}/gi, "checked='checked'") // TODO: get from config
+            );
+        }
+
     });
 };
 

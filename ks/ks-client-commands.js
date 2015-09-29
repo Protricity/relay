@@ -3,9 +3,9 @@
  */
 if(!exports) var exports = {};
 (function() {
-
     if(typeof Client === 'undefined')
-        var Client = require('../client/client.js').Client;
+        var Client = exports.Client
+            || require('../client/client.js').Client;
 
     var PATH_PUT = 'put';
     var PATH_PREFIX_GET = 'get:';
@@ -44,7 +44,7 @@ if(!exports) var exports = {};
         if(content) {
             // todo http format
             if(preview) {
-                importScripts('http/templates/ks-put-template.js');
+                importScripts('ks/templates/ks-put-template.js');
                 Templates.rest.put.preview(content, function(html) {
                     Client.postResponseToClient("LOG.REPLACE put-preview: " + html);
                 });
@@ -56,7 +56,7 @@ if(!exports) var exports = {};
             }
 
         } else {
-            importScripts('http/templates/ks-put-template.js');
+            importScripts('ks/templates/ks-put-template.js');
             Templates.rest.put.form(content, function(html) {
                 Client.postResponseToClient("LOG.REPLACE put: " + html);
             });
@@ -175,11 +175,12 @@ if(!exports) var exports = {};
 
         // Check local cache to see what can be displayed while waiting
         var requestURL = getRequestURL(requestString);
-        KeySpaceDB.getContent(requestURL, function (contentData) {
+        KeySpaceDB.queryContent(requestURL, function (contentData) {
             if(contentData) {
+                // TODO: verify and decrypt content on the fly?
                 var signedBody = protectHTMLContent(contentData.content_verified);
 
-                importScripts('http/templates/ks-response-template.js');
+                importScripts('ks/templates/ks-response-template.js');
                 Templates.rest.response.body(
                     signedBody,
                     requestURL,
@@ -195,7 +196,7 @@ if(!exports) var exports = {};
 
             } else {
                 // If nothing found, show something, sheesh
-                importScripts('http/templates/ks-response-template.js');
+                importScripts('ks/templates/ks-response-template.js');
                 Templates.rest.response.body(
                     "<p>Request sent...</p>",
                     requestURL,
@@ -221,11 +222,12 @@ if(!exports) var exports = {};
             var KeySpaceDB = require('./ks-db.js');
 
         var requestURL = getRequestURL(requestString);
-        KeySpaceDB.getContent(requestURL, function (contentData) {
+        KeySpaceDB.queryContent(requestURL, function (contentData) {
             if(contentData) {
+                // TODO: verify and decrypt content on the fly? Maybe don't verify things being sent out
                 var signedBody = protectHTMLContent(contentData.content_verified);
 
-                importScripts('http/templates/ks-response-template.js');
+                importScripts('ks/templates/ks-response-template.js');
                 Templates.rest.response.body(
                     signedBody,
                     requestURL,
@@ -243,7 +245,7 @@ if(!exports) var exports = {};
 
                 importScripts('rest/pages/404.js');
                 get404IndexTemplate(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
-                    importScripts('http/templates/ks-response-template.js');
+                    importScripts('ks/templates/ks-response-template.js');
                     Templates.rest.response.body(
                         defaultResponseBody,
                         requestURL,
@@ -281,7 +283,7 @@ if(!exports) var exports = {};
 
             // Non-200 so grab local version or default content
             getDefaultContentResponse(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
-                importScripts('http/templates/ks-response-template.js');
+                importScripts('ks/templates/ks-response-template.js');
                 Templates.rest.response.body(
                     defaultResponseBody,
                     requestURL,
@@ -348,7 +350,7 @@ if(!exports) var exports = {};
         if(!browserID)
             throw new Error("Invalid Browser ID");
 
-        importScripts('http/templates/test-browser-template.js');
+        importScripts('ks/templates/test-browser-template.js');
         Templates.rest.browser(responseString, function(html) {
             Client.postResponseToClient("LOG.REPLACE ks-browser:" + browserID + ' ' + html);
         });
