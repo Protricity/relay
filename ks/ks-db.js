@@ -99,7 +99,7 @@ function KeySpaceDB(dbReadyCallback) {
 
     };
 
-    KeySpaceDB.addVerifiedContentToDB = function(encryptedContent, pgp_id_public, path, timestamp, callback) {
+    KeySpaceDB.addVerifiedContentToDB = function(encryptedContent, pgp_id_public, path, timestamp, customFields, callback) {
         if(!path)
             throw new Error("Invalid Path");
         if(!timestamp)
@@ -107,16 +107,20 @@ function KeySpaceDB(dbReadyCallback) {
         if(!pgp_id_public)
             throw new Error("Invalid PGP Public Key ID");
 
-        if(path[0] !== '/')
-            throw new Error("Path must begin with /");
-
+        if(path[0] === '/')
+            path = path.substr(1);
         pgp_id_public = pgp_id_public.toUpperCase();
+
         var insertData = {
             'pgp_id_public': pgp_id_public,
             'path': path,
             'timestamp': timestamp,
             'content': encryptedContent
         };
+        for(var customField in customFields)
+            if(customFields.hasOwnProperty(customField))
+                if(typeof insertData[customField] === 'undefined')
+                    insertData[customField] = customFields[customField];
 
         // Client browser should store verified content
         //if(typeof IDBDatabase !== 'undefined')
@@ -133,7 +137,7 @@ function KeySpaceDB(dbReadyCallback) {
             }
         );
 
-        var url = ('http://' + pgp_id_public + path);
+        var url = ('http://' + pgp_id_public + '.ks/' + path);
         KeySpaceDB.addURLToDB(url, null);
     };
 
@@ -147,12 +151,15 @@ function KeySpaceDB(dbReadyCallback) {
             host = match[4],
             contentPath = match[5].toLowerCase() || '';
 
+        if(contentPath[0] === '/')
+            contentPath = contentPath.substr(1);
+            
         var publicKeyID = null;
         if(host) {
             match = /^([^.]*\.)?([a-f0-9]{16})\.ks$/i.exec(host);
             if (!match)
                 throw new Error("Host must match [PGP KEY ID (16)].ks: " + contentURI);
-            publicKeyID = match[2];
+            publicKeyID = match[2].toUpperCase();
             publicKeyID = publicKeyID.substr(publicKeyID.length - 16);
         }
 
@@ -164,17 +171,21 @@ function KeySpaceDB(dbReadyCallback) {
                     .objectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
 
                 var pathIndex = dbStore.index(KeySpaceDB.DB_INDEX_PATH);
-                var queryValueID = contentPath;
+                var queryRange = IDBKeyRange.bound([contentPath, 0], [contentPath, 2443566558308], true, true);
                 if(publicKeyID) {
                     pathIndex = dbStore.index(KeySpaceDB.DB_INDEX_ID_PATH);
-                    queryValueID = [publicKeyID, contentPath];
+                    queryRange = IDBKeyRange.bound([publicKeyID, contentPath, 0], [publicKeyID, contentPath, 2443566558308], true, true);
                 }
-                var cursor = pathIndex.openCursor(queryValueID, 'prev');
+                var cursor = pathIndex.openCursor(queryRange, 'prev');
                 cursor.onsuccess = function (e) {
+                    console.log(e, e.target.result, queryRange, pathIndex);
                     var cursor = e.target.result;
                     if (cursor) {
                         if(callback(null, cursor.value) !== true)
                             cursor.continue();
+
+                    } else {
+                        callback(null, null);
                     }
                 };
                 cursor.onerror = function(err) {

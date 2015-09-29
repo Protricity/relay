@@ -261,7 +261,7 @@
 
                 var pgpEncryptedMessage = openpgp.message.readArmored(pgpEncryptedString);
 
-                KeySpaceDB.addVerifiedContentToDB(pgpEncryptedString, selectedPublicKeyID, fixedPostPath, timestamp, function(err, insertData) {
+                KeySpaceDB.addVerifiedContentToDB(pgpEncryptedString, selectedPublicKeyID, fixedPostPath, timestamp, {}, function(err, insertData) {
                     if(err)
                         throw new Error(err);
 
@@ -361,7 +361,7 @@
                 var path = /data-path=["'](\S+)["']/i.exec(verifiedContent)[1];
                 var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(verifiedContent)[1]);
 
-                KeySpaceDB.addVerifiedContentToDB(pgpEncryptedPost, pgp_id_public, path, timestamp, callback);
+                KeySpaceDB.addVerifiedContentToDB(pgpEncryptedPost, pgp_id_public, path, timestamp, {}, callback);
             }
         );
     }

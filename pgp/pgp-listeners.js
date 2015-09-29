@@ -129,8 +129,7 @@
         function refreshPGPRegisterForm() {
             var submitElm = formElm.querySelector('input[type=submit]');
             submitElm.setAttribute('disabled', 'disabled');
-            submitElm.setAttribute('value', "Register");
-
+            formElm.getElementsByClassName('text-register')[0].innerHTML = "Register";
             if(val('private_key').indexOf("-----BEGIN PGP PRIVATE KEY BLOCK-----") >= 0) {
                 var privateKey = window.openpgp.key.readArmored(val('private_key')).keys[0];
                 self.wut = privateKey;
@@ -142,14 +141,15 @@
 
                 var userIDString = privateKey.getUserIds().join('; ');
                 formElm.getElementsByClassName('status-box')[0].innerHTML = "\
-                    <span class='success'>Private Key Block read successfully</span><br/>\n\
+                    <span class='success'>PGP Key Pair generated successfully</span><br/><br/>\n\
+                    <span class='info'>You may now register the following identity:</span><br/>\n\
+                    User ID: <strong>" + userIDString.replace(/</, '&lt;') + "</strong><br/>\n\
                     Private Key ID: <strong>" + privateKeyID + "</strong><br/>\n\
                     Public Key ID: <strong>" + publicKeyID + "</strong><br/>\n\
-                    User ID: <strong>" + userIDString.replace(/</, '&lt;') + "</strong><br/>\n\
                     Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
 
                 submitElm.removeAttribute('disabled');
-                submitElm.setAttribute('value', "Register '" + userIDString.replace(/</, '&lt;') + "'");
+                formElm.getElementsByClassName('text-register')[0].innerHTML = "Register PGP Identity '<span class='user-id'>" + userIDString.replace(/</, '&lt;') + "</span>'";
             }
         }
 
@@ -169,14 +169,24 @@
 
             var userIDString = privateKey.getUserIds().join('; ');
 
+            var customFields = {
+                pgp_id_private: privateKeyID,
+                user_id: userIDString,
+                passphrase_required: privateKey.primaryKey.isDecrypted ? false : true
+            };
+
             var path = '/.private/id';
-            KeySpaceDB.addVerifiedContentToDB(privateKeyBlock, publicKeyID, path, Date.now(), function(err, insertData) {
+            KeySpaceDB.addVerifiedContentToDB(privateKeyBlock, publicKeyID, path, Date.now(), customFields, function(err, insertData) {
                 if(err)
                     throw new Error(err);
 
+                var customFields = {
+                    pgp_id_private: privateKeyID,
+                    user_id: userIDString
+                };
 
                 var path = '/public/id';
-                KeySpaceDB.addVerifiedContentToDB(publicKeyBlock, publicKeyID, path, Date.now(), function(err, insertData) {
+                KeySpaceDB.addVerifiedContentToDB(publicKeyBlock, publicKeyID, path, Date.now(), customFields, function(err, insertData) {
                     if(err)
                         throw new Error(err);
 
@@ -185,11 +195,15 @@
                         cancelable:true
                     });
                     document.dispatchEvent(messageEvent);
-                    Client.manage("MANAGE");
+
+                    setTimeout(function() {
+                        document.querySelector('form[name=pgp-manage-form] .status-box').innerHTML = "\
+                            <span class='success'>PGP Key Pair registered successfully</span><br/><br/>\n\
+                            <span class='info'>You may now make use of your new identity:</span><br/>\n\
+                            User ID: <strong>" + userIDString.replace(/</, '&lt;') + "</strong><br/>";
+                    }, 100);
                 });
-
             });
-
         }
 
         function refreshPGPManageForm() {

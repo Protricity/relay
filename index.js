@@ -42,8 +42,8 @@
 //                send('put');
 
         if (document.location.host === 'localhost') {
+            send('manage');
             send('feed');
-            send('keygen');
             //send('register');
 
 

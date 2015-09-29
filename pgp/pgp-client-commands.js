@@ -42,26 +42,32 @@
 
         importScripts('pgp/templates/pgp-manage-template.js');
         Templates.pgp.manage.form(status_content, function(html) {
-            Client.postResponseToClient("LOG.REPLACE pgp-manage: " + html);
+            Client.postResponseToClient("LOG.REPLACE pgp: " + html);
         });
-
-        if(typeof self.KeySpaceDB === 'undefined') {
-            if(typeof importScripts === "function")
-                importScripts('ks/ks-db.js');
-            else
-                self.KeySpaceDB = require('./ks-db.js').KeySpaceDB;
-        }
 
         // Query private key
         var path = '/.private/id';
-        self.KeySpaceDB.queryContent(path, function(privateKeyBlock) {
-            if(privateKeyBlock) {
-                Templates.pgp.manage.entry(privateKeyBlock, function(html) {
+        var count = 0;
+        getKeySpaceDB().queryContent(path, function(err, contentEntry) {
+            if(err)
+                throw new Error(err);
+
+            if(contentEntry) {
+                count++;
+                Templates.pgp.manage.entry(contentEntry, function(html) {
                     Client.postResponseToClient("LOG pgp-manage-entries: " + html);
                 });
+
             } else {
+                if(count === 0) {
+                    status_content = (status_content ? status_content + "<br/>" : '') + "<strong>No PGP Identities found</strong><br/>" +
+                        "<span class='info'>You may <a href='#KEYGEN'>Generate</a>  a new PGP Key Pair Identity</span>";
+                    Templates.pgp.manage.form(status_content, function(html) {
+                        Client.postResponseToClient("LOG.REPLACE pgp: " + html);
+                    });
+                }
                 // Free up template resources
-                delete Templates.pgp.manage;
+                //delete Templates.pgp.manage;
             }
         });
         return true;
@@ -133,13 +139,6 @@
         if(!match)
             return false;
 
-        if(typeof KeySpaceDB === 'undefined') {
-            if(typeof importScripts === "function")
-                importScripts('ks/ks-db.js');
-            else
-                var KeySpaceDB = require('./ks-db.js').KeySpaceDB;
-        }
-
         var publicKeyIDs = match[1].trim().split(/\W+/g);
         for(var i=0; i<publicKeyIDs.length; i++) {
             (function (publicKeyID) {
@@ -147,7 +146,7 @@
 
                 // Query private key(s)
                 var path = 'http://' + publicKeyID + '.ks/.private/id';
-                KeySpaceDB.queryContent(path, function(privateKeyBlock) {
+                getKeySpaceDB().queryContent(path, function(privateKeyBlock) {
                     console.log("TODO: Delete: ", privateKeyBlock);
                 });
             })(publicKeyIDs[i]);
@@ -167,6 +166,16 @@
         var publicKeyID = match[1].trim().split(/\W+/g)[0];
         publicKeyID = publicKeyID.substr(publicKeyID.length - 16);
         console.log("TODO: default", publicKeyID);
+    }
+
+    function getKeySpaceDB() {
+        if(typeof self.KeySpaceDB === 'undefined') {
+            if(typeof importScripts === "function")
+                importScripts('ks/ks-db.js');
+            else
+                self.KeySpaceDB = require('./ks-db.js').KeySpaceDB;
+        }
+        return self.KeySpaceDB;
     }
 
 })();

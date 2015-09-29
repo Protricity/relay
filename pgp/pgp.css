@@ -22,6 +22,7 @@ form[name=pgp-manage-form] .pgp-id-box {
     max-width: 18em;
     display: inline-block;
     vertical-align: top;
+    position: relative;
 }
 
 form[name=pgp-manage-form] select[name=actions] {

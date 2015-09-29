@@ -23,7 +23,7 @@ Templates.pgp.register.form = function(private_key_block, status_content, callba
                     <label><strong>Paste a PGP Private key block into the box below to register:</strong><br/>\n\
                         <textarea name='private_key' required='required' placeholder='{$example_public_key}' rows='12' cols='68'>{$private_key_block}</textarea>\n\
                     </label>\n\
-                    <br/><br/>Register:<br/>\n\
+                    <br/><br/><span class='text-register'>Register</span>:<br/>\n\
                     <input type='submit' name='submit-register' value='Register'/>\n\
                     or <a href='#KEYGEN'>Generate a new PGP Key pair</a>\n\
                 </form>\n\
