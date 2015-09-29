@@ -146,12 +146,12 @@ function PGPDB(dbReadyCallback) {
     //    if(!privateKey)
     //        throw new Error("PGP PRIVATE KEY BLOCK not found");
     //    privateKeyBlock = privateKey.armor();
-    //    var privateKeyID = privateKey.getKeyId().toHex().toUpperCase();
+    //    var privateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();
     //
     //    var userIDString = privateKey.getUserIds().join('; ');
     //
     //    var publicKey = privateKey.toPublic();
-    //    var publicKeyID = publicKey.getKeyId().toHex().toUpperCase();
+    //    var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
     //    var publicKeyBlock = publicKey.armor();
     //
     //    var insertData = {
@@ -187,7 +187,7 @@ function PGPDB(dbReadyCallback) {
     //    if(!publicKey) // publicKeyBlock.indexOf("-----BEGIN PGP PUBLIC KEY BLOCK-----") === -1)
     //        throw new Error("PGP PUBLIC KEY BLOCK not found");
     //
-    //    var publicKeyID = publicKey.getKeyId().toHex().toUpperCase();
+    //    var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
     //    var userID = publicKey.getUserIds().join('; ');
     //
     //

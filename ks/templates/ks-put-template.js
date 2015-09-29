@@ -63,20 +63,20 @@ Templates.rest.put.form = function(content, callback) {
     var html_path_options = '';
 
     // Query private key(s)
-    var path = '.private/id';
+    var path = '/.private/id';
     KeySpaceDB.queryContent(path, function(privateKeyBlock) {
         if(privateKeyBlock) {
             var privateKey = openpgp.key.readArmored(privateKeyBlock).keys[0];
-            var privateKeyID = privateKey.getKeyId().toHex().toUpperCase();
+            var privateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();
             var userIDString = privateKey.getUserIds().join('; ');
             var publicKey = privateKey.toPublic();
-            var publicKeyID = publicKey.getKeyId().toHex().toUpperCase();
+            var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
 
-            var optionValue = privateKeyID + "," + publicKeyID + (privateKey.primaryKey.isDecrypted() ? ',1' : ',0');
+            var optionValue = privateKeyID + "," + publicKeyID + (privateKey.primaryKey.isDecrypted ? ',1' : ',0');
 
             html_pgp_id_private_html +=
                 '<option value="' + optionValue + '">' +
-                (privateKey.primaryKey.isDecrypted() ? '(*) ' : '') + userIDString.replace(/</, '&lt;') +
+                (privateKey.primaryKey.isDecrypted ? '(*) ' : '') + userIDString.replace(/</, '&lt;') +
                 '</option>';
 
         } else {

@@ -44,6 +44,7 @@
         if (document.location.host === 'localhost') {
             send('feed');
             send('keygen');
+            //send('register');
 
 
         } else {

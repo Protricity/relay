@@ -89,40 +89,40 @@ body.template-minimal {
     display: inherit;
 }
 
-.template-minimal span.username {
+.template-minimal .username {
     color: darkblue;
     text-overflow: ellipsis;
 }
 
 
-.template-minimal span.message {
+.template-minimal .message {
     color: black;
     word-break: break-all;
 }
 
-.template-minimal span.command{
+.template-minimal .command{
     color: green;
     text-transform: uppercase;
     font-size: smaller;
     font-family: monospace;
 }
 
-.template-minimal span.action {
+.template-minimal .action {
     color: green;
     font-style: italic;
 }
 
-.template-minimal span.error {
+.template-minimal .error {
     color: red;
     font-style: italic;
 }
 
-.template-minimal span.passphrase {
+.template-minimal .passphrase {
     color: darkgreen;
     font-weight: bold;
 }
 
-.template-minimal span.info {
+.template-minimal .info {
     color: #666;
 }
 
@@ -166,8 +166,7 @@ body.template-minimal {
 .template-minimal input[name=passphrase] {
     border-color: lightgreen;
     color: darkgreen;
-    padding: 0.2em;
-    border-radius: 0.4em;
+    /* border-radius: 0.4em; */
 }
 
 .template-minimal input[type=submit] {

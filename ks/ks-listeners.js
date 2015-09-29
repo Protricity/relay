@@ -236,6 +236,9 @@
 
             var author = privateKey.getUserIds()[0];
             var fixedPostPath = fixHomePath(pathElm.value, selectedPublicKeyID);
+            if(fixedPostPath[0] !== '/')
+                fixedPostPath = '/' + fixedPostPath;
+
             var timestamp = Date.now();
 
             var contentDiv = document.createElement('div');
@@ -420,9 +423,6 @@
                 onInsert();
         }
     }
-
-    // For Config Access
-    includeScript('config/config-db.js');
 
     // For HTTP Content Database access
     includeScript('ks/ks-db.js');

@@ -91,7 +91,6 @@ if(!exports) var exports = {};
         });
     }
 
-// http://521D4941.ks/@pgp/@export
     Client.addResponse(getResponse);
     function getResponse(requestString) {
         var match = /^get (?:socket:\/\/)?([a-f0-9]{8,})(?:\.ks)(\/@pgp.*)$/i.exec(requestString);
@@ -151,7 +150,7 @@ if(!exports) var exports = {};
                 importScripts('ks/ks-db.js');
 
             if(typeof KeySpaceDB === 'undefined')
-                var KeySpaceDB = require('./ks-db.js');
+                var KeySpaceDB = require('./ks-db.js').KeySpaceDB;
             KeySpaceDB.addURLToDB(url, referrerURL);
         });
     }
@@ -165,7 +164,7 @@ if(!exports) var exports = {};
             requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
 
         if(typeof KeySpaceDB === 'undefined')
-            var KeySpaceDB = require('./ks-db.js');
+            var KeySpaceDB = require('./ks-db.js').KeySpaceDB;
 
         // Send request regardless of local cache
         var requestID = 'R' + requestIDCount++;
@@ -219,7 +218,7 @@ if(!exports) var exports = {};
             requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
 
         if(typeof KeySpaceDB === 'undefined')
-            var KeySpaceDB = require('./ks-db.js');
+            var KeySpaceDB = require('./ks-db.js').KeySpaceDB;
 
         var requestURL = getRequestURL(requestString);
         KeySpaceDB.queryContent(requestURL, function (contentData) {

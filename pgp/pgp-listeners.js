@@ -84,55 +84,72 @@
             var bits = val('bits');
             var userID = val('user_id');
             var passphrase = val('passphrase');
-            var send_as_socket_command = parseInt(val('send_as_socket_command'));
+            //var send_as_socket_command = parseInt(val('send_as_socket_command'));
 
             formElm.querySelector('[type=submit]').setAttribute('disabled', 'disabled');
-    //0 &&
-            if(send_as_socket_command) {
-                setStatus("Generating new PGP Key via socket command...");
-                var commandString = 'KEYGEN --bits ' + bits;
-                if(passphrase)
-                    commandString += ' --passphrase ' + passphrase;
-                commandString += ' --user ' + userID;
+            setStatus("Generating new PGP Key via client...");
+
+            openpgp.generateKeyPair({
+                keyType:1,
+                numBits:bits,
+                userId:userID,
+                passphrase:passphrase
+
+            }).then(function(keyPair) {
+                var newPrivateKeyID = keyPair.key.primaryKey.getKeyId().toHex().toUpperCase();
+                var newPublicKeyID = keyPair.key.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+                console.log("New PGP Key Generated: ", newPrivateKeyID, newPublicKeyID);
 
                 var messageEvent = new CustomEvent('socket', {
-                    detail: commandString
+                    detail: "REGISTER " + keyPair.privateKeyArmored,
+                    cancelable:true
                 });
                 document.dispatchEvent(messageEvent);
 
-            } else {
-                setStatus("Generating new PGP Key via client...");
+            });
 
-
-
-                openpgp.generateKeyPair({
-                    keyType:1,
-                    numBits:bits,
-                    userId:userID,
-                    passphrase:passphrase
-
-                }).then(function(keyPair) {
-                    var newPrivateKeyID = keyPair.key.primaryKey.getKeyId().toHex().toUpperCase();
-                    var newPublicKeyID = keyPair.key.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
-                    console.log("New PGP Key Generated: ", newPrivateKeyID, newPublicKeyID);
-
-                    var messageEvent = new CustomEvent('socket', {
-                        detail: "REGISTER " + keyPair.privateKeyArmored,
-                        cancelable:true
-                    });
-                    document.dispatchEvent(messageEvent);
-
-                });
-            }
+            //}
+    //0 &&
+    //        if(send_as_socket_command) {
+    //            setStatus("Generating new PGP Key via socket command...");
+    //            var commandString = 'KEYGEN --bits ' + bits;
+    //            if(passphrase)
+    //                commandString += ' --passphrase ' + passphrase;
+    //            commandString += ' --user ' + userID;
+    //
+    //            var messageEvent = new CustomEvent('socket', {
+    //                detail: commandString
+    //            });
+    //            document.dispatchEvent(messageEvent);
+    //
+    //        } else {
 
         }
 
         function refreshPGPRegisterForm() {
             var submitElm = formElm.querySelector('input[type=submit]');
-            if(val('private_key').indexOf("-----BEGIN PGP PRIVATE KEY BLOCK-----") === -1) {
-                submitElm.setAttribute('disabled', 'disabled');
-            } else {
+            submitElm.setAttribute('disabled', 'disabled');
+            submitElm.setAttribute('value', "Register");
+
+            if(val('private_key').indexOf("-----BEGIN PGP PRIVATE KEY BLOCK-----") >= 0) {
+                var privateKey = window.openpgp.key.readArmored(val('private_key')).keys[0];
+                self.wut = privateKey;
+                var privateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();
+
+                var publicKey = privateKey.toPublic();
+                var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+                //var publicKeyBlock = publicKey.armor();
+
+                var userIDString = privateKey.getUserIds().join('; ');
+                formElm.getElementsByClassName('status-box')[0].innerHTML = "\
+                    <span class='success'>Private Key Block read successfully</span><br/>\n\
+                    Private Key ID: <strong>" + privateKeyID + "</strong><br/>\n\
+                    Public Key ID: <strong>" + publicKeyID + "</strong><br/>\n\
+                    User ID: <strong>" + userIDString.replace(/</, '&lt;') + "</strong><br/>\n\
+                    Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
+
                 submitElm.removeAttribute('disabled');
+                submitElm.setAttribute('value', "Register '" + userIDString.replace(/</, '&lt;') + "'");
             }
         }
 
@@ -144,24 +161,22 @@
 
             var privateKey = window.openpgp.key.readArmored(privateKeyValue).keys[0];
             var privateKeyBlock = privateKey.armor();
-            var privateKeyID = privateKey.getKeyId().toHex().toUpperCase();
+            var privateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();
 
             var publicKey = privateKey.toPublic();
-            var publicKeyID = publicKey.getKeyId().toHex().toUpperCase();
+            var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
             var publicKeyBlock = publicKey.armor();
 
             var userIDString = privateKey.getUserIds().join('; ');
 
-            var path = '.private/id';
-            KeySpaceDB.addVerifiedContentToDB(privateKeyBlock, publicKeyID, path, Date.now(), function(err) {
-                console.log(arguments);
+            var path = '/.private/id';
+            KeySpaceDB.addVerifiedContentToDB(privateKeyBlock, publicKeyID, path, Date.now(), function(err, insertData) {
                 if(err)
                     throw new Error(err);
 
 
-                var path = 'public/id';
-                KeySpaceDB.addVerifiedContentToDB(publicKeyBlock, publicKeyID, path, Date.now(), function(err) {
-                    console.log(arguments);
+                var path = '/public/id';
+                KeySpaceDB.addVerifiedContentToDB(publicKeyBlock, publicKeyID, path, Date.now(), function(err, insertData) {
                     if(err)
                         throw new Error(err);
 
@@ -565,22 +580,8 @@
 
     // Includes
 
-    function includeScript(scriptPath, onInsert) {
-        var head = document.getElementsByTagName('head')[0];
-        if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
-            var newScript = document.createElement('script');
-            newScript.setAttribute('src', scriptPath);
-            head.appendChild(newScript);
-            if(onInsert)
-                onInsert();
-        }
-    }
-
-    // For Config Access
-    includeScript('config/config-db.js');
-
-    // For Public/Private Key Database access
-    includeScript('pgp/pgp-db.js');
+    // For HTTP Content Database access
+    includeScript('ks/ks-db.js');
 
     // For PGP Decryption in chat rooms
     var openPGPScriptPath = 'pgp/lib/openpgpjs/openpgp.js';
@@ -596,6 +597,17 @@
              //console.info("OpenPGP Worker Loaded: " + src);
         }, 500);
     });
+
+    function includeScript(scriptPath, onInsert) {
+        var head = document.getElementsByTagName('head')[0];
+        if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+            var newScript = document.createElement('script');
+            newScript.setAttribute('src', scriptPath);
+            head.appendChild(newScript);
+            if(onInsert)
+                onInsert();
+        }
+    }
 
 //
 //    var SCRIPT_PATH = 'pgp/lib/openpgpjs/openpgp.js';

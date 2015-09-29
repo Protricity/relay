@@ -91,9 +91,9 @@
             }
         }
 
-        var contentParent = document.createElement('div');
-        contentParent.innerHTML = content;
-        var contentElement = contentParent.firstChild;
+        var htmlContainer = document.createElement('div');
+        htmlContainer.innerHTML = content;
+        var contentElement = htmlContainer.firstChild;
         if(contentElement) {
 
         } else {
@@ -183,17 +183,16 @@
                         throw new Error("Unknown subcommand: " + subCommand);
                 }
             }
-
             var contentEvent = new CustomEvent('log', {
                 bubbles: true,
                 detail: content
             });
-            contentElement.dispatchEvent(contentEvent);
+            channelOutput.dispatchEvent(contentEvent);
             contentEvent = new CustomEvent('log.' + subCommand, {
                 bubbles: true,
                 detail: content
             });
-            contentElement.dispatchEvent(contentEvent);
+            channelOutput.dispatchEvent(contentEvent);
         }
 
     }

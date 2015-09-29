@@ -45,12 +45,16 @@
             Client.postResponseToClient("LOG.REPLACE pgp-manage: " + html);
         });
 
-        if(typeof KeySpaceDB === 'undefined')
-            var KeySpaceDB = require('./ks-db.js');
+        if(typeof self.KeySpaceDB === 'undefined') {
+            if(typeof importScripts === "function")
+                importScripts('ks/ks-db.js');
+            else
+                self.KeySpaceDB = require('./ks-db.js').KeySpaceDB;
+        }
 
         // Query private key
-        var path = '.private/id';
-        KeySpaceDB.queryContent(path, function(privateKeyBlock) {
+        var path = '/.private/id';
+        self.KeySpaceDB.queryContent(path, function(privateKeyBlock) {
             if(privateKeyBlock) {
                 Templates.pgp.manage.entry(privateKeyBlock, function(html) {
                     Client.postResponseToClient("LOG pgp-manage-entries: " + html);
@@ -109,9 +113,9 @@
             return false;
 
         var privateKeyBlock = (match[1] || '').replace(/(\r\n|\r|\n)/g, '\r\n');
-        var status_content = "<span class='info'>Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually</span>";
+        var status_content = "Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually";
         importScripts('pgp/templates/pgp-register-template.js');
-        Templates.pgp.register.form(privateKeyBlock, '', function(html) {
+        Templates.pgp.register.form(privateKeyBlock, status_content, function(html) {
             Client.postResponseToClient("LOG.REPLACE pgp: " + html);
         });
         // Free up template resources
@@ -128,6 +132,14 @@
         var match = /^unregister\s+(.*)$/im.exec(commandString);
         if(!match)
             return false;
+
+        if(typeof KeySpaceDB === 'undefined') {
+            if(typeof importScripts === "function")
+                importScripts('ks/ks-db.js');
+            else
+                var KeySpaceDB = require('./ks-db.js').KeySpaceDB;
+        }
+
         var publicKeyIDs = match[1].trim().split(/\W+/g);
         for(var i=0; i<publicKeyIDs.length; i++) {
             (function (publicKeyID) {

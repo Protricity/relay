@@ -60,8 +60,8 @@ function KeySpaceDB(dbReadyCallback) {
 
                 if(!upgradeDB.objectStoreNames.contains(KeySpaceDB.DB_TABLE_HTTP_CONTENT)) {
                     var postStore = upgradeDB.createObjectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT, { keyPath: ["pgp_id_public", "timestamp"] });
-                    postStore.createIndex(KeySpaceDB.DB_INDEX_PATH, "path", { unique: false });
-                    postStore.createIndex(KeySpaceDB.DB_INDEX_ID_PATH, ["pgp_id_public", "path"], { unique: false });
+                    postStore.createIndex(KeySpaceDB.DB_INDEX_PATH, ["path", "timestamp"], { unique: false });
+                    postStore.createIndex(KeySpaceDB.DB_INDEX_ID_PATH, ["pgp_id_public", "path", "timestamp"], { unique: false });
                     postStore.createIndex(KeySpaceDB.DB_INDEX_TIMESTAMP, ["timestamp"], { unique: false });
 
                     console.log('Upgraded Table: ' + KeySpaceDB.DB_NAME + '.' + postStore.name);
@@ -86,9 +86,9 @@ function KeySpaceDB(dbReadyCallback) {
 
                 var dbCollection = db.collection(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
                 //dbCollection.createIndex({"path", { unique: false });
-                dbCollection.createIndex({"pgp_id_public": 1, "timestamp": 1}, { unique: true });
-                dbCollection.createIndex({"pgp_id_public": 1, "path": 1});
-                dbCollection.createIndex({"path": 1});
+                dbCollection.createIndex({"pgp_id_public": 1, "timestamp": -1}, { unique: true });
+                dbCollection.createIndex({"pgp_id_public": 1, "path": 1, "timestamp": -1});
+                dbCollection.createIndex({"path": 1, "timestamp": -1});
                 dbCollection.createIndex({"timestamp": -1});
 
                 for (var i = 0; i < onDBCallbacks.length; i++)
@@ -107,6 +107,10 @@ function KeySpaceDB(dbReadyCallback) {
         if(!pgp_id_public)
             throw new Error("Invalid PGP Public Key ID");
 
+        if(path[0] !== '/')
+            throw new Error("Path must begin with /");
+
+        pgp_id_public = pgp_id_public.toUpperCase();
         var insertData = {
             'pgp_id_public': pgp_id_public,
             'path': path,
@@ -115,8 +119,8 @@ function KeySpaceDB(dbReadyCallback) {
         };
 
         // Client browser should store verified content
-        if(typeof IDBDatabase !== 'undefined')
-            insertData['content_verified'] = verifiedContent;
+        //if(typeof IDBDatabase !== 'undefined')
+        //    insertData['content_verified'] = verifiedContent;
 
         KeySpaceDB.insert(
             KeySpaceDB.DB_TABLE_HTTP_CONTENT,
@@ -125,11 +129,11 @@ function KeySpaceDB(dbReadyCallback) {
                 if(callback)
                     callback(err, insertData);
 
-                console.info("Added content to database: http://" + pgp_id_public + '.ks' + path);
+                console.info("Added content to database: http://" + pgp_id_public + '.ks/' + path);
             }
         );
 
-        var url = ('socket://' + pgp_id_public + path);
+        var url = ('http://' + pgp_id_public + path);
         KeySpaceDB.addURLToDB(url, null);
     };
 
@@ -165,12 +169,12 @@ function KeySpaceDB(dbReadyCallback) {
                     pathIndex = dbStore.index(KeySpaceDB.DB_INDEX_ID_PATH);
                     queryValueID = [publicKeyID, contentPath];
                 }
-                var cursor = pathIndex.openCursor(queryValueID);
+                var cursor = pathIndex.openCursor(queryValueID, 'prev');
                 cursor.onsuccess = function (e) {
                     var cursor = e.target.result;
                     if (cursor) {
-                        callback(null, cursor.value);
-                        cursor.continue();
+                        if(callback(null, cursor.value) !== true)
+                            cursor.continue();
                     }
                 };
                 cursor.onerror = function(err) {
@@ -204,7 +208,7 @@ function KeySpaceDB(dbReadyCallback) {
                 var timestampIndex = dbStore.index(KeySpaceDB.DB_INDEX_TIMESTAMP);
                 var boundKeyRange = IDBKeyRange.bound(timespan[0], timespan[1], true, true);
 
-                timestampIndex.openCursor(boundKeyRange)
+                timestampIndex.openCursor(boundKeyRange, 'prev')
                     .onsuccess = function (e) {
                     var cursor = e.target.result;
                     if (cursor) {
@@ -230,9 +234,9 @@ function KeySpaceDB(dbReadyCallback) {
             callback = function(err, insertData) {
                 if(err) {
                     if(!/constraint/i.test(err))
-                        console.error("Error adding url to database: " + url, err);
+                        console.error("Error adding url to database: " + url, referrerURL, err);
                 } else {
-                    console.info("Added http url to database: " + insertData.url);
+                    console.info("Added http url to database: " + insertData.url_original_case);
                 }
             };
 
@@ -254,12 +258,12 @@ function KeySpaceDB(dbReadyCallback) {
         var contentURLHost = match[4];
         if(!contentURLHost)
             throw new Error("Invalid Host: " + currentURL);
-        var contentURLPath = (match[5] || '')
-            .replace(/^\/~/, '/home/' + contentURLHost);
+        var contentURLPath = (match[5] || '');
+            //.replace(/^\/~/, '/home/' + /contentURLHost);
         var contentURLParentPath = contentURLPath.replace(/[^\/]+\/$/, '') || '/';
 
         var paths = [[currentURL, '.']];
-        var parentURL = 'socket://' + contentURLHost + contentURLParentPath;
+        var parentURL = 'http://' + contentURLHost + contentURLParentPath;
         if(currentURL !== parentURL)
             paths.push([parentURL, '..']);
 
@@ -290,9 +294,6 @@ function KeySpaceDB(dbReadyCallback) {
             };
         });
     };
-
-
-    // Support
 
 
     KeySpaceDB.insert = function(tableName, insertData, callback) {

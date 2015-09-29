@@ -11,27 +11,39 @@ Templates.pgp.generate.form = function(user_id, callback) {
         <article class='channel pgp:'>\n\
             <script src='pgp/pgp-listeners.js'></script>\n\
             <link rel='stylesheet' href='pgp/pgp.css' type='text/css'>\n\
-            <legend class='title'><span class='command'>Generate</span> a new Identity</legend>\n\
+            <legend class='title'><span class='command'>Generate</span> a New Identity</legend>\n\
             <div class='title-commands'>\n\
                 <a class='title-command-minimize' href='#MINIMIZE pgp:'>[-]</a><!--\
                  --><a class='title-command-maximize' href='#MAXIMIZE pgp:'>[+]</a><!--\
                  --><a class='title-command-close' href='#CLOSE pgp:'>[x]</a>\n\
             </div>\n\
             <form name='pgp-keygen-form' action='#' method='post'>\n\
-                <code class='status-box' style='display: none'></code><br/>\n\
-                Select key strength: </br><i>or: your fear level for getting hacked on a scale from 512 to 4096</i><br/>\n\
+                <code class='status-box'>Use this form to generate a new PGP Key Identity</code>\n\
+                \
+                <label><br/><strong>Select key strength: </strong><br />\
+                (<i class='info'>or: your fear level for getting hacked<br/>on a scale from 512 to 4096</i>)<br/>\n\
                 <select name='bits'>\n\
-                    <option value='512'>512 (Weak)</option>\n\
-                    <option value='1024' selected='selected'>1024 (Casual)</option>\n\
-                    <option value='2048'>2048 (Strong)</option>\n\
-                    <option value='4096'>4096 (Very strong)</option>\n\
+                    <option value='512'>512 (Weak Sauce)</option>\n\
+                    <option value='1024' selected='selected'>1024 (Casual Security)</option>\n\
+                    <option value='2048'>2048 (Stronger Security)</option>\n\
+                    <option value='4096'>4096 (Very Stronger Security)</option>\n\
                 </select>\n\
-                <br/><br/>Select a user ID: <br/><i>Can be a user name, email address, or both in the format <br/><strong>'Your Name' &lt;your@email.com&gt;</strong></i><br/> \n\
-                <input type='text' name='user_id' value='{$user_id}' required='required' placeholder='User ID and/or email [ ex. \"Your Name\" <your@email.com> ]' />\n\
-                <br/><br/>Optionally choose a passphrase to secure your PGP Key Pair: <br/><i>You will be asked for the passphrase <br/>any time your private key is used</i><br/> \n\
+                <br/></label>\n\
+                \
+                <label><br/><strong>Select a user ID: </strong><br/>\
+                (<i class='info'>can be a user name, email address, or both)</i><br/> \n\
+                <input type='text' name='user_id' value='{$user_id}' required='required' size='36' placeholder='\"Your Name\" <your@email.com>' />\n\
+                <br/></label>\
+                \
+                <label><br/><strong>Optionally choose a passphrase to secure your PGP Key Pair: </strong><br/>\
+                (<i class='info'>You will be asked for the passphrase <br/>any time your private key is used</i>)<br/> \n\
                 <input type='password' name='passphrase' />\n\
-                <br/><br/>Generate:<br/> \n\
+                <br/></label>\
+                \
+                <label><br/><strong>Generate:</strong><br/> \n\
+                (<i class='info'>Generate a new PGP Public/Private Key Pair Identity</i>)<br/> \n\
                 <input type='submit' value='Generate'  name='submit-generate' />\n\
+                </label>\
                 or <a href='#REGISTER'>Load your own PGP private key</a>\n\
             </form>\n\
         </article>";
