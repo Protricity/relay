@@ -311,9 +311,10 @@ if(!exports) var exports = {};
     ];
     var getDefaultContentResponse = function(requestString, callback) {
         var requestURL = getRequestURL(requestString);
-        var urlData = parseURL(requestURL);
-        if(urlData.path === '~')
-            urlData.path = '~/';
+        var match = requestURL.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
+        var path = match[5] || '';
+        if(path === '~')
+            path = '~/';
 
         var browserID = getContentHeader(requestString, 'Browser-ID');
         if(!browserID)
@@ -330,7 +331,7 @@ if(!exports) var exports = {};
 
         for(var i=0; i<defaultContentResponses.length; i++) {
             //console.log(defaultContentResponses[i], contentURLPath, contentURL);
-            if(defaultContentResponses[i][0].test(urlData.path)) {
+            if(defaultContentResponses[i][0].test(path)) {
                 defaultContentResponses[i][1](requestString, fixedCallback);
                 return;
             }
@@ -384,17 +385,13 @@ if(!exports) var exports = {};
             });
         }
 
-        Templates.ks.log.entry(requestURL, dir, function(html) {
+        var requestURLAnchorHTML = "<a href='" + requestURL + "'>" + requestURL + "</a>";
+        Templates.ks.log.entry(requestURLAnchorHTML, dir, function(html) {
             Client.postResponseToClient("LOG ks-log-content:" + host + " " + html);
         });
     };
 
     // Request/Response methods
-
-    function parseURL(url) {
-        var matches = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(url);
-        return {url: url, scheme: matches[2], host: matches[4], path: matches[5] || '', query: matches[7], fragment: matches[9]};
-    }
 
     function getResponseStatus(responseString) {
         var match = /^http\/1.1 (\d+) ?(.*)$/im.exec(responseString);
@@ -435,6 +432,18 @@ if(!exports) var exports = {};
         }
         return self.KeySpaceDB;
     }
+    //
+    //function parseURL(url) {
+    //    var matches = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(url);
+    //    return {
+    //        url: url,
+    //        scheme: matches[2],
+    //        host: matches[4],
+    //        path: matches[5] || '',
+    //        query: matches[7],
+    //        fragment: matches[9]
+    //    };
+    //}
 
     exports.test = function() {
         putCommand();

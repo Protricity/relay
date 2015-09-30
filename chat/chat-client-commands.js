@@ -11,14 +11,14 @@
     var PATH_PREFIX_MESSAGE = 'message:';
 
     var activeChannels = [];
-
-    Client.addCommand(channelCommand);
-    function channelCommand(commandString, e) {
-        if(!/^(message|join|leave)/i.test(commandString))
-            return false;
-        Client.sendWithSocket(commandString, e);
-        return true;
-    }
+    //
+    //Client.addCommand(channelCommand);
+    //function channelCommand(commandString, e) {
+    //    if(!/^(message|join|leave)/i.test(commandString))
+    //        return false;
+    //    Client.sendWithSocket(commandString, e);
+    //    return true;
+    //}
 //    function(commandString) {
 //        var args = commandString.split(/\s+/, 3);
 //        var channelPath = args[1];
@@ -44,32 +44,40 @@
     }
 
     Client.addResponse(chatResponse);
-    function chatResponse(commandResponse) {
-        var match = /^(chat)\s+(\S+)/im.exec(commandResponse);
+    function chatResponse(responseString) {
+        var match = /^(chat)\s+(\S+)/im.exec(responseString);
         if(!match)
             return false; 
 
         var channelPath = match[2];
         getChannelUsers(channelPath);
-        Templates.chat.message(commandResponse, function(html) {
+        Templates.chat.message(responseString, function(html) {
             Client.postResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
         });
         return true;
     }
 
     var channelUsers = {};
-    Client.addResponse(joinCommand);
-    function joinCommand(commandResponse) {
-        var match = /^(join)\s+(\S+)\s+(\S+)\s+/im.exec(commandResponse);
+    Client.addCommand(joinCommand);
+    function joinCommand(commandString) {
+        var match = /^join/i.exec(commandString);
+        if(!match)
+            return false;
+        Client.sendWithSocket(commandString);
+    }
+
+    Client.addResponse(joinResponse);
+    function joinResponse(responseString) {
+        var match = /^(join)\s+(\S+)\s+(\S+)\s+/im.exec(responseString);
         if(!match)
             return false;
 
-        var args = commandResponse.split(/\s/);
+        var args = responseString.split(/\s/);
         var channelPath = match[2];
         var channelPathLowerCase = channelPath.toLowerCase();
         var username = match[3];
         getChannelUsers(channelPath);
-        Templates.chat.action(commandResponse, function(html) {
+        Templates.chat.action(responseString, function(html) {
             Client.postResponseToClient('LOG chat-log:' + channelPathLowerCase + ' ' + html);
         });
 
@@ -100,6 +108,14 @@
         return true;
     }
 
+    Client.addCommand(leaveCommand);
+    function leaveCommand(commandString) {
+        var match = /^leave/i.exec(commandString);
+        if(!match)
+            return false;
+        Client.send(commandString);
+    }
+
     Client.addResponse(leaveResponse);
     function leaveResponse(commandResponse) {
         var match = /^(leave)\s+(\S+)\s+(\S+)\s+/im.exec(commandResponse);
@@ -126,9 +142,18 @@
         return true;
     }
 
+    Client.addCommand(nickCommand);
+    function nickCommand(commandString) {
+        var match = /^nick/i.exec(commandString);
+        if(!match)
+            return false;
+
+        Client.sendWithSocket(commandString);
+    }
+
     Client.addResponse(nickResponse);
-    function nickResponse(commandResponse) {
-        var match = /^(nick)\s+(\S+)\s+(\S+)/im.exec(commandResponse);
+    function nickResponse(responseString) {
+        var match = /^(nick)\s+(\S+)\s+(\S+)/im.exec(responseString);
         if(!match)
             return false;
         var old_username = match[2];
@@ -140,7 +165,7 @@
                     var pos = userList.indexOf(old_username);
                     if (pos >= 0) {
                         userList[pos] = new_username;
-                        Templates.chat.nick(commandResponse, function (html) {
+                        Templates.chat.nick(responseString, function (html) {
                             Client.postResponseToClient('LOG chat-log:' + channelPath.toLowerCase() + ' ' + html);
                         });
                         Templates.chat.userList(channelPath, userList, function(html) {
@@ -153,13 +178,21 @@
         return true;
     }
 
-    Client.addResponse(messageCommand);
-    function messageCommand(commandResponse) {
-        if(!/^(message)/im.test(commandResponse))
+    Client.addCommand(messageCommand);
+    function messageCommand(commandString) {
+        var match = /^message/i.exec(commandString);
+        if(!match)
+            return false;
+        Client.send(commandString);
+    }
+
+    Client.addResponse(messageResponse);
+    function messageResponse(responseString) {
+        if(!/^message/i.test(responseString))
             return false;
         //var username = match[2];
         //var content = fixPGPMessage(match[3]);
-        Templates.chat.message(commandResponse, function(html, username) {
+        Templates.chat.message(responseString, function(html, username) {
             Client.postResponseToClient('LOG message:' + username + ' ' + html);
         });
         return true;

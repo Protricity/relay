@@ -53,7 +53,11 @@ function SocketServer() {
 
     clientEvents.push(['message', function(message) {
         console.log("I " + message);
-        SocketServer.execute(message, this);
+        try {
+            SocketServer.execute(message, this);
+        } catch (e) {
+            console.error(e);
+        }
     }]);
 
     SocketServer.addEventListener = function(type, listener) {

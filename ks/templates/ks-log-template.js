@@ -53,10 +53,10 @@ Templates.ks.log.entry = function(logContent, direction, callback) {
     return callback(SOCKET_TEMPLATE_LOG_ENTRY
         .replace(/{\$DIR}/g, direction)
         .replace(/{\$content}/gi, logContent
-            .replace(/&/g, '&amp;')
-            .replace(/&amp;amp;/, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
+            //.replace(/&/g, '&amp;')
+            //.replace(/&amp;amp;/, '&amp;')
+            //.replace(/</g, '&lt;')
+            //.replace(/>/g, '&gt;')
         )
     );
 };

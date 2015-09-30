@@ -35,7 +35,7 @@ function generateUID(format) {
 function isClientActive(client) {
     if(client.readyState !== client.OPEN) {
         var clientInfo = getClientInfo(client);
-        console.info("Client is inactive: " + clientInfo.username);
+        //console.info("Client is inactive: " + clientInfo.username);
         for(var i=0; i<clientInfo.channels.length; i++) {
             var channel = clientInfo.channels[i];
             //leaveChannel("LEAVE " + channel, client);
@@ -118,7 +118,8 @@ function chatChannel(commandString, client) {
     var clientInfo = getClientInfo(client);
 
     if(typeof channelUsers[channelLowerCase] === 'undefined')
-        joinChannel("JOIN " + channel, client);
+        throw new Error("Channel does not exist: " + channel);
+        //joinChannel("JOIN " + channel, client);
 
     var clients = channelUsers[channelLowerCase];
     var pos = clients.indexOf(client);
@@ -129,6 +130,9 @@ function chatChannel(commandString, client) {
         var channelClient = clients[i];
         if(isClientActive(channelClient)) {
             send(channelClient, "CHAT " + channel + " " + clientInfo.username + " " + timestamp + " " + message);
+
+        } else {
+            //leaveChannel("LEAVE " + channel, channelClient);
         }
     }
     return true;
@@ -160,6 +164,9 @@ function joinChannel(commandString, client) {
         if(isClientActive(channelClient)) {
             send(channelClient, "JOIN " + channel + " " + clientInfo.username + " " + Date.now());
             userList.push(clientInfo.username);
+
+        } else {
+            //leaveChannel("LEAVE " + channel, channelClient);
         }
     }
 
@@ -198,7 +205,10 @@ function leaveChannel(commandString, client) {
     for(var i=0; i<clients.length; i++) {
         var channelClient = clients[i];
         if(isClientActive(channelClient)) {
-            send(channelClient, "LEAVE " + channelLowerCase + " " + clientInfo.username + " " + Date.now());
+            send(channelClient, "LEAVE " + channel + " " + clientInfo.username + " " + Date.now());
+
+        } else {
+            //leaveChannel("LEAVE " + channel, channelClient);
         }
     }
 
