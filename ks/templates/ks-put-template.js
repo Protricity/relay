@@ -4,9 +4,9 @@
 
 
 var Templates = Templates || {};
-Templates.rest = Templates.rest || {};
-Templates.rest.put = Templates.rest.put || {};
-Templates.rest.put.form = function(content, callback) {
+Templates.ks = Templates.ks || {};
+Templates.ks.put = Templates.ks.put || {};
+Templates.ks.put.form = function(content, callback) {
     var PUT_FORM_TEMPLATE = "\
         <article class='channel put:'>\n\
             <script src='ks/ks-listeners.js'></script>\n\
@@ -97,7 +97,7 @@ Templates.rest.put.form = function(content, callback) {
 };
 
 
-Templates.rest.put.preview = function(content, callback) {
+Templates.ks.put.preview = function(content, callback) {
 // TODO: variables for topic, url, image etc
 
     var PUT_FORM_PREVIEW_TEMPLATE = "\

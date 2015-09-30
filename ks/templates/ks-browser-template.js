@@ -3,8 +3,8 @@
  */
 
 var Templates = Templates || {};
-Templates.rest = Templates.rest || {};
-Templates.rest.browser = function(responseText, callback) {
+Templates.ks = Templates.ks || {};
+Templates.ks.browser = function(responseText, callback) {
     // Template
     var HTTP_BROWSER_TEMPLATE = "\
         <article class='channel ks-browser:{$browser_id} ks-browser ks-response-{$response_code}' data-browser-id='{$browser_id}'>\n\

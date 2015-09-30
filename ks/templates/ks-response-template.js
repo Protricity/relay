@@ -2,9 +2,9 @@
  * Created by ari on 6/19/2015.
  */
 var Templates = Templates || {};
-Templates.rest = Templates.rest || {};
-Templates.rest.response = Templates.rest.response || {};
-Templates.rest.response.body = function(body, url, code, text, headers, callback) {
+Templates.ks = Templates.ks || {};
+Templates.ks.response = Templates.ks.response || {};
+Templates.ks.response.body = function(body, url, code, text, headers, callback) {
     var RESPONSE_BODY_TEMPLATE = "\
 HTTP/1.1 {$response_code} {$response_text}\n\
 Content-type: text/html\n\

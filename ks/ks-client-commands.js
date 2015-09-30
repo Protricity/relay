@@ -45,11 +45,11 @@ if(!exports) var exports = {};
             // todo http format
             if(preview) {
                 importScripts('ks/templates/ks-put-template.js');
-                Templates.rest.put.preview(content, function(html) {
+                Templates.ks.put.preview(content, function(html) {
                     Client.postResponseToClient("LOG.REPLACE put-preview: " + html);
                 });
                 // Free up template resources
-                delete Templates.rest.put.preview;
+                delete Templates.ks.put.preview;
 
             } else {
                 Client.sendWithSocket(commandString);
@@ -57,11 +57,11 @@ if(!exports) var exports = {};
 
         } else {
             importScripts('ks/templates/ks-put-template.js');
-            Templates.rest.put.form(content, function(html) {
+            Templates.ks.put.form(content, function(html) {
                 Client.postResponseToClient("LOG.REPLACE put: " + html);
             });
             // Free up template resources
-            delete Templates.rest.put.form;
+            delete Templates.ks.put.form;
         }
 
         return true;
@@ -166,6 +166,7 @@ if(!exports) var exports = {};
 
         // Check local cache to see what can be displayed while waiting
         var requestURL = getRequestURL(requestString);
+        logKSRequest(requestURL, 'O');
         getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
             if(err)
                 throw new Error(err);
@@ -175,7 +176,7 @@ if(!exports) var exports = {};
                 var signedBody = protectHTMLContent(contentData.content_verified);
 
                 importScripts('ks/templates/ks-response-template.js');
-                Templates.rest.response.body(
+                Templates.ks.response.body(
                     signedBody,
                     requestURL,
                     200,
@@ -186,12 +187,12 @@ if(!exports) var exports = {};
                     }
                 );
                 // Free up template resources
-                delete Templates.rest.response.body;
+                delete Templates.ks.response.body;
 
             } else {
                 // If nothing found, show something, sheesh
                 importScripts('ks/templates/ks-response-template.js');
-                Templates.rest.response.body(
+                Templates.ks.response.body(
                     "<p>Request sent...</p>",
                     requestURL,
                     202,
@@ -202,7 +203,7 @@ if(!exports) var exports = {};
                     }
                 );
                 // Free up template resources
-                delete Templates.rest.response.body;
+                delete Templates.ks.response.body;
             }
         });
     }
@@ -213,6 +214,7 @@ if(!exports) var exports = {};
             requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
 
         var requestURL = getRequestURL(requestString);
+        logKSRequest(requestURL, 'I');
         getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
             if(err)
                 throw new Error(err);
@@ -221,7 +223,7 @@ if(!exports) var exports = {};
                 // TODO: verify and decrypt content on the fly? Maybe don't verify things being sent out
 
                 importScripts('ks/templates/ks-response-template.js');
-                Templates.rest.response.body(
+                Templates.ks.response.body(
                     contentData.content,
                     requestURL,
                     200,
@@ -232,7 +234,7 @@ if(!exports) var exports = {};
                     }
                 );
                 // Free up template resources
-                delete Templates.rest.response.body;
+                delete Templates.ks.response.body;
 
             } else {
 
@@ -243,7 +245,7 @@ if(!exports) var exports = {};
                         "\nBrowser-ID: " + browserID;
 
                     importScripts('ks/templates/ks-response-template.js');
-                    Templates.rest.response.body(
+                    Templates.ks.response.body(
                         defaultResponseBody,
                         requestURL,
                         responseCode,
@@ -254,7 +256,7 @@ if(!exports) var exports = {};
                         }
                     );
                     // Free up template resources
-                    delete Templates.rest.response.body;
+                    delete Templates.ks.response.body;
                 });
 
             }
@@ -285,7 +287,7 @@ if(!exports) var exports = {};
                     "\nBrowser-ID: " + browserID;
 
                 importScripts('ks/templates/ks-response-template.js');
-                Templates.rest.response.body(
+                Templates.ks.response.body(
                     defaultResponseBody,
                     requestURL,
                     responseCode,
@@ -296,7 +298,7 @@ if(!exports) var exports = {};
                     }
                 );
                 // Free up template resources
-                delete Templates.rest.response;
+                delete Templates.ks.response;
             });
         }
 
@@ -351,12 +353,12 @@ if(!exports) var exports = {};
         if(!browserID)
             throw new Error("Invalid Browser ID");
 
-        importScripts('ks/templates/test-browser-template.js');
-        Templates.rest.browser(responseString, function(html) {
+        importScripts('ks/templates/ks-browser-template.js');
+        Templates.ks.browser(responseString, function(html) {
             Client.postResponseToClient("LOG.REPLACE ks-browser:" + browserID + ' ' + html);
         });
         // Free up template resources
-        delete Templates.rest.browser;
+        delete Templates.ks.browser;
     }
 
     function protectHTMLContent(htmlContent) {
@@ -366,6 +368,26 @@ if(!exports) var exports = {};
 
         return htmlContent;
     }
+
+    var logContainerActive = false;
+    var logKSRequest = function(requestURL, dir) {
+        var match = requestURL.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
+        var host = match[4];
+        if(!host)
+            throw new Error("Invalid Host: " + requestURL);
+
+        if(!logContainerActive) {
+            logContainerActive = true;
+            importScripts('ks/templates/ks-log-template.js');
+            Templates.ks.log.container(requestURL, function (html) {
+                Client.postResponseToClient("LOG.REPLACE ks-log:" + host + " " + html);
+            });
+        }
+
+        Templates.ks.log.entry(requestURL, dir, function(html) {
+            Client.postResponseToClient("LOG ks-log-content:" + host + " " + html);
+        });
+    };
 
     // Request/Response methods
 
