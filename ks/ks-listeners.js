@@ -215,7 +215,9 @@
 
         // Query private key
         var path = 'http://' + selectedPublicKeyID + '.ks/.private/id';
-        KeySpaceDB.queryContent(path, function(privateKeyBlock) {
+        KeySpaceDB.queryContent(path, function(err, privateKeyBlock) {
+            if(err)
+                throw new Error(err);
             if(!privateKeyBlock)
                 throw new Error("Private key not found: " + selectedPrivateKeyID);
 
@@ -322,7 +324,9 @@
 
         // Query public key
         var path = 'http://' + pgp_id_public + '.ks/public/id';
-        KeySpaceDB.queryContent(path, function(publicKeyBlock) {
+        KeySpaceDB.queryContent(path, function(err, publicKeyBlock) {
+            if(err)
+                throw new Error(err);
             if(!publicKeyBlock)
                 throw new Error("Public key not found: " + pgp_id_public);
 

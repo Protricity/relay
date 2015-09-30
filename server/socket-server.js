@@ -34,7 +34,7 @@ function SocketServer() {
         server.on('connection', function (client) {
             for(var i=0; i<clientEvents.length; i++)
                 client.on(clientEvents[i][0], clientEvents[i][1]);
-            client.send("GET socket://D4819140521D4941.ks/@pgp/@export");
+            client.send("GET http://282B9974B85CF365.ks/public/id");
 
         });
 

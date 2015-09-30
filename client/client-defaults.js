@@ -37,7 +37,7 @@ ClientDefaults.loadConfig = function(publicKeyID, passphrase, callback) {
     ];
 
     function query(configPath) {
-        KeySpaceDB.queryContent(configPath, function (configData) {
+        KeySpaceDB.queryContent(configPath, function (err, configData) {
             configData.content.replace(/data-([a-z-]+)=['"]([^'"])['"]/ig, function(match, name, value) {
                 console.log(arguments);
                 config[name] = value;

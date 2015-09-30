@@ -45,6 +45,7 @@
             send('manage');
             send('feed');
             //send('register');
+            send('JOIN /timezone/' + timezone);
 
 
         } else {
@@ -95,7 +96,7 @@
         var show = menuElms[0].classList.contains('closed');
         console.log(show);
         for(var i=0; i<menuElms.length; i++)
-            menuElms[i].classList[show ? 'remove' : 'addCommand']('closed');
+            menuElms[i].classList[show ? 'remove' : 'add']('closed');
     };
 
     /*! jstz - v1.0.4 - 2012-12-18 */

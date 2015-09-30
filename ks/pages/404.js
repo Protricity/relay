@@ -6,7 +6,7 @@ var get404IndexTemplate = function(commandString, callback) {
     var TEMPLATE_404 = "\
         <h2>404 Not Found</h2>\n\
         <p>Try these pages instead:</p>\n\
-        {rest::index {$url}}\n\
+        {ks::index {$url}}\n\
     ";
 
     var match = /^get\s*(\S*)(\s+HTTP\/1.1)?$/im.exec(commandString);

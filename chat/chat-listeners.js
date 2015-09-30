@@ -79,8 +79,9 @@
     }
 
     // For PGP Decryption in chat rooms
+    // TODO: remove dep
     includeScript('pgp/pgp-listeners.js');
-
-    // For Public/Private Key Database access
-    includeScript('pgp/pgp-db.js');
+    //
+    //// For Public/Private Key Database access
+    //includeScript('pgp/pgp-db.js');
 })();

@@ -50,7 +50,6 @@ Templates.pgp.manage.form = function(status_content, callback) {
 
 
 Templates.pgp.manage.entry = function(contentEntry, callback) {
-console.log(contentEntry);
     var MANAGE_TEMPLATE_ENTRY = "\
         <label>\n\
             <fieldset class='pgp-id-box pgp-id-box:{$id_public}{$class}'>\n\

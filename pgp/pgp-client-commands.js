@@ -134,7 +134,7 @@
      * @param commandString UNREGISTER [PGP Private Key Fingerprint]
      */
     Client.addCommand(unregisterCommand);
-    function unregisterCommand(commandString) {
+    function unregisterCommand(commandString, e) {
         var match = /^unregister\s+(.*)$/im.exec(commandString);
         if(!match)
             return false;
@@ -142,12 +142,21 @@
         var publicKeyIDs = match[1].trim().split(/\W+/g);
         for(var i=0; i<publicKeyIDs.length; i++) {
             (function (publicKeyID) {
-                var privateKeyID = publicKeyID.substr(publicKeyID.length - 16);
+                publicKeyID = publicKeyID.substr(publicKeyID.length - 16);
 
                 // Query private key(s)
-                var path = 'http://' + publicKeyID + '.ks/.private/id';
-                getKeySpaceDB().queryContent(path, function(privateKeyBlock) {
-                    console.log("TODO: Delete: ", privateKeyBlock);
+                var privateKeyPath = 'http://' + publicKeyID + '.ks/.private/id';
+                getKeySpaceDB().queryContent(privateKeyPath, function(err, privateKeyData) {
+                    if(err)
+                        throw new Error(err);
+                    if(privateKeyData) {
+                        getKeySpaceDB().deleteContent(privateKeyData.pgp_id_public, privateKeyData.timestamp, function(err) {
+                            if(err)
+                                throw new Error(err);
+                            console.info("PGP Identity deleted successfully: " + privateKeyData.user_id);
+                            manageCommand("MANAGE", e, "<span class='success'>PGP Identity deleted successfully</span>: " + privateKeyData.user_id + "<br/>Public Key ID: " + publicKeyID);
+                        });
+                    }
                 });
             })(publicKeyIDs[i]);
         }
@@ -177,7 +186,6 @@
         }
         return self.KeySpaceDB;
     }
-
 })();
 
 

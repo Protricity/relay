@@ -29,10 +29,7 @@
             Client.postResponseToClient("LOG.REPLACE feed: " + html);
         });
 
-        if(typeof KeySpaceDB !== 'function')
-            importScripts('ks/ks-db.js');
-
-        KeySpaceDB.queryContentFeed(
+        getKeySpaceDB().queryContentFeed(
             [feedStartTime, feedEndTime],
             function(err, data) {
                 console.info("CONTENT: ", err, data);
@@ -88,5 +85,14 @@
 //            });
 //}
 
+    function getKeySpaceDB() {
+        if(typeof self.KeySpaceDB === 'undefined') {
+            if(typeof importScripts === "function")
+                importScripts('ks/ks-db.js');
+            else
+                self.KeySpaceDB = require('./ks-db.js').KeySpaceDB;
+        }
+        return self.KeySpaceDB;
+    }
 
 })();

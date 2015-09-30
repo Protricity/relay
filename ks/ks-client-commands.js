@@ -93,7 +93,7 @@ if(!exports) var exports = {};
 
     Client.addResponse(getResponse);
     function getResponse(requestString) {
-        var match = /^get (?:socket:\/\/)?([a-f0-9]{8,})(?:\.ks)(\/@pgp.*)$/i.exec(requestString);
+        var match = /^get/i.exec(requestString); // (?:\w+:\/\/)?([a-f0-9]{8,})(?:\.ks)(\/@pgp.*)$
         if(!match)
             return false;
 
@@ -146,12 +146,7 @@ if(!exports) var exports = {};
             throw new Error("Unknown Request-Url for response: Header is missing");
 
         responseContent.replace(/<a[^>]+href=['"]([^'">]+)['"][^>]*>([^<]+)<\/a>/gi, function(match, url, text, offset, theWholeThing) {
-            if(typeof RestDB !== 'function')
-                importScripts('ks/ks-db.js');
-
-            if(typeof KeySpaceDB === 'undefined')
-                var KeySpaceDB = require('./ks-db.js').KeySpaceDB;
-            KeySpaceDB.addURLToDB(url, referrerURL);
+            getKeySpaceDB().addURLToDB(url, referrerURL);
         });
     }
 
@@ -163,9 +158,6 @@ if(!exports) var exports = {};
         if(!browserID)
             requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
 
-        if(typeof KeySpaceDB === 'undefined')
-            var KeySpaceDB = require('./ks-db.js').KeySpaceDB;
-
         // Send request regardless of local cache
         var requestID = 'R' + requestIDCount++;
         requestString = addContentHeader(requestString, 'Request-ID', requestID);
@@ -174,7 +166,10 @@ if(!exports) var exports = {};
 
         // Check local cache to see what can be displayed while waiting
         var requestURL = getRequestURL(requestString);
-        KeySpaceDB.queryContent(requestURL, function (contentData) {
+        getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
+            if(err)
+                throw new Error(err);
+
             if(contentData) {
                 // TODO: verify and decrypt content on the fly?
                 var signedBody = protectHTMLContent(contentData.content_verified);
@@ -217,18 +212,17 @@ if(!exports) var exports = {};
         if(!browserID)
             requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
 
-        if(typeof KeySpaceDB === 'undefined')
-            var KeySpaceDB = require('./ks-db.js').KeySpaceDB;
-
         var requestURL = getRequestURL(requestString);
-        KeySpaceDB.queryContent(requestURL, function (contentData) {
+        getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
+            if(err)
+                throw new Error(err);
+
             if(contentData) {
                 // TODO: verify and decrypt content on the fly? Maybe don't verify things being sent out
-                var signedBody = protectHTMLContent(contentData.content_verified);
 
                 importScripts('ks/templates/ks-response-template.js');
                 Templates.rest.response.body(
-                    signedBody,
+                    contentData.content,
                     requestURL,
                     200,
                     "OK",
@@ -242,15 +236,19 @@ if(!exports) var exports = {};
 
             } else {
 
-                importScripts('rest/pages/404.js');
+                importScripts('ks/pages/404.js');
                 get404IndexTemplate(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
+                    responseHeaders =
+                        (responseHeaders || '') +
+                        "\nBrowser-ID: " + browserID;
+
                     importScripts('ks/templates/ks-response-template.js');
                     Templates.rest.response.body(
                         defaultResponseBody,
                         requestURL,
                         responseCode,
                         responseText,
-                        (responseHeaders + "\nBrowser-ID: " + browserID).trim(),
+                        responseHeaders,
                         function(body, code, text, responseHeaders) {
                             callback('HTTP/1.1 ' + code + ' ' + text + responseHeaders + "\n\n" + body, code, text);
                         }
@@ -282,19 +280,23 @@ if(!exports) var exports = {};
 
             // Non-200 so grab local version or default content
             getDefaultContentResponse(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
+                responseHeaders =
+                    (responseHeaders || '') +
+                    "\nBrowser-ID: " + browserID;
+
                 importScripts('ks/templates/ks-response-template.js');
                 Templates.rest.response.body(
                     defaultResponseBody,
                     requestURL,
                     responseCode,
                     responseText,
-                    (responseHeaders + "\nBrowser-ID: " + browserID).trim(),
-                    function(body, code, text, responseHeaders) {
-                        callback('HTTP/1.1 ' + code + ' ' + text + responseHeaders + "\n\n" + body, code, text);
+                    responseHeaders,
+                    function(body) {
+                        callback('HTTP/1.1 ' + responseCode + ' ' + responseText + responseHeaders + "\n\n" + body, code, text);
                     }
                 );
                 // Free up template resources
-                delete Templates.rest.response.body;
+                delete Templates.rest.response;
             });
         }
 
@@ -302,8 +304,8 @@ if(!exports) var exports = {};
 
     // TODO default content public config
     var defaultContentResponses = [
-        [/^\/?home\/?$/i, function(commandString, callback) { importScripts('rest/pages/home/user-index.js'); getUserIndexTemplate(commandString, callback); }],
-        [/^\/?$/, function(commandString, callback) { importScripts('rest/pages/index.js'); getRootIndexTemplate(commandString, callback); }]
+        [/^\/?home\/?$/i, function(commandString, callback) { importScripts('ks/pages/home/user-index.js'); getUserIndexTemplate(commandString, callback); }],
+        [/^\/?$/, function(commandString, callback) { importScripts('ks/pages/index.js'); getRootIndexTemplate(commandString, callback); }]
     ];
     var getDefaultContentResponse = function(requestString, callback) {
         var requestURL = getRequestURL(requestString);
@@ -332,7 +334,7 @@ if(!exports) var exports = {};
             }
         }
 
-        importScripts('rest/pages/404.js');
+        importScripts('ks/pages/404.js');
         get404IndexTemplate(requestString, fixedCallback);
     };
 
@@ -400,6 +402,16 @@ if(!exports) var exports = {};
         var lines = contentString.split(/\n/);
         lines.splice(lines.length >= 1 ? 1 : 0, 0, headerName + ": " + headerValue);
         return lines.join("\n");
+    }
+
+    function getKeySpaceDB() {
+        if(typeof self.KeySpaceDB === 'undefined') {
+            if(typeof importScripts === "function")
+                importScripts('ks/ks-db.js');
+            else
+                self.KeySpaceDB = require('./ks-db.js').KeySpaceDB;
+        }
+        return self.KeySpaceDB;
     }
 
     exports.test = function() {

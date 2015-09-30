@@ -54,7 +54,7 @@ function Client() {
         var exports = require('./client-command-proxies.js')
     else
         importScripts('client/client-command-proxies.js');
-    self.exports.initClientCommands(Client);
+    (exports || self.exports).initClientCommands(Client);
 
 
     Client.execute = function(commandString, e) {

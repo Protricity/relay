@@ -64,7 +64,10 @@ Templates.rest.put.form = function(content, callback) {
 
     // Query private key(s)
     var path = '/.private/id';
-    KeySpaceDB.queryContent(path, function(privateKeyBlock) {
+    KeySpaceDB.queryContent(path, function(err, privateKeyBlock) {
+        if(err)
+            throw new Error(err);
+
         if(privateKeyBlock) {
             var privateKey = openpgp.key.readArmored(privateKeyBlock).keys[0];
             var privateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();

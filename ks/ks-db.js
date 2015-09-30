@@ -141,8 +141,46 @@ function KeySpaceDB(dbReadyCallback) {
         KeySpaceDB.addURLToDB(url, null);
     };
 
+    KeySpaceDB.deleteContent = function(publicKeyID, timestamp, callback) {
+        KeySpaceDB(function(db) {
+            if (typeof IDBDatabase !== 'undefined' && db instanceof IDBDatabase) {
+                var dbStore = db
+                    .transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readwrite")
+                    .objectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
+
+                var deleteRequest = dbStore.delete([publicKeyID, timestamp]);
+
+                deleteRequest.onsuccess = function(e) {
+                    callback(null, deleteRequest);
+                };
+                deleteRequest.onerror = function(e) {
+                    callback(e.target, deleteRequest);
+                };
+            }
+        });
+    };
+
+    KeySpaceDB.getContent = function(publicKeyID, timestamp, callback) {
+        KeySpaceDB(function(db) {
+            if (typeof IDBDatabase !== 'undefined' && db instanceof IDBDatabase) {
+                var dbStore = db
+                    .transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readwrite")
+                    .objectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
+
+                var getRequest = dbStore.get([publicKeyID, timestamp]);
+
+                getRequest.onsuccess = function(e) {
+                    callback(null, e.target.result, getRequest);
+                };
+                getRequest.onerror = function(e) {
+                    callback(e.target, null, getRequest);
+                };
+            }
+        });
+    };
+
     KeySpaceDB.queryContent = function(contentURI, callback) {
-        console.info("KeySpaceDB.queryContent(" + contentURI + ", ...)");
+         //console.info("KeySpaceDB.queryContent(" + contentURI + ", ...)");
         var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(contentURI);
         if(!match)
             throw new Error("Invalid URI: " + contentURI);
@@ -177,19 +215,22 @@ function KeySpaceDB(dbReadyCallback) {
                     queryRange = IDBKeyRange.bound([publicKeyID, contentPath, 0], [publicKeyID, contentPath, 2443566558308], true, true);
                 }
                 var cursor = pathIndex.openCursor(queryRange, 'prev');
+                var recordID = 0;
                 cursor.onsuccess = function (e) {
-                    console.log(e, e.target.result, queryRange, pathIndex);
+                    //console.log(e, e.target.result, queryRange, pathIndex);
                     var cursor = e.target.result;
                     if (cursor) {
-                        if(callback(null, cursor.value) !== true)
+                        if(callback(null, cursor.value, cursor) !== true)
                             cursor.continue();
 
                     } else {
-                        callback(null, null);
+                        if(recordID === 0)
+                            callback(null, null, cursor);
                     }
+                    recordID++;
                 };
                 cursor.onerror = function(err) {
-                    callback(err.toString());
+                    callback(err.toString(), null, cursor);
                 }
 
             } else if (typeof mongodb !== 'undefined' && db instanceof mongodb.Db) {
@@ -197,7 +238,9 @@ function KeySpaceDB(dbReadyCallback) {
                 var queryValueMD = {path: contentPath};
                 if(publicKeyID)
                     queryValueMD['pgp_id_public'] = publicKeyID;
-                dbCollection.find(queryValueMD, callback);
+                var mdCursor = dbCollection.find(queryValueMD, function(err, data) {
+                    callback(err, data, mdCursor);
+                });
 
             } else {
                 throw new Error("Invalid Database Driver");
@@ -344,9 +387,8 @@ function KeySpaceDB(dbReadyCallback) {
             userId: 'Test <test@example.org>'
         };
 
-        var openpgp = self.openpgp;
-        if(typeof self.openpgp === 'undefined')
-            openpgp = require('openpgp');
+        if(typeof openpgp === 'undefined')
+            var openpgp = require('openpgp');
 
         //console.log("Generating test keypair...");
         openpgp.generateKeyPair(options)
@@ -358,8 +400,10 @@ function KeySpaceDB(dbReadyCallback) {
                 openpgp.encryptMessage(keypair.key, postContent)
                 .then(function(pgpEncryptedContent) {
                     setTimeout(function() {
-                        KeySpaceDB.verifyAndAddContentToDB(pgpEncryptedContent, postContent, function() {
+                        KeySpaceDB.addVerifiedContentToDB(pgpEncryptedContent, newPublicKeyID, '/test/path', Date.now(), function() {
                             KeySpaceDB.queryContent('http://' + newPublicKeyID + '.ks/test/path', function(err, content) {
+                                if(err)
+                                    throw new Error(err);
                                 //console.log("Content: ", err, content);
                             })
                         });
