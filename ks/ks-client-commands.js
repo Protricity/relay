@@ -15,6 +15,46 @@ if(!exports) var exports = {};
     Client.addResponse(httpResponse);
     Client.addResponse(ksChallengeResponse);
 
+    var challengeValidations = [];
+    function ksChallengeResponse(commandString) {
+        var match = /^ks-challenge\s+([\s\S]+)$/im.exec(commandString);
+        if(!match)
+            return false;
+
+        var encryptedChallengeString = match[1];
+
+        var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
+        var pgpEncryptedMessage = openpgp.message.readArmored(encryptedChallengeString);
+        var encIDs = pgpEncryptedMessage.getEncryptionKeyIds();
+        var pgp_id_public = encIDs[0].toHex().toUpperCase();
+        console.log(pgpEncryptedMessage);
+
+        var requestURL = "http://" + pgp_id_public + ".ks/.private/id";
+        getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
+            if (err)
+                throw new Error(err);
+
+            if (!contentData)
+                throw new Error("Could not find Private Key: " + requestURL);
+
+            var privateKey = openpgp.key.readArmored(contentData.content).keys[0];
+
+            console.log(privateKey);
+            openpgp.decryptMessage(privateKey, pgpEncryptedMessage).then(function(decryptedChallenge) {
+                challengeValidations.push([pgp_id_public, decryptedChallenge]);
+                Client.sendWithSocket("KS-VALIDATE " + decryptedChallenge);
+                // TODO: hosting settings
+
+            }).catch(function(error) {
+                console.error(error);
+            });
+        });
+
+
+
+        return true;
+    }
+
     /**
      *
      * @param commandString PUT [path] [content]
@@ -414,6 +454,15 @@ if(!exports) var exports = {};
         }
         return self.KeySpaceDB;
     }
+
+    function require(path) {
+        self.module = {
+            exports: {}
+        };
+        importScripts(path);
+        return self.module.exports;
+    }
+
     //
     //function parseURL(url) {
     //    var matches = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(url);

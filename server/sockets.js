@@ -52,8 +52,8 @@ function Sockets(socketURL) {
             setTimeout(function () {
                 newSocket.send("NICK relay" + Date.now().toString().substr(6));
             }, 500);
-            newSocket.send("KS-AUTH 282B9974B85CF365");
-            newSocket.send("KS-AUTH 282B9974B85CF365");
+            newSocket.send("KS-AUTH AEA00E8FAA7CF1D1");
+            newSocket.send("KS-AUTH AEA00E8FAA7CF1D1");
         }
 
         function onClose(e) {

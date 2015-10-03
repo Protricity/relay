@@ -104,7 +104,6 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
             if(typeof openpgp === 'undefined')
                 var openpgp = require('openpgp');
             var publicKey = openpgp.key.readArmored(contentData.content).keys[0];
-            var publicKeyCreateDate = publicKey.subKeys[0].subKey.created;
             var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
             //var privateKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
             if(publicKeyID !== pgp_id_public)
@@ -120,6 +119,7 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
                 if(typeof openpgp === 'undefined')
                     var openpgp = require('openpgp');
                 var publicKey = openpgp.key.readArmored(responseBody).keys[0];
+                var publicKeyCreateDate = publicKey.subKeys[0].subKey.created;
                 //var privateKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
                 var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
                 if(publicKeyID !== pgp_id_public)
