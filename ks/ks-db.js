@@ -99,7 +99,7 @@ function KeySpaceDB(dbReadyCallback) {
 
     };
 
-    KeySpaceDB.addVerifiedContentToDB = function(encryptedContent, pgp_id_public, path, timestamp, customFields, callback) {
+    KeySpaceDB.addVerifiedContentToDB = function(verifiedContent, pgp_id_public, path, timestamp, customFields, callback) {
         if(!path)
             throw new Error("Invalid Path");
         if(!timestamp)
@@ -115,7 +115,7 @@ function KeySpaceDB(dbReadyCallback) {
             'pgp_id_public': pgp_id_public,
             'path': path,
             'timestamp': timestamp,
-            'content': encryptedContent
+            'content': verifiedContent
         };
         for(var customField in customFields)
             if(customFields.hasOwnProperty(customField))
