@@ -6,7 +6,8 @@ if(!exports) var exports = {};
 exports.initSocketServerCommands = function(SocketServer) {
     SocketServer.addCommand(getCommandSocket);
     SocketServer.addCommand(putCommandSocket);
-    SocketServer.addCommand(httpCommandSocket);
+    SocketServer.addCommand(handleHTTPSocketResponse);
+    SocketServer.addEventListener('connection', onSocketConnection);
 };
 
 exports.initHTTPServerCommands = function(HTTPServer) {
@@ -15,12 +16,30 @@ exports.initHTTPServerCommands = function(HTTPServer) {
 
 };
 
+function onSocketConnection(client) {
+
+    sendClientRequest("GET http://282B9974B85CF365.ks/public/id", client, function(responseBody, responseCode, responseMessage, responseHeaders) {
+        console.log("TODO: Handle PubKey Response - " + responseCode, responseMessage, responseHeaders);
+//responseBody, 
+    });
+}
+
+function sendClientRequest(commandString, client, callback) {
+    var requestID = getContentHeader(commandString, 'Request-ID') || null;
+    if(!requestID) {
+        requestID = 'S' + Date.now();
+        commandString = addContentHeader(commandString, 'Request-ID', requestID);
+    }
+    pendingGETRequests[requestID] = [commandString, client, callback]; // TODO: reuse same callback? should be fine.
+    client.send(commandString);
+}
+
 function getCommandSocket(commandString, client) {
     var match = /^get\s+/i.exec(commandString);
     if(!match)
         return false;
 
-    executeGETRequest(commandString, function(responseBody, statusCode, statusMessage, headers) {
+    executeServerGetRequest(commandString, function(responseBody, statusCode, statusMessage, headers) {
         client.send('HTTP/1.1 ' + (statusCode || 200) + (statusMessage || 'OK') +
             (headers ? "\n" + headers : ''),
             "\n\n" + responseBody
@@ -34,7 +53,7 @@ function getCommandHTTP(request, response) {
     if(!match)
         return false;
 
-    executeGETRequest(commandString, function(responseBody, statusCode, statusMessage, headers) {
+    executeServerGetRequest(commandString, function(responseBody, statusCode, statusMessage, headers) {
         response.writeHead(statusCode || 200, statusMessage || 'OK', headers);
         response.end(responseBody);
     });
@@ -62,31 +81,41 @@ function putCommandHTTP(request, response) {
     throw new Error(content);
 }
 
-
-function httpCommandSocket(commandString, client) {
-    return httpCommand(commandString);
-}
-
-function httpCommandHTTP(commandString, client) {
-    return httpCommand(commandString);
-}
-
 // TODO: default content on response http only?
-function httpCommand(commandString) {
-    if(commandString.substr(0,4).toLowerCase() !== 'http')
+function handleHTTPSocketResponse(responseString, client) {
+    if(responseString.substr(0,4).toLowerCase() !== 'http')
         return false;
 
-    var referrerURL = getContentHeader(commandString, 'Request-Url');
+    var referrerURL = getContentHeader(responseString, 'Request-Url');
     if(!referrerURL)
         throw new Error("Unknown Request-Url for response: Header is missing");
 
-    addURLsToDB(commandString, referrerURL);
+    addURLsToDB(responseString, referrerURL);
 
-    var responseCode = getResponseStatus(commandString)[0];
+    var status = getResponseStatus(responseString);
+    var responseBody = getResponseBody(responseString);
+    var responseHeaders = getResponseHeaders(responseString);
+    var responseCode = status[0];
+    var responseMessage = status[1];
     if(responseCode === 200) {
-        // TODO: store/cache
+
+        var requestID = getContentHeader(responseString, 'Request-ID');
+        if(typeof pendingGETRequests[requestID] === 'undefined')
+            throw new Error("Request ID not found: " + responseString);
+
+        var pendingGetRequest = pendingGETRequests[requestID];
+        delete pendingGETRequests[requestID];
+
+        var pendingCommand = pendingGetRequest[0];
+        var pendingClient = pendingGetRequest[1];
+        var pendingCallback = pendingGetRequest[2];
+        if(pendingClient !== client)
+            throw new Error("Invalid request ID: Client mismatch");
+        if(pendingCallback)
+            pendingCallback(responseBody, responseCode, responseMessage, responseHeaders);
 
     } else {
+        throw new Error("Handle 404: " + responseString);
         // Handle 404 request
     }
     return true;
@@ -101,15 +130,15 @@ function addURLsToDB(responseContent, referrerURL) {
 var httpBrowserID = 1;
 var requestIDCount = 0;
 var pendingGETRequests = {};
-function executeGETRequest(requestString, callback) {
+function executeServerGetRequest(requestString, callback) {
     var browserID = getContentHeader(requestString, 'Browser-ID');
     if(!browserID)
         requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
 
-    // TODO: Query all client hosts
-    //var requestID = 'R' + requestIDCount++;
+    //// TODO: Query all client hosts
+    //var requestID = 'S' + requestIDCount++;
     //requestString = addContentHeader(requestString, 'Request-ID', requestID);
-    //pendingGETRequests[requestID] = callback; // TODO: reuse same callback? should be fine.
+    //pendingGETRequests[requestID] = [callback, client]; // TODO: reuse same callback? should be fine.
     //Client.sendWithSocket(requestString);
 
     // Check local cache to see what can be displayed while waiting
@@ -139,6 +168,18 @@ function executeGETRequest(requestString, callback) {
 
 // Request/Response methods
 
+function getResponseBody(responseString) {
+    getResponseStatus(responseString);
+    return responseString.split("\n\n", 2)[1];
+}
+
+function getResponseHeaders(responseString) {
+    getResponseStatus(responseString);
+    var lines = responseString.split("\n\n", 2)[0].split(/\n/g);
+    lines.shift();
+    return lines.join("\n");
+}
+
 function getResponseStatus(responseString) {
     var match = /^http\/1.1 (\d+) ?(.*)$/im.exec(responseString);
     if(!match)
@@ -154,6 +195,7 @@ function getRequestURL(requestString) {
     return match[1];
 }
 
+// TODO: ignore body
 function getContentHeader(contentString, headerName) {
     var match = new RegExp('^' + headerName + ': ([^$]+)$', 'mi').exec(contentString.split(/\n\n/)[0]);
     if(!match)

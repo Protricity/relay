@@ -11,6 +11,25 @@
     var PATH_PREFIX_MESSAGE = 'message:';
 
     var activeChannels = [];
+
+
+    Client.addCommand(joinCommand);
+    Client.addResponse(joinResponse);
+
+    Client.addCommand(chatCommand);
+    Client.addResponse(chatResponse);
+
+    Client.addCommand(leaveCommand);
+    Client.addResponse(leaveResponse);
+
+    Client.addCommand(nickCommand);
+    Client.addResponse(nickResponse);
+
+    Client.addCommand(messageCommand);
+    Client.addResponse(messageResponse);
+
+    Client.addResponse(userlistResponse);
+
     //
     //Client.addCommand(channelCommand);
     //function channelCommand(commandString, e) {
@@ -30,7 +49,6 @@
 //    });
 
 
-    Client.addCommand(chatCommand);
     function chatCommand(commandString) {
         var match = /^chat\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandString);
         if(!match)
@@ -43,7 +61,6 @@
         return true;
     }
 
-    Client.addResponse(chatResponse);
     function chatResponse(responseString) {
         var match = /^(chat)\s+(\S+)/im.exec(responseString);
         if(!match)
@@ -58,15 +75,14 @@
     }
 
     var channelUsers = {};
-    Client.addCommand(joinCommand);
     function joinCommand(commandString) {
         var match = /^join/i.exec(commandString);
         if(!match)
             return false;
         Client.sendWithSocket(commandString);
+        return true;
     }
 
-    Client.addResponse(joinResponse);
     function joinResponse(responseString) {
         var match = /^(join)\s+(\S+)\s+(\S+)\s+/im.exec(responseString);
         if(!match)
@@ -92,7 +108,6 @@
         return true;
     }
 
-    Client.addResponse(userlistResponse);
     function userlistResponse(commandResponse) {
         var match = /^(userlist)\s+(\S+)\s+([\s\S]+)$/im.exec(commandResponse);
         if(!match)
@@ -108,7 +123,6 @@
         return true;
     }
 
-    Client.addCommand(leaveCommand);
     function leaveCommand(commandString) {
         var match = /^leave/i.exec(commandString);
         if(!match)
@@ -116,7 +130,6 @@
         Client.send(commandString);
     }
 
-    Client.addResponse(leaveResponse);
     function leaveResponse(commandResponse) {
         var match = /^(leave)\s+(\S+)\s+(\S+)\s+/im.exec(commandResponse);
         if(!match)
@@ -142,7 +155,6 @@
         return true;
     }
 
-    Client.addCommand(nickCommand);
     function nickCommand(commandString) {
         var match = /^nick/i.exec(commandString);
         if(!match)
@@ -151,7 +163,6 @@
         Client.sendWithSocket(commandString);
     }
 
-    Client.addResponse(nickResponse);
     function nickResponse(responseString) {
         var match = /^(nick)\s+(\S+)\s+(\S+)/im.exec(responseString);
         if(!match)
@@ -178,7 +189,7 @@
         return true;
     }
 
-    Client.addCommand(messageCommand);
+
     function messageCommand(commandString) {
         var match = /^message/i.exec(commandString);
         if(!match)
@@ -186,7 +197,6 @@
         Client.send(commandString);
     }
 
-    Client.addResponse(messageResponse);
     function messageResponse(responseString) {
         if(!/^message/i.test(responseString))
             return false;

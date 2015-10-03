@@ -146,13 +146,16 @@ if(!exports) var exports = {};
             requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
 
         // Send request regardless of local cache
-        var requestID = 'R' + requestIDCount++;
+        var requestID = 'C' + requestIDCount++;
         requestString = addContentHeader(requestString, 'Request-ID', requestID);
         pendingGETRequests[requestID] = callback; // TODO: reuse same callback? should be fine.
         Client.sendWithSocket(requestString);
 
         // Check local cache to see what can be displayed while waiting
         var requestURL = getRequestURL(requestString);
+        var passedResponseHeaders = "\nBrowser-ID: " + browserID;
+        passedResponseHeaders += "\nRequest-ID: " + requestID;
+
         logKSRequest(requestURL, 'O');
         getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
             if(err)
@@ -168,7 +171,7 @@ if(!exports) var exports = {};
                     requestURL,
                     200,
                     "OK",
-                    "Browser-ID: " + browserID,
+                    passedResponseHeaders,
                     callback
                 );
                 // Free up template resources
@@ -182,7 +185,7 @@ if(!exports) var exports = {};
                     requestURL,
                     202,
                     "Request Sent",
-                    "Browser-ID: " + browserID,
+                    passedResponseHeaders,
                     callback
                 );
                 // Free up template resources
@@ -197,6 +200,10 @@ if(!exports) var exports = {};
             requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
 
         var requestURL = getRequestURL(requestString);
+        var requestID = getContentHeader(requestString, 'Request-ID');
+        var passedResponseHeaders = "\nBrowser-ID: " + browserID;
+        if(requestID)
+            passedResponseHeaders += "\nRequest-ID: " + requestID;
         logKSRequest(requestURL, 'I');
         getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
             if(err)
@@ -211,7 +218,7 @@ if(!exports) var exports = {};
                     requestURL,
                     200,
                     "OK",
-                    "Browser-ID: " + browserID,
+                    passedResponseHeaders,
                     callback
                 );
                 // Free up template resources
@@ -221,7 +228,7 @@ if(!exports) var exports = {};
 
                 importScripts('ks/pages/404.js');
                 get404IndexTemplate(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
-                    responseHeaders += "\nBrowser-ID: " + browserID;
+                    responseHeaders += passedResponseHeaders;
 
                     importScripts('ks/templates/ks-response-template.js');
                     Templates.ks.response.body(

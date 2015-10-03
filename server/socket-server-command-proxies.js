@@ -7,6 +7,9 @@ exports.initSocketServerCommandProxies = function(SocketServer) {
 
     // HTTP Commands
     SocketServer.addCommand(httpCommand);
+    SocketServer.addEventListener('connection', function(client) {
+        httpCommand("GET", client);
+    });
     function httpCommand(commandString, client) {
         if(!/^(get|post|put|delete|patch|head|http|host-auth|host-auth-validate)/i.test(commandString))
             return false;
