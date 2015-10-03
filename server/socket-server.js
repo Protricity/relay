@@ -52,11 +52,11 @@ function SocketServer() {
     //var requestHandlers = [];
 
     clientEvents.push(['message', function(message) {
-        console.log("I " + message);
+        //console.log("I " + message);
         try {
             SocketServer.execute(message, this);
         } catch (e) {
-            console.error(e);
+            console.error(e.stack);
         }
     }]);
 
@@ -76,12 +76,16 @@ function SocketServer() {
     };
 
     SocketServer.addCommand = function (commandCallback) {
+        if(typeof commandCallback !== 'function')
+            throw new Error("Invalid Function: " + typeof commandCallback);
         if(commandHandlers.indexOf(commandCallback) >= 0)
             throw new Error("Socket Server Command Callback already added: " + commandCallback);
         commandHandlers.push(commandCallback);
     };
 
     SocketServer.removeCommand = function (commandCallback) {
+        if(typeof commandCallback !== 'function')
+            throw new Error("Invalid Function: " + typeof commandCallback);
         var pos = commandHandlers.indexOf(commandCallback);
         if(pos === -1)
             throw new Error("Socket Server Command Callback not added: " + commandCallback);
@@ -93,7 +97,7 @@ function SocketServer() {
 
     SocketServer.execute = function(commandString, client) {
         var oldLength = commandHandlers.length;
-        for(var i=0; i<oldLength; i++)
+        for(var i=0; i<commandHandlers.length; i++)
             if(commandHandlers[i](commandString, client) !== false)
                 return true;
 

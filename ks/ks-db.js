@@ -294,14 +294,17 @@ function KeySpaceDB(dbReadyCallback) {
                 }
             };
 
+        var insertData = {
+            'url': url.toLowerCase(),
+            'url_original_case': url,
+            'added': Date.now()
+        };
+        if(referrerURL)
+            insertData['url_referrer'] = referrerURL;
+
         KeySpaceDB.insert(
             KeySpaceDB.DB_TABLE_HTTP_URL,
-            {
-                'url': url.toLowerCase(),
-                'url_original_case': url,
-                'referrer ': referrerURL,
-                'added': Date.now()
-            },
+            insertData,
             callback
         );
     };

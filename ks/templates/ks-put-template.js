@@ -96,6 +96,15 @@ Templates.ks.put.form = function(content, callback) {
     });
 };
 
+//<label class='label-recipients show-section-on-value'>Choose which subscribers may view this post:<br/>\n\
+//    <select name='recipients'>\n\
+//        <option value='*'>Everybody</option>\n\
+//        <option disabled='disabled'>My friends</option>\n\
+//        <option disabled='disabled'>Friends of Friends</option>\n\
+//        <option disabled='disabled'>Specific Recipients</option>\n\
+//    </select>\n\
+//<br/><br/></label>\n\
+
 
 Templates.ks.put.preview = function(content, callback) {
 // TODO: variables for topic, url, image etc

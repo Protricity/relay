@@ -34,7 +34,8 @@
 
         var commandString = "GET " + anchorElement.href;
         if(browserID)
-            commandString += "\nBrowser-ID: " + browserID;
+            commandString = addContentHeader(commandString, 'Browser-ID', browserID);
+            //commandString += "\nBrowser-ID: " + browserID;
         // TODO: grab latest timestamp from path via header
 
         var commandEvent = new CustomEvent('command', {
@@ -300,8 +301,8 @@
         if(!browserID)
             throw new Error("Browser ID not found");
 
-        var commandString = "GET " + urlElm.value +
-            "\nBrowser-ID: " + browserID;
+        var commandString = "GET " + urlElm.value;
+        commandString = addContentHeader(commandString, 'Browser-ID', browserID);
 
         var commandEvent = new CustomEvent('command', {
             detail: commandString,
@@ -413,6 +414,22 @@
             channelPath = '/home/' + publicKeyID + channelPath;
         }
         return channelPath;
+    }
+
+
+    function getContentHeader(contentString, headerName) {
+        var match = new RegExp('^' + headerName + ': ([^$]+)$', 'mi').exec(contentString.split(/\n\n/)[0]);
+        if(!match)
+            return null;
+        return match[1];
+    }
+
+    function addContentHeader(contentString, headerName, headerValue) {
+        if(getContentHeader(contentString, headerName))
+            throw new Error("Content already has Header: " + headerName);
+        var lines = contentString.split(/\n/);
+        lines.splice(lines.length >= 1 ? 1 : 0, 0, headerName + ": " + headerValue);
+        return lines.join("\n");
     }
 
     // Includes

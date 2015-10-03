@@ -3,38 +3,41 @@
  */
 if(!exports) var exports = {};
 exports.initSocketServerCommands = function(SocketServer) {
-    SocketServer.addCommand(getStaticSocketCommand);
-    function getStaticSocketCommand(commandString, client) {
-        var match = /^get\s+([\S\s]+)$/im.exec(commandString);
-        if(!match)
-            return false;
-
-        console.log(commandString);
-        var requestURL = match[1];
-        handleFileRequest(requestURL, function(responseBody, statusCode, statusMessage, headers) {
-            client.send('HTTP/1.1 ' + (statusCode || 200) + (statusMessage || 'OK') +
-                (headers ? "\n" + headers : ''),
-                "\n\n" + responseBody
-            );
-
-        });
-    }
+    //SocketServer.addCommand(getStaticSocketCommand);
+    // TODO: allow file requests here?
 };
 
 exports.initHTTPServerCommands = function(HTTPServer) {
     HTTPServer.addCommand(getStaticHTTPCommand);
-    function getStaticHTTPCommand(request, response) {
-        if(request.method.toLowerCase() !== 'get')
-            return false;
-
-        console.log(request.method, request.url);
-        handleFileRequest(request.url, function(responseBody, statusCode, statusMessage, headers) {
-            response.writeHead(statusCode || 200, statusMessage || 'OK', headers);
-            response.end(responseBody);
-        });
-        return true;
-    }
 };
+
+function getStaticHTTPCommand(request, response) {
+    if(request.method.toLowerCase() !== 'get')
+        return false;
+
+    // Allow KS requests here?
+    console.log(request.method, request.url);
+    handleFileRequest(request.url, function(responseBody, statusCode, statusMessage, headers) {
+        response.writeHead(statusCode || 200, statusMessage || 'OK', headers);
+        response.end(responseBody);
+    });
+    return true;
+}
+
+function getStaticSocketCommand(commandString, client) {
+    var match = /^get\s+([\S\s]+)$/im.exec(commandString);
+    if(!match)
+        return false;
+
+    console.log(commandString);
+    var requestURL = match[1];
+    handleFileRequest(requestURL, function(responseBody, statusCode, statusMessage, headers) {
+        client.send('HTTP/1.1 ' + (statusCode || 200) + (statusMessage || 'OK') +
+            (headers ? "\n" + headers : ''),
+            "\n\n" + responseBody
+        );
+    });
+}
 
 function handleFileRequest(requestURI, responseCallback) {
     var fs = require('fs');

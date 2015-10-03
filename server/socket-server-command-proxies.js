@@ -13,6 +13,8 @@ exports.initSocketServerCommandProxies = function(SocketServer) {
         SocketServer.removeCommand(httpCommand);
         require('../server/server-commands.js')
             .initSocketServerCommands(SocketServer);
+        require('../ks/ks-server-commands.js')
+            .initSocketServerCommands(SocketServer);
         console.log("Loaded server/server-commands.js");
         return false;
     }
@@ -32,7 +34,7 @@ exports.initSocketServerCommandProxies = function(SocketServer) {
     // PGP Commands
     SocketServer.addCommand(pgpCommand);
     function pgpCommand(commandString, client) {
-        if(!/^(pgp-auth|pgp-auth-validate|get @pgp)/i.test(commandString))
+        if(!/^(pgp-auth|pgp-auth-validate)/i.test(commandString))
             return false;
         SocketServer.removeCommand(pgpCommand);
         require('../pgp/pgp-server-commands.js')

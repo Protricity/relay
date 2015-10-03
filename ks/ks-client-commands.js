@@ -7,19 +7,6 @@ if(!exports) var exports = {};
         var Client = exports.Client
             || require('../client/client.js').Client;
 
-    var PATH_PUT = 'put';
-    var PATH_PREFIX_GET = 'get:';
-
-    //<label class='label-recipients show-section-on-value'>Choose which subscribers may view this post:<br/>\n\
-    //    <select name='recipients'>\n\
-    //        <option value='*'>Everybody</option>\n\
-    //        <option disabled='disabled'>My friends</option>\n\
-    //        <option disabled='disabled'>Friends of Friends</option>\n\
-    //        <option disabled='disabled'>Specific Recipients</option>\n\
-    //    </select>\n\
-    //<br/><br/></label>\n\
-
-
     /**
      *
      * @param commandString PUT [path] [content]
@@ -122,8 +109,8 @@ if(!exports) var exports = {};
             var browserID = getContentHeader(responseString, 'Browser-ID');
             if(!browserID)
                 throw new Error("Unknown browser-id for response:\n" + responseString);
-            var requestString = "GET " + requestURL + "\n" +
-                "Browser-ID: " + browserID + "\n";
+            var requestString = "GET " + requestURL +
+                "\nBrowser-ID: " + browserID + "\n";
 
             executeLocalGETRequest(requestString, function(responseString, responseCode) {
                 if (responseCode === 200) {
@@ -182,9 +169,7 @@ if(!exports) var exports = {};
                     200,
                     "OK",
                     "Browser-ID: " + browserID,
-                    function(body, code, text, responseHeaders) {
-                        callback('HTTP/1.1 ' + code + ' ' + text + responseHeaders + "\n\n" + body, code, text);
-                    }
+                    callback
                 );
                 // Free up template resources
                 delete Templates.ks.response.body;
@@ -198,9 +183,7 @@ if(!exports) var exports = {};
                     202,
                     "Request Sent",
                     "Browser-ID: " + browserID,
-                    function(body, code, text, responseHeaders) {
-                        callback('HTTP/1.1 ' + code + ' ' + text + responseHeaders + "\n\n" + body, code, text);
-                    }
+                    callback
                 );
                 // Free up template resources
                 delete Templates.ks.response.body;
@@ -229,9 +212,7 @@ if(!exports) var exports = {};
                     200,
                     "OK",
                     "Browser-ID: " + browserID,
-                    function(body, code, text, responseHeaders) {
-                        callback('HTTP/1.1 ' + code + ' ' + text + responseHeaders + "\n\n" + body, code, text);
-                    }
+                    callback
                 );
                 // Free up template resources
                 delete Templates.ks.response.body;
@@ -240,9 +221,7 @@ if(!exports) var exports = {};
 
                 importScripts('ks/pages/404.js');
                 get404IndexTemplate(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
-                    responseHeaders =
-                        (responseHeaders || '') +
-                        "\nBrowser-ID: " + browserID;
+                    responseHeaders += "\nBrowser-ID: " + browserID;
 
                     importScripts('ks/templates/ks-response-template.js');
                     Templates.ks.response.body(
@@ -251,9 +230,7 @@ if(!exports) var exports = {};
                         responseCode,
                         responseText,
                         responseHeaders,
-                        function(body, code, text, responseHeaders) {
-                            callback('HTTP/1.1 ' + code + ' ' + text + responseHeaders + "\n\n" + body, code, text);
-                        }
+                        callback
                     );
                     // Free up template resources
                     delete Templates.ks.response.body;
@@ -277,14 +254,11 @@ if(!exports) var exports = {};
             var browserID = getContentHeader(responseString, 'Browser-ID');
             if(!browserID)
                 throw new Error("Unknown browser-id for response:\n" + responseString);
-            var requestString = "GET " + requestURL + "\n" +
-                "Browser-ID: " + browserID + "\n";
+            var requestString = addContentHeader("GET " + requestURL, "Browser-ID", browserID);
 
             // Non-200 so grab local version or default content
             getDefaultContentResponse(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
-                responseHeaders =
-                    (responseHeaders || '') +
-                    "\nBrowser-ID: " + browserID;
+                responseHeaders += "\nBrowser-ID: " + browserID;
 
                 importScripts('ks/templates/ks-response-template.js');
                 Templates.ks.response.body(
@@ -293,9 +267,7 @@ if(!exports) var exports = {};
                     responseCode,
                     responseText,
                     responseHeaders,
-                    function(body) {
-                        callback('HTTP/1.1 ' + responseCode + ' ' + responseText + responseHeaders + "\n\n" + body, code, text);
-                    }
+                    callback
                 );
                 // Free up template resources
                 delete Templates.ks.response;
