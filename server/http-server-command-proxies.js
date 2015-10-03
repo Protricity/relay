@@ -10,10 +10,15 @@ exports.initHTTPServerCommandProxies = function(HTTPServer) {
         if(!/(get|post|put|delete|patch|head|http)/i.test(request.method))
             return false;
         HTTPServer.removeCommand(httpCommand);
+
         require('../server/server-commands.js')
             .initHTTPServerCommands(HTTPServer);
+        console.log("Loaded server/server-commands.js");
+
         require('../ks/ks-server-commands.js')
             .initHTTPServerCommands(HTTPServer);
+        console.log("Loaded ks/ks-server-commands.js");
+
         return false;
     }
 
@@ -27,14 +32,14 @@ exports.initHTTPServerCommandProxies = function(HTTPServer) {
     //}
 
     // PGP Commands
-    HTTPServer.addCommand(pgpCommand);
-    function pgpCommand(request, response) {
-        if(!/^get @pgp/i.test(request.method + ' ' + request.url))
-            return false;
-        HTTPServer.removeCommand(pgpCommand);
-        require('../pgp/pgp-server-commands.js')
-            .initHTTPServerCommands(HTTPServer);
-        return false;
-    }
+    //HTTPServer.addCommand(pgpCommand);
+    //function pgpCommand(request, response) {
+    //    if(!/^get @pgp/i.test(request.method + ' ' + request.url))
+    //        return false;
+    //    HTTPServer.removeCommand(pgpCommand);
+    //    require('../pgp/pgp-server-commands.js')
+    //        .initHTTPServerCommands(HTTPServer);
+    //    return false;
+    //}
 
 };

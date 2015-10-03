@@ -52,8 +52,10 @@ function Sockets(socketURL) {
             setTimeout(function () {
                 newSocket.send("NICK relay" + Date.now().toString().substr(6));
             }, 500);
-            newSocket.send("PGP-AUTH ABCD1234 ABCD6543");
+            newSocket.send("KS-AUTH 282B9974B85CF365");
+            newSocket.send("KS-AUTH 282B9974B85CF365");
         }
+
         function onClose(e) {
             console.log("SOCKET CLOSED: ", e.currentTarget, e.reason, e);
             //self.postMessage("SOCKET CLOSED " + socketURL);
@@ -82,8 +84,8 @@ function Sockets(socketURL) {
             Templates.socket.log.action("SOCKET CLOSED: " + newSocket.url, function(html) {
                 Client.postResponseToClient('LOG socket-log:' + newSocket.url + ' ' + html);
             });
-
         }
+
         function onSocketMessage(e) {
 //             console.info("I " + e.data);
             Client.processResponse(e.data, e);

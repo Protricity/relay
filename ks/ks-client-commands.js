@@ -7,11 +7,18 @@ if(!exports) var exports = {};
         var Client = exports.Client
             || require('../client/client.js').Client;
 
+    Client.addCommand(putCommand);
+    Client.addCommand(getCommand);
+
+    Client.addResponse(putResponse);
+    Client.addResponse(getResponse);
+    Client.addResponse(httpResponse);
+    Client.addResponse(ksChallengeResponse);
+
     /**
      *
      * @param commandString PUT [path] [content]
      */
-    Client.addCommand(putCommand);
     function putCommand(commandString) {
         var match = /^put(?:\s+(\S+))?(?:\s+(\S+))?/im.exec(commandString);
         if(!match)
@@ -54,7 +61,6 @@ if(!exports) var exports = {};
         return true;
     }
 
-    Client.addResponse(putResponse);
     function putResponse(commandString) {
         if(commandString.substr(0,3).toLowerCase() !== 'put')
             return false; // throw new Error("Invalid PUT: " + commandString);
@@ -67,7 +73,6 @@ if(!exports) var exports = {};
      *
      * @param commandString GET [URL]
      */
-    Client.addCommand(getCommand);
     function getCommand(commandString) {
         var match = /^get\s+/i.exec(commandString);
         if(!match)
@@ -78,7 +83,6 @@ if(!exports) var exports = {};
         });
     }
 
-    Client.addResponse(getResponse);
     function getResponse(requestString) {
         var match = /^get/i.exec(requestString); // (?:\w+:\/\/)?([a-f0-9]{8,})(?:\.ks)(\/@pgp.*)$
         if(!match)
@@ -91,7 +95,6 @@ if(!exports) var exports = {};
     }
 
     // TODO: default content on response http only?
-    Client.addResponse(httpResponse);
     function httpResponse(responseString) {
         if(responseString.substr(0,4).toLowerCase() !== 'http')
             return false;

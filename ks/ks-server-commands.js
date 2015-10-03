@@ -6,8 +6,9 @@ if(!exports) var exports = {};
 exports.initSocketServerCommands = function(SocketServer) {
     SocketServer.addCommand(getCommandSocket);
     SocketServer.addCommand(putCommandSocket);
+    SocketServer.addCommand(ksAuthCommandSocket);
     SocketServer.addCommand(handleHTTPSocketResponse);
-    SocketServer.addEventListener('connection', onSocketConnection);
+    //SocketServer.addEventListener('connection', onSocketConnection);
 };
 
 exports.initHTTPServerCommands = function(HTTPServer) {
@@ -16,15 +17,77 @@ exports.initHTTPServerCommands = function(HTTPServer) {
 
 };
 
-function onSocketConnection(client) {
+var keySpaceClients = {};
 
-    requestClientPublicKey(client, "282B9974B85CF365", function(publicKey) {
-        var publicKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
-        console.error("TODO: Handle PubKey Response", publicKeyID);
-    });
+function ksAuthCommandSocket(commandString, client) {
+    var match = /^ks-auth\s+(.*)$/i.exec(commandString);
+    if(!match)
+        return false;
+
+    var ids = match[1].split(/\W+/);
+    for(var i=0; i<ids.length; i++) {
+        var id = ids[i];
+        console.log("KS-AUTH " + id);
+        if(id.length < 16) {
+            client.send("ERROR PGP ID must be at least 16 characters: " + id);
+
+        } else {
+            sendKeySpaceAuth(id, client);
+        }
+    }
+    return true;
 }
 
-function requestClientPublicKey(client, pgp_id_public, callback) {
+function ksValidateCommandSocket(commandString, client) {
+    var match = /^ks-validate\s+(.*)?$/i.exec(commandString);
+    if(!match)
+        return false;
+
+    //var publicKeyBlock = parsePublicKeyBlock(commandString);
+    //var signedIDSIGBlock = parseSignedMessage(commandString);
+    //var publicKeys = openpgp.key.readArmored(commandString);
+    //var clearSignedMessages = openpgp.cleartext.readArmored(commandString);
+    console.log(commandString);
+    //send(client, "IDENTIFY " + client.pgp.uid);
+    return true;
+}
+
+function sendKeySpaceAuth(pgp_id_public, client) {
+    if(typeof keySpaceClients[pgp_id_public] === 'undefined')
+        keySpaceClients[pgp_id_public] = [];
+
+    var clientEntries = keySpaceClients[pgp_id_public];
+
+    for(var i=0; i<clientEntries.length; i++) {
+        var entry = clientEntries[i];
+        if(entry[0] === client) {
+            // Pass new challenge with existing uid
+            sendAuth(entry[0], entry[1]);
+            return;
+        }
+    }
+
+    // Generate new challenge
+    var authCode = generateUID('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx');
+    clientEntries.push([client, authCode ]);
+    sendAuth(client, authCode);
+
+    function sendAuth(client, authCode) {
+        requestClientPublicKey(pgp_id_public, client, function(publicKey) {
+            if(typeof openpgp === 'undefined')
+                var openpgp = require('openpgp');
+            openpgp.encryptMessage(publicKey, authCode)
+                .then(function(encryptedMessage) {
+                    client.send("KS-CHALLENGE " + encryptedMessage);
+
+                }).catch(function(error) {
+                    client.send("ERROR " + error);
+                });
+        });
+    }
+}
+
+function requestClientPublicKey(pgp_id_public, client, callback) {
     if(pgp_id_public.length < 16)
         throw new Error("Invalid PGP Key ID (16): " + pgp_id_public);
 
@@ -41,7 +104,9 @@ function requestClientPublicKey(client, pgp_id_public, callback) {
             if(typeof openpgp === 'undefined')
                 var openpgp = require('openpgp');
             var publicKey = openpgp.key.readArmored(contentData.content).keys[0];
-            var publicKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
+            var publicKeyCreateDate = publicKey.subKeys[0].subKey.created;
+            var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+            //var privateKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
             if(publicKeyID !== pgp_id_public)
                 throw new Error("Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
 
@@ -55,16 +120,16 @@ function requestClientPublicKey(client, pgp_id_public, callback) {
                 if(typeof openpgp === 'undefined')
                     var openpgp = require('openpgp');
                 var publicKey = openpgp.key.readArmored(responseBody).keys[0];
-                var publicKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
+                //var privateKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
+                var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
                 if(publicKeyID !== pgp_id_public)
                     throw new Error("Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
 
                 callback(publicKey, responseBody);
 
                 // TODO: client config cache settings
-                // TODO: correct timestamp
-                // Cache
-                getKeySpaceDB().addVerifiedContentToDB(publicKey.armor(), pgp_id_public, requestPath, Date.now(), {},
+                // Cache Public Key
+                getKeySpaceDB().addVerifiedContentToDB(publicKey.armor(), pgp_id_public, requestPath, publicKeyCreateDate.getTime(), {},
                     function(err, insertData) {
                         if(err)
                             throw new Error(err);
@@ -262,6 +327,13 @@ function addContentHeader(contentString, headerName, headerValue) {
     var lines = contentString.split(/\n/);
     lines.splice(lines.length >= 1 ? 1 : 0, 0, headerName + ": " + headerValue);
     return lines.join("\n");
+}
+
+function generateUID(format) {
+    return (format).replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
 }
 
 function getKeySpaceDB() {
