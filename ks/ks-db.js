@@ -238,9 +238,7 @@ function KeySpaceDB(dbReadyCallback) {
                 var queryValueMD = {path: contentPath};
                 if(publicKeyID)
                     queryValueMD['pgp_id_public'] = publicKeyID;
-                var mdCursor = dbCollection.find(queryValueMD, function(err, data) {
-                    callback(err, data, mdCursor);
-                });
+                dbCollection.find(queryValueMD).each(callback);
 
             } else {
                 throw new Error("Invalid Database Driver");
@@ -275,7 +273,7 @@ function KeySpaceDB(dbReadyCallback) {
                 var dbCollection = db.collection(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
                 dbCollection.find({
                     timestamp: { $gt: timespan[0], $lt: timespan[1] }
-                }, callback);
+                }).each(callback);
 
             } else {
                 throw new Error("Invalid Database");

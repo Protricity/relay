@@ -18,9 +18,34 @@ exports.initHTTPServerCommands = function(HTTPServer) {
 
 function onSocketConnection(client) {
 
-    sendClientRequest("GET http://282B9974B85CF365.ks/public/id", client, function(responseBody, responseCode, responseMessage, responseHeaders) {
-        console.log("TODO: Handle PubKey Response - " + responseCode, responseMessage, responseHeaders);
-//responseBody, 
+    requestClientPublicKey(client, "282B9974B85CF365", function(privateKey) {
+        console.log("TODO: Handle PubKey Response - ", privateKey);
+    });
+}
+
+function requestClientPublicKey(client, pgp_id_public, callback) {
+    if(pgp_id_public.length < 16)
+        throw new Error("Invalid PGP Key ID (16): " + pgp_id_public);
+    
+    var requestURL = "http://" + pgp_id_public + ".ks/public/id";
+    getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
+        if (err)
+            throw new Error(err);
+
+        if (contentData) {
+            if(typeof openpgp === 'undefined')
+                var openpgp = require('openpgp');
+            var publicKey = openpgp.key.readArmored(contentData.content).keys[0];
+            callback(publicKey, contentData.content);
+
+        } else {
+            sendClientRequest("GET " + requestURL, client, function(responseBody, responseCode, responseMessage, responseHeaders) {
+                if(typeof openpgp === 'undefined')
+                    var openpgp = require('openpgp');
+                var publicKey = openpgp.key.readArmored(responseBody).keys[0];
+                callback(publicKey, responseBody);
+            });
+        }
     });
 }
 
@@ -212,13 +237,13 @@ function addContentHeader(contentString, headerName, headerValue) {
 }
 
 function getKeySpaceDB() {
-    if(typeof self.KeySpaceDB === 'undefined') {
+    if(typeof KeySpaceDB === 'undefined') {
         if(typeof importScripts === "function")
             importScripts('ks/ks-db.js');
         else
-            self.KeySpaceDB = require('./ks-db.js').KeySpaceDB;
+            return require('./ks-db.js').KeySpaceDB;
     }
-    return self.KeySpaceDB;
+    return KeySpaceDB;
 }
 
 exports.test = function() {
