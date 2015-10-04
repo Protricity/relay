@@ -2,13 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f1a3609b-05f2-4e93-b5c1-0f477f2ec236" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/openpgp.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/client-command-proxies.js" afterPath="$PROJECT_DIR$/client/client-command-proxies.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ks/ks-client-commands.js" afterPath="$PROJECT_DIR$/ks/ks-client-commands.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ks/ks-server-commands.js" afterPath="$PROJECT_DIR$/ks/ks-server-commands.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pgp/lib/openpgpjs/openpgp.js" afterPath="$PROJECT_DIR$/pgp/lib/openpgpjs/openpgp.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/sockets.js" afterPath="$PROJECT_DIR$/server/sockets.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ks/ks-listeners.js" afterPath="$PROJECT_DIR$/ks/ks-listeners.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pgp/pgp-client-commands.js" afterPath="$PROJECT_DIR$/pgp/pgp-client-commands.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pgp/pgp-listeners.js" afterPath="$PROJECT_DIR$/pgp/pgp-listeners.js" />
     </list>
     <ignored path="relay.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -46,33 +43,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ks-server-commands.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/ks/ks-server-commands.js">
+      <file leaf-file-name="pgp-client-commands.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pgp/pgp-client-commands.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.37393424" vertical-offset="1614" max-vertical-offset="6069">
-              <caret line="113" column="26" selection-start-line="113" selection-start-column="26" selection-end-line="113" selection-end-column="26" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ks-client-commands.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ks/ks-client-commands.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="211" max-vertical-offset="8296">
-              <caret line="45" column="41" selection-start-line="45" selection-start-column="41" selection-end-line="45" selection-end-column="41" />
+            <state vertical-scroll-proportion="270.52" vertical-offset="6882" max-vertical-offset="7701">
+              <caret line="7" column="37" selection-start-line="7" selection-start-column="37" selection-end-line="7" selection-end-column="37" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="sockets.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/server/sockets.js">
+      <file leaf-file-name="pgp-listeners.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pgp/pgp-listeners.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="632" max-vertical-offset="3774">
-              <caret line="55" column="52" selection-start-line="55" selection-start-column="52" selection-end-line="55" selection-end-column="52" />
+            <state vertical-scroll-proportion="-10.92" vertical-offset="9689" max-vertical-offset="10523">
+              <caret line="586" column="33" selection-start-line="586" selection-start-column="33" selection-end-line="586" selection-end-column="33" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.22860636" vertical-offset="0" max-vertical-offset="833">
+              <caret line="11" column="40" selection-start-line="11" selection-start-column="40" selection-end-line="11" selection-end-column="40" />
               <folding />
             </state>
           </provider>
@@ -81,32 +76,18 @@
       <file leaf-file-name="ks-listeners.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ks/ks-listeners.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="5175" max-vertical-offset="8007">
-              <caret line="321" column="81" selection-start-line="321" selection-start-column="81" selection-end-line="323" selection-end-column="60" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="7163" max-vertical-offset="8007">
+              <caret line="432" column="5" selection-start-line="432" selection-start-column="5" selection-end-line="432" selection-end-column="5" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="openpgp.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pgp/lib/openpgpjs/openpgp.js">
+      <file leaf-file-name="ks-client-commands.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ks/ks-client-commands.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-12.96" vertical-offset="157028" max-vertical-offset="284053">
-              <caret line="9256" column="9" selection-start-line="9256" selection-start-column="9" selection-end-line="9256" selection-end-column="9" />
-              <folding>
-                <marker date="1443895271437" expanded="true" signature="389378:396041" placeholder="[...]" />
-                <marker date="1443895271437" expanded="true" signature="389411:396003" placeholder="{...}" />
-                <marker date="1443895271437" expanded="true" signature="390387:390407" placeholder="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="server-commands.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/server/server-commands.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1717">
-              <caret line="22" column="7" selection-start-line="22" selection-start-column="7" selection-end-line="22" selection-end-column="7" />
+            <state vertical-scroll-proportion="-10.24" vertical-offset="7462" max-vertical-offset="8296">
+              <caret line="456" column="0" selection-start-line="456" selection-start-column="0" selection-end-line="463" selection-end-column="5" />
               <folding />
             </state>
           </provider>
@@ -135,7 +116,6 @@
         <option value="$PROJECT_DIR$/init-node.sh" />
         <option value="$PROJECT_DIR$/start-server.sh" />
         <option value="$PROJECT_DIR$/start-mongo-server.sh" />
-        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/ks/feed/feed-templates.js" />
         <option value="$PROJECT_DIR$/pgp/templates/pgp-identify-template.js" />
         <option value="$PROJECT_DIR$/pgp/pgp-db.js" />
@@ -145,11 +125,9 @@
         <option value="$PROJECT_DIR$/pgp/pgp-db.js.old" />
         <option value="$PROJECT_DIR$/client/client-listeners.js" />
         <option value="$PROJECT_DIR$/pgp/templates/pgp-register-template.js" />
-        <option value="$PROJECT_DIR$/pgp/pgp-listeners.js" />
         <option value="$PROJECT_DIR$/pgp/templates/pgp-manage-template.js" />
         <option value="$PROJECT_DIR$/ks/feed/feed-client-commands.js" />
         <option value="$PROJECT_DIR$/client/client-defaults.js" />
-        <option value="$PROJECT_DIR$/pgp/pgp-client-commands.js" />
         <option value="$PROJECT_DIR$/index.js" />
         <option value="$PROJECT_DIR$/chat/chat-listeners.js" />
         <option value="$PROJECT_DIR$/ks/ks-tags.js" />
@@ -162,7 +140,6 @@
         <option value="$PROJECT_DIR$/server/http-server.js" />
         <option value="$PROJECT_DIR$/ks/templates/ks-put-template.js" />
         <option value="$PROJECT_DIR$/server/server-commands.js" />
-        <option value="$PROJECT_DIR$/ks/ks-listeners.js" />
         <option value="$PROJECT_DIR$/ks/templates/ks-response-template.js" />
         <option value="$PROJECT_DIR$/chat/chat-client-commands.js" />
         <option value="$PROJECT_DIR$/server/socket-server.js" />
@@ -176,6 +153,10 @@
         <option value="$PROJECT_DIR$/server/sockets.js" />
         <option value="$PROJECT_DIR$/ks/ks-client-commands.js" />
         <option value="$PROJECT_DIR$/ks/ks-server-commands.js" />
+        <option value="$PROJECT_DIR$/pgp/pgp-listeners.js" />
+        <option value="$PROJECT_DIR$/pgp/pgp-client-commands.js" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/ks/ks-listeners.js" />
       </list>
     </option>
   </component>
@@ -628,11 +609,11 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1014" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32953367" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26943558" sideWeight="0.49830508" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26943558" sideWeight="0.49830124" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28115016" sideWeight="0.49948186" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32746115" sideWeight="0.5" order="6" side_tool="true" content_ui="tabs" />
@@ -642,7 +623,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18956336" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="true" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26943558" sideWeight="0.5016949" order="4" side_tool="true" content_ui="tabs" x="-1899" y="-689" width="1878" height="298" />
+      <window_info id="Run" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26943558" sideWeight="0.50169873" order="4" side_tool="true" content_ui="tabs" x="-1899" y="-689" width="1878" height="298" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -893,14 +874,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.5384617" vertical-offset="0" max-vertical-offset="833">
-          <caret line="10" column="49" selection-start-line="10" selection-start-column="49" selection-end-line="10" selection-end-column="49" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="619" max-vertical-offset="1870">
@@ -929,22 +902,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="415" max-vertical-offset="2040">
           <caret line="61" column="27" selection-start-line="61" selection-start-column="27" selection-end-line="61" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pgp/pgp-listeners.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-13.64" vertical-offset="1988" max-vertical-offset="11203">
-          <caret line="137" column="54" selection-start-line="137" selection-start-column="54" selection-end-line="138" selection-end-column="95" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pgp/pgp-client-commands.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5882">
-          <caret line="137" column="64" selection-start-line="137" selection-start-column="64" selection-end-line="137" selection-end-column="64" />
           <folding />
         </state>
       </provider>
@@ -1046,9 +1003,9 @@
         <state vertical-scroll-proportion="-12.96" vertical-offset="157028" max-vertical-offset="284053">
           <caret line="9256" column="9" selection-start-line="9256" selection-start-column="9" selection-end-line="9256" selection-end-column="9" />
           <folding>
-            <marker date="1443895271437" expanded="true" signature="389378:396041" placeholder="[...]" />
-            <marker date="1443895271437" expanded="true" signature="389411:396003" placeholder="{...}" />
-            <marker date="1443895271437" expanded="true" signature="390387:390407" placeholder="{...}" />
+            <marker date="1443895271437" expanded="true" signature="-1:-1" placeholder="[...]" />
+            <marker date="1443895271437" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1443895271437" expanded="true" signature="-1:-1" placeholder="{...}" />
           </folding>
         </state>
       </provider>
@@ -1061,14 +1018,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ks/ks-listeners.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="5175" max-vertical-offset="8007">
-          <caret line="321" column="81" selection-start-line="321" selection-start-column="81" selection-end-line="323" selection-end-column="60" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/server/sockets.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="632" max-vertical-offset="3774">
@@ -1077,21 +1026,53 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/ks/ks-server-commands.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-27.24" vertical-offset="3314" max-vertical-offset="6069">
+          <caret line="235" column="25" selection-start-line="235" selection-start-column="25" selection-end-line="235" selection-end-column="25" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/ks/ks-client-commands.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="211" max-vertical-offset="8296">
-          <caret line="45" column="41" selection-start-line="45" selection-start-column="41" selection-end-line="45" selection-end-column="41" />
+        <state vertical-scroll-proportion="-10.24" vertical-offset="7462" max-vertical-offset="8296">
+          <caret line="456" column="0" selection-start-line="456" selection-start-column="0" selection-end-line="463" selection-end-column="5" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ks/ks-server-commands.js">
+    <entry file="file://$PROJECT_DIR$/pgp/pgp-client-commands.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.37393424" vertical-offset="1614" max-vertical-offset="6069">
-          <caret line="113" column="26" selection-start-line="113" selection-start-column="26" selection-end-line="113" selection-end-column="26" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="270.52" vertical-offset="6882" max-vertical-offset="7701">
+          <caret line="7" column="37" selection-start-line="7" selection-start-column="37" selection-end-line="7" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pgp/pgp-listeners.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.92" vertical-offset="9689" max-vertical-offset="10523">
+          <caret line="586" column="33" selection-start-line="586" selection-start-column="33" selection-end-line="586" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ks/ks-listeners.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="7163" max-vertical-offset="8007">
+          <caret line="432" column="5" selection-start-line="432" selection-start-column="5" selection-end-line="432" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.22860636" vertical-offset="0" max-vertical-offset="833">
+          <caret line="11" column="40" selection-start-line="11" selection-start-column="40" selection-end-line="11" selection-end-column="40" />
+          <folding />
         </state>
       </provider>
     </entry>

@@ -449,17 +449,17 @@
     includeScript('ks/ks-db.js');
 
     // For PGP Decryption in chat rooms
-    var openPGPScriptPath = 'pgp/lib/openpgpjs/openpgp.js';
-    includeScript(openPGPScriptPath, function() {
-
-        var timeout = setInterval(function() {
-            var src = openPGPScriptPath.replace('/openpgp.', '/openpgp.worker.');
-            if(!window.openpgp || window.openpgp._worker_init)
-                return;
-            window.openpgp.initWorker(src);
-            window.openpgp._worker_init = true;
-            clearInterval(timeout);
-            //console.info("OpenPGP Worker Loaded: " + src);
-        }, 500);
-    });
+    //var openPGPScriptPath = 'pgp/lib/openpgpjs/openpgp.js';
+    //includeScript(openPGPScriptPath, function() {
+    //
+    //    var timeout = setInterval(function() {
+    //        var src = openPGPScriptPath.replace('/openpgp.', '/openpgp.worker.');
+    //        if(!window.openpgp || window.openpgp._worker_init)
+    //            return;
+    //        window.openpgp.initWorker(src);
+    //        window.openpgp._worker_init = true;
+    //        clearInterval(timeout);
+    //        //console.info("OpenPGP Worker Loaded: " + src);
+    //    }, 500);
+    //});
 })();

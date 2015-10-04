@@ -2,10 +2,19 @@
  * Ari 7/2/2015.
  */
 (function() {
+
+    Client.addCommand(pgpAuthCommand);
+    Client.addCommand(pgpAuthValidateCommand);
+    Client.addCommand(manageCommand);
+    Client.addCommand(keygenCommand);
+    Client.addCommand(registerCommand);
+    Client.addCommand(commandDefault);
+    Client.addCommand(unregisterCommand);
+
+
     /**
      * @param commandString
      */
-    Client.addCommand(pgpAuthCommand);
     function pgpAuthCommand(commandString) {
         var match = /^pgp-auth/i.exec(commandString);
         if(!match)
@@ -19,7 +28,6 @@
     /**
      * @param commandString
      */
-    Client.addCommand(pgpAuthValidateCommand);
     function pgpAuthValidateCommand(commandString) {
         var match = /^pgp-auth-validate\s+(\w{8,})/im.exec(commandString);
         if(!match)
@@ -34,7 +42,6 @@
      * @param commandString
      * @param status_content
      */
-    Client.addCommand(manageCommand);
     function manageCommand(commandString, e, status_content) {
         var match = /^manage/i.exec(commandString);
         if(!match)
@@ -75,65 +82,158 @@
 
 
     /**
-     * @param commandString KEYGEN --bits [2048] [user id]
+     * @param commandString KEYGEN --bits [2048] --pass [passphrase] --user [user id]
      */
-    Client.addCommand(keygenCommand);
     function keygenCommand(commandString, e) {
-        var match = /^keygen ?(.+)?$/im.exec(commandString);
+        var match = /^keygen\s+?(.+)?$/im.exec(commandString);
         if(!match)
             return false;
 
         var content = match[1] || '';
-        var bits = 2048;
-        content = content.replace(/--bits (\d+)/i, function(match, contents, offset, s) {
-            bits = parseInt(contents); return '';
-        });
+        if(content) {
+            var bits = 2048;
+            content = content.replace(/--bits (\d+)/i, function(match, contents, offset, s) {
+                bits = parseInt(contents); return '';
+            });
 
-        var passphrase = null;
-        content = content.replace(/--pass(?:phrase)? ([^-]+)/i, function(match, contents, offset, s) {
-            passphrase = contents.trim(); return '';
-        });
+            var passphrase = null;
+            content = content.replace(/--pass(?:phrase)? ([^-]+)/i, function(match, contents, offset, s) {
+                passphrase = contents.trim(); return '';
+            });
 
-        var userID = content.trim();
-        content.replace(/--user ([^-]+)/i, function(match, contents, offset, s) {
-            userID = contents; return '';
-        });
+            var userID = content.trim();
+            content.replace(/--user ([^-]+)/i, function(match, contents, offset, s) {
+                userID = contents; return '';
+            });
 
-        importScripts('pgp/templates/pgp-generate-template.js');
-        Templates.pgp.generate.form(userID, function(html) {
-            Client.postResponseToClient("LOG.REPLACE pgp: " + html);
-        });
-        // Free up template resources
-        delete Templates.pgp.generate;
+            var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
+            openpgp.generateKeyPair({
+                keyType:1,
+                numBits:bits,
+                userId:userID,
+                passphrase:passphrase
 
-        return true;
+            }).then(function(keyPair) {
+                var privateKey = keyPair.key;
+                var newPrivateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();
+                var newPublicKeyID = privateKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+                console.log("New PGP Key Generated: ", newPrivateKeyID, newPublicKeyID);
+
+                //registerCommand("REGISTER " + keyPair.privateKeyArmored);
+
+                var userIDString = privateKey.getUserIds().join('; ');
+
+                //var publicKeyBlock = publicKey.armor();
+
+                var status_content = "\
+                    Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually\n\
+                    <span class='success'>PGP Key Pair generated successfully</span><br/><br/>\n\
+                    <span class='info'>You may now register the following identity:</span><br/>\n\
+                    User ID: <strong>" + userIDString.replace(/</, '&lt;') + "</strong><br/>\n\
+                    Private Key ID: <strong>" + newPrivateKeyID + "</strong><br/>\n\
+                    Public Key ID: <strong>" + newPublicKeyID + "</strong><br/>\n\
+                    Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
+
+                importScripts('pgp/templates/pgp-register-template.js');
+                Templates.pgp.register.form(keyPair.privateKeyArmored, status_content, function(html) {
+                    Client.postResponseToClient("LOG.REPLACE pgp: " + html);
+                });
+                // Free up template resources
+                delete Templates.pgp.register;
+                return true;
+
+            });
+
+
+        } else {
+
+            importScripts('pgp/templates/pgp-generate-template.js');
+            Templates.pgp.generate.form(userID, function(html) {
+                Client.postResponseToClient("LOG.REPLACE pgp: " + html);
+            });
+            // Free up template resources
+            delete Templates.pgp.generate;
+
+            return true;
+
+        }
+
     }
 
     /**
      * @param commandString REGISTER
      */
-    Client.addCommand(registerCommand);
     function registerCommand(commandString, e) {
-        var match = /^register\s*([\s\S]*)$/im.exec(commandString);
+        var match = /^register\s*([\s\S]+)?$/im.exec(commandString);
         if(!match)
             return false;
 
-        var privateKeyBlock = (match[1] || '').replace(/(\r\n|\r|\n)/g, '\r\n');
-        var status_content = "Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually";
-        importScripts('pgp/templates/pgp-register-template.js');
-        Templates.pgp.register.form(privateKeyBlock, status_content, function(html) {
-            Client.postResponseToClient("LOG.REPLACE pgp: " + html);
-        });
-        // Free up template resources
-        delete Templates.pgp.register;
-        return true;
+        if(match[1]) {
+            var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
+
+            var privateKeyBlock = (match[1] || '').replace(/(\r\n|\r|\n)/g, '\r\n');
+            var privateKey = openpgp.key.readArmored(privateKeyBlock).keys[0];
+            var privateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();
+
+            var publicKey = privateKey.toPublic();
+            var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+            var publicKeyBlock = publicKey.armor();
+
+            var userIDString = privateKey.getUserIds().join('; ');
+
+            var customFields = {
+                pgp_id_private: privateKeyID,
+                user_id: userIDString,
+                passphrase_required: privateKey.primaryKey.isDecrypted ? false : true
+            };
+
+            var path = '/.private/id';
+            getKeySpaceDB().addVerifiedContentToDB(privateKeyBlock, publicKeyID, path, Date.now(), customFields, function(err, insertData) {
+                if(err)
+                    throw new Error(err);
+
+                var customFields = {
+                    pgp_id_private: privateKeyID,
+                    user_id: userIDString
+                };
+
+                var path = '/public/id';
+                getKeySpaceDB().addVerifiedContentToDB(publicKeyBlock, publicKeyID, path, Date.now(), customFields, function(err, insertData) {
+                    if(err)
+                        throw new Error(err);
+
+                    var messageEvent = new CustomEvent('socket', {
+                        detail: "MANAGE",
+                        cancelable:true
+                    });
+                    document.dispatchEvent(messageEvent);
+
+                    setTimeout(function() {
+                        document.querySelector('form[name=pgp-manage-form] .status-box').innerHTML = "\
+                            <span class='success'>PGP Key Pair registered successfully</span><br/><br/>\n\
+                            <span class='info'>You may now make use of your new identity:</span><br/>\n\
+                            User ID: <strong>" + userIDString.replace(/</, '&lt;') + "</strong><br/>";
+                    }, 100);
+                });
+            });
+
+        } else {
+            var status_content = "Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually";
+            importScripts('pgp/templates/pgp-register-template.js');
+            Templates.pgp.register.form('', status_content, function(html) {
+                Client.postResponseToClient("LOG.REPLACE pgp: " + html);
+            });
+            // Free up template resources
+            delete Templates.pgp.register;
+            return true;
+
+        }
     }
 
 
     /**
      * @param commandString UNREGISTER [PGP Private Key Fingerprint]
      */
-    Client.addCommand(unregisterCommand);
     function unregisterCommand(commandString, e) {
         var match = /^unregister\s+(.*)$/im.exec(commandString);
         if(!match)
@@ -166,7 +266,6 @@
     /**
      * @param commandString DEFAULT [PGP Private Key Fingerprint]
      */
-    Client.addCommand(commandDefault);
     function commandDefault(commandString, e) {
         var match = /^default\s+(.*)$/im.exec(commandString);
         if(!match)
@@ -175,6 +274,14 @@
         var publicKeyID = match[1].trim().split(/\W+/g)[0];
         publicKeyID = publicKeyID.substr(publicKeyID.length - 16);
         console.log("TODO: default", publicKeyID);
+    }
+
+    function require(path) {
+        self.module = {
+            exports: {}
+        };
+        importScripts(path);
+        return self.module.exports;
     }
 
     function getKeySpaceDB() {
