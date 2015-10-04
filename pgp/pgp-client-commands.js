@@ -85,7 +85,7 @@
      * @param commandString KEYGEN --bits [2048] --pass [passphrase] --user [user id]
      */
     function keygenCommand(commandString, e) {
-        var match = /^keygen\s+?(.+)?$/im.exec(commandString);
+        var match = /^keygen\s*(.+)?$/im.exec(commandString);
         if(!match)
             return false;
 
@@ -144,20 +144,18 @@
 
             });
 
+            return true;
 
         } else {
-
             importScripts('pgp/templates/pgp-generate-template.js');
-            Templates.pgp.generate.form(userID, function(html) {
+            Templates.pgp.generate.form('', function(html) {
                 Client.postResponseToClient("LOG.REPLACE pgp: " + html);
             });
             // Free up template resources
             delete Templates.pgp.generate;
 
             return true;
-
         }
-
     }
 
     /**
@@ -202,20 +200,16 @@
                     if(err)
                         throw new Error(err);
 
-                    var messageEvent = new CustomEvent('socket', {
-                        detail: "MANAGE",
-                        cancelable:true
-                    });
-                    document.dispatchEvent(messageEvent);
+                    var status_content = "\
+                        <span class='success'>PGP Key Pair registered successfully</span><br/><br/>\n\
+                        <span class='info'>You may now make use of your new identity:</span><br/>\n\
+                        User ID: <strong>" + userIDString.replace(/</, '&lt;') + "</strong><br/>";
 
-                    setTimeout(function() {
-                        document.querySelector('form[name=pgp-manage-form] .status-box').innerHTML = "\
-                            <span class='success'>PGP Key Pair registered successfully</span><br/><br/>\n\
-                            <span class='info'>You may now make use of your new identity:</span><br/>\n\
-                            User ID: <strong>" + userIDString.replace(/</, '&lt;') + "</strong><br/>";
-                    }, 100);
+                    manageCommand("MANAGE", e, status_content);
+
                 });
             });
+            return true;
 
         } else {
             var status_content = "Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually";

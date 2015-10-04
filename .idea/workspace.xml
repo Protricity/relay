@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f1a3609b-05f2-4e93-b5c1-0f477f2ec236" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ks/ks-listeners.js" afterPath="$PROJECT_DIR$/ks/ks-listeners.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pgp/pgp-client-commands.js" afterPath="$PROJECT_DIR$/pgp/pgp-client-commands.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pgp/pgp-listeners.js" afterPath="$PROJECT_DIR$/pgp/pgp-listeners.js" />
     </list>
     <ignored path="relay.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -43,12 +40,33 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="pgp-client-commands.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="pgp-client-commands.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pgp/pgp-client-commands.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="270.52" vertical-offset="6882" max-vertical-offset="7701">
-              <caret line="7" column="37" selection-start-line="7" selection-start-column="37" selection-end-line="7" selection-end-column="37" />
+            <state vertical-scroll-proportion="0.22954823" vertical-offset="3246" max-vertical-offset="7599">
+              <caret line="202" column="43" selection-start-line="202" selection-start-column="43" selection-end-line="202" selection-end-column="43" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pgp-generate-template.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pgp/templates/pgp-generate-template.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="6" max-vertical-offset="1054">
+              <caret line="52" column="39" selection-start-line="52" selection-start-column="39" selection-end-line="52" selection-end-column="39" />
+              <folding>
+                <marker date="1443543764190" expanded="true" signature="295:2774" placeholder="..." />
+                <marker date="1443543764190" expanded="true" signature="572:849" placeholder="..." />
+                <marker date="1443543764190" expanded="true" signature="660:679" placeholder="..." />
+                <marker date="1443543764190" expanded="true" signature="749:768" placeholder="..." />
+                <marker date="1443543764190" expanded="true" signature="919:2752" placeholder="..." />
+                <marker date="1443543764190" expanded="true" signature="1064:1656" placeholder="..." />
+                <marker date="1443543764190" expanded="true" signature="1268:1623" placeholder="..." />
+                <marker date="1443543764190" expanded="true" signature="1701:2017" placeholder="..." />
+                <marker date="1443543764190" expanded="true" signature="2060:2364" placeholder="..." />
+                <marker date="1443543764190" expanded="true" signature="2407:2655" placeholder="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -63,10 +81,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.22860636" vertical-offset="0" max-vertical-offset="833">
+            <state vertical-scroll-proportion="-7.1923075" vertical-offset="0" max-vertical-offset="833">
               <caret line="11" column="40" selection-start-line="11" selection-start-column="40" selection-end-line="11" selection-end-column="40" />
               <folding />
             </state>
@@ -154,9 +172,9 @@
         <option value="$PROJECT_DIR$/ks/ks-client-commands.js" />
         <option value="$PROJECT_DIR$/ks/ks-server-commands.js" />
         <option value="$PROJECT_DIR$/pgp/pgp-listeners.js" />
-        <option value="$PROJECT_DIR$/pgp/pgp-client-commands.js" />
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/ks/ks-listeners.js" />
+        <option value="$PROJECT_DIR$/pgp/pgp-client-commands.js" />
       </list>
     </option>
   </component>
@@ -726,13 +744,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pgp/templates/pgp-generate-template.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="126" max-vertical-offset="1054">
-          <caret line="37" column="63" selection-start-line="37" selection-start-column="63" selection-end-line="37" selection-end-column="63" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pgp/templates/pgp-register-template.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="198" max-vertical-offset="1139">
@@ -1044,14 +1055,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pgp/pgp-client-commands.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="270.52" vertical-offset="6882" max-vertical-offset="7701">
-          <caret line="7" column="37" selection-start-line="7" selection-start-column="37" selection-end-line="7" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pgp/pgp-listeners.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-10.92" vertical-offset="9689" max-vertical-offset="10523">
@@ -1070,8 +1073,35 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.22860636" vertical-offset="0" max-vertical-offset="833">
+        <state vertical-scroll-proportion="-7.1923075" vertical-offset="0" max-vertical-offset="833">
           <caret line="11" column="40" selection-start-line="11" selection-start-column="40" selection-end-line="11" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pgp/templates/pgp-generate-template.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="6" max-vertical-offset="1054">
+          <caret line="52" column="39" selection-start-line="52" selection-start-column="39" selection-end-line="52" selection-end-column="39" />
+          <folding>
+            <marker date="1443543764190" expanded="true" signature="295:2774" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="572:849" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="660:679" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="749:768" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="919:2752" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="1064:1656" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="1268:1623" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="1701:2017" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="2060:2364" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="2407:2655" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pgp/pgp-client-commands.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.22954823" vertical-offset="3246" max-vertical-offset="7599">
+          <caret line="202" column="43" selection-start-line="202" selection-start-column="43" selection-end-line="202" selection-end-column="43" />
           <folding />
         </state>
       </provider>
