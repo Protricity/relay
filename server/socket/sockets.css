@@ -1,0 +1,11 @@
+
+.socket-log {
+    display: inline-block;
+    overflow: auto;
+    max-height: 23vw;
+    min-width: 41em;
+}
+
+.socket-log .log-entry .message {
+    white-space: pre-wrap;
+}

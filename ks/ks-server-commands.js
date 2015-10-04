@@ -19,6 +19,7 @@ exports.initHTTPServerCommands = function(HTTPServer) {
 };
 
 var keySpaceClients = {};
+var keySpaceChallenges = {};
 function ksAuthCommandSocket(commandString, client) {
     var match = /^ks-auth\s+(.*)$/i.exec(commandString);
     if(!match)
@@ -43,24 +44,23 @@ function ksValidateCommandSocket(commandString, client) {
         return false;
 
     var uid = match[1];
-    for(var pgp_id_public in keySpaceClients) {
-        if(keySpaceClients.hasOwnProperty(pgp_id_public)) {
-            var clientEntries = keySpaceClients[pgp_id_public];
-            for(var i=0; i<clientEntries.length; i++) {
-                var entry = clientEntries[i];
-                if(entry[1] === uid) {
-                    if(entry[0] !== client)
-                        throw new Error("Client mismatch");
+    if(!keySpaceChallenges[uid])
+        throw new Error("Invalid Validation Key");
 
-                    // TODO: mark as authenticated
-                    console.log("TODO ", pgp_id_public, uid, commandString);
-                    return true;
-                }
-            }
-        }
+    var pgp_id_public = keySpaceChallenges[uid];
+    delete keySpaceChallenges[uid];
+    console.log("Validation Success: " + pgp_id_public + " => " + uid);
+    if(typeof keySpaceClients[pgp_id_public] === 'undefined')
+        keySpaceClients[pgp_id_public] = [];
+    var clientEntries = keySpaceClients[pgp_id_public];
+    if(clientEntries.indexOf(client) >= 0) {
+        client.send("WARN Already hosting key space " + pgp_id_public);
+
+    } else {
+        clientEntries.push(client);
+        client.send("INFO Hosting key space " + pgp_id_public);
     }
-
-    throw new Error("Invalid Validation Key");
+    return true;
 }
 
 function sendKeySpaceAuth(pgp_id_public, client) {
@@ -68,34 +68,25 @@ function sendKeySpaceAuth(pgp_id_public, client) {
         keySpaceClients[pgp_id_public] = [];
 
     var clientEntries = keySpaceClients[pgp_id_public];
-
-    for(var i=0; i<clientEntries.length; i++) {
-        var entry = clientEntries[i];
-        if(entry[0] === client) {
-            // Pass new challenge with existing uid
-            sendAuth(entry[0], entry[1]);
-            return;
-        }
-    }
+    if(clientEntries.indexOf(client) >= 0)
+        throw new Error("Already hosting key space " + pgp_id_public);
 
     // Generate new challenge
     var authCode = generateUID('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx');
-    clientEntries.push([client, authCode ]);
-    sendAuth(client, authCode);
+    keySpaceChallenges[authCode] = pgp_id_public;
 
-    function sendAuth(client, authCode) {
-        requestClientPublicKey(pgp_id_public, client, function(publicKey) {
-            if(typeof openpgp === 'undefined')
-                var openpgp = require('openpgp');
-            openpgp.encryptMessage(publicKey, authCode)
-                .then(function(encryptedMessage) {
-                    client.send("KS-CHALLENGE " + encryptedMessage);
+    requestClientPublicKey(pgp_id_public, client, function(publicKey) {
+        if(typeof openpgp === 'undefined')
+            var openpgp = require('openpgp');
 
-                }).catch(function(error) {
-                    client.send("ERROR " + error);
-                });
-        });
-    }
+        openpgp.encryptMessage(publicKey, authCode)
+            .then(function(encryptedMessage) {
+                client.send("KS-CHALLENGE " + encryptedMessage);
+
+            }).catch(function(error) {
+                client.send("ERROR " + error);
+            });
+    });
 }
 
 function requestClientPublicKey(pgp_id_public, client, callback) {

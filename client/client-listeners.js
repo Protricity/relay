@@ -4,8 +4,6 @@
 
 (function() {
 
-    var CLASS_FORM_SOCKET_COMMAND = 'form-websocket-command';
-
     var CLASS_CHANNEL = 'channel';
     var CLASS_CHANNEL_CONTENT = 'channel-content';
     var CLASS_CHANNEL_CONTAINER = 'channel-container';

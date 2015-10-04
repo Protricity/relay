@@ -18,7 +18,7 @@ function Client() {
 
     Client.sendWithSocket = function(commandString, e, withSocket) {
         if(typeof Sockets === 'undefined')
-            importScripts('server/sockets.js');
+            importScripts('server/socket/sockets.js');
         return Sockets.send(commandString, e, withSocket);
     };
 

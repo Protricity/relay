@@ -15,8 +15,9 @@ if(!exports) var exports = {};
     Client.addResponse(httpResponse);
     Client.addResponse(ksChallengeResponse);
 
-    var challengeValidations = [];
-    function ksChallengeResponse(commandString) {
+    //var challengeValidations = [];
+
+    function ksChallengeCommand(commandString) {
         var match = /^ks-challenge\s+([\s\S]+)$/im.exec(commandString);
         if(!match)
             return false;
@@ -25,8 +26,7 @@ if(!exports) var exports = {};
 
         var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
         var pgpEncryptedMessage = openpgp.message.readArmored(encryptedChallengeString);
-        var encIDs = pgpEncryptedMessage.getEncryptionKeyIds();
-        var pgp_id_public = encIDs[0].toHex().toUpperCase();
+        var pgp_id_public = pgpEncryptedMessage.getEncryptionKeyIds()[0].toHex().toUpperCase();
 
         var requestURL = "http://" + pgp_id_public + ".ks/.private/id";
         getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
@@ -38,19 +38,23 @@ if(!exports) var exports = {};
 
             var privateKey = openpgp.key.readArmored(contentData.content).keys[0];
 
+            // TODO: handle passphrase
             openpgp.decryptMessage(privateKey, pgpEncryptedMessage).then(function(decryptedChallenge) {
-                challengeValidations.push([pgp_id_public, decryptedChallenge]);
+                //challengeValidations.push([pgp_id_public, decryptedChallenge]);
                 Client.sendWithSocket("KS-VALIDATE " + decryptedChallenge);
-                // TODO: hosting settings
 
-            }).catch(function(error) {
-                console.error(error);
-            });
+            }).catch(console.error);
         });
 
-
-
         return true;
+    }
+
+    function ksChallengeResponse(responseString) {
+        var match = /^ks-challenge\s+([\s\S]+)$/im.exec(responseString);
+        if(!match)
+            return false;
+
+        return ksChallengeCommand(responseString);
     }
 
     /**

@@ -43,7 +43,7 @@ Templates.ks.log.container = function(url, callback) {
 Templates.ks.log.entry = function(logContent, direction, callback) {
     // Template
     var SOCKET_TEMPLATE_LOG_ENTRY = "\
-        <div class='websocket-log'>\n\
+        <div class='log-entry'>\n\
             <span class='direction'>{$DIR}</span>:\n\
             <span class='message'>{$content}</span>\n\
         </div>\
@@ -65,7 +65,7 @@ Templates.ks.log.entry = function(logContent, direction, callback) {
 Templates.ks.log.action = function(action, callback) {
     // Template
     var SOCKET_TEMPLATE_ACTION_ENTRY = "\
-        <div class='websocket-log'>\n\
+        <div class='log-entry'>\n\
             <span class='action'>{$action}</span>\n\
         </div>\n\
         ";
