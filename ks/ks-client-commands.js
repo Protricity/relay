@@ -27,7 +27,6 @@ if(!exports) var exports = {};
         var pgpEncryptedMessage = openpgp.message.readArmored(encryptedChallengeString);
         var encIDs = pgpEncryptedMessage.getEncryptionKeyIds();
         var pgp_id_public = encIDs[0].toHex().toUpperCase();
-        console.log(pgpEncryptedMessage);
 
         var requestURL = "http://" + pgp_id_public + ".ks/.private/id";
         getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
@@ -39,7 +38,6 @@ if(!exports) var exports = {};
 
             var privateKey = openpgp.key.readArmored(contentData.content).keys[0];
 
-            console.log(privateKey);
             openpgp.decryptMessage(privateKey, pgpEncryptedMessage).then(function(decryptedChallenge) {
                 challengeValidations.push([pgp_id_public, decryptedChallenge]);
                 Client.sendWithSocket("KS-VALIDATE " + decryptedChallenge);

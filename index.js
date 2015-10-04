@@ -42,7 +42,7 @@
 //                send('put');
 
         if (document.location.host === 'localhost') {
-            send('manage');
+            //send('manage');
             send('feed');
             //send('register');
             send('JOIN /timezone/' + timezone);

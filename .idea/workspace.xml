@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f1a3609b-05f2-4e93-b5c1-0f477f2ec236" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pgp/pgp-client-commands.js" afterPath="$PROJECT_DIR$/pgp/pgp-client-commands.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/chat/chat-client-commands.js" afterPath="$PROJECT_DIR$/chat/chat-client-commands.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.js" afterPath="$PROJECT_DIR$/index.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ks/ks-client-commands.js" afterPath="$PROJECT_DIR$/ks/ks-client-commands.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ks/ks-server-commands.js" afterPath="$PROJECT_DIR$/ks/ks-server-commands.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/server-commands.js" afterPath="$PROJECT_DIR$/server/server-commands.js" />
     </list>
     <ignored path="relay.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,63 +44,14 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="pgp-client-commands.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/pgp/pgp-client-commands.js">
+      <file leaf-file-name="ks-server-commands.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ks/ks-server-commands.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.22954823" vertical-offset="3246" max-vertical-offset="7599">
-              <caret line="202" column="43" selection-start-line="202" selection-start-column="43" selection-end-line="202" selection-end-column="43" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pgp-generate-template.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pgp/templates/pgp-generate-template.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="6" max-vertical-offset="1054">
-              <caret line="52" column="39" selection-start-line="52" selection-start-column="39" selection-end-line="52" selection-end-column="39" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1842" max-vertical-offset="6239">
+              <caret line="148" column="62" selection-start-line="148" selection-start-column="62" selection-end-line="148" selection-end-column="62" />
               <folding>
-                <marker date="1443543764190" expanded="true" signature="295:2774" placeholder="..." />
-                <marker date="1443543764190" expanded="true" signature="572:849" placeholder="..." />
-                <marker date="1443543764190" expanded="true" signature="660:679" placeholder="..." />
-                <marker date="1443543764190" expanded="true" signature="749:768" placeholder="..." />
-                <marker date="1443543764190" expanded="true" signature="919:2752" placeholder="..." />
-                <marker date="1443543764190" expanded="true" signature="1064:1656" placeholder="..." />
-                <marker date="1443543764190" expanded="true" signature="1268:1623" placeholder="..." />
-                <marker date="1443543764190" expanded="true" signature="1701:2017" placeholder="..." />
-                <marker date="1443543764190" expanded="true" signature="2060:2364" placeholder="..." />
-                <marker date="1443543764190" expanded="true" signature="2407:2655" placeholder="..." />
+                <element signature="n#!!doc" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pgp-listeners.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pgp/pgp-listeners.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-10.92" vertical-offset="9689" max-vertical-offset="10523">
-              <caret line="586" column="33" selection-start-line="586" selection-start-column="33" selection-end-line="586" selection-end-column="33" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/index.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.1923075" vertical-offset="0" max-vertical-offset="833">
-              <caret line="11" column="40" selection-start-line="11" selection-start-column="40" selection-end-line="11" selection-end-column="40" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ks-listeners.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ks/ks-listeners.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="7163" max-vertical-offset="8007">
-              <caret line="432" column="5" selection-start-line="432" selection-start-column="5" selection-end-line="432" selection-end-column="5" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -104,8 +59,38 @@
       <file leaf-file-name="ks-client-commands.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ks/ks-client-commands.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-10.24" vertical-offset="7462" max-vertical-offset="8296">
-              <caret line="456" column="0" selection-start-line="456" selection-start-column="0" selection-end-line="463" selection-end-column="5" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="280" max-vertical-offset="8262">
+              <caret line="41" column="73" selection-start-line="41" selection-start-column="73" selection-end-line="41" selection-end-column="73" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="server-commands.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/server/server-commands.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="221" max-vertical-offset="1700">
+              <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/index.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="619" max-vertical-offset="1870">
+              <caret line="45" column="25" selection-start-line="45" selection-start-column="25" selection-end-line="45" selection-end-column="25" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="chat-client-commands.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/chat/chat-client-commands.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.252042" vertical-offset="2555" max-vertical-offset="4641">
+              <caret line="163" column="20" selection-start-line="163" selection-start-column="20" selection-end-line="163" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -146,7 +131,6 @@
         <option value="$PROJECT_DIR$/pgp/templates/pgp-manage-template.js" />
         <option value="$PROJECT_DIR$/ks/feed/feed-client-commands.js" />
         <option value="$PROJECT_DIR$/client/client-defaults.js" />
-        <option value="$PROJECT_DIR$/index.js" />
         <option value="$PROJECT_DIR$/chat/chat-listeners.js" />
         <option value="$PROJECT_DIR$/ks/ks-tags.js" />
         <option value="$PROJECT_DIR$/client/client.js" />
@@ -157,9 +141,7 @@
         <option value="$PROJECT_DIR$/chat/chat-server-commands.js" />
         <option value="$PROJECT_DIR$/server/http-server.js" />
         <option value="$PROJECT_DIR$/ks/templates/ks-put-template.js" />
-        <option value="$PROJECT_DIR$/server/server-commands.js" />
         <option value="$PROJECT_DIR$/ks/templates/ks-response-template.js" />
-        <option value="$PROJECT_DIR$/chat/chat-client-commands.js" />
         <option value="$PROJECT_DIR$/server/socket-server.js" />
         <option value="$PROJECT_DIR$/ks/ks-db.js" />
         <option value="$PROJECT_DIR$/server/http-server-command-proxies.js" />
@@ -170,11 +152,14 @@
         <option value="$PROJECT_DIR$/pgp/lib/openpgpjs/openpgp.js" />
         <option value="$PROJECT_DIR$/server/sockets.js" />
         <option value="$PROJECT_DIR$/ks/ks-client-commands.js" />
-        <option value="$PROJECT_DIR$/ks/ks-server-commands.js" />
         <option value="$PROJECT_DIR$/pgp/pgp-listeners.js" />
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/ks/ks-listeners.js" />
         <option value="$PROJECT_DIR$/pgp/pgp-client-commands.js" />
+        <option value="$PROJECT_DIR$/ks/ks-server-commands.js" />
+        <option value="$PROJECT_DIR$/server/server-commands.js" />
+        <option value="$PROJECT_DIR$/index.js" />
+        <option value="$PROJECT_DIR$/chat/chat-client-commands.js" />
       </list>
     </option>
   </component>
@@ -674,13 +659,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/node_modules/openpgp/src/enums.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5525">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ks/feed/feed-templates.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="2157" max-vertical-offset="3281">
@@ -885,14 +863,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="619" max-vertical-offset="1870">
-          <caret line="47" column="47" selection-start-line="47" selection-start-column="47" selection-end-line="47" selection-end-column="47" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ks/templates/ks-response-template.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-4.08" vertical-offset="0" max-vertical-offset="612">
@@ -905,14 +875,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1275">
           <caret line="9" column="34" selection-start-line="9" selection-start-column="34" selection-end-line="9" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/socket-server.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="415" max-vertical-offset="2040">
-          <caret line="61" column="27" selection-start-line="61" selection-start-column="27" selection-end-line="61" selection-end-column="27" />
           <folding />
         </state>
       </provider>
@@ -945,14 +907,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1003">
           <caret line="19" column="58" selection-start-line="19" selection-start-column="58" selection-end-line="19" selection-end-column="58" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/chat/chat-client-commands.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-12.04" vertical-offset="3575" max-vertical-offset="4607">
-          <caret line="228" column="49" selection-start-line="228" selection-start-column="46" selection-end-line="228" selection-end-column="49" />
           <folding />
         </state>
       </provider>
@@ -1021,36 +975,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/server/server-commands.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1717">
-          <caret line="22" column="7" selection-start-line="22" selection-start-column="7" selection-end-line="22" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/server/sockets.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="632" max-vertical-offset="3774">
           <caret line="55" column="52" selection-start-line="55" selection-start-column="52" selection-end-line="55" selection-end-column="52" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ks/ks-server-commands.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-27.24" vertical-offset="3314" max-vertical-offset="6069">
-          <caret line="235" column="25" selection-start-line="235" selection-start-column="25" selection-end-line="235" selection-end-column="25" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ks/ks-client-commands.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.24" vertical-offset="7462" max-vertical-offset="8296">
-          <caret line="456" column="0" selection-start-line="456" selection-start-column="0" selection-end-line="463" selection-end-column="5" />
           <folding />
         </state>
       </provider>
@@ -1084,24 +1012,82 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="6" max-vertical-offset="1054">
           <caret line="52" column="39" selection-start-line="52" selection-start-column="39" selection-end-line="52" selection-end-column="39" />
           <folding>
-            <marker date="1443543764190" expanded="true" signature="295:2774" placeholder="..." />
-            <marker date="1443543764190" expanded="true" signature="572:849" placeholder="..." />
-            <marker date="1443543764190" expanded="true" signature="660:679" placeholder="..." />
-            <marker date="1443543764190" expanded="true" signature="749:768" placeholder="..." />
-            <marker date="1443543764190" expanded="true" signature="919:2752" placeholder="..." />
-            <marker date="1443543764190" expanded="true" signature="1064:1656" placeholder="..." />
-            <marker date="1443543764190" expanded="true" signature="1268:1623" placeholder="..." />
-            <marker date="1443543764190" expanded="true" signature="1701:2017" placeholder="..." />
-            <marker date="1443543764190" expanded="true" signature="2060:2364" placeholder="..." />
-            <marker date="1443543764190" expanded="true" signature="2407:2655" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443543764190" expanded="true" signature="-1:-1" placeholder="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/openpgp/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="19.615385" vertical-offset="510" max-vertical-offset="1564">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pgp/pgp-client-commands.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.22954823" vertical-offset="3246" max-vertical-offset="7599">
-          <caret line="202" column="43" selection-start-line="202" selection-start-column="43" selection-end-line="202" selection-end-column="43" />
+        <state vertical-scroll-proportion="13.56" vertical-offset="3246" max-vertical-offset="7599">
+          <caret line="171" column="27" selection-start-line="171" selection-start-column="27" selection-end-line="171" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/socket-server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1035" max-vertical-offset="2040">
+          <caret line="79" column="0" selection-start-line="79" selection-start-column="0" selection-end-line="79" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ks/ks-client-commands.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="280" max-vertical-offset="8262">
+          <caret line="41" column="73" selection-start-line="41" selection-start-column="73" selection-end-line="41" selection-end-column="73" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ks/ks-server-commands.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1842" max-vertical-offset="6239">
+          <caret line="148" column="62" selection-start-line="148" selection-start-column="62" selection-end-line="148" selection-end-column="62" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/server-commands.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="221" max-vertical-offset="1700">
+          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="619" max-vertical-offset="1870">
+          <caret line="45" column="25" selection-start-line="45" selection-start-column="25" selection-end-line="45" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/chat/chat-client-commands.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.252042" vertical-offset="2555" max-vertical-offset="4641">
+          <caret line="163" column="20" selection-start-line="163" selection-start-column="20" selection-end-line="163" selection-end-column="20" />
           <folding />
         </state>
       </provider>

@@ -29,7 +29,6 @@ function getStaticSocketCommand(commandString, client) {
     if(!match)
         return false;
 
-    console.log(commandString);
     var requestURL = match[1];
     handleFileRequest(requestURL, function(responseBody, statusCode, statusMessage, headers) {
         client.send('HTTP/1.1 ' + (statusCode || 200) + (statusMessage || 'OK') +

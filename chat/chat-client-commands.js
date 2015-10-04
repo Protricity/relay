@@ -161,12 +161,14 @@
             return false;
 
         Client.sendWithSocket(commandString);
+        return true;
     }
 
     function nickResponse(responseString) {
         var match = /^(nick)\s+(\S+)\s+(\S+)/im.exec(responseString);
         if(!match)
             return false;
+
         var old_username = match[2];
         var new_username = match[3];
         for (var channelPath in channelUsers) {

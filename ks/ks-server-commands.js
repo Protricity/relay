@@ -7,6 +7,7 @@ exports.initSocketServerCommands = function(SocketServer) {
     SocketServer.addCommand(getCommandSocket);
     SocketServer.addCommand(putCommandSocket);
     SocketServer.addCommand(ksAuthCommandSocket);
+    SocketServer.addCommand(ksValidateCommandSocket);
     SocketServer.addCommand(handleHTTPSocketResponse);
     //SocketServer.addEventListener('connection', onSocketConnection);
 };
@@ -18,7 +19,6 @@ exports.initHTTPServerCommands = function(HTTPServer) {
 };
 
 var keySpaceClients = {};
-
 function ksAuthCommandSocket(commandString, client) {
     var match = /^ks-auth\s+(.*)$/i.exec(commandString);
     if(!match)
@@ -27,7 +27,6 @@ function ksAuthCommandSocket(commandString, client) {
     var ids = match[1].split(/\W+/);
     for(var i=0; i<ids.length; i++) {
         var id = ids[i];
-        console.log("KS-AUTH " + id);
         if(id.length < 16) {
             client.send("ERROR PGP ID must be at least 16 characters: " + id);
 
@@ -43,13 +42,25 @@ function ksValidateCommandSocket(commandString, client) {
     if(!match)
         return false;
 
-    //var publicKeyBlock = parsePublicKeyBlock(commandString);
-    //var signedIDSIGBlock = parseSignedMessage(commandString);
-    //var publicKeys = openpgp.key.readArmored(commandString);
-    //var clearSignedMessages = openpgp.cleartext.readArmored(commandString);
-    console.log(commandString);
-    //send(client, "IDENTIFY " + client.pgp.uid);
-    return true;
+    var uid = match[1];
+    for(var pgp_id_public in keySpaceClients) {
+        if(keySpaceClients.hasOwnProperty(pgp_id_public)) {
+            var clientEntries = keySpaceClients[pgp_id_public];
+            for(var i=0; i<clientEntries.length; i++) {
+                var entry = clientEntries[i];
+                if(entry[1] === uid) {
+                    if(entry[0] !== client)
+                        throw new Error("Client mismatch");
+
+                    // TODO: mark as authenticated
+                    console.log("TODO ", pgp_id_public, uid, commandString);
+                    return true;
+                }
+            }
+        }
+    }
+
+    throw new Error("Invalid Validation Key");
 }
 
 function sendKeySpaceAuth(pgp_id_public, client) {
@@ -110,7 +121,7 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
                 throw new Error("Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
 
             callback(publicKey, contentData.content);
-            console.info("Loaded Public Key from Cache: " + requestURL);
+            //console.info("Loaded Public Key from Cache: " + requestURL);
             loaded = true;
 
         } else {
@@ -135,7 +146,7 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
                             throw new Error(err);
 
                         loaded = true;
-                        console.info("Cached: " + requestURL);
+                        console.info("Storing Public Key Cache: " + requestURL);
                     });
             });
         }
@@ -246,7 +257,6 @@ function addURLsToDB(responseContent, referrerURL) {
 }
 
 var httpBrowserID = 1;
-var requestIDCount = 0;
 var pendingGETRequests = {};
 function executeServerGetRequest(requestString, callback) {
     var browserID = getContentHeader(requestString, 'Browser-ID');
@@ -261,7 +271,7 @@ function executeServerGetRequest(requestString, callback) {
 
     // Check local cache to see what can be displayed while waiting
     var requestURL = getRequestURL(requestString);
-    console.info("GET ", requestURL);
+    //console.info("GET ", requestURL);
     getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
         if(err)
             throw new Error(err);
