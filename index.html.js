@@ -6,10 +6,10 @@
 
     window.addEventListener('hashchange', onHashChange);
 //            window.onbeforeunload = onUnload;
+    //function onUnload(e) {
+    //    return "Relay client will disconnect";
+    //}
 
-    function onUnload(e) {
-        return "Relay client will disconnect";
-    }
     function onHashChange(e) {
         var hashCommand = document.location.hash.replace(/^#/, '').trim();
         document.location.hash = '';
