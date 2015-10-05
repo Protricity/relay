@@ -55,16 +55,13 @@ Templates.ks.put.form = function(content, callback) {
     // " + EXAMPLE_VOTE + "\n\
 
 
-    if(typeof PGPDB !== 'function')
-        importScripts('pgp/pgp-db.js');
-
     var form_classes = [];
     var html_pgp_id_private_html = '';
     var html_path_options = '';
 
     // Query private key(s)
     var path = '/.private/id';
-    KeySpaceDB.queryContent(path, function(err, privateKeyBlock) {
+    getKeySpaceDB().queryContent(path, function(err, privateKeyBlock) {
         if(err)
             throw new Error(err);
 
@@ -158,6 +155,16 @@ Templates.ks.put.preview = function(content, callback) {
     );
 };
 
+
+function getKeySpaceDB() {
+    if(typeof self.KeySpaceDB === 'undefined') {
+        if(typeof importScripts === "function")
+            importScripts('ks/ks-db.js');
+        else
+            self.KeySpaceDB = require('./ks-db.js').KeySpaceDB;
+    }
+    return self.KeySpaceDB;
+}
 
 var EXAMPLE_VOTE = "\
         <ul draggable='true' class='app.vote' data-id='abcd'>\n\

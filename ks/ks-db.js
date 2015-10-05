@@ -30,7 +30,7 @@ function KeySpaceDB(dbReadyCallback) {
     var connecting = false;
     KeySpaceDB.getDBInstance = function(callback) {
         if(dbInst)
-            return callback(dbInst);
+            return callback(null, dbInst);
         if(callback)
             onDBCallbacks.push(callback);
         if(connecting)
@@ -45,12 +45,15 @@ function KeySpaceDB(dbReadyCallback) {
             openRequest.onsuccess = function (e) {
                 dbInst = e.target.result;
                 for (var i = 0; i < onDBCallbacks.length; i++)
-                    onDBCallbacks[i](dbInst);
+                    onDBCallbacks[i](null, dbInst);
                 onDBCallbacks = [];
             };
 
             openRequest.onerror = function (e) {
                 var err = e.target.result;
+                for (var i = 0; i < onDBCallbacks.length; i++)
+                    onDBCallbacks[i](err, null);
+                onDBCallbacks = [];
                 throw new Error(err);
             };
 
@@ -79,8 +82,13 @@ function KeySpaceDB(dbReadyCallback) {
             console.info("MongoClient.connect(", url, ")");
 
             MongoClient.connect(url, function(err, db) {
-                if(err)
-                    throw new Error(err);
+                if(err) {
+                    for (var j = 0; j < onDBCallbacks.length; j++)
+                        onDBCallbacks[j](err, db);
+                    onDBCallbacks = [];
+                    return;
+                }
+
                 console.log("Connected: " + url);
                 dbInst = db;
 
@@ -92,7 +100,7 @@ function KeySpaceDB(dbReadyCallback) {
                 dbCollection.createIndex({"timestamp": -1});
 
                 for (var i = 0; i < onDBCallbacks.length; i++)
-                    onDBCallbacks[i](db);
+                    onDBCallbacks[i](err, db);
                 onDBCallbacks = [];
             });
         }
@@ -142,7 +150,10 @@ function KeySpaceDB(dbReadyCallback) {
     };
 
     KeySpaceDB.deleteContent = function(publicKeyID, timestamp, callback) {
-        KeySpaceDB(function(db) {
+        KeySpaceDB(function(err, db) {
+            if(err)
+                return callback(err);
+
             if (typeof IDBDatabase !== 'undefined' && db instanceof IDBDatabase) {
                 var dbStore = db
                     .transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readwrite")
@@ -161,7 +172,10 @@ function KeySpaceDB(dbReadyCallback) {
     };
 
     KeySpaceDB.getContent = function(publicKeyID, timestamp, callback) {
-        KeySpaceDB(function(db) {
+        KeySpaceDB(function(err, db) {
+            if(err)
+                return callback(err);
+
             if (typeof IDBDatabase !== 'undefined' && db instanceof IDBDatabase) {
                 var dbStore = db
                     .transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readwrite")
@@ -205,8 +219,10 @@ function KeySpaceDB(dbReadyCallback) {
             publicKeyID = publicKeyID.substr(publicKeyID.length - 16);
         }
 
+        KeySpaceDB(function(err, db) {
+            if(err)
+                return callback(err);
 
-        KeySpaceDB(function(db) {
             if(typeof IDBDatabase !== 'undefined' && db instanceof IDBDatabase) {
                 var dbStore = db
                     .transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readwrite")
@@ -255,7 +271,10 @@ function KeySpaceDB(dbReadyCallback) {
         if(typeof timespan.length === 'undefined')
             timespan = [timespan, Date.now()];
 
-        KeySpaceDB(function(db) {
+        KeySpaceDB(function(err, db) {
+            if(err)
+                return callback(err);
+
             if(typeof IDBDatabase !== 'undefined' && db instanceof IDBDatabase) {
                 var dbStore = db
                     .transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readwrite")
@@ -326,7 +345,10 @@ function KeySpaceDB(dbReadyCallback) {
         if(currentURL !== parentURL)
             paths.push([parentURL, '..']);
 
-        KeySpaceDB(function(db) {
+        KeySpaceDB(function(err, db) {
+            if(err)
+                return callback(err);
+
             var urlPrefix = currentURL.toLowerCase();
             if(urlPrefix[urlPrefix.length-1] !== '/')
                 urlPrefix += '/';
@@ -356,7 +378,10 @@ function KeySpaceDB(dbReadyCallback) {
 
 
     KeySpaceDB.insert = function(tableName, insertData, callback) {
-        KeySpaceDB(function(db) {
+        KeySpaceDB(function(err, db) {
+            if(err)
+                return callback(err);
+
             if(typeof IDBDatabase !== 'undefined' && db instanceof IDBDatabase) {
                 var dbStore = db
                     .transaction([tableName], "readwrite")

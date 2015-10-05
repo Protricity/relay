@@ -75,7 +75,10 @@ function sendKeySpaceAuth(pgp_id_public, client) {
     var authCode = generateUID('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx');
     keySpaceChallenges[authCode] = pgp_id_public;
 
-    requestClientPublicKey(pgp_id_public, client, function(publicKey) {
+    requestClientPublicKey(pgp_id_public, client, function(err, publicKey) {
+        if(err)
+            return client.send("ERROR " + err);
+
         if(typeof openpgp === 'undefined')
             var openpgp = require('openpgp');
 
@@ -98,7 +101,8 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
     var loaded = false;
     getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
         if (err)
-            throw new Error(err);
+            return callback(err);
+
         if(loaded)
             return;
 
@@ -111,7 +115,7 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
             if(publicKeyID !== pgp_id_public)
                 throw new Error("Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
 
-            callback(publicKey, contentData.content);
+            callback(null, publicKey, contentData.content);
             //console.info("Loaded Public Key from Cache: " + requestURL);
             loaded = true;
 
@@ -127,7 +131,7 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
                 if(publicKeyID !== pgp_id_public)
                     throw new Error("Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
 
-                callback(publicKey, responseBody);
+                callback(null, publicKey, responseBody);
 
                 // TODO: client config cache settings
                 // Cache Public Key

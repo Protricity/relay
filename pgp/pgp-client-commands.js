@@ -313,7 +313,7 @@
     //        if(err)
     //            throw new Error(err);
     //
-    //        importScripts('pgp/templates/pgp-identify-template.js');
+    //        importScripts('pgp/templates/pgp-identify-template.js.old');
     //        Templates.pgp.identify.form(responseString, socket.url, CONFIG, function(html) {
     //            Client.postResponseToClient("LOG.REPLACE identify: " + html);
     //        });
@@ -388,7 +388,7 @@
 //                            auto_identify_all_attr = "selected='selected'";
 //                    }
 //
-//                    importScripts('pgp/templates/pgp-identify-template.js');
+//                    importScripts('pgp/templates/pgp-identify-template.js.old');
 //                    Templates.pgp.identify.successForm(commandData, socket.url, CONFIG, function(html) {
 //                        Client.postResponseToClient("LOG.REPLACE identify: " + html);
 //                    });

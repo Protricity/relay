@@ -6,6 +6,7 @@ var Templates = Templates || {};
 Templates.feed = Templates.feed || {};
 Templates.feed.container = function(commandString, callback) {
 
+
     var FEED_TEMPLATE = "\
         <article class='channel feed feed:{$channel_path}'>\n\
             <script src='ks/feed/feed-listeners.js'></script>\n\
@@ -19,6 +20,7 @@ Templates.feed.container = function(commandString, callback) {
              --><a class='title-command-close' href='#CLOSE feed:{$channel_path}'>[x]</a>\n\
             </div>\n\
             <div class='feed-entries feed-entries:{$channel_path}' onscroll='scrollFeed.apply(this, [event]);'>\n\
+                {$html_put_form}\n\
             </div>\n\
         </article>";
 
@@ -26,10 +28,18 @@ Templates.feed.container = function(commandString, callback) {
     //FEED_POST_FORM_TEMPLATE\n\
     //</fieldset>\n\
 
-    // Callback
-    callback(FEED_TEMPLATE
-            .replace(/{\$channel_path}/gi, '')
-    );
+    var content = '';
+    importScripts('ks/templates/ks-put-template.js');
+    Templates.ks.put.form(content, function(putFormTemplate) {
+        // Callback
+
+        callback(FEED_TEMPLATE
+                .replace(/{\$channel_path}/gi, '')
+                .replace(/{\$html_put_form}/gi, putFormTemplate)
+        );
+    });
+    // Free up template resources
+    delete Templates.ks.put.form;
 };
 
 // <article data-re='7F9B82233110FF44-1442812607259' optional data-path="/home/3110FF44/"

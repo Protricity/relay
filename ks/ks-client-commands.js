@@ -78,7 +78,7 @@ if(!exports) var exports = {};
             throw new Error("Invalid Path: " + path);
 
         if(content) {
-            // todo http format
+            // todo http form
             if(preview) {
                 importScripts('ks/templates/ks-put-template.js');
                 Templates.ks.put.preview(content, function(html) {
