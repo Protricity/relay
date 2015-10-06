@@ -96,33 +96,7 @@ function Client() {
     };
 
     function replaceAllTags(htmlContent, callback) {
-        var match = /{\$([a-z][^}]+)}/.exec(htmlContent);
-        if(!match) {
-            callback(htmlContent);
-            return;
-        }
-        console.log(match);
-
-        var tagString = match[0];
-        var tagContent = match[1];
-        var tagNamespace = 'websocket';
-        if(tagContent.indexOf('::') !== -1) {
-            tagNamespace = tagContent.split('::', 2)[0].toLowerCase();
-            if(!/^\w+$/.test(tagNamespace))
-                throw new Error("Invalid Tag Namespace: " + tagString);
-        }
-        if(typeof tagCallbacks[tagNamespace] === 'undefined') {
-            tagCallbacks[tagNamespace] = false;
-            importScripts(tagNamespace + '/' + tagNamespace + '-tags.js');
-        }
-        var tagCall = tagCallbacks[tagNamespace];
-
-        tagCall(tagString, function(tagContent) {
-            replaceAllTags(htmlContent
-                    .replace(tagString, tagContent),
-                callback
-            );
-        });
+        require('client-tags.js').parseClientTags(htmlContent, callback);
     }
 
 // Default
