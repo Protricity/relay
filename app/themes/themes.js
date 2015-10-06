@@ -9,4 +9,7 @@
         Templates.app.themes.minimal(renderElement, callback);
         delete Templates.app.themes.minimal;
     })
+
+
+    function parseTag(themeName,etc)
 })();
