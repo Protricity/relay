@@ -1,0 +1,20 @@
+/** Hover **/
+
+.navigation-commands:hover,
+
+/** Channels **/
+
+.channel {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.channel.closed,
+.channel.minimized > * {
+    display: none;
+}
+
+.channel.minimized .show-on-minimized {
+    display: inherit;
+}

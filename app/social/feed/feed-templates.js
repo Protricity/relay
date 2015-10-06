@@ -6,7 +6,6 @@ var Templates = Templates || {};
 Templates.feed = Templates.feed || {};
 Templates.feed.container = function(commandString, callback) {
 
-
     var FEED_TEMPLATE = "\
         <article class='channel feed feed:{$channel_path}'>\n\
             <script src='app/social/feed/feed-listeners.js'></script>\n\

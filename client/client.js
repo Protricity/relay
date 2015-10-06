@@ -83,6 +83,15 @@ function Client() {
         }
     };
 
+    Client.render = function(targetClass, content, subCommand) {
+        if(subCommand)
+            subCommand = '.' + subCommand;
+
+        replaceAllTags(content, function(parsedContent) {
+            Client.postResponseToClient("RENDER" + subCommand + " " + targetClass + " " + parsedContent);
+        });
+    };
+
     Client.postResponseToClient = function(responseString) {
         self.postMessage(responseString);
     };
@@ -144,9 +153,9 @@ function Client() {
         if(!match)
             return false;
 
-        replaceAllTags(commandString, function(parsedCommandString) {
-            Client.postResponseToClient(parsedCommandString);
-        });
+        var targetClass = match[1];
+        var content = match[2];
+        Client.render(targetClass, content);
         return true;
     }
 

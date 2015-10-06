@@ -71,7 +71,7 @@ if(!exports) var exports = {};
 
         importScripts('ks/templates/ks-put-template.js');
         Templates.ks.put.preview(content, function(html) {
-            Client.postResponseToClient("RENDER.REPLACE put-preview: " + html);
+            Client.render("put-preview:", html);
         });
         // Free up template resources
         delete Templates.ks.put.preview;
@@ -112,7 +112,7 @@ if(!exports) var exports = {};
         } else {
             importScripts('ks/templates/ks-put-template.js');
             Templates.ks.put.form(content, function(html) {
-                Client.postResponseToClient("RENDER.REPLACE put: " + html);
+                Client.render("put:", html);
             });
             // Free up template resources
             delete Templates.ks.put.form;
@@ -121,11 +121,12 @@ if(!exports) var exports = {};
         return true;
     }
 
-    function putResponse(commandString) {
-        if(commandString.substr(0,3).toLowerCase() !== 'put')
-            return false; // throw new Error("Invalid PUT: " + commandString);
-        Client.postResponseToClient(commandString);
-        return true;
+    function putResponse(responseString) {
+        if(responseString.substr(0,3).toLowerCase() !== 'put')
+            return false; // throw new Error("Invalid PUT: " + responseString);
+        throw new Error("Not Implemented: " + responseString);
+        //Client.postResponseToClient(responseString);
+        //return true;
     }
 
 
@@ -398,7 +399,7 @@ if(!exports) var exports = {};
 
         importScripts('ks/templates/ks-browser-template.js');
         Templates.ks.browser(responseString, function(html) {
-            Client.postResponseToClient("RENDER.REPLACE ks-browser:" + browserID + ' ' + html);
+            Client.render("ks-browser:" + browserID, html);
         });
         // Free up template resources
         delete Templates.ks.browser;
@@ -423,13 +424,13 @@ if(!exports) var exports = {};
             logContainerActive = true;
             importScripts('ks/templates/ks-log-template.js');
             Templates.ks.log.container(requestURL, function (html) {
-                Client.postResponseToClient("RENDER.REPLACE ks-log:" + host + " " + html);
+                Client.render("ks-log:" + host, html);
             });
         }
 
         var requestURLAnchorHTML = "<a href='" + requestURL + "'>" + requestURL + "</a>";
         Templates.ks.log.entry(requestURLAnchorHTML, dir, function(html) {
-            Client.postResponseToClient("RENDER ks-log-content:" + host + " " + html);
+            Client.render("ks-log-content:", html, 'append');
         });
     };
 

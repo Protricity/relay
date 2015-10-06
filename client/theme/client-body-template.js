@@ -7,7 +7,9 @@
 var Templates = Templates || {};
 Templates.client = Templates.client || {};
 Templates.client.body = function(theme, callback) {
-    var CLIENT_TEMPLATE = "\<body class='template-minimal'>\n\
+    var CLIENT_TEMPLATE = "\
+    <article>\n\
+        <link rel='stylesheet' href='client/client.css' type='text/css'>\n\
         <nav class='navigation-commands closed'>\n\
             <header onclick='toggleNavigationCommandMenu(event)'>\n\
                 <label>\n\
@@ -29,15 +31,8 @@ Templates.client.body = function(theme, callback) {
                 <li><a href='#PUT'          ><span class='command'>Put</span> to your <strong>User Space</strong></a></li>\n\
             </ul>\n\
         </nav>\n\
-        <span class='channel-container'>\n\
-        </span>\n\
-    </body>";
+        <section class='channel-container'></section>\n\
+    </article>";
 
-    callback(CLIENT_TEMPLATE
-            //.replace(/{\$content}/gi, content || '')
-        //        .replace(/{\$html_pgp_id_public}/gi, html_pgp_id_public_html || '')
-        //.replace(/{\$form_class}/gi, form_classes.join(' '))
-        //.replace(/{\$html_path_options}/gi, html_path_options || '')
-        //.replace(/{\$attr_preview_checked}/gi, "checked='checked'") // TODO: get from config
-    );
+    callback(CLIENT_TEMPLATE);
 };

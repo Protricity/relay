@@ -117,7 +117,7 @@ ClientWorker.includeLink = function(linkPath) {
 
         var htmlContainer = document.createElement('div');
         htmlContainer.innerHTML = content;
-        var contentElement = htmlContainer.firstChild;
+        var contentElement = htmlContainer.children[0];
         if(contentElement) {
 
         } else {
@@ -174,8 +174,7 @@ ClientWorker.includeLink = function(linkPath) {
 
 
                 case 'replace':
-                    console.log(contentElement);
-                    channelOutput.innerHTML = contentElement.innerHTML;
+                    channelOutput.innerHTML = contentElement.outerHTML;
                     break;
 
                 case 'prepend':

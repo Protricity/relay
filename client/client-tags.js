@@ -13,9 +13,11 @@ function parseBodyTag(tagHTML, callback) {
 
     var theme = match[1];
 
-    importScripts('client/theme/client-body-template.js');
-    Templates.client.body(theme, callback);
+    importScripts('client/theme/client-render.js');
+    Templates.client.render(tagHTML, theme, callback);
 }
+
+
 
 // Exports
 
