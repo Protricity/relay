@@ -92,17 +92,16 @@ function Client() {
     };
 
     Client.postResponseToClient = function(responseString) {
-        replaceAllTags(responseString, function(parsedResponseString) {
-            self.postMessage(parsedResponseString);
-        });
+        self.postMessage(responseString);
     };
 
     function replaceAllTags(htmlContent, callback) {
-        var match = /{([a-z][^}]+)}/.exec(htmlContent);
+        var match = /{\$([a-z][^}]+)}/.exec(htmlContent);
         if(!match) {
             callback(htmlContent);
             return;
         }
+        console.log(match);
 
         var tagString = match[0];
         var tagContent = match[1];
@@ -136,7 +135,7 @@ function Client() {
     //};
     //Client.addResponse(/^\w+/, defaultResponse);
 
-// Socket Client
+    // Socket Client
     Client.addResponse(consoleResponse);
     function consoleResponse(commandResponse, e) {
         var match = /^(info|error|assert|warn)/i.exec(commandResponse);
@@ -149,13 +148,29 @@ function Client() {
     }
 
 
-// Window Client
+    // Window Client
     Client.addCommand(channelButtonCommand);
     function channelButtonCommand(commandString, e) {
         if(!/^(minimize|maximize|close)/i.test(commandString))
             return false;
-        Client.postResponseToClient("LOG." + commandString);
+        Client.postResponseToClient("RENDER." + commandString);
         return true;
     }
+
+
+    // Client Render
+    Client.addCommand(clientRenderCommand);
+    function clientRenderCommand(commandString, e) {
+        // TODO: subcommands
+        var match = /^render(?:\s+(\S+))(?:\s+(\S+))$/im.exec(commandString);
+        if(!match)
+            return false;
+
+        replaceAllTags(commandString, function(parsedCommandString) {
+            Client.postResponseToClient(parsedCommandString);
+        });
+        return true;
+    }
+
 
 })();

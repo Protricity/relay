@@ -5,9 +5,9 @@
 
     // Events
 
-    self.addEventListener('log', onLogEvent);
+    self.addEventListener('render', onRenderEvent);
 
-    function onLogEvent(e) {
+    function onRenderEvent(e) {
         var voteElements = document.getElementsByClassName('app.vote');
 
         for(var i=0; i<voteElements.length; i++) (function(voteElement) {
@@ -34,7 +34,7 @@
             console.log("Found vote: ", title, options);
         })(voteElements[i]);
     }
-    setTimeout(onLogEvent, 200);
+    setTimeout(onRenderEvent, 200);
 
 
     // Includes

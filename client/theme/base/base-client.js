@@ -37,6 +37,8 @@
     }, 200);
 
 
+    //<script src="http://www.telize.com/geoip?callback=geoipcallback" async="async" defer="defer"></script>
+    //<script src="https://freegeoip.net/json/?callback=geoipcallback" async="async" defer="defer"></script>
     self.geoipcallback = function(result) {
         if (result.country_name)
             result.country = result.country_name;

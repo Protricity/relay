@@ -13,7 +13,7 @@
     self.addEventListener('submit', onFormEvent);
     self.addEventListener('change', onFormEvent);
     self.addEventListener('input', onFormEvent);
-    self.addEventListener('log', function(e) {
+    self.addEventListener('render', function(e) {
         //console.log(e.type, e.target.querySelector('form'), e.target);
         return onFormEvent(e, e.target.querySelector('form'));
     });

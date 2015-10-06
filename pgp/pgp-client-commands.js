@@ -49,7 +49,7 @@
 
         importScripts('pgp/templates/pgp-manage-template.js');
         Templates.pgp.manage.form(status_content, function(html) {
-            Client.postResponseToClient("LOG.REPLACE pgp: " + html);
+            Client.postResponseToClient("RENDER.REPLACE pgp: " + html);
         });
 
         // Query private key
@@ -62,7 +62,7 @@
             if(contentEntry) {
                 count++;
                 Templates.pgp.manage.entry(contentEntry, function(html) {
-                    Client.postResponseToClient("LOG pgp-manage-entries: " + html);
+                    Client.postResponseToClient("RENDER pgp-manage-entries: " + html);
                 });
 
             } else {
@@ -70,7 +70,7 @@
                     status_content = (status_content ? status_content + "<br/>" : '') + "<strong>No PGP Identities found</strong><br/>" +
                         "<span class='info'>You may <a href='#KEYGEN'>Generate</a>  a new PGP Key Pair Identity</span>";
                     Templates.pgp.manage.form(status_content, function(html) {
-                        Client.postResponseToClient("LOG.REPLACE pgp: " + html);
+                        Client.postResponseToClient("RENDER.REPLACE pgp: " + html);
                     });
                 }
                 // Free up template resources
@@ -136,7 +136,7 @@
 
                 importScripts('pgp/templates/pgp-register-template.js');
                 Templates.pgp.register.form(keyPair.privateKeyArmored, status_content, function(html) {
-                    Client.postResponseToClient("LOG.REPLACE pgp: " + html);
+                    Client.postResponseToClient("RENDER.REPLACE pgp: " + html);
                 });
                 // Free up template resources
                 delete Templates.pgp.register;
@@ -149,7 +149,7 @@
         } else {
             importScripts('pgp/templates/pgp-generate-template.js');
             Templates.pgp.generate.form('', function(html) {
-                Client.postResponseToClient("LOG.REPLACE pgp: " + html);
+                Client.postResponseToClient("RENDER.REPLACE pgp: " + html);
             });
             // Free up template resources
             delete Templates.pgp.generate;
@@ -215,7 +215,7 @@
             var status_content = "Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually";
             importScripts('pgp/templates/pgp-register-template.js');
             Templates.pgp.register.form('', status_content, function(html) {
-                Client.postResponseToClient("LOG.REPLACE pgp: " + html);
+                Client.postResponseToClient("RENDER.REPLACE pgp: " + html);
             });
             // Free up template resources
             delete Templates.pgp.register;
@@ -317,7 +317,7 @@
     //
     //        importScripts('pgp/templates/pgp-identify-template.js.old');
     //        Templates.pgp.identify.form(responseString, socket.url, CONFIG, function(html) {
-    //            Client.postResponseToClient("LOG.REPLACE identify: " + html);
+    //            Client.postResponseToClient("RENDER.REPLACE identify: " + html);
     //        });
     //        // Free up template resources
     //        delete Templates.pgp.identify;
@@ -392,7 +392,7 @@
 //
 //                    importScripts('pgp/templates/pgp-identify-template.js.old');
 //                    Templates.pgp.identify.successForm(commandData, socket.url, CONFIG, function(html) {
-//                        Client.postResponseToClient("LOG.REPLACE identify: " + html);
+//                        Client.postResponseToClient("RENDER.REPLACE identify: " + html);
 //                    });
 //                    // Free up template resources
 //                    delete Templates.pgp.identify;
@@ -410,7 +410,7 @@
 //                    //            throw new Error("Could not find private key: " + privateKeyID);
 //                    //        var pgp_id_private = privateKeyData.id_private + "," + privateKeyData.id_public + "," + username + (privateKeyData.passphrase_required ? ',1' : ',0');
 //                    //
-//                    //        Client.postResponseToClient("LOG.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE_SUCCESS
+//                    //        Client.postResponseToClient("RENDER.REPLACE " + PATH_ID_REQUEST + " * " + IDENTIFY_TEMPLATE_SUCCESS
 //                    //                .replace(/{\$pgp_id_public}/gi, pgp_id_public)
 //                    //                .replace(/{\$pgp_id_private}/gi, pgp_id_private)
 //                    //                .replace(/{\$status_content}/gi, status_content || '')

@@ -5,7 +5,7 @@
 
     //var verifiedContentElms = document.getElementsByClassName('pgp-verified-content1');
 
-    document.addEventListener('log', sortFeedEntry);
+    document.addEventListener('render', sortFeedEntry);
     document.addEventListener('submit', onSubmitEvent);
 
     var unsortedElms = document.getElementsByClassName('feed-unsorted');

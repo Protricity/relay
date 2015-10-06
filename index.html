@@ -3,9 +3,11 @@
     <head>
         <script src="client/client-worker.js"></script>
         <script>
-            ClientWorker.sendCommand("load");
+            ClientWorker.sendCommand("render ::body {$body.minimal}");
+//            ClientWorker.sendCommand("render navigation minimal");
+//            ClientWorker.sendCommand("render content minimal");
         </script>
     </head>
-    <body>
+    <body class="::body">
     </body>
 </html>

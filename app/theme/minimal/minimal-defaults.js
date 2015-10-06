@@ -4,8 +4,8 @@
 
 (function() {
 
-    //document.addEventListener('log', onLog);
-    //document.addEventListener('log.replace', onLogReplace);
+    //document.addEventListener('render', onLog);
+    //document.addEventListener('render.replace', onLogReplace);
 
     //var sortedChannelElms = document.getElementsByClassName('channel sorted');
     //var unsortedChannelElms = document.getElementsByClassName('channel unsorted');

@@ -26,7 +26,7 @@
         var feedStartTime = feedEndTime - MS_DAY;
 
         Templates.feed.container(commandString, function(html) {
-            Client.postResponseToClient("LOG.REPLACE feed: " + html);
+            Client.postResponseToClient("RENDER.REPLACE feed: " + html);
         });
 
         getKeySpaceDB().queryContentFeed(
@@ -37,7 +37,7 @@
                     throw new Error(err);
                 if(data)
                     Templates.feed.entry(data, function(html) {
-                        Client.postResponseToClient("LOG feed-entries: " + html);
+                        Client.postResponseToClient("RENDER feed-entries: " + html);
                     });
             });
         return true;

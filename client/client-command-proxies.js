@@ -58,5 +58,5 @@ exports.initClientCommands = function(Client) {
         return false;
     }
 
-}
+};
 
