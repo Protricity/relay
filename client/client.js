@@ -98,7 +98,7 @@ function Client() {
 
     function replaceAllTags(htmlContent, callback) {
         Client.require('client/client-tags.js')
-            .parseClientTags(htmlContent, callback);
+            .parseClientTags(Client, htmlContent, callback);
     }
 
     Client.require = function(path) {
