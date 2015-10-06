@@ -9,8 +9,8 @@ Templates.feed.container = function(commandString, callback) {
 
     var FEED_TEMPLATE = "\
         <article class='channel feed feed:{$channel_path}'>\n\
-            <script src='ks/feed/feed-listeners.js'></script>\n\
-            <link rel='stylesheet' href='ks/feed/feed.css' type='text/css'>\n\
+            <script src='app/social/feed/feed-listeners.js'></script>\n\
+            <link rel='stylesheet' href='app/social/feed/feed.css' type='text/css'>\n\
             <legend class='title'>\
                 <span class='command'>Feed</span>: {$channel_path}\
             </legend>\n\
@@ -29,7 +29,7 @@ Templates.feed.container = function(commandString, callback) {
     //</fieldset>\n\
 
     var content = '';
-    importScripts('ks/templates/ks-put-template.js');
+    importScripts('app/ks/templates/ks-put-template.js');
     Templates.ks.put.form(content, function(putFormTemplate) {
         // Callback
 
@@ -56,7 +56,7 @@ Templates.feed.entry = function(entryData, callback) {
             </div>\n\
             <div class='feed-author'>\n\
                 <a href='#KEY {$pgp_id_public}' class='user'>\
-                    <img class='user_icon tiny' src='ks/feed/img/user_icon_default.png' alt='UI' />\n\
+                    <img class='user_icon tiny' src='app/social/feed/img/user_icon_default.png' alt='UI' />\n\
                     {$author}\n\
                 </a>\n\
                 <div class='timestamp_formatted'>{$timestamp_formatted}</div>\n\
@@ -70,7 +70,7 @@ Templates.feed.entry = function(entryData, callback) {
                 <form name='feed-source-form'><button>Source</button></form>\n\
             </div>\n\
             <div class='feed-comments-section feed-comments-section:{$uid}'>\n\
-                <img class='user_icon tiny' src='ks/feed/img/user_icon_default.png' alt='UI' />\n\
+                <img class='user_icon tiny' src='app/social/feed/img/user_icon_default.png' alt='UI' />\n\
                 <input name='comment' placeholder='Write a comment' size='56' />\n\
             </div>\n\
             <div class='feed-share-section'>Share\n\
@@ -117,7 +117,7 @@ Templates.feed.comment = function(entryData, callback) {
         <article class='feed-comment feed-comment:{$uid} feed-unsorted'>\n\
             <div class='feed-comment-author'>\n\
                 <a href='#KEY {$pgp_id_public}' class='user'>\
-                    <img class='user_icon tiny' src='ks/feed/img/user_icon_default.png' alt='UI' />\n\
+                    <img class='user_icon tiny' src='app/social/feed/img/user_icon_default.png' alt='UI' />\n\
                     {$author}\n\
                 </a>\n\
                 <div class='timestamp_formatted'>{$timestamp_formatted}</div>\n\

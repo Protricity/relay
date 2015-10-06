@@ -7,8 +7,8 @@ Templates.chat = Templates.chat || {};
 Templates.chat.form = function(channelPath, callback) {
     var CHANNEL_TEMPLATE = "\
         <article class='channel chat chat:{$channel_path}'>\n\
-            <script src='chat/chat-listeners.js'></script>\n\
-            <link rel='stylesheet' href='chat/chat.css' type='text/css'>\n\
+            <script src='app/social/chat/chat-listeners.js'></script>\n\
+            <link rel='stylesheet' href='app/social/chat/chat.css' type='text/css'>\n\
             <legend class='title'>\n\
                 <span class='command'>Join</span> {$channel}\n\
             </legend>\n\

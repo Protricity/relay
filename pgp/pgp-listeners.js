@@ -98,7 +98,7 @@
                 commandString += " --pass " + passphrase;
 
 
-            var messageEvent = new CustomEvent('socket', {
+            var messageEvent = new CustomEvent('command', {
                 detail: commandString,
                 cancelable:true
             });
@@ -158,7 +158,7 @@
 
             var commandString = "REGISTER " + privateKeyValue;
 
-            var messageEvent = new CustomEvent('socket', {
+            var messageEvent = new CustomEvent('command', {
                 detail: commandString,
                 cancelable:true
             });
@@ -404,7 +404,7 @@
                 throw new Error("BEGIN PGP SIGNED MESSAGE not found");
             var commandString = "IDSIG " + idSignatureElm.value;
 
-            var messageEvent = new CustomEvent('socket', {
+            var messageEvent = new CustomEvent('command', {
                 detail: commandString,
                 cancelable:true
             });
@@ -555,7 +555,7 @@
     // Includes
 
     // For HTTP Content Database access
-    includeScript('ks/ks-db.js');
+    includeScript('app/ks/ks-db.js');
 
     // For PGP Decryption in chat rooms
     //var openPGPScriptPath = 'pgp/lib/openpgpjs/openpgp.js';

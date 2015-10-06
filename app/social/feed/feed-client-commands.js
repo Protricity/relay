@@ -10,7 +10,7 @@
 
     var db = null;
 
-    importScripts('ks/feed/feed-templates.js');
+    importScripts('app/social/feed/feed-templates.js');
 
     /**
      *
@@ -70,7 +70,7 @@
 //        });
 //
 //        if(typeof KeySpaceDB !== 'function')
-//            importScripts('ks/ks-db.js');
+//            importScripts('app/ks/ks-db.js');
 //
 //        KeySpaceDB.queryContentFeedByID(
 //            publicKeyID,
@@ -88,7 +88,7 @@
     function getKeySpaceDB() {
         if(typeof self.KeySpaceDB === 'undefined') {
             if(typeof importScripts === "function")
-                importScripts('ks/ks-db.js');
+                importScripts('app/ks/ks-db.js');
             else
                 self.KeySpaceDB = require('./ks-db.js').KeySpaceDB;
         }

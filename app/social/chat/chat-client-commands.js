@@ -3,7 +3,7 @@
  */
 (function() {
 
-    importScripts('chat/chat-templates.js');
+    importScripts('app/social/chat/chat-templates.js');
 
     var PATH_PREFIX_CHAT = 'chat:';
     var PATH_PREFIX_CHAT_USER_LIST = 'chat-user-list:';

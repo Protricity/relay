@@ -56,7 +56,7 @@
             return false;
         }
 
-        var socketEvent = new CustomEvent('socket', {
+        var socketEvent = new CustomEvent('command', {
             detail: commandString,
             cancelable:true,
             bubbles:true

@@ -4,28 +4,9 @@
 
 (function() {
 
-    window.addEventListener('hashchange', onHashChange);
-//            window.onbeforeunload = onUnload;
-    //function onUnload(e) {
-    //    return "Relay client will disconnect";
-    //}
-
-    function onHashChange(e) {
-        var hashCommand = document.location.hash.replace(/^#/, '').trim();
-        document.location.hash = '';
-        if(!hashCommand)
-            return false;
-        console.log("Hash Command: ", hashCommand);
-        send(hashCommand);
-    }
 
     function send(commandString) {
-        var socketEvent = new CustomEvent('command', {
-            detail: commandString,
-            cancelable: true
-        });
-        document.dispatchEvent(socketEvent);
-        return socketEvent.defaultPrevented;
+        ClientWorker.sendCommand(commandString);
     }
 
     setTimeout(function() {
@@ -42,10 +23,10 @@
 //                send('put');
 
         if (document.location.host === 'localhost') {
-            //send('manage');
-            send('feed');
+            send('put');
+            //send('feed');
             //send('register');
-            send('JOIN /timezone/' + timezone);
+            //send('JOIN /timezone/' + timezone);
 
 
         } else {

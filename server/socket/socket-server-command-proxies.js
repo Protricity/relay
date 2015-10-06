@@ -19,9 +19,9 @@ exports.initSocketServerCommandProxies = function(SocketServer) {
         //    .initSocketServerCommands(SocketServer);
         //console.log("Loaded server/server-commands.js");
 
-        require('../../ks/ks-server-commands.js')
+        require('../../app/ks/ks-server-commands.js')
             .initSocketServerCommands(SocketServer);
-        console.log("Loaded ks/ks-server-commands.js");
+        console.log("Loaded app/ks/ks-server-commands.js");
 
         return false;
     }
@@ -33,9 +33,9 @@ exports.initSocketServerCommandProxies = function(SocketServer) {
             return false;
         SocketServer.removeCommand(chatCommand);
 
-        require('../../chat/chat-server-commands.js')
+        require('../../app/social/chat/chat-server-commands.js')
             .initSocketServerCommands(SocketServer);
-        console.log("Loaded chat/chat-server-commands.js");
+        console.log("Loaded app/social/chat/chat-server-commands.js");
 
         return false;
     }

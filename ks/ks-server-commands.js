@@ -99,7 +99,7 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
     var requestPath = "/public/id";
     var requestURL = "http://" + pgp_id_public + ".ks" + requestPath;
     var loaded = false;
-    getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
+    getKeySpaceDB().queryOne(requestURL, function (err, contentData) {
         if (err)
             return callback(err);
 
@@ -267,7 +267,7 @@ function executeServerGetRequest(requestString, callback) {
     // Check local cache to see what can be displayed while waiting
     var requestURL = getRequestURL(requestString);
     //console.info("GET ", requestURL);
-    getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
+    getKeySpaceDB().queryOne(requestURL, function (err, contentData) {
         if(err)
             throw new Error(err);
 

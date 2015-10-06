@@ -28,7 +28,7 @@ ClientDefaults.loadConfig = function(publicKeyID, passphrase, callback) {
     // TODO: optional decrypt private config
 
     if(typeof KeySpaceDB === 'undefined')
-        var KeySpaceDB = require('../ks/ks-db.js').KeySpaceDB;
+        var KeySpaceDB = require('../app/ks/ks-db.js').KeySpaceDB;
 
     var configPos = 0;
     var configPaths = [
@@ -37,7 +37,7 @@ ClientDefaults.loadConfig = function(publicKeyID, passphrase, callback) {
     ];
 
     function query(configPath) {
-        KeySpaceDB.queryContent(configPath, function (err, configData) {
+        KeySpaceDB.queryOne(configPath, function (err, configData) {
             configData.content.replace(/data-([a-z-]+)=['"]([^'"])['"]/ig, function(match, name, value) {
                 console.log(arguments);
                 config[name] = value;

@@ -2,6 +2,34 @@
  * Created by ari on 6/19/2015.
  */
 
+function ClientWorker() {
+    return ClientWorker.getSocketWorker();
+}
+
+ClientWorker.includeScript = function(scriptPath) {
+    var head = document.getElementsByTagName('head')[0];
+    if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+        var newScript = document.createElement('script');
+        newScript.setAttribute('src', scriptPath);
+        head.appendChild(newScript);
+        return true;
+    }
+    return false;
+};
+
+ClientWorker.includeLink = function(linkPath) {
+    var head = document.getElementsByTagName('head')[0];
+    if (head.querySelectorAll('link[href=' + linkPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+        var newScript = document.createElement('link');
+        newScript.setAttribute('href', linkPath);
+        head.appendChild(newScript);
+        return true;
+    }
+    return false;
+};
+
+//ClientLoader.includeScript('client/theme/base/base-client-loader.js');
+
 (function() {
 
     var CLASS_CHANNEL = 'channel';
@@ -10,34 +38,45 @@
     var CLASS_CHANNEL_LIST = 'channel-list';
     var CLASS_CHANNEL_LIST_ENTRY = 'channel-list-entry';
 
-    function getSocketWorker() {
-        if(typeof getSocketWorker.socketWorker === 'undefined') {
-            var socketWorker = new Worker('worker.js');
+    var socketWorker = null;
+    ClientWorker.getSocketWorker = function() {
+        if(!socketWorker) {
+            socketWorker = new Worker('worker.js');
             socketWorker.addEventListener('message', function(e) {
-                receiveMessage(e.data || e.detail);
+                ClientWorker.receiveMessage(e.data || e.detail);
             }, true);
-            getSocketWorker.socketWorker = socketWorker;
         }
-        return getSocketWorker.socketWorker;
-    }
-
-
-    document.addEventListener('socket', function(e) {
-        var commandString = e.detail || e.data;
-        getSocketWorker().postMessage(commandString);
-        e.preventDefault();
-    });
-    document.addEventListener('message', function(e) {
-        receiveMessage(e.data || e.detail);
-    });
+        return socketWorker;
+    };
 
     document.addEventListener('command', function(e) {
         var commandString = e.detail || e.data;
-        getSocketWorker().postMessage(commandString);
+        ClientWorker.sendCommand(commandString);
         e.preventDefault();
     });
 
-    function receiveMessage(responseString) {
+    window.addEventListener('hashchange', onHashChange);
+    //window.onbeforeunload = function (e) {
+    //    return "Relay client will disconnect";
+    //}
+
+    function onHashChange(e) {
+        var hashCommand = document.location.hash.replace(/^#/, '').trim();
+        document.location.hash = '';
+        if(!hashCommand)
+            return false;
+        console.log("Hash Command: ", hashCommand);
+        ClientWorker.sendCommand(hashCommand);
+    }
+
+
+    ClientWorker.sendCommand = function (commandString) {
+        console.log(ClientWorker.getSocketWorker());
+        ClientWorker.getSocketWorker()
+            .postMessage(commandString);
+    };
+
+    ClientWorker.receiveMessage = function(responseString) {
         var args = /^\w+/.exec(responseString);
         if(!args)
             throw new Error("Invalid Command: " + responseString);
@@ -52,7 +91,7 @@
                 console.error("Unhandled client-side command: " + responseString);
                 break;
         }
-    }
+    };
 
     function logToChannel(commandString) {
         var args = /^log(?:.(\w+))?\s+(\S+)\s*([\s\S]*)$/mi.exec(commandString);
@@ -60,14 +99,7 @@
             throw new Error("Invalid Log: " + commandString);
         var subCommand = args[1] ? args[1].toLowerCase() : 'append';
         var channelPath = args[2];
-        //var channelPathClass = CLASS_CHANNEL + ':' + channelPath;
-        //var channelSelector = args[3];
         var content = args[3];
-
-        //content = content
-        //    .replace(/{\$attr_class}/gi, CLASS_CHANNEL + ' ' + channelPath)
-        //    .replace(/{\$channel_class}/gi, channelPath)
-        //    .replace(/{\$path}/gi, channelPath);
 
         var match;
         while(match = /<script([^>]*)><\/script>/gi.exec(content)) {
@@ -76,14 +108,8 @@
             var match2 = /\s*src=['"]([^'"]*)['"]/gi.exec(match[1]);
             if(match2) {
                 var hrefValue = match2[1];
-                var oldScript = document.querySelector('script[src=' + hrefValue.replace(/[/.:~]/g, '\\$&') + ']');
-                if(!oldScript) {
-                    //oldScript.parentNode.removeChild(oldScript);
-                    var newScript = document.createElement('script');
-                    newScript.setAttribute('src', hrefValue);
-                    document.getElementsByTagName('head')[0].appendChild(newScript);
-                    //console.log("Inserted: ", newScript, oldScript);
-                }
+                ClientWorker.includeScript(hrefValue);
+
             } else {
                 console.error("Invalid Script: " + scriptContent);
             }

@@ -91,7 +91,7 @@
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
         if(formElm.nodeName.toLowerCase() !== 'form')
             return false;
-
+            
         switch(formElm.getAttribute('name')) {
             case 'ks-put-form':
                 refreshHTTPPutForm(e, formElm);
@@ -113,35 +113,35 @@
 
     var lastPostContent = null;
     function refreshHTTPPutForm(e, formElm) {
-        var pgpIDElm = formElm.querySelector('[name=pgp_id_private]');
-        if(!pgpIDElm.value) {
-            formElm.classList.add('id-required');
-            return;
-        }
+//         var pgpIDElm = formElm.querySelector('[name=pgp_id_public]');
+// console.log(pgpIDElm);
+//         if(!pgpIDElm.value) {
+//             formElm.classList.add('id-required');
+//             return;
+//         }
+
         formElm.classList.remove('id-required');
-        var split = pgpIDElm.value.split(',');
-        var pgp_id_private = split[0];
-        var pgp_id_public = split[1];
-        var passphraseRequired = split[2] === '1';
+//         var pgp_id_public = pgpIDElm.value;
+        //var passphraseRequired = split[2] === '1';
 
         var passphraseElm = formElm.querySelector('*[name=passphrase][type=password], [type=password]');
         var postContentElm = formElm.querySelector('textarea[name=content]');
 
         if(postContentElm.value.length > 0)
             formElm.classList.remove('compact');
-        formElm.classList[passphraseRequired ? 'add' : 'remove']('passphrase-required');
-        formElm.classList[passphraseRequired ? 'remove' : 'add']('no-passphrase-required');
-        passphraseElm[(passphraseRequired ? 'set' : 'remove') + 'Attribute']('required', 'required');
+        //formElm.classList[passphraseRequired ? 'add' : 'remove']('passphrase-required');
+        //formElm.classList[passphraseRequired ? 'remove' : 'add']('no-passphrase-required');
+        //passphraseElm[(passphraseRequired ? 'set' : 'remove') + 'Attribute']('required', 'required');
 
-        if(!lastPostContent || lastPostContent != postContentElm.value || e.type === 'change') {
-            lastPostContent = postContentElm.value;
-
-            if(refreshHTTPPutForm.previewTimeout)
-                clearTimeout(refreshHTTPPutForm.previewTimeout);
-            refreshHTTPPutForm.previewTimeout = setTimeout(function() {
-                submitHTTPPutFormPreview(e, formElm);
-            }, 200)
-        }
+        //if(!lastPostContent || lastPostContent != postContentElm.value || e.type === 'change') {
+        //    lastPostContent = postContentElm.value;
+        //
+        //    if(refreshHTTPPutForm.previewTimeout)
+        //        clearTimeout(refreshHTTPPutForm.previewTimeout);
+        //    refreshHTTPPutForm.previewTimeout = setTimeout(function() {
+        //        submitHTTPPutFormPreview(e, formElm);
+        //    }, 200)
+        //}
     }
 
     function submitHTTPPutFormPreview(e, formElm) {
@@ -180,11 +180,11 @@
         var previewCheckBoxElm = formElm.querySelector('input[name=preview]');
         //putPreviewElm.innerHTML = postContent;
         //console.log(putPreviewElm, postContent);
-        var commandString = "PUT " + fixedPostPath + " --preview " + postContent;
+        var commandString = "PUT.PREVIEW " + postContent;
         if(!previewCheckBoxElm.checked) // TODO Config
             commandString = "CLOSE put-preview:";
 
-        var socketEvent = new CustomEvent('socket', {
+        var socketEvent = new CustomEvent('command', {
             detail: commandString,
             cancelable:true,
             bubbles:true
@@ -216,7 +216,7 @@
 
         // Query private key
         var path = 'http://' + selectedPublicKeyID + '.ks/.private/id';
-        KeySpaceDB.queryContent(path, function(err, privateKeyBlock) {
+        KeySpaceDB.queryOne(path, function(err, privateKeyBlock) {
             if(err)
                 throw new Error(err);
             if(!privateKeyBlock)
@@ -270,7 +270,7 @@
 
                     var commandString = "PUT " + fixedPostPath + " " + pgpEncryptedString;
 
-                    var socketEvent = new CustomEvent('socket', {
+                    var socketEvent = new CustomEvent('command', {
                         detail: commandString,
                         cancelable:true,
                         bubbles:true
@@ -325,7 +325,7 @@
 
         // Query public key
         var path = 'http://' + pgp_id_public + '.ks/public/id';
-        KeySpaceDB.queryContent(path, function(err, publicKeyBlock) {
+        KeySpaceDB.queryOne(path, function(err, publicKeyBlock) {
             if(err)
                 throw new Error(err);
             if(!publicKeyBlock)

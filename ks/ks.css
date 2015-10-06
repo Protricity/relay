@@ -9,9 +9,13 @@ form[name=ks-put-form] {
     /*min-width: 30em;*/
 }
 
+
+form[name=ks-put-form] select[name=path],
+form[name=ks-put-form] input[name=preview],
+form[name=ks-put-form] input[name=template],
 form[name=ks-put-form] input[type=submit] {
     padding: 0.5em 1em;
-    margin: 0.5em;
+    margin: 0.5em 0;
 }
 
 .channel.ks-response-400 {

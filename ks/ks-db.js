@@ -193,12 +193,21 @@ function KeySpaceDB(dbReadyCallback) {
         });
     };
 
+    KeySpaceDB.queryOne = function(contentURL, callback) {
+        var done = false;
+        KeySpaceDB.queryAll(contentURL, function(err, content) {
+            if(!done) {
+                done = true;
+                callback(err, content);
+            }
+        })
+    };
+
 // TODO listings and variables
 // TODO: calculate domain names that resolve to key ids
 // TODO: D4819140521D4941.ks + [] => myspace.az12332432523.nks - [] => D4819140521D4941.ks
 // TODO: 521D4941.ks + [] => myspace.abc123.nks - [] => 521D4941.ks
-    KeySpaceDB.queryContent = function(contentURI, callback) {
-         //console.info("KeySpaceDB.queryContent(" + contentURI + ", ...)");
+    KeySpaceDB.queryAll = function(contentURI, callback) {
         var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(contentURI);
         if(!match)
             throw new Error("Invalid URI: " + contentURI);
@@ -235,7 +244,6 @@ function KeySpaceDB(dbReadyCallback) {
                     queryRange = IDBKeyRange.bound([publicKeyID, contentPath, 0], [publicKeyID, contentPath, 2443566558308], true, true);
                 }
                 var cursor = pathIndex.openCursor(queryRange, 'prev');
-                var recordID = 0;
                 cursor.onsuccess = function (e) {
                     //console.log(e, e.target.result, queryRange, pathIndex);
                     var cursor = e.target.result;
@@ -244,10 +252,8 @@ function KeySpaceDB(dbReadyCallback) {
                             cursor.continue();
 
                     } else {
-                        if(recordID === 0)
                             callback(null, null, cursor);
                     }
-                    recordID++;
                 };
                 cursor.onerror = function(err) {
                     callback(err.toString(), null, cursor);
@@ -431,7 +437,7 @@ function KeySpaceDB(dbReadyCallback) {
                 .then(function(pgpEncryptedContent) {
                     setTimeout(function() {
                         KeySpaceDB.addVerifiedContentToDB(pgpEncryptedContent, newPublicKeyID, '/test/path', Date.now(), function() {
-                            KeySpaceDB.queryContent('http://' + newPublicKeyID + '.ks/test/path', function(err, content) {
+                            KeySpaceDB.queryOne('http://' + newPublicKeyID + '.ks/test/path', function(err, content) {
                                 if(err)
                                     throw new Error(err);
                                 //console.log("Content: ", err, content);

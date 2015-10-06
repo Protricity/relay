@@ -11,87 +11,97 @@ Templates.ks.put.form = function(content, callback) {
         <article class='channel put:'>\n\
             <script src='ks/ks-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
-            <legend class='title'><span class='command'>Put</span> content in your <strong>User Space</strong></legend>\n\
+            <legend class='title'>\
+                <span class='command'>Put</span> content in your <strong>Key Space</strong>\
+            </legend>\n\
             <div class='title-commands'>\n\
                 <a class='title-command-minimize' href='#MINIMIZE put:'>[-]</a><!--\
              --><a class='title-command-maximize' href='#MAXIMIZE put:'>[+]</a><!--\
              --><a class='title-command-close' href='#CLOSE put:'>[x]</a>\n\
             </div>\n\
             <form name='ks-put-form' class='compact' style='float:left;'>\n\
-                <label class='label-content'>Create new <span class='html'>HTML</span> content for your <strong>User Space</strong>:<br/>\n\
-                    <textarea cols='50' rows='8' class='focus' name='content' required='required' placeholder='Type anything you like.\n\n\t<i>most</i>\n\t<code>html tags</code>\n\t<strong>allowed!</strong>'>{$content}</textarea>\n\
-                <br/><br/></label>\n\
-                <label class='label-path hide-on-compact'>Post to:<br/>\n\
-                    <select name='path'>\n\
+                <label class='label-content'>\
+                    Create new <span class='html'>HTML</span> content for your <strong>Key Space</strong>:\n\
+                    <br/><span class='info'>(You can also use a <a href='#PUT.TEMPLATE'>template</a>)</span>\
+                    <br/><textarea cols='50' rows='8' class='focus' name='content' required='required' placeholder='Type anything you like.\n\n\t<i>most</i>\n\t<code>html tags</code>\n\t<strong>allowed!</strong>'>{$content}</textarea>\n\
+                </label><br/>\n\
+                <label class='label-submit hide-on-compact'>\n\
+                    <input type='submit' value='Publish' name='put' />\n\
+                </label>\n\
+                <label class='label-path hide-on-compact'>to\n\
+                    <select name='path' style='width:12em;'>\n\
                         <option value='~'>My Home Page</option>\n\
                         <option disabled='disabled'>Friend's Web Space...</option>\n\
                         <option disabled='disabled'>Other Web Space...</option>\n\
-                        {$html_path_options}\n\
+                                    {$html_path_options}\n\
                     </select>\n\
-                <br/><br/></label>\n\
-                <label class='label-pgp-id-private hide-on-compact'>Post with (PGP Identity):<br/>\n\
-                    <select name='pgp_id_private' required='required'>\n\
-                        <option value=''>Select a PGP Identity</option>\n\
-                        <optgroup class='pgp-identities' label='My PGP Identities (* = passphrase required)'>\n\
-                            {$html_pgp_id_private}\n\
-                        </optgroup>\n\
-                        <optgroup label='Other options'>\n\
-                            <option value='' disabled='disabled'>Manage PGP Identities...</option>\n\
-                            <option value='' disabled='disabled'>Look up Identity...</option>\n\
-                        </optgroup>\n\
-                    </select>\n\
-                <br/><br/></label>\n\
-                <label class='label-passphrase hide-on-compact hide-on-no-passphrase-required'>PGP Passphrase (if required):<br/>\n\
-                    <input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>\n\
-                <br/><br/></label>\n\
-                <label class='label-submit hide-on-compact'><hr/>Submit your post:<br/>\n\
-                    <input type='submit' value='Post' name='put' />\n\
-                </label>\n\
-                <label class='label-submit hide-on-compact'>\n\
-                    <input class='pressed' type='checkbox' name='preview' {$attr_preview_checked}/>Preview your post\n\
+                </label>&nbsp;\n\
+                <label class='label-template hide-on-compact' >\n\
+                    <input disabled='disabled' type='button' value='Preview >' name='preview' />\n\
                 </label>\n\
             </form>\n\
         </article>";
+
+    callback(PUT_FORM_TEMPLATE
+            .replace(/{\$content}/gi, content || '')
+        //        .replace(/{\$html_pgp_id_public}/gi, html_pgp_id_public_html || '')
+        //.replace(/{\$form_class}/gi, form_classes.join(' '))
+        //.replace(/{\$html_path_options}/gi, html_path_options || '')
+        //.replace(/{\$attr_preview_checked}/gi, "checked='checked'") // TODO: get from config
+    );
+};
+
+Templates.ks.put.template = function(commandString, callback) {
+    importScripts()
+    call(commandString)
+
+};
+
+
     // " + EXAMPLE_VOTE + "\n\
 
+    //<hr/><label class='label-pgp-id-private hide-on-compact'>Post with (PGP Identity):<br/>\n\
+    //                <select name='pgp_id_public' required='required'>\n\
+    //                    <option value=''>Select a PGP Identity</option>\n\
+    //                    <optgroup class='pgp-identities' label='My PGP Identities'>\n\
+    //                        {$html_pgp_id_public}\n\
+    //                    </optgroup>\n\
+    //                    <optgroup label='Other options'>\n\
+    //                        <option value='' disabled='disabled'>Manage PGP Identities...</option>\n\
+    //                        <option value='' disabled='disabled'>Look up Identity...</option>\n\
+    //                    </optgroup>\n\
+    //                </select>\n\
+    //            <br/><br/></label>\n\
+    //                <label class='label-passphrase hide-on-compact hide-on-no-passphrase-required'>PGP Passphrase (if required):<br/>\n\
+    //                    <input type='password' name='passphrase' placeholder='Enter your PGP Passphrase'/>\n\
+    //                    <br/><br/></label>\n\
 
-    var form_classes = [];
-    var html_pgp_id_private_html = '';
-    var html_path_options = '';
+    //<label class='label-submit hide-on-compact'>\n\
+    //    <input class='pressed' type='checkbox' name='preview' {$attr_preview_checked}/>Preview your post\n\
+    //</label>\n\
+
+    //var form_classes = [];
+    //var html_pgp_id_public_html = '';
+    //var html_path_options = '';
 
     // Query private key(s)
-    var path = '/.private/id';
-    getKeySpaceDB().queryContent(path, function(err, privateKeyBlock) {
-        if(err)
-            throw new Error(err);
+    //var path = '/public/id';
+    //getKeySpaceDB().queryAll(path, function(err, content) {
 
-        if(privateKeyBlock) {
-            var privateKey = openpgp.key.readArmored(privateKeyBlock).keys[0];
-            var privateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();
-            var userIDString = privateKey.getUserIds().join('; ');
-            var publicKey = privateKey.toPublic();
-            var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+        //if(err)
+        //    throw new Error(err);
 
-            var optionValue = privateKeyID + "," + publicKeyID + (privateKey.primaryKey.isDecrypted ? ',1' : ',0');
+        //if(content) {
+        //    html_pgp_id_public_html +=
+        //        '<option value="' + content.pgp_id_public + '">' +
+        //            content.user_id.replace(/</, '&lt;') +
+        //        '</option>';
 
-            html_pgp_id_private_html +=
-                '<option value="' + optionValue + '">' +
-                (privateKey.primaryKey.isDecrypted ? '(*) ' : '') + userIDString.replace(/</, '&lt;') +
-                '</option>';
-
-        } else {
+        //} else {
             // Callback
-            callback(PUT_FORM_TEMPLATE
-                    .replace(/{\$content}/gi, content || '')
-                    .replace(/{\$html_pgp_id_private}/gi, html_pgp_id_private_html || '')
-                    .replace(/{\$form_class}/gi, form_classes.join(' '))
-                    .replace(/{\$html_path_options}/gi, html_path_options || '')
-                    .replace(/{\$attr_preview_checked}/gi, "checked='checked'") // TODO: get from config
-            );
-        }
+        //}
 
-    });
-};
+    //});
 
 //<label class='label-recipients show-section-on-value'>Choose which subscribers may view this post:<br/>\n\
 //    <select name='recipients'>\n\

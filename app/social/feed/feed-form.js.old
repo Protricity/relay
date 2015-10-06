@@ -183,7 +183,7 @@
 
                         var commandString = "MESSAGE " + homeChannel + " " + encryptedString;
 
-                        var socketEvent = new CustomEvent('socket', {
+                        var socketEvent = new CustomEvent('command', {
                             detail: commandString,
                             cancelable:true,
                             bubbles:true
@@ -197,7 +197,7 @@
                         postContentElm.value = '';
 
                         commandString = "FEED " + postPath;
-                        socketEvent = new CustomEvent('socket', {
+                        socketEvent = new CustomEvent('command', {
                             detail: commandString,
                             cancelable:true,
                             bubbles:true
@@ -329,7 +329,7 @@
     includeScript('rest/ks-db.js');
 
     // For Content Events
-    includeScript('ks/feed/feed-listeners.js');
+    includeScript('app/social/feed/feed-listeners.js');
 
 })();
 //
@@ -370,7 +370,7 @@
 //
 //// For Feed Database access
 //(function() {
-//    var SCRIPT_PATH = 'ks/feed/feed-db.js';
+//    var SCRIPT_PATH = 'app/social/feed/feed-db.js';
 //    var head = document.getElementsByTagName('head')[0];
 //    if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
 //        var newScript = document.createElement('script');
@@ -394,7 +394,7 @@
 //
 //// For PGP Decryption in chat rooms
 //(function() {
-//    var SCRIPT_PATH = 'ks/feed/feed-listeners.js';
+//    var SCRIPT_PATH = 'app/social/feed/feed-listeners.js';
 //    var head = document.getElementsByTagName('head')[0];
 //    if (head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
 //        var newScript = document.createElement('script');

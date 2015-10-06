@@ -21,7 +21,7 @@ exports.initClientCommands = function(Client) {
             return false;
         Client.removeCommand(importHTTPCommands);
         Client.removeResponse(importHTTPCommands);
-        importScripts('ks/ks-client-commands.js');
+        importScripts('app/ks/ks-client-commands.js');
         return false;
     }
 
@@ -33,7 +33,7 @@ exports.initClientCommands = function(Client) {
             return false;
         Client.removeCommand(importChatCommands);
         Client.removeResponse(importChatCommands);
-        importScripts('chat/chat-client-commands.js');
+        importScripts('app/social/chat/chat-client-commands.js');
         return false;
     }
 
@@ -44,7 +44,7 @@ exports.initClientCommands = function(Client) {
         if(!/^feed/i.test(commandString))
             return false;
         Client.removeCommand(importFeedCommands);
-        importScripts('ks/feed/feed-client-commands.js');
+        importScripts('app/social/feed/feed-client-commands.js');
         return false;
     }
 

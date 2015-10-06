@@ -29,7 +29,7 @@ if(!exports) var exports = {};
         var pgp_id_public = pgpEncryptedMessage.getEncryptionKeyIds()[0].toHex().toUpperCase();
 
         var requestURL = "http://" + pgp_id_public + ".ks/.private/id";
-        getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
+        getKeySpaceDB().queryOne(requestURL, function (err, contentData) {
             if (err)
                 throw new Error(err);
 
@@ -57,39 +57,57 @@ if(!exports) var exports = {};
         return ksChallengeCommand(responseString);
     }
 
+    function putTemplateCommand(commandString) {
+        return false;
+    }
+
+
+    function putPreviewCommand(commandString) {
+        var match = /^put.preview\s*([\s\S]+)$/im.exec(commandString);
+        if(!match)
+            return false;
+
+        var content = match[1];
+
+        importScripts('ks/templates/ks-put-template.js');
+        Templates.ks.put.preview(content, function(html) {
+            Client.postResponseToClient("LOG.REPLACE put-preview: " + html);
+        });
+        // Free up template resources
+        delete Templates.ks.put.preview;
+
+        return true;
+    }
+
     /**
      *
      * @param commandString PUT [path] [content]
      */
     function putCommand(commandString) {
-        var match = /^put(?:\s+(\S+))?(?:\s+(\S+))?/im.exec(commandString);
+        var match = /^put(?:\.(template|preview))?(?:\s+(\S+))?(?:\s+(\S+))?/im.exec(commandString);
         if(!match)
             return false;
 
-        var path = match[1] || '~';
-        var content = match[2] || '';
+        switch((match[1] || '').toLowerCase()) {
+            case '':
+                break;
+            case 'preview':
+                return putPreviewCommand(commandString);
+            case 'template':
+                return putTemplateCommand(commandString);
+            default:
+                throw new Error("Invalid command: " + commandString);
+        }
 
-        var preview = false;
-        content = content.replace(/--preview\s+/i, function(match, contents, offset, s) {
-            preview = true; return '';
-        });
+        var path = match[2] || '~';
+        var content = match[3] || '';
 
         if(!/[~/a-z_-]+/i.test(path))
             throw new Error("Invalid Path: " + path);
 
         if(content) {
             // todo http form
-            if(preview) {
-                importScripts('ks/templates/ks-put-template.js');
-                Templates.ks.put.preview(content, function(html) {
-                    Client.postResponseToClient("LOG.REPLACE put-preview: " + html);
-                });
-                // Free up template resources
-                delete Templates.ks.put.preview;
-
-            } else {
-                Client.sendWithSocket(commandString);
-            }
+            Client.sendWithSocket(commandString);
 
         } else {
             importScripts('ks/templates/ks-put-template.js');
@@ -202,7 +220,7 @@ if(!exports) var exports = {};
         passedResponseHeaders += "\nRequest-ID: " + requestID;
 
         logKSRequest(requestURL, 'O');
-        getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
+        getKeySpaceDB().queryOne(requestURL, function (err, contentData) {
             if(err)
                 throw new Error(err);
 
@@ -250,7 +268,7 @@ if(!exports) var exports = {};
         if(requestID)
             passedResponseHeaders += "\nRequest-ID: " + requestID;
         logKSRequest(requestURL, 'I');
-        getKeySpaceDB().queryContent(requestURL, function (err, contentData) {
+        getKeySpaceDB().queryOne(requestURL, function (err, contentData) {
             if(err)
                 throw new Error(err);
 

@@ -55,7 +55,7 @@
         // Query private key
         var path = '/.private/id';
         var count = 0;
-        getKeySpaceDB().queryContent(path, function(err, contentEntry) {
+        getKeySpaceDB().queryAll(path, function(err, contentEntry) {
             if(err)
                 throw new Error(err);
 
@@ -240,7 +240,7 @@
 
                 // Query private key(s)
                 var privateKeyPath = 'http://' + publicKeyID + '.ks/.private/id';
-                getKeySpaceDB().queryContent(privateKeyPath, function(err, privateKeyData) {
+                getKeySpaceDB().queryOne(privateKeyPath, function(err, privateKeyData) {
                     if(err)
                         throw new Error(err);
                     if(privateKeyData) {
@@ -250,6 +250,8 @@
                             console.info("PGP Identity deleted successfully: " + privateKeyData.user_id);
                             manageCommand("MANAGE", e, "<span class='success'>PGP Identity deleted successfully</span>: " + privateKeyData.user_id + "<br/>Public Key ID: " + publicKeyID);
                         });
+                    } else {
+                        console.error("Not found: " + publicKeyID);
                     }
                 });
             })(publicKeyIDs[i]);
@@ -281,7 +283,7 @@
     function getKeySpaceDB() {
         if(typeof self.KeySpaceDB === 'undefined') {
             if(typeof importScripts === "function")
-                importScripts('ks/ks-db.js');
+                importScripts('app/ks/ks-db.js');
             else
                 self.KeySpaceDB = require('./ks-db.js').KeySpaceDB;
         }
