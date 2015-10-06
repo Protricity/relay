@@ -49,14 +49,6 @@ function Client() {
         responseHandlers.splice(pos, 1);
     };
 
-
-    if(typeof require !== 'undefined')
-        var exports = require('./client-command-proxies.js');
-    else
-        importScripts('client/client-command-proxies.js');
-    (exports || self.exports).initClientCommands(Client);
-
-
     Client.execute = function(commandString, e) {
         var oldLength = commandHandlers.length;
         for(var i=0; i<commandHandlers.length; i++)
@@ -96,8 +88,20 @@ function Client() {
     };
 
     function replaceAllTags(htmlContent, callback) {
-        require('client-tags.js').parseClientTags(htmlContent, callback);
+        Client.require('client/client-tags.js')
+            .parseClientTags(htmlContent, callback);
     }
+
+    Client.require = function(path) {
+        if(typeof require === 'function')
+            return require('../' + path);
+        self.exports = {};
+        importScripts(path);
+        return self.exports;
+    };
+
+    Client.require('client/client-command-proxies.js')
+        .initClientCommands(Client);
 
 // Default
 

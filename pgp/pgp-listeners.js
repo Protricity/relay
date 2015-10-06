@@ -555,7 +555,7 @@
     // Includes
 
     // For HTTP Content Database access
-    includeScript('app/ks/ks-db.js');
+    includeScript('ks/ks-db.js');
 
     // For PGP Decryption in chat rooms
     //var openPGPScriptPath = 'pgp/lib/openpgpjs/openpgp.js';

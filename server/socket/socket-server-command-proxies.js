@@ -19,9 +19,9 @@ exports.initSocketServerCommandProxies = function(SocketServer) {
         //    .initSocketServerCommands(SocketServer);
         //console.log("Loaded server/server-commands.js");
 
-        require('../../app/ks/ks-server-commands.js')
+        require('../../ks/ks-server-commands.js')
             .initSocketServerCommands(SocketServer);
-        console.log("Loaded app/ks/ks-server-commands.js");
+        console.log("Loaded ks/ks-server-commands.js");
 
         return false;
     }

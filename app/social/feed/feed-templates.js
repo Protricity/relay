@@ -29,7 +29,7 @@ Templates.feed.container = function(commandString, callback) {
     //</fieldset>\n\
 
     var content = '';
-    importScripts('app/ks/templates/ks-put-template.js');
+    importScripts('ks/templates/ks-put-template.js');
     Templates.ks.put.form(content, function(putFormTemplate) {
         // Callback
 

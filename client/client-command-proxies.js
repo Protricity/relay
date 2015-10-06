@@ -21,7 +21,7 @@ exports.initClientCommands = function(Client) {
             return false;
         Client.removeCommand(importHTTPCommands);
         Client.removeResponse(importHTTPCommands);
-        importScripts('app/ks/ks-client-commands.js');
+        importScripts('ks/ks-client-commands.js');
         return false;
     }
 

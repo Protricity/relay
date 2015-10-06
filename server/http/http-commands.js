@@ -6,9 +6,9 @@ if(!exports) var exports = {};
 exports.initHTTPServerCommands = function(HTTPServer) {
     HTTPServer.addCommand(getStaticHTTPCommand);
 
-    require('../../app/ks/ks-server-commands.js')
+    require('../../ks/ks-server-commands.js')
         .initHTTPServerCommands(HTTPServer);
-    console.log("Loaded app/ks/ks-server-commands.js");
+    console.log("Loaded ks/ks-server-commands.js");
 };
 
 function getStaticHTTPCommand(request, response) {

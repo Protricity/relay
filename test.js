@@ -4,6 +4,6 @@
 
 if(!exports) var exports = {};
 exports.test = function() {
-    require('./app/ks/ks-tests.js').test();
+    require('./ks/ks-tests.js').test();
 };
 exports.test();

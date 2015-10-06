@@ -283,7 +283,7 @@
     function getKeySpaceDB() {
         if(typeof self.KeySpaceDB === 'undefined') {
             if(typeof importScripts === "function")
-                importScripts('app/ks/ks-db.js');
+                importScripts('ks/ks-db.js');
             else
                 self.KeySpaceDB = require('./ks-db.js').KeySpaceDB;
         }

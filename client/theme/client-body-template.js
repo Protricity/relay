@@ -6,10 +6,8 @@
 
 var Templates = Templates || {};
 Templates.client = Templates.client || {};
-Templates.client.template = Templates.client.template || {};
-Templates.client.template.base = function(theme, callback) {
-    var CLIENT_TEMPLATE = "\
-    <body class='template-minimal'>\n\
+Templates.client.body = function(theme, callback) {
+    var CLIENT_TEMPLATE = "\<body class='template-minimal'>\n\
         <nav class='navigation-commands closed'>\n\
             <header onclick='toggleNavigationCommandMenu(event)'>\n\
                 <label>\n\

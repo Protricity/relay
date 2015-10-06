@@ -96,6 +96,7 @@ ClientWorker.includeLink = function(linkPath) {
         var args = /^(?:render|log)(?:.(\w+))?\s+(\S+)\s*([\s\S]*)$/mi.exec(commandString);
         if(!args)
             throw new Error("Invalid Render: " + commandString);
+
         var subCommand = args[1] ? args[1].toLowerCase() : 'replace';
         var channelPath = args[2];
         var content = args[3];
@@ -126,6 +127,7 @@ ClientWorker.includeLink = function(linkPath) {
         }
 
         var channelOutputs = document.getElementsByClassName(channelPath);
+
         var channelOutput;
         if(channelOutputs.length === 0) {
 
@@ -155,35 +157,35 @@ ClientWorker.includeLink = function(linkPath) {
 
         } else {
             channelOutput = channelOutputs[0];
-            var contentTarget = channelOutput;
 
             switch(subCommand) {
                 case 'minimize':
                 case 'maximize':
                 case 'close':
-                    if(contentTarget.classList.contains(subCommand + 'd')) {
-                        contentTarget.classList.remove(subCommand + 'd');
+                    if(channelOutput.classList.contains(subCommand + 'd')) {
+                        channelOutput.classList.remove(subCommand + 'd');
                     } else {
-                        contentTarget.classList.remove('minimized');
-                        contentTarget.classList.remove('maximized');
-                        contentTarget.classList.remove('closed');
-                        contentTarget.classList.add(subCommand + 'd');
+                        channelOutput.classList.remove('minimized');
+                        channelOutput.classList.remove('maximized');
+                        channelOutput.classList.remove('closed');
+                        channelOutput.classList.add(subCommand + 'd');
                     }
                     break;
 
 
                 case 'replace':
-                    contentTarget.innerHTML = contentElement.innerHTML;
+                    console.log(contentElement);
+                    channelOutput.innerHTML = contentElement.innerHTML;
                     break;
 
                 case 'prepend':
-                    contentTarget[contentTarget.firstChild ? 'insertBefore' : 'appendChild'](contentElement, contentTarget.firstChild);
-                    contentTarget.scrollTop = 0;
+                    channelOutput[channelOutput.firstChild ? 'insertBefore' : 'appendChild'](contentElement, channelOutput.firstChild);
+                    channelOutput.scrollTop = 0;
                     break;
 
                 case 'append':
-                    contentTarget.appendChild(contentElement);
-                    contentTarget.scrollTop = contentTarget.scrollHeight;
+                    channelOutput.appendChild(contentElement);
+                    channelOutput.scrollTop = channelOutput.scrollHeight;
                     break;
 
                 default:
