@@ -10,7 +10,7 @@
     ];
 
     function parseBodyTag(tagHTML, callback) {
-        var match = /^body(?:\.(\w+))?/.exec(tagHTML);
+        var match = /^{\$body([^}]*)}?/.exec(tagHTML);
         if (!match)
             throw new Error("Invalid Body Tag: " + tagHTML);
 
