@@ -4,7 +4,7 @@
 
 (function() {
 
-    // TODO send all requests to client-render or theme
+    // TODO send all requests to client-render or theme pull
     var tags = [
         [/^body(?:\.(\w+))?/i, parseBodyTag]
     ];
@@ -14,22 +14,9 @@
         if (!match)
             throw new Error("Invalid Body Tag: " + tagHTML);
 
-        var themeName = match[1];
-
-        if(themeName) {
-            var ClientThemes = (function(path) {
-                if(typeof require === 'function')
-                    return require('../' + path);
-                self.exports = {};
-                importScripts(path);
-                return self.exports;
-            })('client/themes/themes.js').ClientThemes;
-
-            if(ClientThemes.parseThemeTags(themeName, tagHTML, callback))
-                return true;
-        }
-
-
+        throw new Error("Implement body");
+        //if(getClientThemes().parseTagsWithDefaultTheme(tagHTML, callback))
+        //    return true;
     }
 
 
@@ -48,6 +35,12 @@
         var tagString = match[0];
         var tagContent = match[1];
 
+        //getClientThemes().parseTagsWithDefaultTheme(tagString, function (tagContent) {
+        //    tagHTML = tagHTML
+        //        .replace(tagString, tagContent);
+        //    parseClientTags(tagHTML, callback);
+        //});
+
         for (var i = 0; i < tags.length; i++) {
             if (tags[i][0].test(tagContent)) {
                 tags[i][1](tagContent, function (tagContent) {
@@ -62,4 +55,12 @@
         throw new Error("Invalid Tag: " + tagString);
     }
 
+
+    //function getClientThemes() {
+    //    if(typeof require === 'function')
+    //        return require('../client/themes/themes.js.old').ClientThemes;
+    //    self.exports = {};
+    //    importScripts('client/themes/themes.js.old');
+    //    return self.exports.ClientThemes;
+    //}
 })();

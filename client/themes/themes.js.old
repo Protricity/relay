@@ -11,18 +11,29 @@ exports.ClientThemes = ClientThemes;
 
 (function(){
     var themes = {};
+    //var defaultTheme = null;
     ClientThemes.add = function(themeName, themeCallback) {
         if(ClientThemes.has(themeName))
             throw new Error("Theme already added: " + themeName);
 
+        //if(!defaultTheme)
+        //    defaultTheme = themeName;
+        
         themes[themeName.toLowerCase()] = themeCallback;
     };
+    
+    //ClientThemes.parseTagsWithDefaultTheme = function(tagHTML, callback) {
+    //    if(!defaultTheme)
+    //        throw new Error("No default theme");
+    //    
+    //    return ClientThemes.parseTagsWithTheme(defaultTheme, tagHTML, callback);
+    //};
 
     ClientThemes.has = function(themeName) {
         return typeof themes[themeName.toLowerCase()] !== 'undefined';
     };
 
-    ClientThemes.parseThemeTags = function(themeName, tagHTML, callback) {
+    ClientThemes.parseTagsWithTheme = function(themeName, tagHTML, callback) {
         if(!ClientThemes.has(themeName))
             throw new Error("Theme not found: " + themeName);
 
@@ -45,6 +56,7 @@ exports.ClientThemes = ClientThemes;
         } else {
             throw new Error("Invalid Theme");
         }
+        
         return themeValue(tagHTML, callback);
     };
 })();
