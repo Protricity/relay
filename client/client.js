@@ -83,10 +83,13 @@ function Client() {
         }
     };
 
-    Client.render = function(targetClass, content) {
-        //replaceAllTags(content, function(parsedContent) {
-            Client.postResponseToClient("RENDER " + targetClass + " " + content);
-        //});
+    Client.render = function(targetClass, content, subCommand) {
+        if(subCommand)
+            subCommand = '.' + subCommand;
+
+        replaceAllTags(content, function(parsedContent) {
+            Client.postResponseToClient("RENDER" + subCommand + " " + targetClass + " " + parsedContent);
+        });
     };
 
     Client.postResponseToClient = function(responseString) {
@@ -135,9 +138,9 @@ function Client() {
     // Window Client
     Client.addCommand(channelButtonCommand);
     function channelButtonCommand(commandString, e) {
-        if(!/^minimize|maximize|close/i.test(commandString))
+        if(!/^(minimize|maximize|close)/i.test(commandString))
             return false;
-        Client.postResponseToClient(commandString);
+        Client.postResponseToClient("RENDER." + commandString);
         return true;
     }
 

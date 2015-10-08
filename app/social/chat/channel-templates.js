@@ -61,7 +61,7 @@ Templates.chat.message = function(commandResponse, callback) {
     var timestamp = parseInt(match[4]);
     var content = (match[5]); // fixPGPMessage
 
-    var MESSAGE_TEMPLATE = '<div class="chat-log-entry append">' +
+    var MESSAGE_TEMPLATE = '<div class="chat-log-entry">' +
         '<span class="username" data-session-uid="{$session_uid}" data-timestamp="{$timestamp}">{$username}</span>' +
         ': <span class="message">{$content}</span>' +
         '</div>';
@@ -87,7 +87,7 @@ Templates.chat.action = function(commandResponse, callback) {
         default: throw new Error("Unknown action: " + commandResponse);
     }
 
-    var ACTION_TEMPLATE = '<div class="chat-log-entry append">' +
+    var ACTION_TEMPLATE = '<div class="chat-log-entry">' +
         '<span class="username" data-session-uid="{$session_uid}">{$username}</span>' +
         ' has <span class="action">{$action}</span>' +
         ' <a href="#JOIN {$channel}" class="path">{$channel}</a>' +
@@ -105,7 +105,7 @@ Templates.chat.nick = function (commandResponse, callback) {
     var old_username = args[1];
     var new_username = args[2];
 
-    var NICK_TEMPLATE = '<div class="chat-log-entry append">' +
+    var NICK_TEMPLATE = '<div class="chat-log-entry">' +
         'Username <span class="username">{$old_username}</span>' +
         ' has been <span class="action">renamed</span> to <span class="username">{$new_username}</span>' +
         '</div>';

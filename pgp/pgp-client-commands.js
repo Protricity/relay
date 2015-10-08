@@ -62,7 +62,7 @@
             if(contentEntry) {
                 count++;
                 Templates.pgp.manage.entry(contentEntry, function(html) {
-                    Client.render("pgp-manage-entries:", html);
+                    Client.render("pgp-manage-entries:", html, 'append');
                 });
 
             } else {

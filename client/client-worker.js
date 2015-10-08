@@ -43,7 +43,7 @@ ClientWorker.includeLink = function(linkPath) {
         if(!socketWorker) {
             socketWorker = new Worker('worker.js');
             socketWorker.addEventListener('message', function(e) {
-                ClientWorker.handleResponse(e.data || e.detail);
+                ClientWorker.receiveMessage(e.data || e.detail);
             }, true);
         }
         return socketWorker;
@@ -75,7 +75,7 @@ ClientWorker.includeLink = function(linkPath) {
             .postMessage(commandString);
     };
 
-    ClientWorker.handleResponse = function(responseString) {
+    ClientWorker.receiveMessage = function(responseString) {
         var args = /^\w+/.exec(responseString);
         if(!args)
             throw new Error("Invalid Command: " + responseString);
@@ -86,49 +86,20 @@ ClientWorker.includeLink = function(linkPath) {
                 render(responseString);
                 break;
 
-            case 'minimize':
-            case 'maximize':
-            case 'close':
-                windowCommand(responseString);
-                break;
-
             default:
                 console.error("Unhandled client-side command: " + responseString);
                 break;
         }
     };
 
-    function windowCommand(commandString) {
-        var args = /^(minimize|maximize|close)\s+(\S+)/mi.exec(commandString);
-        if(!args)
-            throw new Error("Invalid Command: " + commandString);
-
-        var command = args[1].toLowerCase();
-        var targetClass = args[2];
-        var targetElements = document.getElementsByClassName(targetClass);
-        if(targetElements.length === 0)
-            throw new Error("Class not found: " + targetClass);
-
-        var targetElement = targetElements[0];
-
-        if(targetElement.classList.contains(command + 'd')) {
-            targetElement.classList.remove(command + 'd');
-        } else {
-            targetElement.classList.remove('minimized');
-            targetElement.classList.remove('maximized');
-            targetElement.classList.remove('closed');
-            targetElement.classList.add(command + 'd');
-        }
-    }
-
     function render(commandString) {
-        var args = /^render\s+(\S+)\s*([\s\S]*)$/mi.exec(commandString);
+        var args = /^(?:render|log)(?:.(\w+))?\s+(\S+)\s*([\s\S]*)$/mi.exec(commandString);
         if(!args)
             throw new Error("Invalid Render: " + commandString);
 
-        var renderAction = 'replace';
-        var targetClass = args[1];
-        var content = args[2];
+        var subCommand = args[1] ? args[1].toLowerCase() : 'replace';
+        var channelPath = args[2];
+        var content = args[3];
 
         var match;
         while(match = /<script([^>]*)><\/script>/gi.exec(content)) {
@@ -140,62 +111,145 @@ ClientWorker.includeLink = function(linkPath) {
                 ClientWorker.includeScript(hrefValue);
 
             } else {
-                throw new Error("Invalid Script: " + scriptContent);
+                console.error("Invalid Script: " + scriptContent);
             }
         }
 
         var htmlContainer = document.createElement('div');
         htmlContainer.innerHTML = content;
         var contentElement = htmlContainer.children[0];
-        if(!contentElement)
-            throw new Error("First child missing", console.log(commandString, content, htmlContainer));
+        if(contentElement) {
 
-        if(contentElement.classList.contains('append'))
-            renderAction = 'append';
-        if(contentElement.classList.contains('prepend'))
-            renderAction = 'prepend';
-
-        var targetElements = document.getElementsByClassName(targetClass);
-
-        var targetElement;
-        if(targetElements.length === 0) {
-            document.getElementsByTagName('body')[0].appendChild(contentElement);
-
-            if(targetElements.length === 0)
-                throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
-
-        }
-        targetElement = targetElements[0];
-
-        switch(renderAction) {
-            case 'replace':
-                targetElement.parentNode.insertBefore(contentElement, targetElement);
-                targetElement.parentNode.removeChild(targetElement);
-                targetElement = contentElement;
-                //targetElement.outerHTML = content; //  = contentElement.outerHTML;
-                break;
-
-            case 'prepend':
-                targetElement
-                    [targetElement.firstChild ? 'insertBefore' : 'appendChild']
-                    (contentElement, targetElement.firstChild);
-                targetElement.scrollTop = 0;
-                break;
-
-            case 'append':
-                targetElement.appendChild(contentElement);
-                targetElement.scrollTop = targetElement.scrollHeight;
-                break;
-
-            default:
-                throw new Error("Unknown render action: " + renderAction);
+        } else {
+            if(content)
+                throw new Error("First child missing");
+            contentElement = document.createTextNode('');
         }
 
+        var channelOutputs = document.getElementsByClassName(channelPath);
+
+        var channelOutput;
+        if(channelOutputs.length === 0) {
+
+            switch(subCommand) {
+                case 'minimize':
+                case 'maximize':
+                case 'close':
+                    throw new Error("Could not find class: " + channelPath);
+
+                case 'replace': // TODO: verify logic
+                case 'prepend':
+                case 'append':
+                    document.appendChild(contentElement);
+                    //contentTarget.scrollTop = contentTarget.scrollHeight;
+                    break;
+
+                default:
+                    throw new Error("Unknown subcommand: " + subCommand);
+            }
+
+            if(channelOutputs.length === 0) {
+                console.log(document.getElementsByClassName(channelPath));
+//                     contentElement.parentNode.removeChild(contentElement);
+                throw new Error("Invalid content. Missing class='" + channelPath + "'\n" + content);
+            }
+            channelOutput = channelOutputs[0];
+
+        } else {
+            channelOutput = channelOutputs[0];
+
+            switch(subCommand) {
+                case 'minimize':
+                case 'maximize':
+                case 'close':
+                    if(channelOutput.classList.contains(subCommand + 'd')) {
+                        channelOutput.classList.remove(subCommand + 'd');
+                    } else {
+                        channelOutput.classList.remove('minimized');
+                        channelOutput.classList.remove('maximized');
+                        channelOutput.classList.remove('closed');
+                        channelOutput.classList.add(subCommand + 'd');
+                    }
+                    break;
+
+
+                case 'replace':
+                    channelOutput.innerHTML = contentElement.outerHTML;
+                    break;
+
+                case 'prepend':
+                    channelOutput[channelOutput.firstChild ? 'insertBefore' : 'appendChild'](contentElement, channelOutput.firstChild);
+                    channelOutput.scrollTop = 0;
+                    break;
+
+                case 'append':
+                    channelOutput.appendChild(contentElement);
+                    channelOutput.scrollTop = channelOutput.scrollHeight;
+                    break;
+
+                default:
+                    throw new Error("Unknown subcommand: " + subCommand);
+            }
+        }
         var contentEvent = new CustomEvent('render', {
             bubbles: true,
             detail: content
         });
-        targetElement.dispatchEvent(contentEvent);
+        channelOutput.dispatchEvent(contentEvent);
+        contentEvent = new CustomEvent('render.' + subCommand, {
+            bubbles: true,
+            detail: content
+        });
+        channelOutput.dispatchEvent(contentEvent);
 
     }
+
+
+    //function refreshChannels() {
+    //    var channelLists = document.getElementsByClassName(CLASS_CHANNEL_LIST);
+    //    var channelElements = document.getElementsByClassName(CLASS_CHANNEL);
+    //    var j, path, selectContent='';
+    //    for(var i=0; i<channelLists.length; i++) {
+    //        var channelList = channelLists[i];
+    //        switch(channelList.nodeName.toLowerCase()) {
+    //            case 'select':
+    //                for(j=0; j<channelElements.length; j++) {
+    //                    path = channelElements[j].getAttribute('data-path');
+    //                    selectContent += '<option><a href="#JOIN ' + path + '">' + path + '</a></option>';
+    //                }
+    //                channelList.innerHTML = selectContent;
+    //                break;
+    //
+    //            case 'ul':
+    //                for(j=0; j<channelElements.length; j++) {
+    //                    path = channelElements[j].getAttribute('data-path');
+    //                    selectContent += '<li><a href="#JOIN ' + path + '">' + path + '</a></li>';
+    //                }
+    //                channelList.innerHTML = selectContent;
+    //                break;
+    //
+    //            default:
+    //                break;
+    //        }
+    //    }
+    //}
+//
+//    window.addEventListener('hashchange', onHashChange);
+//    function onHashChange(e) {
+//        var hashCommand = document.location.hash.replace(/^#/, '');
+//        if(!hashCommand)
+//            return false;
+//
+//        var commandEvent = new CustomEvent('command', {
+//            detail: hashCommand,
+//            cancelable:true,
+//            bubbles:true
+//        });
+//        document.dispatchEvent(commandEvent);
+//        if(!commandEvent.defaultPrevented)
+//            socketWorker.postMessage(hashCommand);
+//
+//        document.location.hash = '';
+////         document.location.href = document.location.origin + document.location.pathname;
+//    }
 })();

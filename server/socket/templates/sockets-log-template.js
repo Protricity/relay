@@ -41,7 +41,7 @@ Templates.socket.log.container = function(url, callback) {
 Templates.socket.log.entry = function(socketMessageContent, direction, callback) {
     // Template
     var SOCKET_TEMPLATE_LOG_ENTRY = "\
-        <div class='log-entry append'>\n\
+        <div class='log-entry'>\n\
             <span class='direction'>{$DIR}</span>:\n\
             <span class='message'>{$content}</span>\n\
         </div>\
@@ -63,7 +63,7 @@ Templates.socket.log.entry = function(socketMessageContent, direction, callback)
 Templates.socket.log.action = function(action, callback) {
     // Template
     var SOCKET_TEMPLATE_ACTION_ENTRY = "\
-        <div class='log-entry append'>\n\
+        <div class='log-entry'>\n\
             <span class='action'>{$action}</span>\n\
         </div>\n\
         ";
