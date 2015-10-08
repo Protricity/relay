@@ -4,13 +4,23 @@
 
 
 
-var Templates = Templates || {};
-Templates.client = Templates.client || {};
-Templates.client.body = function(theme, callback) {
+var Tags = Tags || {};
+Tags.client = Tags.client || {};
+Tags.client.body = function(tagHTML, callback) {
     var CLIENT_TEMPLATE = "\
-    <article>\n\
-        <link rel='stylesheet' href='client/client.css' type='text/css'>\n\
+        <body>\n\
+            {$nav}\n\
+            <section class='channel-container'></section>\n\
+        </body>";
+
+    callback(CLIENT_TEMPLATE);
+};
+
+
+Tags.client.nav = function(tagHTML, callback) {
+    var CLIENT_TEMPLATE = "\
         <nav class='navigation-commands closed'>\n\
+            <link rel='stylesheet' href='client/client.css' type='text/css'>\n\
             <header onclick='toggleNavigationCommandMenu(event)'>\n\
                 <label>\n\
                     <button onclick='toggleNavigationCommandMenu(event)'>&#9776;</button>\n\
@@ -30,9 +40,7 @@ Templates.client.body = function(theme, callback) {
                 <li><a href='#FEED ~'       >View your <span class='command'>feed</span></a></li>\n\
                 <li><a href='#PUT'          ><span class='command'>Put</span> to your <strong>User Space</strong></a></li>\n\
             </ul>\n\
-        </nav>\n\
-        <section class='channel-container'></section>\n\
-    </article>";
+        </nav>";
 
     callback(CLIENT_TEMPLATE);
 };
