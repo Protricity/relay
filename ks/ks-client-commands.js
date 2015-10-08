@@ -1,5 +1,5 @@
 /**
- * Created by ari ooccurred015.
+ * Created by ari.
  */
 if(!exports) var exports = {};
 (function() {

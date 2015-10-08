@@ -83,6 +83,7 @@ function Client() {
         }
     };
 
+<<<<<<< HEAD
     Client.render = function(targetClass, content, subCommand) {
         if(subCommand)
             subCommand = '.' + subCommand;
@@ -92,6 +93,12 @@ function Client() {
         parseClientTags(content, function(parsedContent) {
             Client.postResponseToClient("RENDER" + subCommand + " " + targetClass + " " + parsedContent);
         });
+=======
+    Client.render = function(targetClass, content) {
+        //replaceAllTags(content, function(parsedContent) {
+            Client.postResponseToClient("RENDER " + targetClass + " " + content);
+        //});
+>>>>>>> 4a716761988be5183129b01bffddd9f1a7e0fc09
     };
 
     Client.postResponseToClient = function(responseString) {
@@ -160,9 +167,9 @@ function Client() {
     // Window Client
     Client.addCommand(channelButtonCommand);
     function channelButtonCommand(commandString, e) {
-        if(!/^(minimize|maximize|close)/i.test(commandString))
+        if(!/^minimize|maximize|close/i.test(commandString))
             return false;
-        Client.postResponseToClient("RENDER." + commandString);
+        Client.postResponseToClient(commandString);
         return true;
     }
 

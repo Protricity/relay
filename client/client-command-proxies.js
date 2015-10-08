@@ -1,16 +1,4 @@
-
-//var socketListByPath = [];
-//socketListByPath.push([/regex/, ['ws://domain:port/path/to/socket']]);
-
-
-// Socket Command Proxies
-
-//var proxy['get'] = 'rest.get';
-//var proxy['post'] = 'rest.post';
-
-
-if(!exports) var exports = {}; 
-
+if(!exports) var exports = {};
 exports.initClientCommands = function(Client) {
 
     // HTTP Commands
@@ -25,29 +13,6 @@ exports.initClientCommands = function(Client) {
         return false;
     }
 
-    // Chat Commands
-    Client.addCommand(importChatCommands);
-    Client.addResponse(importChatCommands);
-    function importChatCommands(commandString, e) {
-        if(!/^(join|leave|message|chat|nick)/i.test(commandString))
-            return false;
-        Client.removeCommand(importChatCommands);
-        Client.removeResponse(importChatCommands);
-        importScripts('app/social/chat/chat-client-commands.js');
-        return false;
-    }
-
-
-    // Feed Commands
-    Client.addCommand(importFeedCommands);
-    function importFeedCommands(commandString, e) {
-        if(!/^feed/i.test(commandString))
-            return false;
-        Client.removeCommand(importFeedCommands);
-        importScripts('app/social/feed/feed-client-commands.js');
-        return false;
-    }
-
     // PGP Commands
     Client.addCommand(importPGPCommands);
     function importPGPCommands(commandString, e) {
@@ -58,5 +23,8 @@ exports.initClientCommands = function(Client) {
         return false;
     }
 
+    // App Commands
+    Client.require('app/app-client-commands.js')
+        .initClientAppCommands(Client);
 };
 
