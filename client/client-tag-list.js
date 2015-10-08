@@ -6,13 +6,8 @@
 if (!exports) var exports = {};
 exports.tags = [
     [/^{\$nav[^}]*}$/i, function(tagHTML, callback) {
-        importScripts('client/themes/base/client-tags.js');
+        importScripts('client/tags/client-nav-tag.js');
         Tags.client.nav(tagHTML, callback);
-        delete Tags.client;
-    }],
-    [/^{\$body[^}]*}$/i, function(tagHTML, callback) {
-        importScripts('client/themes/base/client-tags.js');
-        Tags.client.body(tagHTML, callback);
-        delete Tags.client;
+        delete Tags.client.nav;
     }]
 ];

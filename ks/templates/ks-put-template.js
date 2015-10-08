@@ -11,14 +11,12 @@ Templates.ks.put.form = function(content, callback) {
         <article class='channel put:'>\n\
             <script src='ks/ks-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
-            <legend class='title'>\
+            <header style='width: 100%;'>\n\
                 <span class='command'>Put</span> content in your <strong>Key Space</strong>\
-            </legend>\n\
-            <div class='title-commands'>\n\
-                <a class='title-command-minimize' href='#MINIMIZE put:'>[-]</a><!--\
-             --><a class='title-command-maximize' href='#MAXIMIZE put:'>[+]</a><!--\
-             --><a class='title-command-close' href='#CLOSE put:'>[x]</a>\n\
-            </div>\n\
+                <a class='command-minimize' href='#MINIMIZE put' style='float: right'>[-]</a><!--\n\
+             --><a class='command-maximize' href='#MAXIMIZE put' style='float: right'>[+]</a><!--\n\
+             --><a class='command-close' href='#CLOSE put' style='float: right'>[x]</a>\n\
+            </header>\
             <form name='ks-put-form' class='compact' style='float:left;'>\n\
                 <label class='label-content'>\
                     Create new <span class='html'>HTML</span> content for your <strong>Key Space</strong>:\n\
