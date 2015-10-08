@@ -3,9 +3,9 @@
  */
 if(!exports) var exports = {};
 (function() {
-    if(typeof Client === 'undefined')
-        var Client = exports.Client
-            || require('../client/client.js').Client;
+
+    //if(typeof Client === 'undefined')
+    //var Client = require('../client/client.js').Client;
 
     Client.addCommand(putCommand);
     Client.addCommand(getCommand);

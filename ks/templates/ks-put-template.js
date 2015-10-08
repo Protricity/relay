@@ -33,7 +33,6 @@ Templates.ks.put.form = function(content, callback) {
                         <option value='~'>My Home Page</option>\n\
                         <option disabled='disabled'>Friend's Web Space...</option>\n\
                         <option disabled='disabled'>Other Web Space...</option>\n\
-                                    {$html_path_options}\n\
                     </select>\n\
                 </label>&nbsp;\n\
                 <label class='label-template hide-on-compact' >\n\

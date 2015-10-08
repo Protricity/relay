@@ -3,7 +3,7 @@
     <head>
         <script src="client/client-worker.js"></script>
         <script>
-            ClientWorker.sendCommand("render ::nav {$nav}");
+            ClientWorker.sendCommand("render * {$nav}");
             ClientWorker.sendCommand("put");
         </script>
     </head>

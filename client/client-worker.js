@@ -122,6 +122,7 @@ ClientWorker.includeLink = function(linkPath) {
     }
 
     function render(commandString) {
+//         console.log(commandString);
         var args = /^render\s+(\S+)\s*([\s\S]*)$/mi.exec(commandString);
         if(!args)
             throw new Error("Invalid Render: " + commandString);
@@ -155,27 +156,39 @@ ClientWorker.includeLink = function(linkPath) {
         if(contentElement.classList.contains('prepend'))
             renderAction = 'prepend';
 
-        var targetElements = document.getElementsByClassName(targetClass);
-
-        var targetElement;
-        if(targetElements.length === 0) {
-            document.getElementsByTagName('body')[0].appendChild(contentElement);
-
-            if(targetElements.length === 0)
-                throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
-
-        }
-        targetElement = targetElements[0];
-
+        var targetElement = null;
         switch(renderAction) {
             case 'replace':
-                targetElement.parentNode.insertBefore(contentElement, targetElement);
-                targetElement.parentNode.removeChild(targetElement);
-                targetElement = contentElement;
-                //targetElement.outerHTML = content; //  = contentElement.outerHTML;
+                if(targetClass === '*') {
+                    document.getElementsByTagName('body')[0].appendChild(contentElement);
+                    targetElement = contentElement;
+
+                } else {
+                    var targetElements = document.getElementsByClassName(targetClass);
+                    if(targetElements.length === 0) {
+                        document.getElementsByTagName('body')[0].appendChild(contentElement);
+                        if(targetElements.length === 0)
+                            throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
+                        targetElement = targetElements[0];
+
+                    } else {
+                        targetElement = targetElements[0];
+
+                        targetElement.parentNode.insertBefore(contentElement, targetElement);
+                        targetElement.parentNode.removeChild(targetElement);
+                        targetElement = contentElement;
+                    }
+
+                }
+
                 break;
 
             case 'prepend':
+                var prependTargets = document.getElementsByClassName(targetClass);
+                if(prependTargets.length === 0)
+                    throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
+                targetElement = prependTargets[0];
+
                 targetElement
                     [targetElement.firstChild ? 'insertBefore' : 'appendChild']
                     (contentElement, targetElement.firstChild);
@@ -183,6 +196,11 @@ ClientWorker.includeLink = function(linkPath) {
                 break;
 
             case 'append':
+                var appendTargets = document.getElementsByClassName(targetClass);
+                if(appendTargets.length === 0)
+                    throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
+                targetElement = appendTargets[0];
+
                 targetElement.appendChild(contentElement);
                 targetElement.scrollTop = targetElement.scrollHeight;
                 break;
