@@ -86,8 +86,10 @@ function Client() {
     Client.render = function(targetClass, content, subCommand) {
         if(subCommand)
             subCommand = '.' + subCommand;
+        else
+            subCommand = '';
 
-        replaceAllTags(content, function(parsedContent) {
+        parseClientTags(content, function(parsedContent) {
             Client.postResponseToClient("RENDER" + subCommand + " " + targetClass + " " + parsedContent);
         });
     };
@@ -96,9 +98,29 @@ function Client() {
         self.postMessage(responseString);
     };
 
-    function replaceAllTags(htmlContent, callback) {
-        Client.require('client/client-tags.js')
-            .parseClientTags(Client, htmlContent, callback);
+
+    function parseClientTags(tagHTML, callback) {
+        var match = /{\$([a-z][^}]+)}/.exec(tagHTML);
+        if (!match) {
+            callback(tagHTML);
+            return;
+        }
+
+        var tagString = match[0];
+
+        var tags = Client.require('client/client-tag-list.js').tags;
+        for (var i = 0; i < tags.length; i++) {
+            if (tags[i][0].test(tagString)) {
+                tags[i][1](tagString, function (tagReplacedContent) {
+                    tagHTML = tagHTML
+                        .replace(tagString, tagReplacedContent);
+                    parseClientTags(tagHTML, callback);
+                });
+                return;
+            }
+        }
+
+        throw new Error("Invalid Tag(" + tags.length+ "): " + tagString);
     }
 
     Client.require = function(path) {

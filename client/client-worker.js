@@ -28,7 +28,7 @@ ClientWorker.includeLink = function(linkPath) {
     return false;
 };
 
-//ClientLoader.includeScript('client/theme/base/base-client-loader.js');
+//ClientLoader.includeScript('client/tags/base/base-client-loader.js');
 
 (function() {
 
@@ -130,6 +130,7 @@ ClientWorker.includeLink = function(linkPath) {
 
         var channelOutput;
         if(channelOutputs.length === 0) {
+            // Render to first available container (probably document)
 
             switch(subCommand) {
                 case 'minimize':
@@ -140,12 +141,12 @@ ClientWorker.includeLink = function(linkPath) {
                 case 'replace': // TODO: verify logic
                 case 'prepend':
                 case 'append':
-                    document.appendChild(contentElement);
+                    document.getElementsByTagName('body')[0].appendChild(contentElement);
                     //contentTarget.scrollTop = contentTarget.scrollHeight;
                     break;
 
                 default:
-                    throw new Error("Unknown subcommand: " + subCommand);
+                    throw new Error("Unknown sub-command: " + subCommand);
             }
 
             if(channelOutputs.length === 0) {
@@ -174,7 +175,7 @@ ClientWorker.includeLink = function(linkPath) {
 
 
                 case 'replace':
-                    channelOutput.innerHTML = contentElement.outerHTML;
+                    channelOutput.outerHTML = content; // contentElement.outerHTML;
                     break;
 
                 case 'prepend':
