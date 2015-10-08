@@ -46,7 +46,7 @@ function Sockets(socketURL) {
                     eventListeners[i][1](newSocket);
 
             Templates.socket.log.action("SOCKET OPEN: " + newSocket.url, function(html) {
-                Client.render('socket-log:' + newSocket.url, html, 'append');
+                Client.render('socket-log:' + newSocket.url, html);
             });
 
             setTimeout(function () {
@@ -82,7 +82,7 @@ function Sockets(socketURL) {
             }, Sockets.SOCKET_RECONNECT_INTERVAL);
 
             Templates.socket.log.action("SOCKET CLOSED: " + newSocket.url, function(html) {
-                Client.render('socket-log:' + newSocket.url, html, 'append');
+                Client.render('socket-log:' + newSocket.url, html);
             });
         }
 
@@ -92,7 +92,7 @@ function Sockets(socketURL) {
             var socket = e.target;
             if(socket instanceof WebSocket) {
                 Templates.socket.log.entry(e.data, 'I', function(html) {
-                    Client.render('socket-log:' + socket.url, html, 'append');
+                    Client.render('socket-log:' + socket.url, html);
                 });
             }
         }
@@ -187,7 +187,7 @@ function Sockets(socketURL) {
     Sockets.send = function(commandString, e, withSocket) {
         function send(socket){
             Templates.socket.log.entry(commandString, 'O', function(html) {
-                Client.render('socket-log:' + socket.url, html, 'append');
+                Client.render('socket-log:' + socket.url, html);
             });
             socket.send(commandString);
         }

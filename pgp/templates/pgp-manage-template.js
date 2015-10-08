@@ -51,7 +51,7 @@ Templates.pgp.manage.form = function(status_content, callback) {
 
 Templates.pgp.manage.entry = function(contentEntry, callback) {
     var MANAGE_TEMPLATE_ENTRY = "\
-        <label>\n\
+        <label class='append'>\n\
             <fieldset class='pgp-id-box pgp-id-box:{$id_public}{$class}'>\n\
                 <legend class='title'>\n\
                     <input type='checkbox' value='{$id_public}' name='selected:{$id_public}'/> <span class='user'>{$user_id}</span>\n\

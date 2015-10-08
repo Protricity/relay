@@ -3,8 +3,8 @@
     <head>
         <script src="client/client-worker.js"></script>
         <script>
-            ClientWorker.sendCommand("render ::body {$body}");
-//            ClientWorker.sendCommand("render navigation minimal");
+            ClientWorker.sendCommand("render ::body <div>{$body}</div>");
+            ClientWorker.sendCommand("put");
 //            ClientWorker.sendCommand("render content minimal");
         </script>
     </head>

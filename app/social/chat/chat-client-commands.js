@@ -69,7 +69,7 @@
         var channelPath = match[2];
         getChannelUsers(channelPath);
         Templates.chat.message(responseString, function(html) {
-            Client.render('chat-log:' + channelPath.toLowerCase(), html, 'append');
+            Client.render('chat-log:' + channelPath.toLowerCase(), html);
         });
         return true;
     }
@@ -94,7 +94,7 @@
         var username = match[3];
         getChannelUsers(channelPath);
         Templates.chat.action(responseString, function(html) {
-            Client.render('chat-log:' + channelPathLowerCase, html, 'append');
+            Client.render('chat-log:' + channelPathLowerCase, html);
         });
 
         var userList = getChannelUsers(channelPath);
@@ -139,7 +139,7 @@
         var username = match[3];
         getChannelUsers(channelPath);
         Templates.chat.action(commandResponse, function(html) {
-            Client.render('chat-log:' + channelPathLowerCase, html, 'append');
+            Client.render('chat-log:' + channelPathLowerCase, html);
         });
 
         var userList = getChannelUsers(channelPath);
@@ -179,7 +179,7 @@
                     if (pos >= 0) {
                         userList[pos] = new_username;
                         Templates.chat.nick(responseString, function (html) {
-                            Client.render('chat-log:' + channelPath.toLowerCase(), html, 'append');
+                            Client.render('chat-log:' + channelPath.toLowerCase(), html);
                         });
                         Templates.chat.userList(channelPath, userList, function(html) {
                             Client.render('chat-active-users:' + channelPath.toLowerCase(), html);
