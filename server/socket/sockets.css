@@ -3,7 +3,7 @@
     display: inline-block;
     overflow: auto;
     max-height: 23vw;
-    min-width: 41em;
+    min-width: 36em;
 }
 
 .socket-log .log-entry .message {

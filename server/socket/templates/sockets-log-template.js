@@ -9,19 +9,15 @@ Templates.socket.log.container = function(url, callback) {
 
     // Template
     var SOCKET_TEMPLATE = "\
-        <article class='channel socket:{$url} minimized' data-sort='z'>\n\
+        <article class='channel socket:{$url} minimized1' data-sort='z'>\n\
             <link rel='stylesheet' href='server/socket/sockets.css' type='text/css'>\n\
-            <legend class='title'>\n\
-                <a href='#MINIMIZE socket:{$url}'>\n\
-                    <span class='command'>Socket</span> {$host}\n\
-                </a>\n\
-            </legend>\n\
-            <div class='title-commands'>\n\
-                <a class='title-command-minimize' href='#MINIMIZE socket:{$url}'>[-]</a><!--\
-             --><a class='title-command-maximize' href='#MAXIMIZE socket:{$url}'>[+]</a><!--\
-             --><a class='title-command-close' href='#CLOSE socket:{$url}'>[x]</a>\n\
-            </div>\n\
-            <fieldset class='socket-log socket-log:{$url}'></fieldset>\n\
+            <header class='show-on-minimized'>\n\
+                <a href='#MINIMIZE socket:{$url}'>ws://{$host}</a>\n\
+                <a class='command-minimize' href='#MINIMIZE socket:{$url}' style='float: right'>[-]</a><!--\n\
+             --><a class='command-maximize' href='#MAXIMIZE socket:{$url}' style='float: right'>[+]</a><!--\n\
+             --><a class='command-close' href='#CLOSE socket:{$url}' style='float: right'>[x]</a>\n\
+            </header>\
+            <div class='socket-log socket-log:{$url}'></div>\n\
             </form>\n\
         </article>";
 
