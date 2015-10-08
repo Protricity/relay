@@ -9,8 +9,8 @@ Templates.chat.form = function(channelPath, callback) {
         <article class='channel chat chat:{$channel_path}'>\n\
             <script src='app/social/chat/chat-listeners.js'></script>\n\
             <link rel='stylesheet' href='app/social/chat/chat.css' type='text/css'>\n\
-            <header style='width: 100%;'>\n\
-                <span class='command'>Join</span> {$channel}\n\
+            <header class='show-on-minimized'>\n\
+                <span class='command'>Join</span><span> {$channel}</span>\n\
                 <a class='title-command-minimize' href='#MINIMIZE chat:{$channel_path}' style='float: right'>[-]</a><!--\n\
              --><a class='title-command-maximize' href='#MAXIMIZE chat:{$channel_path}' style='float: right'>[+]</a><!--\n\
              --><a class='title-command-close' href='#CLOSE chat:{$channel_path}' style='float: right'>[x]</a>\n\

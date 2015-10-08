@@ -1,26 +1,16 @@
-/** Hover **/
-
-.navigation-commands:hover,
-.channel:hover {
-    /*     cursor: pointer; */
-    box-shadow: 1px 2px 6px #999;
-}
 
 /** Channels **/
 
 .channel {
-    position: relative;
     display: inline-block;
-    vertical-align: top;
 }
 
 .channel.closed,
-.channel.minimized > * {
+.channel.minimized > :not(.show-on-minimized) {
     display: none;
 }
 
-.channel.minimized .show-on-minimized {
-    display: inherit;
+.show-on-minimized {
 }
 
 

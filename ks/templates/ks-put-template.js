@@ -11,11 +11,11 @@ Templates.ks.put.form = function(content, callback) {
         <article class='channel put:'>\n\
             <script src='ks/ks-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
-            <header style='width: 100%;'>\n\
-                <span class='command'>Put</span> content in your <strong>Key Space</strong>\
-                <a class='command-minimize' href='#MINIMIZE put' style='float: right'>[-]</a><!--\n\
-             --><a class='command-maximize' href='#MAXIMIZE put' style='float: right'>[+]</a><!--\n\
-             --><a class='command-close' href='#CLOSE put' style='float: right'>[x]</a>\n\
+            <header class='show-on-minimized'>\n\
+                <span class='command'>Put</span><span> content in your </span> <strong>Key Space</strong>\
+                <a class='command-minimize' href='#MINIMIZE put:' style='float: right'>[-]</a><!--\n\
+             --><a class='command-maximize' href='#MAXIMIZE put:' style='float: right'>[+]</a><!--\n\
+             --><a class='command-close' href='#CLOSE put:' style='float: right'>[x]</a>\n\
             </header>\
             <form name='ks-put-form' class='compact' style='float:left;'>\n\
                 <label class='label-content'>\

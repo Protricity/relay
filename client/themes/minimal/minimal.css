@@ -1,7 +1,7 @@
 /** Hover **/
 
-.template-minimal .navigation-commands:hover,
-.template-minimal .channel:hover {
+.theme-minimal .navigation-commands:hover,
+.theme-minimal .channel:hover {
     /*     cursor: pointer; */
     box-shadow: 1px 2px 6px #999;
 }
@@ -9,130 +9,112 @@
 
 /** General **/
 
-body.template-minimal {
-    /* font-family: monospace, serif; */
+.theme-minimal {
     font-family: monospace;
     color: #333;
 }
 
-.template-minimal a {
+.theme-minimal a {
     text-decoration: none;
 }
 
-.template-minimal fieldset {
-    /* vertical-align: top; */
-}
 
 /** Channels **/
 
-.template-minimal .channel {
-    animation: fade-in-resize 1s ease-in-out;
+.theme-minimal .channel {
     position: relative;
+    animation: fade-in-resize 1s ease-in-out;
     /*transition: opacity 0.4s ease-in-out;*/
-    display: inline-block;
+
     border: 2px groove threedface;
     margin: 4px 1px 13px 1px;
     padding: 0.8em 0.75em 0.625em 0.75em;
     min-width: 9em;
-    /* max-width: 50em; */
     vertical-align: top;
 }
 
-.template-minimal .channel:last-child {
+.theme-minimal .channel:last-child {
     margin: 4px 1px 0 1px;
 }
 
-.template-minimal .channel .title {
+.theme-minimal .channel header {
     font-weight: bold;
     color: #111;
-    background-color: white;
     border-radius: 6px;
-    position: absolute;
-    top: -10px;
     margin: 0 2px;
     padding: 0 2px;
-}
-
-.template-minimal .channel .title-commands {
     position: absolute;
     top: -10px;
-    right: 10px;
-    background-color: white;
+    width: 95%;
+}
+/* box-shadow: 1px 4px 30px #333; */
+
+.theme-minimal .channel header > * {
+     background-color: white;
 }
 
-
-.template-minimal .channel .title-commands a {
-    color: black;
-    font-weight: bold;
-}
-.template-minimal .channel .title-commands a:hover {
-    color: darkblue;
-    background-color: lightgreen;
-    box-shadow: 1px 4px 30px #333;
-}
-
-.template-minimal .channel.minimized {
+.theme-minimal .channel.minimized {
     min-width: 16em;
 }
 
-.template-minimal .channel.closed,
-.template-minimal .channel.minimized > * {
-    display: none;
-}
 
-.template-minimal .channel.minimized .channel-header,
-.template-minimal .channel.minimized .title {
+.theme-minimal .channel.minimized header {
     display: inherit;
     color: grey;
 }
-.template-minimal .channel.minimized .title-commands {
-    display: inherit;
-}
 
-.template-minimal .username {
+/** Span Formats **/
+
+.theme-minimal span.username {
     color: darkblue;
     text-overflow: ellipsis;
 }
 
 
-.template-minimal .message {
+.theme-minimal span.message {
     color: black;
     word-break: break-all;
 }
 
-.template-minimal .command{
+.theme-minimal span.command{
     color: green;
     text-transform: uppercase;
     font-size: smaller;
     font-family: monospace;
 }
 
-.template-minimal .action {
+.theme-minimal span.action {
     color: green;
     font-style: italic;
 }
 
-.template-minimal .error {
+.theme-minimal span.error {
     color: red;
     font-style: italic;
 }
 
-.template-minimal .passphrase {
+.theme-minimal span.passphrase {
     color: darkgreen;
     font-weight: bold;
 }
 
-.template-minimal .info {
+.theme-minimal span.info {
     color: #666;
 }
 
-.template-minimal span.success {
+.theme-minimal span.success {
     color: darkblue;
     font-weight: bold;
     text-shadow: 2px 2px 4px #AAA;
 }
 
-.template-minimal .status-box {
+.theme-minimal span.path {
+    color: darkblue;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.theme-minimal .status-box {
     display: block;
     /* margin: 0.5em; */
 
@@ -147,37 +129,26 @@ body.template-minimal {
     white-space: normal;
 }
 
-.template-minimal .status-box:empty {
+.theme-minimal .status-box:empty {
     display: none;
 }
 
-.template-minimal .status-box > * {
+.theme-minimal .status-box > * {
     animation: fadein 0.5s;
-}
-
-.template-minimal span.path {
-    color: darkblue;
-    text-decoration: underline;
-    font-weight: bold;
 }
 
 /** Inputs **/
 
-.template-minimal input[name=passphrase] {
+.theme-minimal input[name=passphrase] {
     border-color: lightgreen;
     color: darkgreen;
     /* border-radius: 0.4em; */
 }
 
-.template-minimal input[type=submit] {
-    animation: fadein 2s;
-}
-
-/* Menu */
+/* Nav Menu */
 
 
-
-.template-minimal .navigation-commands {
+.theme-minimal .navigation-commands {
     border-style: solid;
     border-width: 1px;
     display: block;
@@ -186,11 +157,11 @@ body.template-minimal {
     transition: min-width 0.5s, transform 0.5s;
 }
 
-.template-minimal .navigation-commands:hover {
+.theme-minimal .navigation-commands:hover {
     min-width: 12em;
 }
 
-.template-minimal .navigation-commands {
+.theme-minimal .navigation-commands {
     position: relative;
     z-index: 999;
 
@@ -203,24 +174,24 @@ body.template-minimal {
     vertical-align: top;
 }
 
-.template-minimal .navigation-commands header button {
+.theme-minimal .navigation-commands header button {
     border: 1px inset;
 }
-.template-minimal .navigation-commands.closed header button {
+.theme-minimal .navigation-commands.closed header button {
     border-style: outset;
 }
-.template-minimal .navigation-commands header {
+.theme-minimal .navigation-commands header {
     font-weight: bold;
     text-shadow: 1px 1px 1px #AAA;
 }
-.template-minimal .navigation-commands ul {
+.theme-minimal .navigation-commands ul {
     list-style: none;
     padding: 0;
     margin: 0.5em 0 0 0;
 }
-.template-minimal .navigation-commands ul lh,
-.template-minimal .navigation-commands ul li.header,
-.template-minimal .navigation-commands ul li {
+.theme-minimal .navigation-commands ul lh,
+.theme-minimal .navigation-commands ul li.header,
+.theme-minimal .navigation-commands ul li {
     background-color: #EEE;
     border-radius: 0.3em;
     padding: 0.05em 0.5em;
@@ -231,8 +202,8 @@ body.template-minimal {
     border: 1px inset;
 }
 
-.template-minimal .navigation-commands ul lh,
-.template-minimal .navigation-commands ul li.header {
+.theme-minimal .navigation-commands ul lh,
+.theme-minimal .navigation-commands ul li.header {
     background-color: #BFBFBF;
     border-style: outset;
     font-weight: bold;
@@ -240,25 +211,25 @@ body.template-minimal {
     /* text-transform: lowercase; */
     margin-top: 1em;
 }
-.template-minimal .navigation-commands ul li:hover {
+.theme-minimal .navigation-commands ul li:hover {
     background-color: #EEEEAA;
 }
 
-.template-minimal .navigation-commands {
+.theme-minimal .navigation-commands {
     border: 1px outset;
     border-radius: 4px;
 }
-.template-minimal .navigation-commands.closed {
+.theme-minimal .navigation-commands.closed {
     border-radius: 0.5em;
     border-style: inherit;
 }
-.template-minimal .navigation-commands.closed .hide-on-close {
+.theme-minimal .navigation-commands.closed .hide-on-close {
     display: none;
 }
-.template-minimal .navigation-commands.closed:hover .hide-on-close {
+.theme-minimal .navigation-commands.closed:hover .hide-on-close {
     display: block;
 }
-.template-minimal .navigation-commands.closed:hover span.hide-on-close {
+.theme-minimal .navigation-commands.closed:hover span.hide-on-close {
     display: inline;
 }
 

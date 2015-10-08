@@ -157,7 +157,7 @@ function Client() {
     function channelButtonCommand(commandString, e) {
         if(!/^(minimize|maximize|close)/i.test(commandString))
             return false;
-        Client.postResponseToClient("RENDER." + commandString);
+        Client.postResponseToClient(commandString);
         return true;
     }
 
