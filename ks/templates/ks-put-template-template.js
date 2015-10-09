@@ -7,11 +7,12 @@ var Templates = Templates || {};
 Templates.ks = Templates.ks || {};
 Templates.ks.put = Templates.ks.put || {};
 Templates.ks.put.template = function(commandString, callback, Client) {
-    var match = /^put\.template\s*(\S*)/im.exec(commandString);
+    var match = /^put\.template\s*(\S*)\s*([\s\S]*)$/im.exec(commandString);
     if(!match)
         return false;
 
     var template = match[1];
+    //var args = match[2].split(/\s+/);
 
     var PUT_SELECT_TEMPLATE = "\
         <article class='channel put-template: {$classes}'>\n\
@@ -31,10 +32,9 @@ Templates.ks.put.template = function(commandString, callback, Client) {
                     </select>\n\
                 </label>&nbsp;\n\
             </form>\n\
-            <section class='put-template-content:' style='position:relative;'>\
+            <section class='put-template-content:'>\
                 {$template_content}\
             </section>\n\
-            <br/>\n\
         </article>";
 
     var classes = [];
@@ -44,29 +44,39 @@ Templates.ks.put.template = function(commandString, callback, Client) {
     var scripts = Client.require('ks/ks-content-scripts.js').getContentScripts();
     for(var i=0; i<scripts.length; i++) {
         var opts = scripts[i];
-        html_script_options += "<option value='" + opts[0] + "'>" + opts[1] + "</option>\n";
-        if(template && template === opts[0])
+        var selectedHTML = '';
+        if(template && template === opts[0]) {
             templateFound = opts;
+            selectedHTML = ' selected="selected"';
+        }
+        html_script_options += "<option value='" + opts[0] + "'" + selectedHTML + ">" + opts[1] + "</option>\n";
     }
 
     if(templateFound) {
-        Client.require(template).runScript(commandString, function(template_content) {
-            // Callback
-            callback(PUT_SELECT_TEMPLATE
-                    .replace(/{\$classes}/gi, classes ? classes.join(' ') : '')
-                    .replace(/{\$html_script_options}/gi, html_script_options)
-                    .replace(/{\$template_content}/gi, '<hr/>' + template_content)
-            );
-        });
-
-    } else {
-        // Callback
-        callback(PUT_SELECT_TEMPLATE
-                .replace(/{\$classes}/gi, classes ? classes.join(' ') : '')
-                .replace(/{\$html_script_options}/gi, html_script_options)
-                .replace(/{\$template_content}/gi, '')
-        );
+        try {
+            Client
+                .require(template)
+                .runScript(commandString, function (template_content) {
+                // Callback
+                callback(PUT_SELECT_TEMPLATE
+                        .replace(/{\$classes}/gi, classes ? classes.join(' ') : '')
+                        .replace(/{\$html_script_options}/gi, html_script_options)
+                        .replace(/{\$template_content}/gi, '<hr/>' + template_content)
+                );
+            });
+            return;
+            
+        } catch (e) {
+            console.error(e);
+        }
     }
+
+    // Callback
+    callback(PUT_SELECT_TEMPLATE
+            .replace(/{\$classes}/gi, classes ? classes.join(' ') : '')
+            .replace(/{\$html_script_options}/gi, html_script_options)
+            .replace(/{\$template_content}/gi, '')
+    );
 
 };
 
