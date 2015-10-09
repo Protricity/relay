@@ -2,33 +2,9 @@
  * Created by ari on 6/19/2015.
  */
 
-function ClientWorker() {
-    return ClientWorker.getSocketWorker();
+function ClientSocketWorker() {
+    return ClientSocketWorker.get();
 }
-
-ClientWorker.includeScript = function(scriptPath) {
-    var head = document.getElementsByTagName('head')[0];
-    if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
-        var newScript = document.createElement('script');
-        newScript.setAttribute('src', scriptPath);
-        head.appendChild(newScript);
-        return true;
-    }
-    return false;
-};
-
-ClientWorker.includeLink = function(linkPath) {
-    var head = document.getElementsByTagName('head')[0];
-    if (head.querySelectorAll('link[href=' + linkPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
-        var newScript = document.createElement('link');
-        newScript.setAttribute('href', linkPath);
-        head.appendChild(newScript);
-        return true;
-    }
-    return false;
-};
-
-//ClientLoader.includeScript('client/theme/base/base-client-loader.js');
 
 (function() {
 
@@ -39,11 +15,11 @@ ClientWorker.includeLink = function(linkPath) {
     var CLASS_CHANNEL_LIST_ENTRY = 'channel-list-entry';
 
     var socketWorker = null;
-    ClientWorker.getSocketWorker = function() {
+    ClientSocketWorker.get = function() {
         if(!socketWorker) {
             socketWorker = new Worker('worker.js');
             socketWorker.addEventListener('message', function(e) {
-                ClientWorker.handleResponse(e.data || e.detail);
+                ClientSocketWorker.handleResponse(e.data || e.detail);
             }, true);
         }
         return socketWorker;
@@ -51,7 +27,7 @@ ClientWorker.includeLink = function(linkPath) {
 
     document.addEventListener('command', function(e) {
         var commandString = e.detail || e.data;
-        ClientWorker.sendCommand(commandString);
+        ClientSocketWorker.sendCommand(commandString);
         e.preventDefault();
     });
 
@@ -66,16 +42,16 @@ ClientWorker.includeLink = function(linkPath) {
         if(!hashCommand)
             return false;
         console.log("Hash Command: ", hashCommand);
-        ClientWorker.sendCommand(hashCommand);
+        ClientSocketWorker.sendCommand(hashCommand);
     }
 
 
-    ClientWorker.sendCommand = function (commandString) {
-        ClientWorker.getSocketWorker()
+    ClientSocketWorker.sendCommand = function (commandString) {
+        ClientSocketWorker.get()
             .postMessage(commandString);
     };
 
-    ClientWorker.handleResponse = function(responseString) {
+    ClientSocketWorker.handleResponse = function(responseString) {
         var args = /^\w+/.exec(responseString);
         if(!args)
             throw new Error("Invalid Command: " + responseString);
@@ -138,7 +114,7 @@ ClientWorker.includeLink = function(linkPath) {
             var match2 = /\s*src=['"]([^'"]*)['"]/gi.exec(match[1]);
             if(match2) {
                 var hrefValue = match2[1];
-                ClientWorker.includeScript(hrefValue);
+                ClientSocketWorker.includeScript(hrefValue);
 
             } else {
                 throw new Error("Invalid Script: " + scriptContent);
@@ -214,6 +190,38 @@ ClientWorker.includeLink = function(linkPath) {
             detail: content
         });
         targetElement.dispatchEvent(contentEvent);
-
     }
 })();
+
+
+ClientSocketWorker.includeScript = function(scriptURL) {
+    var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(scriptURL);
+    if(!match)
+        throw new Error("Invalid URL: " + scriptURL);
+    var host = match[4],
+        scriptPath = match[5].toLowerCase() || '';
+    if(host)
+        throw new Error("Only local scripts may be included: " + scriptPath);
+
+    var head = document.getElementsByTagName('head')[0];
+    if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+        var newScript = document.createElement('script');
+        newScript.setAttribute('src', scriptPath);
+        head.appendChild(newScript);
+        return true;
+    }
+    return false;
+};
+//
+//ClientSocketWorker.includeLink = function(linkPath) {
+//    var head = document.getElementsByTagName('head')[0];
+//    if (head.querySelectorAll('link[href=' + linkPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+//        var newScript = document.createElement('link');
+//        newScript.setAttribute('href', linkPath);
+//        head.appendChild(newScript);
+//        return true;
+//    }
+//    return false;
+//};
+
+//ClientLoader.includeScript('client/theme/base/base-client-loader.js');
