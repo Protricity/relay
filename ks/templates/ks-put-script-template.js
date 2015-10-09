@@ -16,16 +16,16 @@ Templates.ks.put.template = function(commandString, callback, Client) {
     //var args = match[2].split(/\s+/);
 
     var PUT_SELECT_TEMPLATE = "\
-        <article class='channel put-template: {$classes}'>\n\
-            <script src='ks/listeners/ks-put-template-listeners.js'></script>\n\
+        <article class='channel put-script: {$classes}'>\n\
+            <script src='ks/listeners/ks-put-script-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
             <header class='title-bar'>\n\
                 <strong>Choose a </strong><span class='command'>Template</span><span>:</span>\
-                <a class='title-bar-minimize' href='#MINIMIZE put-preview:'>[-]</a><!--\n\
-             --><a class='title-bar-maximize' href='#MAXIMIZE put-preview:'>[+]</a><!--\n\
-             --><a class='title-bar-close' href='#CLOSE put:'>[x]</a>\n\
+                <a class='title-bar-minimize' href='#MINIMIZE put-script:'>[-]</a><!--\n\
+             --><a class='title-bar-maximize' href='#MAXIMIZE put-script:'>[+]</a><!--\n\
+             --><a class='title-bar-close' href='#CLOSE put-script:'>[x]</a>\n\
             </header>\
-            <form name='ks-put-template-form'>\n\
+            <form name='ks-put-script-select-form'>\n\
                 <label class='label-select-template hide-on-compact'>\n\
                     <select name='template' style='width:12em;'>\n\
                         <option value=''>Choose a Template</option>\n\
@@ -33,43 +33,19 @@ Templates.ks.put.template = function(commandString, callback, Client) {
                     </select>\n\
                 </label>&nbsp;\n\
             </form>\n\
-            <section class='put-template-content:'>\
-                {$template_content}\
-            </section>\n\
         </article>";
 
     var classes = [];
 
     var html_script_options = '';
-    var templateFound = null;
     var scripts = Client.require('ks/ks-content-scripts.js').getContentScripts();
     for(var i=0; i<scripts.length; i++) {
         var opts = scripts[i];
         var selectedHTML = '';
         if(scriptPath && scriptPath === opts[0]) {
-            templateFound = opts;
             selectedHTML = ' selected="selected"';
         }
         html_script_options += "<option value='" + opts[0] + "'" + selectedHTML + ">" + opts[1] + "</option>\n";
-    }
-
-    if(templateFound) {
-        try {
-            Client
-                .require(templateFound[0])
-                .runScript(commandString, function (template_content) {
-                // Callback
-                callback(PUT_SELECT_TEMPLATE
-                        .replace(/{\$classes}/gi, classes ? classes.join(' ') : '')
-                        .replace(/{\$html_script_options}/gi, html_script_options)
-                        .replace(/{\$template_content}/gi, '<hr/>' + template_content)
-                );
-            });
-            return;
-
-        } catch (e) {
-            console.error(e);
-        }
     }
 
     // Callback

@@ -12,6 +12,23 @@ if(!exports) var exports = {};
         "<input type='text' name='tags' placeholder='Add tags' />"
     ];
 
+    var ARG_STEP_TEMPLATE = "\
+        <article class='channel put-script:'>\n\
+            <script src='ks/listeners/ks-put-script-listeners.js'></script>\n\
+            <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
+            <header class='title-bar'>\n\
+                <strong>Create An Article</strong><span>:</span>\
+                <a class='title-bar-minimize' href='#MINIMIZE put-script:'>[-]</a><!--\n\
+             --><a class='title-bar-maximize' href='#MAXIMIZE put-script:'>[+]</a><!--\n\
+             --><a class='title-bar-close' href='#CLOSE put-script:'>[x]</a>\n\
+            </header>\
+            <form action='#' name='ks-put-script-form' onsubmit='ClientSocketWorker.sendCommand(\"{$command_string}\"); return false;'>\n\
+                {$html_input}\
+                <button type='submit' name='submit'>Next</button>\n\
+                <input type='hidden' name='command_string' value='{$command_string}' />\n\
+            </form>\n\
+        </article>";
+
     // Exports
 
     exports.runScript = function(commandString, callback) {
@@ -40,22 +57,6 @@ if(!exports) var exports = {};
 
         stepCall(commandString, function(html_input) {
 
-            var ARG_STEP_TEMPLATE = "\
-                <article class='channel put-template:'>\n\
-                    <script src='ks/listeners/ks-put-template-listeners.js'></script>\n\
-                    <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
-                    <header class='title-bar'>\n\
-                        <strong>Create An Article</strong><span>:</span>\
-                        <a class='title-bar-minimize' href='#MINIMIZE put-template:'>[-]</a><!--\n\
-                     --><a class='title-bar-maximize' href='#MAXIMIZE put-template:'>[+]</a><!--\n\
-                     --><a class='title-bar-close' href='#CLOSE put-template:'>[x]</a>\n\
-                    </header>\
-                    <form action='#' name='ks-create-script-form' onsubmit='ClientSocketWorker.sendCommand(\"{$command_string} \" + this.title.value); return false;'>\n\
-                        <label class='label-title hide-on-compact'>\n\
-                            {$html_input}\
-                        </label>\n\
-                    </form>\n\
-                </article>";
 
             callback(ARG_STEP_TEMPLATE
                 .replace(/{\$html_input}/i, html_input)
