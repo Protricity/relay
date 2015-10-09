@@ -8,13 +8,11 @@ var Tags = Tags || {};
 Tags.client = Tags.client || {};
 Tags.client.nav = function(tagHTML, callback) {
     var CLIENT_TEMPLATE = "\
-        <nav class='navigation-commands closed'>\n\
+        <nav class='navigation-commands closed'  onclick='this.classList.toggle(\"closed\");'>\n\
             <link rel='stylesheet' href='client/client.css' type='text/css'>\n\
             <header onclick1='this.parentNode.classList.toggle(\"closed\");'>\n\
-                <label>\n\
-                    <button onclick='this.parentNode.parentNode.parentNode.classList.toggle(\"closed\");'>&#9776;</button>\n\
+                <button onclick1='this.parentNode.parentNode.parentNode.classList.toggle(\"closed\");'>&#9776;</button>\n\
                 Relay <span class='hide-on-close'>Commands</span>\n\
-                </label>\n\
             </header>\n\
             <ul class='command-list-channels hide-on-close'>\n\
                 <lh>Channels</lh>\n\
@@ -30,6 +28,8 @@ Tags.client.nav = function(tagHTML, callback) {
             </ul>\n\
         </nav>";
     callback(CLIENT_TEMPLATE);
+
+    //throw new Error("TODO");
 
 //    self.geoipcallback = function(result) {
 //        if (result.country_name)

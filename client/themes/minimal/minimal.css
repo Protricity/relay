@@ -164,11 +164,10 @@
 .theme-minimal .navigation-commands {
     position: relative;
     z-index: 999;
-
     display: inline-block;
     background-color: lightgrey;
     padding: 0.5em;
-    margin-bottom: 0.5em;
+    margin: 0 1em 1em 0;
     animation: fade-in;
     /* border: 2px groove threedface; */
     vertical-align: top;
