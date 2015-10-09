@@ -8,11 +8,11 @@ var Tags = Tags || {};
 Tags.client = Tags.client || {};
 Tags.client.nav = function(tagHTML, callback, Client) {
     var CLIENT_TEMPLATE = "\
-        <nav class='navigation-commands closed1'>\n\
+        <nav class='navigation-commands closed'>\n\
             <link rel='stylesheet' href='client/client.css' type='text/css'>\n\
-            <header onclick1='this.parentNode.classList.toggle(\"closed\");'>\n\
+            <header onclick='this.parentNode.classList.toggle(\"closed\");'>\n\
                 <label>\n\
-                    <button onclick='this.parentNode.parentNode.parentNode.classList.toggle(\"closed\");'>&#9776;</button>\n\
+                    <button>&#9776;</button>\n\
                 Relay <span class='hide-on-close'>Commands</span>\n\
                 </label>\n\
             </header>\n\

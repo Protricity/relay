@@ -41,7 +41,7 @@
                 clearTimeout(refreshHTTPPutForm.previewTimeout);
             refreshHTTPPutForm.previewTimeout = setTimeout(function() {
                 updatePutPreview(e, formElm);
-            }, 200)
+            }, REFRESH_TIMEOUT)
         }
     }
 
