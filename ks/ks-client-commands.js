@@ -58,9 +58,38 @@ if(!exports) var exports = {};
     }
 
     function putTemplateCommand(commandString) {
-        var match = /^put\.template\s*(\S*)/im.exec(commandString);
+        var match = /^put\.template\s*([\s\S]*)$/im.exec(commandString);
         if(!match)
             return false;
+
+        var scriptURL = match[1];
+        var scriptPath = scriptURL.split('?')[0];
+
+        var scriptFound = null;
+        var scripts = Client.require('ks/ks-content-scripts.js').getContentScripts();
+        for(var i=0; i<scripts.length; i++) {
+            var opts = scripts[i];
+            var selectedHTML = '';
+            if(scriptPath && scriptPath === opts[0]) {
+                scriptFound = opts;
+                selectedHTML = ' selected="selected"';
+            }
+        }
+
+        if(scriptFound) {
+            try {
+                Client
+                    .require(scriptFound[0])
+                    .runScript(commandString, function(html) {
+                        Client.render("put-template:", html);
+                    });
+                return true;
+
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
 
         importScripts('ks/templates/ks-put-template-template.js');
         Templates.ks.put.template(commandString, function(html) {

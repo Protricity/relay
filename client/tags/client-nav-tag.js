@@ -57,8 +57,8 @@ Tags.client.nav = function(tagHTML, callback, Client) {
             Client.render('command-list-recent', channelHTML);
         };
 
-        importScripts('http://www.telize.com/geoip?callback=geoipcallback');
-        importScripts('https://freegeoip.net/json/?callback=geoipcallback');
+        if(!done) importScripts('http://www.telize.com/geoip?callback=geoipcallback');
+        if(!done) importScripts('https://freegeoip.net/json/?callback=geoipcallback');
 
     }, 100);
 

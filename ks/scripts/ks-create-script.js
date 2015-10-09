@@ -15,13 +15,20 @@ if(!exports) var exports = {};
     // Exports
 
     exports.runScript = function(commandString, callback) {
-        var match = /^put\.template\s*(\S*)\s*([\s\S]*)$/im.exec(commandString);
+        var match = /^put\.template\s*([\s\S]*)$/im.exec(commandString);
         if(!match)
             return false;
-        console.log(commandString);
+
         var args = match[2] ? match[2].split(/\s+/) : [];
 
-        
+        var url = match[1];
+        match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(url);
+        if(!match)
+            throw new Error("Invalid URI: " + url);
+
+        var scheme = match[2],
+            host = match[4],
+            contentPath = match[5].toLowerCase() || '';
 
         if(argStep.length <= args.length)
             throw new Error("Missing Step: " + argStep.length);
@@ -31,17 +38,24 @@ if(!exports) var exports = {};
         if(typeof stepCallHTML === 'string')
             stepCall = function(commandString, callback) { callback(stepCallHTML); };
 
-        console.log(stepCall);
         stepCall(commandString, function(html_input) {
 
             var ARG_STEP_TEMPLATE = "\
-                <section class='put-template-content:'>\n\
+                <article class='channel put-template:'>\n\
+                    <script src='ks/listeners/ks-put-template-listeners.js'></script>\n\
+                    <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
+                    <header class='title-bar'>\n\
+                        <strong>Create An Article</strong><span>:</span>\
+                        <a class='title-bar-minimize' href='#MINIMIZE put-template:'>[-]</a><!--\n\
+                     --><a class='title-bar-maximize' href='#MAXIMIZE put-template:'>[+]</a><!--\n\
+                     --><a class='title-bar-close' href='#CLOSE put-template:'>[x]</a>\n\
+                    </header>\
                     <form action='#' name='ks-create-script-form' onsubmit='ClientSocketWorker.sendCommand(\"{$command_string} \" + this.title.value); return false;'>\n\
                         <label class='label-title hide-on-compact'>\n\
                             {$html_input}\
                         </label>\n\
                     </form>\n\
-                </section>";
+                </article>";
 
             callback(ARG_STEP_TEMPLATE
                 .replace(/{\$html_input}/i, html_input)

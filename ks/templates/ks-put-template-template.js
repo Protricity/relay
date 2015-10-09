@@ -7,11 +7,12 @@ var Templates = Templates || {};
 Templates.ks = Templates.ks || {};
 Templates.ks.put = Templates.ks.put || {};
 Templates.ks.put.template = function(commandString, callback, Client) {
-    var match = /^put\.template\s*(\S*)\s*([\s\S]*)$/im.exec(commandString);
+    var match = /^put\.template\s*([\s\S]*)$/im.exec(commandString);
     if(!match)
         return false;
 
-    var template = match[1];
+    var scriptURL = match[1];
+    var scriptPath = scriptURL.split('?')[0];
     //var args = match[2].split(/\s+/);
 
     var PUT_SELECT_TEMPLATE = "\
@@ -45,7 +46,7 @@ Templates.ks.put.template = function(commandString, callback, Client) {
     for(var i=0; i<scripts.length; i++) {
         var opts = scripts[i];
         var selectedHTML = '';
-        if(template && template === opts[0]) {
+        if(scriptPath && scriptPath === opts[0]) {
             templateFound = opts;
             selectedHTML = ' selected="selected"';
         }
@@ -55,7 +56,7 @@ Templates.ks.put.template = function(commandString, callback, Client) {
     if(templateFound) {
         try {
             Client
-                .require(template)
+                .require(templateFound[0])
                 .runScript(commandString, function (template_content) {
                 // Callback
                 callback(PUT_SELECT_TEMPLATE
