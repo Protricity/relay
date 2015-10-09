@@ -21,15 +21,17 @@
 
 /** Channels **/
 
+.theme-minimal .channel:not(.no-animation) {
+    animation: fade-in-resize 1s ease-in-out;
+}
+
 .theme-minimal .channel {
     position: relative;
-    animation: fade-in-resize 1s ease-in-out;
     /*transition: opacity 0.4s ease-in-out;*/
-
     border: 2px groove threedface;
     margin: 4px 1px 13px 1px;
     padding: 0.8em 0.75em 0.625em 0.75em;
-    min-width: 9em;
+    min-width: 11em;
     vertical-align: top;
 }
 
@@ -37,7 +39,9 @@
     margin: 4px 1px 0 1px;
 }
 
-.theme-minimal .channel header {
+/** Title Bar **/
+
+.theme-minimal .title-bar {
     font-weight: bold;
     color: #111;
     border-radius: 6px;
@@ -47,21 +51,20 @@
     top: -10px;
     width: 95%;
 }
+
+.theme-minimal .title-bar-minimize,
+.theme-minimal .title-bar-maximize,
+.theme-minimal .title-bar-close {
+    float: right;
+}
 /* box-shadow: 1px 4px 30px #333; */
 
-.theme-minimal .channel header > * {
+.theme-minimal .title-bar > * {
      background-color: white;
 }
 
-.theme-minimal .channel.minimized {
-    min-width: 16em;
-}
 
 
-.theme-minimal .channel.minimized header {
-    display: inherit;
-    color: grey;
-}
 
 /** Span Formats **/
 
@@ -114,6 +117,10 @@
     font-weight: bold;
 }
 
+
+
+/** Status Box **/
+
 .theme-minimal .status-box {
     display: block;
     /* margin: 0.5em; */
@@ -149,8 +156,7 @@
 
 
 .theme-minimal .navigation-commands {
-    border-style: solid;
-    border-width: 1px;
+    border: 1px solid;
     display: block;
     min-width: 5em;
 
@@ -167,10 +173,10 @@
     display: inline-block;
     background-color: lightgrey;
     padding: 0.5em;
-    margin: 0 1em 1em 0;
     animation: fade-in;
     /* border: 2px groove threedface; */
     vertical-align: top;
+    margin: 0 1em 1em 0;
 }
 
 .theme-minimal .navigation-commands header button {

@@ -11,11 +11,11 @@ Templates.socket.log.container = function(url, callback) {
     var SOCKET_TEMPLATE = "\
         <article class='channel socket:{$url} minimized1' data-sort='z'>\n\
             <link rel='stylesheet' href='server/socket/sockets.css' type='text/css'>\n\
-            <header class='show-on-minimized'>\n\
+            <header class='title-bar'>\n\
                 <a href='#MINIMIZE socket:{$url}'>ws://{$host}</a>\n\
-                <a class='command-minimize' href='#MINIMIZE socket:{$url}' style='float: right'>[-]</a><!--\n\
-             --><a class='command-maximize' href='#MAXIMIZE socket:{$url}' style='float: right'>[+]</a><!--\n\
-             --><a class='command-close' href='#CLOSE socket:{$url}' style='float: right'>[x]</a>\n\
+                <a class='title-bar-minimize' href='#MINIMIZE socket:{$url}'>[-]</a><!--\n\
+             --><a class='title-bar-maximize' href='#MAXIMIZE socket:{$url}'>[+]</a><!--\n\
+             --><a class='title-bar-close' href='#CLOSE socket:{$url}'>[x]</a>\n\
             </header>\
             <div class='socket-log socket-log:{$url}'></div>\n\
             </form>\n\

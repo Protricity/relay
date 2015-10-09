@@ -2,33 +2,9 @@
  * Created by ari on 6/19/2015.
  */
 
-function ClientWorker() {
-    return ClientWorker.getSocketWorker();
+function ClientSocketWorker() {
+    return ClientSocketWorker.get();
 }
-
-ClientWorker.includeScript = function(scriptPath) {
-    var head = document.getElementsByTagName('head')[0];
-    if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
-        var newScript = document.createElement('script');
-        newScript.setAttribute('src', scriptPath);
-        head.appendChild(newScript);
-        return true;
-    }
-    return false;
-};
-
-ClientWorker.includeLink = function(linkPath) {
-    var head = document.getElementsByTagName('head')[0];
-    if (head.querySelectorAll('link[href=' + linkPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
-        var newScript = document.createElement('link');
-        newScript.setAttribute('href', linkPath);
-        head.appendChild(newScript);
-        return true;
-    }
-    return false;
-};
-
-//ClientLoader.includeScript('client/theme/base/base-client-loader.js');
 
 (function() {
 
@@ -39,11 +15,11 @@ ClientWorker.includeLink = function(linkPath) {
     var CLASS_CHANNEL_LIST_ENTRY = 'channel-list-entry';
 
     var socketWorker = null;
-    ClientWorker.getSocketWorker = function() {
+    ClientSocketWorker.get = function() {
         if(!socketWorker) {
             socketWorker = new Worker('worker.js');
             socketWorker.addEventListener('message', function(e) {
-                ClientWorker.handleResponse(e.data || e.detail);
+                ClientSocketWorker.handleResponse(e.data || e.detail);
             }, true);
         }
         return socketWorker;
@@ -51,7 +27,7 @@ ClientWorker.includeLink = function(linkPath) {
 
     document.addEventListener('command', function(e) {
         var commandString = e.detail || e.data;
-        ClientWorker.sendCommand(commandString);
+        ClientSocketWorker.sendCommand(commandString);
         e.preventDefault();
     });
 
@@ -66,16 +42,16 @@ ClientWorker.includeLink = function(linkPath) {
         if(!hashCommand)
             return false;
         console.log("Hash Command: ", hashCommand);
-        ClientWorker.sendCommand(hashCommand);
+        ClientSocketWorker.sendCommand(hashCommand);
     }
 
 
-    ClientWorker.sendCommand = function (commandString) {
-        ClientWorker.getSocketWorker()
+    ClientSocketWorker.sendCommand = function (commandString) {
+        ClientSocketWorker.get()
             .postMessage(commandString);
     };
 
-    ClientWorker.handleResponse = function(responseString) {
+    ClientSocketWorker.handleResponse = function(responseString) {
         var args = /^\w+/.exec(responseString);
         if(!args)
             throw new Error("Invalid Command: " + responseString);
@@ -138,7 +114,7 @@ ClientWorker.includeLink = function(linkPath) {
             var match2 = /\s*src=['"]([^'"]*)['"]/gi.exec(match[1]);
             if(match2) {
                 var hrefValue = match2[1];
-                ClientWorker.includeScript(hrefValue);
+                ClientSocketWorker.includeScript(hrefValue);
 
             } else {
                 throw new Error("Invalid Script: " + scriptContent);
@@ -147,26 +123,32 @@ ClientWorker.includeLink = function(linkPath) {
 
         var htmlContainer = document.createElement('div');
         htmlContainer.innerHTML = content;
-        var contentElement = htmlContainer.children[0];
-        if(!contentElement)
+        var contentElements = htmlContainer.children;
+        if(contentElements.length === 0)
             throw new Error("First child missing", console.log(commandString, content, htmlContainer));
+        var contentElement = htmlContainer.children[0];
 
         if(contentElement.classList.contains('append'))
             renderAction = 'append';
         if(contentElement.classList.contains('prepend'))
             renderAction = 'prepend';
+        
+        var bodyElm = document.getElementsByTagName('body')[0];
 
         var targetElement = null;
         switch(renderAction) {
             case 'replace':
                 if(targetClass === '*') {
-                    document.getElementsByTagName('body')[0].appendChild(contentElement);
+                    for(i=0; i<contentElements.length; i++)
+                        bodyElm.appendChild(contentElements[i]);
                     targetElement = contentElement;
 
                 } else {
                     var targetElements = document.getElementsByClassName(targetClass);
                     if(targetElements.length === 0) {
-                        document.getElementsByTagName('body')[0].appendChild(contentElement);
+                        while(contentElements.length > 0)
+                            bodyElm.appendChild(contentElements[0]);
+
                         if(targetElements.length === 0)
                             throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
                         targetElement = targetElements[0];
@@ -174,7 +156,8 @@ ClientWorker.includeLink = function(linkPath) {
                     } else {
                         targetElement = targetElements[0];
 
-                        targetElement.parentNode.insertBefore(contentElement, targetElement);
+                        while(contentElements.length > 0)
+                            targetElement.parentNode.insertBefore(contentElements[contentElements.length-1], targetElement);
                         targetElement.parentNode.removeChild(targetElement);
                         targetElement = contentElement;
                     }
@@ -189,9 +172,13 @@ ClientWorker.includeLink = function(linkPath) {
                     throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
                 targetElement = prependTargets[0];
 
-                targetElement
-                    [targetElement.firstChild ? 'insertBefore' : 'appendChild']
-                    (contentElement, targetElement.firstChild);
+                if(targetElement.firstChild) {
+                    while(contentElements.length > 0)
+                        targetElement.insertBefore(contentElements[contentElements.length-1], targetElement.firstChild);
+                } else {
+                    while(contentElements.length > 0)
+                        targetElement.appendChild(contentElements[0]);
+                }
                 targetElement.scrollTop = 0;
                 break;
 
@@ -201,7 +188,8 @@ ClientWorker.includeLink = function(linkPath) {
                     throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
                 targetElement = appendTargets[0];
 
-                targetElement.appendChild(contentElement);
+                while(contentElements.length > 0)
+                    targetElement.appendChild(contentElements[0]);
                 targetElement.scrollTop = targetElement.scrollHeight;
                 break;
 
@@ -214,6 +202,38 @@ ClientWorker.includeLink = function(linkPath) {
             detail: content
         });
         targetElement.dispatchEvent(contentEvent);
-
     }
 })();
+
+
+ClientSocketWorker.includeScript = function(scriptURL) {
+    var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(scriptURL);
+    if(!match)
+        throw new Error("Invalid URL: " + scriptURL);
+    var host = match[4],
+        scriptPath = match[5].toLowerCase() || '';
+    if(host)
+        throw new Error("Only local scripts may be included: " + scriptPath);
+
+    var head = document.getElementsByTagName('head')[0];
+    if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+        var newScript = document.createElement('script');
+        newScript.setAttribute('src', scriptPath);
+        head.appendChild(newScript);
+        return true;
+    }
+    return false;
+};
+//
+//ClientSocketWorker.includeLink = function(linkPath) {
+//    var head = document.getElementsByTagName('head')[0];
+//    if (head.querySelectorAll('link[href=' + linkPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+//        var newScript = document.createElement('link');
+//        newScript.setAttribute('href', linkPath);
+//        head.appendChild(newScript);
+//        return true;
+//    }
+//    return false;
+//};
+
+//ClientLoader.includeScript('client/theme/base/base-client-loader.js');

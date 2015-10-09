@@ -110,7 +110,7 @@ function Client() {
                     tagHTML = tagHTML
                         .replace(tagString, tagReplacedContent);
                     parseClientTags(tagHTML, callback);
-                });
+                }, Client);
                 return;
             }
         }

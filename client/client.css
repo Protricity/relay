@@ -6,13 +6,13 @@
 }
 
 .channel.closed,
-.channel.minimized > :not(.show-on-minimized) {
+.channel.minimized > :not(.show-on-minimized, .title-bar) {
     display: none;
 }
 
-.show-on-minimized {
+.channel.minimized {
+    min-width: 16em;
 }
-
 
 /* Navigation */
 

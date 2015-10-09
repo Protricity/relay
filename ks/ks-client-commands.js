@@ -1,5 +1,5 @@
 /**
- * Created by ari ooccurred015.
+ * Created by ari.
  */
 if(!exports) var exports = {};
 (function() {
@@ -58,7 +58,18 @@ if(!exports) var exports = {};
     }
 
     function putTemplateCommand(commandString) {
-        return false;
+        var match = /^put\.template\s*(\S*)/im.exec(commandString);
+        if(!match)
+            return false;
+
+        importScripts('ks/templates/ks-put-template-template.js');
+        Templates.ks.put.template(commandString, function(html) {
+            Client.render("put-template:", html);
+        }, Client);
+        // Free up template resources
+        delete Templates.ks.put.template;
+
+        return true;
     }
 
 
@@ -69,7 +80,7 @@ if(!exports) var exports = {};
 
         var content = match[1];
 
-        importScripts('ks/templates/ks-put-template.js');
+        importScripts('ks/templates/ks-put-preview-template.js');
         Templates.ks.put.preview(content, function(html) {
             Client.render("put-preview:", html);
         });
