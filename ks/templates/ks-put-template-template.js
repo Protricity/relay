@@ -65,7 +65,7 @@ Templates.ks.put.template = function(commandString, callback, Client) {
                 );
             });
             return;
-            
+
         } catch (e) {
             console.error(e);
         }
