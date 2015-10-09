@@ -8,20 +8,20 @@ Templates.ks = Templates.ks || {};
 Templates.ks.put = Templates.ks.put || {};
 Templates.ks.put.form = function(content, callback) {
     var PUT_FORM_TEMPLATE = "\
-        <article class='channel put:'>\n\
-            <script src='ks/ks-listeners.js'></script>\n\
+        <article class='channel put: compact'>\n\
+            <script src='ks/templates/ks-put-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
-            <header class='show-on-minimized'>\n\
+            <header class='title-bar'>\n\
                 <span class='command'>Put</span><span> content in your </span> <strong>Key Space</strong>\
-                <a class='command-minimize' href='#MINIMIZE put:' style='float: right'>[-]</a><!--\n\
-             --><a class='command-maximize' href='#MAXIMIZE put:' style='float: right'>[+]</a><!--\n\
-             --><a class='command-close' href='#CLOSE put:' style='float: right'>[x]</a>\n\
+                <a class='title-bar-minimize' href='#MINIMIZE put:'>[-]</a><!--\n\
+             --><a class='title-bar-maximize' href='#MAXIMIZE put:'>[+]</a><!--\n\
+             --><a class='title-bar-close' href='#CLOSE put:'>[x]</a>\n\
             </header>\
-            <form name='ks-put-form' class='compact' style='float:left;'>\n\
+            <form name='ks-put-form'>\n\
                 <label class='label-content'>\
                     Create new <span class='html'>HTML</span> content for your <strong>Key Space</strong>:\n\
                     <br/><span class='info'>(You can also use a <a href='#PUT.TEMPLATE'>template</a>)</span>\
-                    <br/><textarea cols='50' rows='8' class='focus' name='content' required='required' placeholder='Type anything you like.\n\n\t<i>most</i>\n\t<code>html tags</code>\n\t<strong>allowed!</strong>'>{$content}</textarea>\n\
+                    <br/><textarea cols='50' rows='8' class='focus' name='content' required='required' placeholder='Type anything you like.\n\n\t<code>html tags</code>\n\t<strong>allowed!</strong>'>{$content}</textarea>\n\
                 </label><br/>\n\
                 <label class='label-submit hide-on-compact'>\n\
                     <input type='submit' value='Publish' name='put' />\n\
@@ -33,11 +33,15 @@ Templates.ks.put.form = function(content, callback) {
                         <option disabled='disabled'>Other Web Space...</option>\n\
                     </select>\n\
                 </label>&nbsp;\n\
-                <label class='label-template hide-on-compact' >\n\
-                    <input disabled='disabled' type='button' value='Preview >' name='preview' />\n\
-                </label>\n\
             </form>\n\
         </article>";
+        //<article class='channel put-preview: hide-on-compact'>\n\
+        //    <header class='title-bar'>\n\
+        //        <span class='command'>Preview</span><span class='html'> HTML</span>\
+        //        <a class='title-bar-minimize' href='#MINIMIZE put-preview:'>[-]</a><!--\n\
+        //     --><a class='title-bar-maximize' href='#MAXIMIZE put-preview:'>[+]</a>\n\
+        //    </header>\
+        //    <section class='put-preview-content:'></section>\
 
     callback(PUT_FORM_TEMPLATE
             .replace(/{\$content}/gi, content || '')
@@ -47,6 +51,78 @@ Templates.ks.put.form = function(content, callback) {
         //.replace(/{\$attr_preview_checked}/gi, "checked='checked'") // TODO: get from config
     );
 };
+
+Templates.ks.put.renderCount = Templates.ks.put.renderCount || 0;
+Templates.ks.put.preview = function(content, callback) {
+// TODO: variables for topic, url, image etc
+
+    var classes = [];
+    if(Templates.ks.put.renderCount > 0)
+        classes.push('no-animation');
+    Templates.ks.put.renderCount++;
+
+    var PUT_FORM_PREVIEW_TEMPLATE = "\
+        <article class='channel put-preview: {$classes}'>\n\
+            <script src='ks/ks-listeners.js'></script>\n\
+            <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
+            <header class='title-bar'>\n\
+                <span class='command'>Preview</span><strong> Key Space</strong><span> content:</span>\
+                <a class='title-bar-minimize' href='#MINIMIZE put-preview:'>[-]</a><!--\n\
+             --><a class='title-bar-maximize' href='#MAXIMIZE put-preview:'>[+]</a><!--\n\
+             --><a class='title-bar-close' href='#CLOSE put:'>[x]</a>\n\
+            </header>\
+            <section class='put-preview-content:' style='position:relative;'>{$content}</section>\n\
+            <br/>\n\
+            <form name='ks-put-preview-form' >\n\
+                <fieldset>\n\
+                    <legend>Drag and Drop Suggested Content</legend>\n\
+                    <div class='put-preview-template-content:'>\n\
+                        <header draggable='true'>Content Header</header>\n\
+                        <a draggable='true' href='#sdf'>URL Hyperlink</a>\n\
+                        <hr draggable='true' />\n\
+                        <footer draggable='true'>Content Footer</footer>\n\
+                    </div>\n\
+                </fieldset>\n\
+            </form>\n\
+        </article>";
+
+    var html_template_options = '';
+
+    // Callback
+    callback(PUT_FORM_PREVIEW_TEMPLATE
+            .replace(/{\$classes}/gi, classes ? classes.join(' ') : '')
+            .replace(/{\$content}/gi, content || '')
+            .replace(/{\$html_template_options}/gi, html_template_options || '')
+    );
+
+    //<article class='channel put-preview: hide-on-compact'>\n\
+    //    <header class='title-bar'>\n\
+    //        <span class='command'>Preview</span><span class='html'> HTML</span>\
+    //        <a class='title-bar-minimize' href='#MINIMIZE put-preview:'>[-]</a><!--\n\
+    //     --><a class='title-bar-maximize' href='#MAXIMIZE put-preview:'>[+]</a>\n\
+    //    </header>\
+    //    <section class='put-preview-content:'></section>\
+    //
+    //<fieldset draggable='true'>\n\
+    //    <legend>\
+    //        <select name='template'>\n\
+    //            <option value=''>Select a template...</option>\n\
+    //            <option value='header'>Header</option>\n\
+    //            <option value='footer'>Footer</option>\n\
+    //                        {$html_template_options}\n\
+    //        </select>\n\
+    //    </legend>\n\
+    //    <div class='put-preview-template-content:'>asd fsdfas</div>\n\
+    //</fieldset>\n\
+    //            <fieldset>\n\
+    //                <legend>HTML Code</legend>\n\
+    //                <code class='put-preview-template-code:'>adsf asd</code>\n\
+    //            </fieldset>\n\
+};
+
+//<label class='label-template hide-on-compact' >\n\
+//<input disabled='disabled' type='button' value='Preview >' name='preview' />\n\
+//</label>\n\
 
 Templates.ks.put.template = function(commandString, callback) {
     importScripts()
@@ -110,57 +186,6 @@ Templates.ks.put.template = function(commandString, callback) {
 //<br/><br/></label>\n\
 
 
-Templates.ks.put.preview = function(content, callback) {
-// TODO: variables for topic, url, image etc
-
-    var PUT_FORM_PREVIEW_TEMPLATE = "\
-        <article class='channel put-preview:'>\n\
-            <script src='ks/ks-listeners.js'></script>\n\
-            <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
-            <legend class='title'><span class='command'>Preview</span></legend>\n\
-            <div class='title-commands'>\n\
-                <a class='title-command-minimize' href='#MINIMIZE put:'>[-]</a><!--\
-             --><a class='title-command-maximize' href='#MAXIMIZE put:'>[+]</a><!--\
-             --><a class='title-command-close' href='#CLOSE put:'>[x]</a>\n\
-            </div>\n\
-            <section class='put-preview-content:' style='position:relative;'>{$content}</section>\n\
-            <br/>\n\
-            <form name='ks-put-preview-form' >\n\
-                <fieldset>\n\
-                    <legend>Drag and Drop Suggested Content</legend>\n\
-                    <div class='put-preview-template-content:'>\n\
-                        <header draggable='true'>Content Header</header>\n\
-                        <a draggable='true' href='#sdf'>URL Hyperlink</a>\n\
-                        <hr draggable='true' />\n\
-                        <footer draggable='true'>Content Footer</footer>\n\
-                    </div>\n\
-                </fieldset>\n\
-            </form>\n\
-        </article>";
-    //
-    //<fieldset draggable='true'>\n\
-    //    <legend>\
-    //        <select name='template'>\n\
-    //            <option value=''>Select a template...</option>\n\
-    //            <option value='header'>Header</option>\n\
-    //            <option value='footer'>Footer</option>\n\
-    //                        {$html_template_options}\n\
-    //        </select>\n\
-    //    </legend>\n\
-    //    <div class='put-preview-template-content:'>asd fsdfas</div>\n\
-    //</fieldset>\n\
-    //            <fieldset>\n\
-    //                <legend>HTML Code</legend>\n\
-    //                <code class='put-preview-template-code:'>adsf asd</code>\n\
-    //            </fieldset>\n\
-    var html_template_options = '';
-
-    // Callback
-    callback(PUT_FORM_PREVIEW_TEMPLATE
-            .replace(/{\$content}/gi, content || '')
-            .replace(/{\$html_template_options}/gi, html_template_options || '')
-    );
-};
 
 
 function getKeySpaceDB() {

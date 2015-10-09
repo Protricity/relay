@@ -32,11 +32,12 @@ Tags.client.nav = function(tagHTML, callback, Client) {
 
     var done = false;
     setTimeout(function() {
-        if(done)
-            return;
-        done = true;
 
         self.geoipcallback = function(result) {
+            if(done)
+                return;
+            done = true;
+
             if (result.country_name)
                 result.country = result.country_name;
             if (result.region_name)

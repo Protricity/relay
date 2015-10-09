@@ -123,26 +123,32 @@ function ClientSocketWorker() {
 
         var htmlContainer = document.createElement('div');
         htmlContainer.innerHTML = content;
-        var contentElement = htmlContainer.children[0];
-        if(!contentElement)
+        var contentElements = htmlContainer.children;
+        if(contentElements.length === 0)
             throw new Error("First child missing", console.log(commandString, content, htmlContainer));
+        var contentElement = htmlContainer.children[0];
 
         if(contentElement.classList.contains('append'))
             renderAction = 'append';
         if(contentElement.classList.contains('prepend'))
             renderAction = 'prepend';
+        
+        var bodyElm = document.getElementsByTagName('body')[0];
 
         var targetElement = null;
         switch(renderAction) {
             case 'replace':
                 if(targetClass === '*') {
-                    document.getElementsByTagName('body')[0].appendChild(contentElement);
+                    for(i=0; i<contentElements.length; i++)
+                        bodyElm.appendChild(contentElements[i]);
                     targetElement = contentElement;
 
                 } else {
                     var targetElements = document.getElementsByClassName(targetClass);
                     if(targetElements.length === 0) {
-                        document.getElementsByTagName('body')[0].appendChild(contentElement);
+                        while(contentElements.length > 0)
+                            bodyElm.appendChild(contentElements[0]);
+
                         if(targetElements.length === 0)
                             throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
                         targetElement = targetElements[0];
@@ -150,7 +156,8 @@ function ClientSocketWorker() {
                     } else {
                         targetElement = targetElements[0];
 
-                        targetElement.parentNode.insertBefore(contentElement, targetElement);
+                        while(contentElements.length > 0)
+                            targetElement.parentNode.insertBefore(contentElements[contentElements.length-1], targetElement);
                         targetElement.parentNode.removeChild(targetElement);
                         targetElement = contentElement;
                     }
@@ -165,9 +172,13 @@ function ClientSocketWorker() {
                     throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
                 targetElement = prependTargets[0];
 
-                targetElement
-                    [targetElement.firstChild ? 'insertBefore' : 'appendChild']
-                    (contentElement, targetElement.firstChild);
+                if(targetElement.firstChild) {
+                    while(contentElements.length > 0)
+                        targetElement.insertBefore(contentElements[contentElements.length-1], targetElement.firstChild);
+                } else {
+                    while(contentElements.length > 0)
+                        targetElement.appendChild(contentElements[0]);
+                }
                 targetElement.scrollTop = 0;
                 break;
 
@@ -177,7 +188,8 @@ function ClientSocketWorker() {
                     throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
                 targetElement = appendTargets[0];
 
-                targetElement.appendChild(contentElement);
+                while(contentElements.length > 0)
+                    targetElement.appendChild(contentElements[0]);
                 targetElement.scrollTop = targetElement.scrollHeight;
                 break;
 

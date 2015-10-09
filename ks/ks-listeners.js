@@ -93,12 +93,12 @@
             return false;
             
         switch(formElm.getAttribute('name')) {
-            case 'ks-put-form':
-                refreshHTTPPutForm(e, formElm);
-                if(e.type === 'submit')
-                    e.preventDefault() ||
-                    submitHTTPPutForm(e, formElm);
-                return true;
+            //case 'ks-put-form':
+            //    refreshHTTPPutForm(e, formElm);
+            //    if(e.type === 'submit')
+            //        e.preventDefault() ||
+            //        submitHTTPPutForm(e, formElm);
+            //    return true;
 
             case 'ks-browser-navigation-form':
                 if(e.type === 'submit')
