@@ -45,7 +45,21 @@ if(!exports) var exports = {};
 
         var scheme = match[2],
             host = match[4],
-            contentPath = match[5].toLowerCase() || '';
+            contentPath = match[5].toLowerCase() || '',
+            queryString = match[6][0] === '?' ? match[6].substr(1) : match[6];
+
+        var values = {};
+        var queryStringPairs = queryString.split(/&/g);
+        for(var i=0; i<queryStringPairs.length; i++) {
+            var splitPair = queryStringPairs[i].split('=', 2);
+            values[splitPair[0]] = splitPair[1] || true;
+        }
+        console.log(values, queryString);
+
+        // TODO: show next form based on value
+
+
+        
 
         if(argStep.length <= args.length)
             throw new Error("Missing Step: " + argStep.length);
