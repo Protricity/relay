@@ -1,7 +1,6 @@
 /** Hover **/
 
-.theme-minimal .navigation-commands:hover,
-.theme-minimal .channel:hover {
+.theme-minimal .navigation-commands:hover {
     /*     cursor: pointer; */
     box-shadow: 1px 2px 6px #999;
 }
@@ -16,6 +15,7 @@
 
 .theme-minimal a {
     text-decoration: none;
+    color: darkblue;
 }
 
 
@@ -35,7 +35,12 @@
     min-width: 11em;
     vertical-align: top;
     background-color: #FEFEFE;
-    border-radius: 4px;
+    border-radius: 2px;
+}
+
+.theme-minimal .channel:hover {
+    /*cursor: pointer;*/
+    box-shadow: 1px 2px 6px #999;
 }
 
 .theme-minimal .channel:last-child {
@@ -63,6 +68,7 @@
     margin-top: 5%;
     z-index: 1;
     box-shadow: 0 0 2em #558;
+    font-size: large;
 }
 
 
@@ -71,7 +77,7 @@
 .theme-minimal .footer-bar,
 .theme-minimal .header-bar {
     width: 100%;
-    background-color: #F5FFF5;
+    background: linear-gradient(to bottom right, #E5DDD5, #F5FFF5);
     text-indent: 0.3em;
 }
 
@@ -86,6 +92,9 @@
     /* margin: 1em 0 0 0; */
     padding: 0 0 0.1em 0;
     /* border-top: 2px double threedface; */
+}
+.theme-minimal .channel:hover .header-bar {
+    font-weight: bold;
 }
 
 .theme-minimal .header-bar-buttons {
