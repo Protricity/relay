@@ -33,22 +33,24 @@
     }
     
     function updatePutScriptForm(e, formElm) {
-        var commandString = formElm.querySelector('[name=command_string]').value;
+        var scriptURL = formElm.getAttribute('action');
+        var commandString = "PUT.TEMPLATE " + scriptURL + '?'; // Old vars
+
+        var inputs = formElm.querySelectorAll('input[type=text], textarea, select');
+        var oldQueryString = commandString.split('?', 2)[1] || '';
+        var queryString = oldQueryString ? '?' + oldQueryString : '';
+        for(var i=0; i<inputs.length; i++) {
+            var name = inputs[i].getAttribute('name') || i;
+            queryString =
+                (queryString ? queryString + '&' : '?') +
+                encodeURIComponent(name) + '=' + encodeURIComponent(inputs[i].value);
+        }
+
+        commandString = commandString.split('?')[0] + queryString;
+
+        console.log(commandString);
 
         if(e.type === 'submit') {
-            var inputs = formElm.querySelectorAll('input[type=text], textarea, select');
-            var oldQueryString = commandString.split('?', 2)[1] || '';
-            var queryString = oldQueryString ? '?' + oldQueryString : '';
-            for(var i=0; i<inputs.length; i++) {
-                var name = inputs[i].getAttribute('name') || i;
-                queryString =
-                    (queryString ? queryString + '&' : '?') +
-                    encodeURIComponent(name) + '=' + encodeURIComponent(inputs[i].value);
-            }
-
-            commandString = commandString.split('?')[0] + queryString;
-
-            console.log(commandString);
 
             var socketEvent = new CustomEvent('command', {
                 detail: commandString,
@@ -56,6 +58,11 @@
                 bubbles: true
             });
             formElm.dispatchEvent(socketEvent);
+
+        } else {
+
+
+            // Update Preview
         }
     }
 

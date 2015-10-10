@@ -11,7 +11,7 @@ if(!exports) var exports = {};
     exports.runScript = function(fieldValues, callback) {
 
         var ARG_STEP_TEMPLATE = "\
-        <article class='channel put:'>\n\
+        <article class='channel put: maximized'>\n\
             <script src='ks/listeners/ks-put-script-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
             <header class='title-bar'>\n\
@@ -20,14 +20,14 @@ if(!exports) var exports = {};
              --><a class='title-bar-maximize' href='#MAXIMIZE put:'>[+]</a><!--\n\
              --><a class='title-bar-close' href='#CLOSE put:'>[x]</a>\n\
             </header>\
-            <form action='#' name='ks-put-script-form'>\n\
+            <form action='ks/scripts/ks-create-script.js' name='ks-put-script-form'>\n\
                 {$html_input}\
-                <input type='hidden' name='command_string' value='{$command_string}' />\n\
             </form>\n\
             <footer>\n\
                 {$html_preview}\n\
             </footer>\n\
         </article>";
+//                <input type='hidden' name='command_string' value='{$command_string}' />\n\
 
         var HTML_TEMPLATE =
             "\n<article data-tags='" + (fieldValues.tags || '') + "'>" +
@@ -35,10 +35,11 @@ if(!exports) var exports = {};
             "\n</article>";
 
         var HTML_PREVIEW = "\n\
+            <div class='put-preview-template'>" + encodeURIComponent(HTML_TEMPLATE) + "</div>\n\
             <hr><strong>Preview</strong>:</br>\n\
-            " + HTML_TEMPLATE + "\n\
+            <div class='put-preview-output'>" + HTML_TEMPLATE + "</div>\n\
             <hr><strong>Code</strong>:</br>\n\
-            <pre>" + HTML_TEMPLATE.replace(/</g, '&lt;') + "</pre>";
+            <pre class='put-preview-source'>" + HTML_TEMPLATE.replace(/</g, '&lt;') + "</pre>";
 
 
         // Ask for article Title
