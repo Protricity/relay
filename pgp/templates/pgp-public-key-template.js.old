@@ -34,7 +34,7 @@ Templates.pgp.key.form = function(publicKeyData, callback) {
         .replace(/{\$id_public}/gi, keyID || '')
         .replace(/{\$id_public_short}/gi, keyID.substr(keyID.length - 8))
         .replace(/{\$block_public}/gi, publicKeyData.block_public)
-        .replace(/{\$user_id}/gi, publicKeyData.user_id.replace(/</, '&lt;'))
+        .replace(/{\$user_id}/gi, publicKeyData.user_id.replace(/</g, '&lt;'))
         .replace(/{\$user_name}/gi, publicKeyData.user_name || '')
         .replace(/{\$user_email}/gi, publicKeyData.user_email || '')
         .replace(/{\$user_comment}/gi, publicKeyData.user_comment || ''),

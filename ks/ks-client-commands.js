@@ -63,7 +63,14 @@ if(!exports) var exports = {};
             return false;
 
         var scriptURL = match[1];
-        var scriptPath = scriptURL.split('?')[0];
+        match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(scriptURL);
+        if(!match)
+            throw new Error("Invalid URI: " + url);
+
+        var scheme = match[2],
+            host = match[4],
+            scriptPath = match[5].toLowerCase() || '',
+            queryString = match[6] || '';
 
         var scriptFound = null;
         var scripts = Client.require('ks/ks-content-scripts.js').getContentScripts();
@@ -76,12 +83,23 @@ if(!exports) var exports = {};
             }
         }
 
+        var fieldValues = {};
+        var queryStringPairs = queryString.split(/^\?|&/g);
+        for(i=0; i<queryStringPairs.length; i++) {
+            var splitPair = queryStringPairs[i].split('=', 2);
+            if(splitPair[0])
+                fieldValues[decodeURIComponent(splitPair[0])] = decodeURIComponent(splitPair[1]) || true;
+        }
+
+
         if(scriptFound) {
             try {
                 Client
                     .require(scriptFound[0])
-                    .runScript(commandString, function(html) {
-                        Client.render("put-script:", html);
+                    .runScript(fieldValues, function(html) {
+                        Client.render("put-script:", html
+                            .replace(/{\$command_string}/ig, commandString)
+                        );
                     });
                 return true;
 

@@ -71,7 +71,7 @@ Templates.pgp.manage.entry = function(contentEntry, callback) {
             .replace(/{\$id_public_short}/gi, contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8))
             //.replace(/{\$block_private}/gi, privateKeyBlock)
             //.replace(/{\$block_public}/gi, privateKeyData.block_public)
-            .replace(/{\$user_id}/gi, contentEntry.user_id.replace(/</, '&lt;'))
+            .replace(/{\$user_id}/gi, contentEntry.user_id.replace(/</g, '&lt;'))
             //.replace(/{\$user_name}/gi, privateKeyData.user_name || '')
             //.replace(/{\$user_email}/gi, privateKeyData.user_email || '')
             //.replace(/{\$user_comment}/gi, privateKeyData.user_comment || '')

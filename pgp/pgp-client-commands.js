@@ -129,7 +129,7 @@
                     Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually\n\
                     <span class='success'>PGP Key Pair generated successfully</span><br/><br/>\n\
                     <span class='info'>You may now register the following identity:</span><br/>\n\
-                    User ID: <strong>" + userIDString.replace(/</, '&lt;') + "</strong><br/>\n\
+                    User ID: <strong>" + userIDString.replace(/</g, '&lt;') + "</strong><br/>\n\
                     Private Key ID: <strong>" + newPrivateKeyID + "</strong><br/>\n\
                     Public Key ID: <strong>" + newPublicKeyID + "</strong><br/>\n\
                     Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
@@ -203,7 +203,7 @@
                     var status_content = "\
                         <span class='success'>PGP Key Pair registered successfully</span><br/><br/>\n\
                         <span class='info'>You may now make use of your new identity:</span><br/>\n\
-                        User ID: <strong>" + userIDString.replace(/</, '&lt;') + "</strong><br/>";
+                        User ID: <strong>" + userIDString.replace(/</g, '&lt;') + "</strong><br/>";
 
                     manageCommand("MANAGE", e, status_content);
 

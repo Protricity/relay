@@ -34,39 +34,22 @@ if(!exports) var exports = {};
 
     // Exports
 
-    exports.runScript = function(commandString, callback) {
-        var match = /^put\.template\s*([\s\S]*)$/im.exec(commandString);
-        if(!match)
-            return false;
+    exports.runScript = function(fieldValues, callback) {
 
-        var args = match[2] ? match[2].split(/\s+/) : [];
-
-        var url = match[1];
-        match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(url);
-        if(!match)
-            throw new Error("Invalid URI: " + url);
-
-        var scheme = match[2],
-            host = match[4],
-            contentPath = match[5].toLowerCase() || '',
-            queryString = match[6] || '';
-
-        var values = {};
-        var queryStringPairs = queryString.split(/^\?|&/g);
-        for(var i=0; i<queryStringPairs.length; i++) {
-            var splitPair = queryStringPairs[i].split('=', 2);
-            if(splitPair[0])
-                values[decodeURIComponent(splitPair[0])] = decodeURIComponent(splitPair[1]) || true;
-        }
+        var HTML_TEMPLATE =
+            "\n<article>" +
+                "\n\t<header>" + (fieldValues.title || 'Article Title') + "</header>" +
+            "\n</article>";
 
         var HTML_PREVIEW = "\n\
             <hr><strong>Preview</strong>:</br>\n\
-            <article>\n\
-                <header>{$title}</header>\n\
-            </article>"
-            .replace(/{\$title}/ig, values.title || 'Article Title');
+            " + HTML_TEMPLATE + "\n\
+            <hr><strong>Code</strong>:</br>\n\
+            <pre>" + HTML_TEMPLATE.replace(/</g, '&lt;') + "</pre>";
 
-        if(typeof values.title === 'undefined') {
+
+        // Ask for article Title
+        if(typeof fieldValues.title === 'undefined') {
             var HTML_INPUT_TITLE = "\
                 Add a title for this article or hit Next to skip:</br>\n\
                 <input type='text' name='title' placeholder='Add a title' />\n\
@@ -75,12 +58,12 @@ if(!exports) var exports = {};
             callback(ARG_STEP_TEMPLATE
                 .replace(/{\$html_input}/i, HTML_INPUT_TITLE)
                 .replace(/{\$html_preview}/i, HTML_PREVIEW)
-                .replace(/{\$command_string}/ig, commandString)
             );
             return true;
         }
 
-        if(typeof values.tags === 'undefined') {
+        // Ask for Tags
+        if(typeof fieldValues.tags === 'undefined') {
             var HTML_INPUT_TAGS = "\
                 Add search tags for this article or hit Next to skip:</br>\n\
                 <input type='text' name='tags' placeholder='[ex. search, tags, comma, delimited]' />\n\
@@ -89,7 +72,6 @@ if(!exports) var exports = {};
             callback(ARG_STEP_TEMPLATE
                 .replace(/{\$html_input}/i, HTML_INPUT_TAGS)
                 .replace(/{\$html_preview}/i, HTML_PREVIEW)
-                .replace(/{\$command_string}/ig, commandString)
             );
             return true;
         }

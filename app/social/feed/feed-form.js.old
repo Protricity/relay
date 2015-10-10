@@ -89,7 +89,7 @@
                 selectedKeyID = keyID;
             var userID = privateKey.getUserIds().join('; ');
 
-            optGroupPGPIdentities.innerHTML += '<option ' + (keyID === selectedKeyID ? 'selected="selected"' : '') + ' value="' + keyID + '">' + (privateKey.primaryKey.isDecrypted ? '' : '(*) ') + userID.replace(/</, '&lt;') + '</option>';
+            optGroupPGPIdentities.innerHTML += '<option ' + (keyID === selectedKeyID ? 'selected="selected"' : '') + ' value="' + keyID + '">' + (privateKey.primaryKey.isDecrypted ? '' : '(*) ') + userID.replace(/</g, '&lt;') + '</option>';
             if(selectedKeyID === keyID) {
                 if(privateKey.primaryKey.isDecrypted) {
                     passphraseElm.parentNode.style.display = 'none';

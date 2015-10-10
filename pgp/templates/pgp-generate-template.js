@@ -50,7 +50,7 @@ Templates.pgp.generate.form = function(user_id, callback) {
 
     // Callback
     callback(GENERATE_TEMPLATE
-        .replace(/{\$user_id}/gi, user_id.replace(/</, '&lt;'))
+        .replace(/{\$user_id}/gi, user_id.replace(/</g, '&lt;'))
         //.replace(/{\$send_as_socket_command}/gi, send_as_socket_command ? '1' : '0')
     );
 };

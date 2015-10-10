@@ -126,7 +126,7 @@ Templates.pgp.identify.form = function(responseString, socket_url, CONFIG, callb
 
             html_pgp_id_private_html +=
                 '<option' + (privateKeyData.id_private === selectedPGPPrivateKeyID ? ' selected="selected"' : '') + ' value="' + optionValue + '">' +
-                (privateKeyData.passphrase_required ? '(*) ' : '') + privateKeyData.user_id.replace(/</, '&lt;') +
+                (privateKeyData.passphrase_required ? '(*) ' : '') + privateKeyData.user_id.replace(/</g, '&lt;') +
                 '</option>';
 
             pgpIDCount++;

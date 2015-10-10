@@ -94,7 +94,7 @@ Templates.ks.put.template = function(commandString, callback, Client) {
         //if(content) {
         //    html_pgp_id_public_html +=
         //        '<option value="' + content.pgp_id_public + '">' +
-        //            content.user_id.replace(/</, '&lt;') +
+        //            content.user_id.replace(/</g, '&lt;') +
         //        '</option>';
 
         //} else {
