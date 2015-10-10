@@ -6,22 +6,19 @@
 if(!exports) var exports = {};
 (function() {
 
+    // Exports
 
-    // Argument Steps. One step per argument
-    var argStep = [
-        "<input type='text' name='title' placeholder='Add a title' />",
-        "<input type='text' name='tags' placeholder='Add tags' />"
-    ];
+    exports.runScript = function(fieldValues, callback) {
 
-    var ARG_STEP_TEMPLATE = "\
-        <article class='channel put-script:'>\n\
+        var ARG_STEP_TEMPLATE = "\
+        <article class='channel put:'>\n\
             <script src='ks/listeners/ks-put-script-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
             <header class='title-bar'>\n\
                 <strong>Create An Article</strong><span>:</span>\
-                <a class='title-bar-minimize' href='#MINIMIZE put-script:'>[-]</a><!--\n\
-             --><a class='title-bar-maximize' href='#MAXIMIZE put-script:'>[+]</a><!--\n\
-             --><a class='title-bar-close' href='#CLOSE put-script:'>[x]</a>\n\
+                <a class='title-bar-minimize' href='#MINIMIZE put:'>[-]</a><!--\n\
+             --><a class='title-bar-maximize' href='#MAXIMIZE put:'>[+]</a><!--\n\
+             --><a class='title-bar-close' href='#CLOSE put:'>[x]</a>\n\
             </header>\
             <form action='#' name='ks-put-script-form'>\n\
                 {$html_input}\
@@ -32,12 +29,8 @@ if(!exports) var exports = {};
             </footer>\n\
         </article>";
 
-    // Exports
-
-    exports.runScript = function(fieldValues, callback) {
-
         var HTML_TEMPLATE =
-            "\n<article>" +
+            "\n<article data-tags='" + (fieldValues.tags || '') + "'>" +
                 "\n\t<header>" + (fieldValues.title || 'Article Title') + "</header>" +
             "\n</article>";
 
@@ -51,7 +44,7 @@ if(!exports) var exports = {};
         // Ask for article Title
         if(typeof fieldValues.title === 'undefined') {
             var HTML_INPUT_TITLE = "\
-                Add a title for this article or hit Next to skip:</br>\n\
+                Add a title for this article:</br>\n\
                 <input type='text' name='title' placeholder='Add a title' />\n\
                 <input type='submit' value='Next'/>";
 
@@ -65,7 +58,7 @@ if(!exports) var exports = {};
         // Ask for Tags
         if(typeof fieldValues.tags === 'undefined') {
             var HTML_INPUT_TAGS = "\
-                Add search tags for this article or hit Next to skip:</br>\n\
+                Add search tags for this article:</br>\n\
                 <input type='text' name='tags' placeholder='[ex. search, tags, comma, delimited]' />\n\
                 <input type='submit' value='Next'/>";
 
@@ -75,6 +68,13 @@ if(!exports) var exports = {};
             );
             return true;
         }
+
+        // TODO status_content
+
+        importScripts('ks/templates/ks-put-template.js');
+        Templates.ks.put.form(HTML_TEMPLATE, callback);
+        // Free up template resources
+        delete Templates.ks.put.form;
 
         return true;
     };

@@ -16,14 +16,14 @@ Templates.ks.put.template = function(commandString, callback, Client) {
     //var args = match[2].split(/\s+/);
 
     var PUT_SELECT_TEMPLATE = "\
-        <article class='channel put-script: {$classes}'>\n\
+        <article class='channel put: {$classes}'>\n\
             <script src='ks/listeners/ks-put-script-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
             <header class='title-bar'>\n\
                 <strong>Choose a </strong><span class='command'>Template</span><span>:</span>\
-                <a class='title-bar-minimize' href='#MINIMIZE put-script:'>[-]</a><!--\n\
-             --><a class='title-bar-maximize' href='#MAXIMIZE put-script:'>[+]</a><!--\n\
-             --><a class='title-bar-close' href='#CLOSE put-script:'>[x]</a>\n\
+                <a class='title-bar-minimize' href='#MINIMIZE put:'>[-]</a><!--\n\
+             --><a class='title-bar-maximize' href='#MAXIMIZE put:'>[+]</a><!--\n\
+             --><a class='title-bar-close' href='#CLOSE put:'>[x]</a>\n\
             </header>\
             <form name='ks-put-script-select-form'>\n\
                 Generate <strong>Key Space</strong> content with a <strong>Content Script</strong>:<br/>\n\

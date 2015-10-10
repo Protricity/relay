@@ -97,7 +97,7 @@ if(!exports) var exports = {};
                 Client
                     .require(scriptFound[0])
                     .runScript(fieldValues, function(html) {
-                        Client.render("put-script:", html
+                        Client.render("put:", html
                             .replace(/{\$command_string}/ig, commandString)
                         );
                     });
@@ -111,7 +111,7 @@ if(!exports) var exports = {};
 
         importScripts('ks/templates/ks-put-script-template.js');
         Templates.ks.put.template(commandString, function(html) {
-            Client.render("put-script:", html);
+            Client.render("put:", html);
         }, Client);
         // Free up template resources
         delete Templates.ks.put.template;
