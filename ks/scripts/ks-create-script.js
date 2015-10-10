@@ -40,11 +40,11 @@ if(!exports) var exports = {};
             "\n</article>";
 
         var HTML_PREVIEW = "\n\
-            <div class='put-preview-template' style='display: none;'>" + encodeURIComponent(HTML_TEMPLATE) + "</div>\n\
-            <br/><strong>Preview</strong>:</br>\n\
+            <strong>Preview</strong>:</br>\n\
             <div class='put-preview-output'>" + HTML_TEMPLATE + "</div>\n\
             <br/><strong>Code</strong>:\n\
-            <pre class='put-preview-source'>" + HTML_TEMPLATE.replace(/</g, '&lt;') + "</pre>";
+            <pre class='put-preview-source'>" + HTML_TEMPLATE.replace(/</g, '&lt;') + "</pre>\n\
+            <div class='put-preview-template' style='display: none;'>" + encodeURIComponent(HTML_TEMPLATE) + "</div>";
 
 
         // Ask for article Title
