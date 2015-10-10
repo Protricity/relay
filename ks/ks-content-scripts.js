@@ -7,7 +7,7 @@ if(!exports) var exports = {};
 exports.getContentScripts = function() {
     return [
         ['ks/scripts/ks-create-script.js', 'Create new Key Space Content'],
-        ['app/social/vote/scripts/create-vote-script.js', 'Create a new Vote']
+        ['app/social/vote/scripts/create-vote-script.js', 'Create a new Public Vote']
 
     ];
 };

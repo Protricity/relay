@@ -146,8 +146,10 @@ function ClientSocketWorker() {
                 } else {
                     var targetElements = document.getElementsByClassName(targetClass);
                     if(targetElements.length === 0) {
-                        while(contentElements.length > 0)
+                        while(contentElements.length > 0) {
                             bodyElm.appendChild(contentElements[0]);
+                            //contentElements[0].classList.add('content-new')
+                        }
 
                         if(targetElements.length === 0)
                             throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
@@ -156,8 +158,11 @@ function ClientSocketWorker() {
                     } else {
                         targetElement = targetElements[0];
 
-                        while(contentElements.length > 0)
-                            targetElement.parentNode.insertBefore(contentElements[contentElements.length-1], targetElement);
+                        while(contentElements.length > 0) {
+                            var lastPos = contentElements.length - 1;
+                            contentElements[lastPos].classList.add('replaced');
+                            targetElement.parentNode.insertBefore(contentElements[lastPos], targetElement);
+                        }
                         targetElement.parentNode.removeChild(targetElement);
                         targetElement = contentElement;
                     }

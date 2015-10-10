@@ -26,12 +26,12 @@ Templates.ks.put.template = function(commandString, callback, Client) {
              --><a class='title-bar-close' href='#CLOSE put-script:'>[x]</a>\n\
             </header>\
             <form name='ks-put-script-select-form'>\n\
-                <label class='label-select-template hide-on-compact'>\n\
-                    <select name='template' style='width:12em;'>\n\
-                        <option value=''>Choose a Template</option>\n\
-                        {$html_script_options}\n\
-                    </select>\n\
-                </label>&nbsp;\n\
+                Generate <strong>Key Space</strong> content with a <strong>Content Script</strong>:<br/>\n\
+                <select name='template'>\n\
+                    <option value=''>Choose a Content Script</option>\n\
+                    {$html_script_options}\n\
+                </select>\n\
+                <input type='submit' value='Start'/>\n\
             </form>\n\
         </article>";
 

@@ -6,6 +6,7 @@
 if(!exports) var exports = {};
 (function() {
 
+
     // Argument Steps. One step per argument
     var argStep = [
         "<input type='text' name='title' placeholder='Add a title' />",
@@ -22,11 +23,13 @@ if(!exports) var exports = {};
              --><a class='title-bar-maximize' href='#MAXIMIZE put-script:'>[+]</a><!--\n\
              --><a class='title-bar-close' href='#CLOSE put-script:'>[x]</a>\n\
             </header>\
-            <form action='#' name='ks-put-script-form' onsubmit='ClientSocketWorker.sendCommand(\"{$command_string}\"); return false;'>\n\
+            <form action='#' name='ks-put-script-form'>\n\
                 {$html_input}\
-                <button type='submit' name='submit'>Next</button>\n\
                 <input type='hidden' name='command_string' value='{$command_string}' />\n\
             </form>\n\
+            <footer>\n\
+                {$html_preview}\n\
+            </footer>\n\
         </article>";
 
     // Exports
@@ -46,37 +49,50 @@ if(!exports) var exports = {};
         var scheme = match[2],
             host = match[4],
             contentPath = match[5].toLowerCase() || '',
-            queryString = match[6][0] === '?' ? match[6].substr(1) : match[6];
+            queryString = match[6] || '';
 
         var values = {};
-        var queryStringPairs = queryString.split(/&/g);
+        var queryStringPairs = queryString.split(/^\?|&/g);
         for(var i=0; i<queryStringPairs.length; i++) {
             var splitPair = queryStringPairs[i].split('=', 2);
-            values[splitPair[0]] = splitPair[1] || true;
+            if(splitPair[0])
+                values[decodeURIComponent(splitPair[0])] = decodeURIComponent(splitPair[1]) || true;
         }
-        console.log(values, queryString);
 
-        // TODO: show next form based on value
+        var HTML_PREVIEW = "\n\
+            <hr><strong>Preview</strong>:</br>\n\
+            <article>\n\
+                <header>{$title}</header>\n\
+            </article>"
+            .replace(/{\$title}/ig, values.title || 'Article Title');
 
-
-        
-
-        if(argStep.length <= args.length)
-            throw new Error("Missing Step: " + argStep.length);
-
-        var stepCall = argStep[args.length];
-        var stepCallHTML = stepCall;
-        if(typeof stepCallHTML === 'string')
-            stepCall = function(commandString, callback) { callback(stepCallHTML); };
-
-        stepCall(commandString, function(html_input) {
-
+        if(typeof values.title === 'undefined') {
+            var HTML_INPUT_TITLE = "\
+                Add a title for this article or hit Next to skip:</br>\n\
+                <input type='text' name='title' placeholder='Add a title' />\n\
+                <input type='submit' value='Next'/>";
 
             callback(ARG_STEP_TEMPLATE
-                .replace(/{\$html_input}/i, html_input)
+                .replace(/{\$html_input}/i, HTML_INPUT_TITLE)
+                .replace(/{\$html_preview}/i, HTML_PREVIEW)
                 .replace(/{\$command_string}/ig, commandString)
             );
-        });
+            return true;
+        }
+
+        if(typeof values.tags === 'undefined') {
+            var HTML_INPUT_TAGS = "\
+                Add search tags for this article or hit Next to skip:</br>\n\
+                <input type='text' name='tags' placeholder='[ex. search, tags, comma, delimited]' />\n\
+                <input type='submit' value='Next'/>";
+
+            callback(ARG_STEP_TEMPLATE
+                .replace(/{\$html_input}/i, HTML_INPUT_TAGS)
+                .replace(/{\$html_preview}/i, HTML_PREVIEW)
+                .replace(/{\$command_string}/ig, commandString)
+            );
+            return true;
+        }
 
         return true;
     };

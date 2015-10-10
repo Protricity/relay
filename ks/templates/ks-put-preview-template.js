@@ -7,14 +7,10 @@ var Templates = Templates || {};
 Templates.ks = Templates.ks || {};
 Templates.ks.put = Templates.ks.put || {};
 
-Templates.ks.put.renderCount = Templates.ks.put.renderCount || 0;
 Templates.ks.put.preview = function(content, callback) {
 // TODO: variables for topic, url, image etc
 
     var classes = [];
-    if(Templates.ks.put.renderCount > 0)
-        classes.push('no-animation');
-    Templates.ks.put.renderCount++;
 
     var PUT_FORM_PREVIEW_TEMPLATE = "\
         <article class='channel put-preview: {$classes}'>\n\

@@ -1,4 +1,14 @@
 
+/** Script **/
+
+form[name=ks-put-script-select-form] select,
+form[name=ks-put-script-select-form] input,
+form[name=ks-put-script-form] input {
+    padding: 0.5em 1em;
+    margin: 0.5em 0;
+}
+
+/** Preview **/
 
 
 form[name=ks-put-preview-form] {

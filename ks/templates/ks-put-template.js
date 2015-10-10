@@ -27,7 +27,7 @@ Templates.ks.put.form = function(content, callback) {
                     <input type='submit' value='Publish' name='put' />\n\
                 </label>\n\
                 <label class='label-path hide-on-compact'>to\n\
-                    <select name='path' style='width:12em;'>\n\
+                    <select name='path'>\n\
                         <option value='~'>My Home Page</option>\n\
                         <option disabled='disabled'>Friend's Web Space...</option>\n\
                         <option disabled='disabled'>Other Web Space...</option>\n\
