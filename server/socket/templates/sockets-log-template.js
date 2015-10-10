@@ -11,14 +11,16 @@ Templates.socket.log.container = function(url, callback) {
     var SOCKET_TEMPLATE = "\
         <article class='channel socket:{$url} minimized1' data-sort='z'>\n\
             <link rel='stylesheet' href='server/socket/sockets.css' type='text/css'>\n\
-            <header class='title-bar'>\n\
+            <header class='header-bar'>\n\
                 <a href='#MINIMIZE socket:{$url}'>ws://{$host}</a>\n\
-                <a class='title-bar-minimize' href='#MINIMIZE socket:{$url}'>[-]</a><!--\n\
-             --><a class='title-bar-maximize' href='#MAXIMIZE socket:{$url}'>[+]</a><!--\n\
-             --><a class='title-bar-close' href='#CLOSE socket:{$url}'>[x]</a>\n\
             </header>\
+            <div class='header-bar-buttons'>\n\
+                <a href='#MINIMIZE socket:{$url}'>[-]</a><!--\n\
+             --><a href='#MAXIMIZE socket:{$url}'>[+]</a><!--\n\
+             --><a href='#CLOSE socket:{$url}'>[x]</a>\n\
+            </div>\n\
             <div class='socket-log socket-log:{$url}'></div>\n\
-            </form>\n\
+            <footer class='footer-bar'>&nbsp;</footer>\n\
         </article>";
 
     var match = url.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));

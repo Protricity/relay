@@ -19,12 +19,14 @@ Templates.ks.put.template = function(commandString, callback, Client) {
         <article class='channel put: {$classes}'>\n\
             <script src='ks/listeners/ks-put-script-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
-            <header class='title-bar'>\n\
+            <header class='header-bar'>\n\
                 <strong>Choose a </strong><span class='command'>Template</span><span>:</span>\
-                <a class='title-bar-minimize' href='#MINIMIZE put:'>[-]</a><!--\n\
-             --><a class='title-bar-maximize' href='#MAXIMIZE put:'>[+]</a><!--\n\
-             --><a class='title-bar-close' href='#CLOSE put:'>[x]</a>\n\
-            </header>\
+            </header>\n\
+            <div class='header-bar-buttons'>\n\
+                <a href='#MINIMIZE put:'>[-]</a><!--\n\
+             --><a href='#MAXIMIZE put:'>[+]</a><!--\n\
+             --><a href='#CLOSE put:'>[x]</a>\n\
+            </div>\n\
             <form name='ks-put-script-select-form'>\n\
                 Generate <strong>Key Space</strong> content with a <strong>Content Script</strong>:<br/>\n\
                 <select name='template'>\n\
@@ -33,6 +35,7 @@ Templates.ks.put.template = function(commandString, callback, Client) {
                 </select>\n\
                 <input type='submit' value='Start'/>\n\
             </form>\n\
+            <footer class='footer-bar'>&nbsp;</footer>\n\
         </article>";
 
     var classes = [];

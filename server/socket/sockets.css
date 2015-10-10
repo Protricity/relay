@@ -1,6 +1,5 @@
 
 .socket-log {
-    display: inline-block;
     overflow: auto;
     max-height: 23vw;
     min-width: 36em;

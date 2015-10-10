@@ -11,12 +11,14 @@ Templates.ks.put.form = function(content, callback) {
         <article class='channel put: compact'>\n\
             <script src='ks/listeners/ks-put-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
-            <header class='title-bar'>\n\
+            <header class='header-bar'>\n\
                 <span class='command'>Put</span><span> content in your </span> <strong>Key Space</strong>\
-                <a class='title-bar-minimize' href='#MINIMIZE put:'>[-]</a><!--\n\
-             --><a class='title-bar-maximize' href='#MAXIMIZE put:'>[+]</a><!--\n\
-             --><a class='title-bar-close' href='#CLOSE put:'>[x]</a>\n\
-            </header>\
+            </header>\n\
+            <div class='header-bar-buttons'>\n\
+                <a href='#MINIMIZE put:'>[-]</a><!--\n\
+             --><a href='#MAXIMIZE put:'>[+]</a><!--\n\
+             --><a href='#CLOSE put:'>[x]</a>\n\
+            </div>\n\
             <form name='ks-put-form'>\n\
                 <label class='label-content'>\
                     Create new <span class='html'>HTML</span> content for your <strong>Key Space</strong>:\n\
@@ -34,12 +36,13 @@ Templates.ks.put.form = function(content, callback) {
                     </select>\n\
                 </label>&nbsp;\n\
             </form>\n\
+            <footer class='footer-bar'>&nbsp;</footer>\n\
         </article>";
         //<article class='channel put-preview: hide-on-compact'>\n\
-        //    <header class='title-bar'>\n\
+        //    <header class='header-bar'>\n\
         //        <span class='command'>Preview</span><span class='html'> HTML</span>\
-        //        <a class='title-bar-minimize' href='#MINIMIZE put-preview:'>[-]</a><!--\n\
-        //     --><a class='title-bar-maximize' href='#MAXIMIZE put-preview:'>[+]</a>\n\
+        //        <a class='header-bar-minimize' href='#MINIMIZE put-preview:'>[-]</a><!--\n\
+        //     --><a class='header-bar-maximize' href='#MAXIMIZE put-preview:'>[+]</a>\n\
         //    </header>\
         //    <section class='put-preview-content:'></section>\
 

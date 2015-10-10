@@ -16,12 +16,14 @@ Templates.ks.put.preview = function(content, callback) {
         <article class='channel put-preview: {$classes}'>\n\
             <script src='ks/listeners/ks-put-preview-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
-            <header class='title-bar'>\n\
+            <header class='header-bar'>\n\
                 <span class='command'>Preview</span><strong> Key Space</strong><span> content:</span>\
-                <a class='title-bar-minimize' href='#MINIMIZE put-preview:'>[-]</a><!--\n\
-             --><a class='title-bar-maximize' href='#MAXIMIZE put-preview:'>[+]</a><!--\n\
-             --><a class='title-bar-close' href='#CLOSE put:'>[x]</a>\n\
-            </header>\
+            </header>\n\
+            <div class='header-bar-buttons'>\n\
+                <a href='#MINIMIZE put-preview:'>[-]</a><!--\n\
+             --><a href='#MAXIMIZE put-preview:'>[+]</a><!--\n\
+             --><a href='#CLOSE put-preview:'>[x]</a>\n\
+            </div>\n\
             <section class='put-preview-content:' style='position:relative;'>{$content}</section>\n\
             <br/>\n\
             <form name='ks-put-preview-form' >\n\
@@ -35,6 +37,7 @@ Templates.ks.put.preview = function(content, callback) {
                     </div>\n\
                 </fieldset>\n\
             </form>\n\
+            <footer class='footer-bar'>&nbsp;</footer>\n\
         </article>";
 
     var html_template_options = '';
@@ -47,10 +50,10 @@ Templates.ks.put.preview = function(content, callback) {
     );
 
     //<article class='channel put-preview: hide-on-compact'>\n\
-    //    <header class='title-bar'>\n\
+    //    <header class='header-bar'>\n\
     //        <span class='command'>Preview</span><span class='html'> HTML</span>\
-    //        <a class='title-bar-minimize' href='#MINIMIZE put-preview:'>[-]</a><!--\n\
-    //     --><a class='title-bar-maximize' href='#MAXIMIZE put-preview:'>[+]</a>\n\
+    //        <a class='header-bar-minimize' href='#MINIMIZE put-preview:'>[-]</a><!--\n\
+    //     --><a class='header-bar-maximize' href='#MAXIMIZE put-preview:'>[+]</a>\n\
     //    </header>\
     //    <section class='put-preview-content:'></section>\
     //

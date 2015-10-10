@@ -28,9 +28,9 @@
 .theme-minimal .channel {
     position: relative;
     /*transition: opacity 0.4s ease-in-out;*/
-    border: 2px groove threedface;
+    border: 2px outset;
     margin: 4px 1px 13px 1px;
-    padding: 0.8em 0.75em 0.625em 0.75em;
+    /* padding: 0.8em 0.75em 0.625em 0.75em; */
     min-width: 11em;
     vertical-align: top;
 }
@@ -39,31 +39,73 @@
     margin: 4px 1px 0 1px;
 }
 
+
+/** Channel Windows **/
+
+.theme-minimal .channel {
+    display: inline-block;
+    background-color: #FEFEFE;
+}
+
+.theme-minimal .channel.closed,
+.theme-minimal .channel.minimized > :not(.show-on-minimized):not(.header-bar) {
+    display: none;
+}
+
+.theme-minimal .channel.minimized {
+    min-width: 16em;
+}
+
+.theme-minimal .channel.maximized {
+    position: fixed;
+    width: 80%;
+    /* top: 5%; */
+    left: 9%;
+    margin-top: 5%;
+    /* margin-left: 0%; */
+    z-index: 1;
+    box-shadow: 0em 0em 2em #888;
+}
+
 /** Title Bar **/
 
-.theme-minimal .title-bar {
-    font-weight: bold;
-    color: #111;
-    border-radius: 6px;
-    margin: 0 2px;
-    padding: 0 2px;
+.theme-minimal .footer-bar,
+.theme-minimal .header-bar {
+    width: 100%;
+    background-color: #F5FFF5;
+    text-indent: 0.3em;
+}
+
+.theme-minimal .header-bar {
+    /* margin: 0 0 1em 0; */
+    padding: 0 0 0.3em 0;
+    border-bottom: 2px double threedface;
+    /* font-size: larger; */
+    /* box-shadow: 0px 0px 22px #EFEFEF; */
+}
+.theme-minimal .footer-bar {
+    /* margin: 1em 0 0 0; */
+    padding: 0 0 0.1em 0;
+    /* border-top: 2px double threedface; */
+}
+
+.theme-minimal .header-bar-buttons {
+
     position: absolute;
-    top: -10px;
-    width: 95%;
+    right: 2px;
+    top: 0;
+    text-decoration: none;
+    /* font-weight: bold; */
 }
+    /* box-shadow: 1px 4px 30px #333; */
 
-.theme-minimal .title-bar-minimize,
-.theme-minimal .title-bar-maximize,
-.theme-minimal .title-bar-close {
-    float: right;
+
+/** Sections **/
+
+.theme-minimal article.channel > section {
+    padding: 1em;
+    border: 2px inset;
 }
-/* box-shadow: 1px 4px 30px #333; */
-
-.theme-minimal .title-bar > * {
-     background-color: white;
-}
-
-
 
 
 /** Span Formats **/
@@ -152,91 +194,6 @@
     /* border-radius: 0.4em; */
 }
 
-/* Nav Menu */
-
-
-.theme-minimal .navigation-commands {
-    border: 1px solid;
-    display: block;
-    min-width: 5em;
-
-    transition: min-width 0.5s, transform 0.5s;
-}
-
-.theme-minimal .navigation-commands:hover {
-    min-width: 12em;
-}
-
-.theme-minimal .navigation-commands {
-    position: relative;
-    z-index: 999;
-    display: inline-block;
-    background-color: lightgrey;
-    padding: 0.5em;
-    animation: fade-in;
-    /* border: 2px groove threedface; */
-    vertical-align: top;
-    margin: 0 1em 1em 0;
-}
-
-.theme-minimal .navigation-commands header button {
-    border: 1px inset;
-}
-.theme-minimal .navigation-commands.closed header button {
-    border-style: outset;
-}
-.theme-minimal .navigation-commands header {
-    font-weight: bold;
-    text-shadow: 1px 1px 1px #AAA;
-}
-.theme-minimal .navigation-commands ul {
-    list-style: none;
-    padding: 0;
-    margin: 0.5em 0 0 0;
-}
-.theme-minimal .navigation-commands ul lh,
-.theme-minimal .navigation-commands ul li.header,
-.theme-minimal .navigation-commands ul li {
-    background-color: #EEE;
-    border-radius: 0.3em;
-    padding: 0.05em 0.5em;
-    margin-bottom: 2px;
-    margin-right: 2px;
-    display: list-item;
-    font-family: monospace;
-    border: 1px inset;
-}
-
-.theme-minimal .navigation-commands ul lh,
-.theme-minimal .navigation-commands ul li.header {
-    background-color: #BFBFBF;
-    border-style: outset;
-    font-weight: bold;
-    /* text-shadow: 1px 1px 1px #AAA; */
-    /* text-transform: lowercase; */
-    margin-top: 1em;
-}
-.theme-minimal .navigation-commands ul li:hover {
-    background-color: #EEEEAA;
-}
-
-.theme-minimal .navigation-commands {
-    border: 1px outset;
-    border-radius: 4px;
-}
-.theme-minimal .navigation-commands.closed {
-    border-radius: 0.5em;
-    border-style: inherit;
-}
-.theme-minimal .navigation-commands.closed .hide-on-close {
-    display: none;
-}
-.theme-minimal .navigation-commands.closed:hover .hide-on-close {
-    display: block;
-}
-.theme-minimal .navigation-commands.closed:hover span.hide-on-close {
-    display: inline;
-}
 
 /* Animation */
 

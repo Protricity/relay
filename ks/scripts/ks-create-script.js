@@ -14,18 +14,23 @@ if(!exports) var exports = {};
         <article class='channel put: maximized'>\n\
             <script src='ks/listeners/ks-put-script-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
-            <header class='title-bar'>\n\
+            <header class='header-bar'>\n\
                 <strong>Create An Article</strong><span>:</span>\
-                <a class='title-bar-minimize' href='#MINIMIZE put:'>[-]</a><!--\n\
-             --><a class='title-bar-maximize' href='#MAXIMIZE put:'>[+]</a><!--\n\
-             --><a class='title-bar-close' href='#CLOSE put:'>[x]</a>\n\
-            </header>\
-            <form action='ks/scripts/ks-create-script.js' name='ks-put-script-form'>\n\
-                {$html_input}\
-            </form>\n\
-            <footer>\n\
+            </header>\n\
+            <div class='header-bar-buttons'>\n\
+                <a href='#MINIMIZE put:'>[-]</a><!--\n\
+             --><a href='#MAXIMIZE put:'>[+]</a><!--\n\
+             --><a href='#CLOSE put:'>[x]</a>\n\
+            </div>\n\
+            <section>\n\
+                <form action='ks/scripts/ks-create-script.js' name='ks-put-script-form'>\n\
+                    {$html_input}\
+                </form>\n\
+            </section>\n\
+            <section>\n\
                 {$html_preview}\n\
-            </footer>\n\
+            </section>\n\
+            <footer class='footer-bar'>&nbsp;</footer>\n\
         </article>";
 //                <input type='hidden' name='command_string' value='{$command_string}' />\n\
 
@@ -35,10 +40,10 @@ if(!exports) var exports = {};
             "\n</article>";
 
         var HTML_PREVIEW = "\n\
-            <div class='put-preview-template'>" + encodeURIComponent(HTML_TEMPLATE) + "</div>\n\
-            <hr><strong>Preview</strong>:</br>\n\
+            <div class='put-preview-template' style='display: none;'>" + encodeURIComponent(HTML_TEMPLATE) + "</div>\n\
+            <br/><strong>Preview</strong>:</br>\n\
             <div class='put-preview-output'>" + HTML_TEMPLATE + "</div>\n\
-            <hr><strong>Code</strong>:</br>\n\
+            <br/><strong>Code</strong>:\n\
             <pre class='put-preview-source'>" + HTML_TEMPLATE.replace(/</g, '&lt;') + "</pre>";
 
 
@@ -46,7 +51,7 @@ if(!exports) var exports = {};
         if(typeof fieldValues.title === 'undefined') {
             var HTML_INPUT_TITLE = "\
                 Add a title for this article:</br>\n\
-                <input type='text' name='title' placeholder='Add a title' />\n\
+                <input type='text' name='title' placeholder='Article Title' />\n\
                 <input type='submit' value='Next'/>";
 
             callback(ARG_STEP_TEMPLATE

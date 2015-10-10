@@ -86,15 +86,22 @@ function ClientSocketWorker() {
             throw new Error("Class not found: " + targetClass);
 
         var targetElement = targetElements[0];
+        var hasClass = targetElement.classList.contains(command + 'd');
 
-        if(targetElement.classList.contains(command + 'd')) {
+        var maximizedElms = document.getElementsByClassName('maximized');
+        while(maximizedElms.length > 0)
+            maximizedElms[0].classList.remove('maximized');
+
+        if(hasClass) {
             targetElement.classList.remove(command + 'd');
+
         } else {
             targetElement.classList.remove('minimized');
             targetElement.classList.remove('maximized');
             targetElement.classList.remove('closed');
             targetElement.classList.add(command + 'd');
         }
+
     }
 
     function render(commandString) {

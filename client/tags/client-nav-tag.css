@@ -1,19 +1,4 @@
 
-/** Channels **/
-
-.channel {
-    display: inline-block;
-}
-
-.channel.closed,
-.channel.minimized > :not(.show-on-minimized, .title-bar) {
-    display: none;
-}
-
-.channel.minimized {
-    min-width: 16em;
-}
-
 /* Navigation */
 
 
