@@ -6,7 +6,7 @@ var Templates = Templates || {};
 Templates.chat = Templates.chat || {};
 Templates.chat.form = function(channelPath, callback) {
     var CHANNEL_TEMPLATE = "\
-        <article class='channel chat chat:{$channel_path}'>\n\
+        <article class='channel chat: chat:{$channel_path}'>\n\
             <script src='app/social/chat/chat-listeners.js'></script>\n\
             <link rel='stylesheet' href='app/social/chat/chat.css' type='text/css'>\n\
             <header class='header-bar'>\n\
@@ -20,20 +20,23 @@ Templates.chat.form = function(channelPath, callback) {
             <form name='chat-form'>\n\
                 <table style='width:100%'>\n\
                     <tbody>\n\
-                        <tr>\n\
-                            <td style='vertical-align: top'>\n\
+                        <tr class='hide-on-minimized'>\n\
+                            <td style='vertical-align: top; width:1px;'>\n\
                                 <select multiple='multiple' name='user-list' size='5'>\n\
                                     <optgroup class='chat-active-users:{$channel_path}' label='Active Users (0)'></optgroup>\n\
                                     <optgroup class='chat-inactive-users:{$channel_path}' label='Inactive Users (0)'></optgroup>\n\
                                 </select>\n\
                             </td>\n\
-                            <td style='vertical-align: top'>\n\
+                            <td colspan='2' style='vertical-align: top;'>\n\
                                 <fieldset class='chat-log chat-log:{$channel_path}'>Joining {$channel}...</fieldset>\n\
                             </td>\n\
                         </tr>\n\
                         <tr>\n\
                             <td colspan='2'>\n\
-                                <input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' />\n\
+                                <input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' style='width: 100%;'/>\n\
+                            </td>\n\
+                            <td style='width:1px'>\n\
+                                &nbsp;\
                                 <input type='submit' value='Send' name='submit-send-chat' />\n\
                                 <input type='hidden' value='{$channel}' name='channel' />\n\
                             </td>\n\
@@ -41,7 +44,7 @@ Templates.chat.form = function(channelPath, callback) {
                     </tbody>\n\
                 </table>\n\
             </form>\n\
-            <footer class='footer-bar'>&nbsp;</footer>\n\
+            <footer class='footer-bar show-on-minimized'>&nbsp;</footer>\n\
         </article>";
 
 

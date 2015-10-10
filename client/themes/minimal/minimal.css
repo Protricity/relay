@@ -26,13 +26,16 @@
 }
 
 .theme-minimal .channel {
+    display: inline-block;
     position: relative;
     /*transition: opacity 0.4s ease-in-out;*/
     border: 2px outset;
-    margin: 4px 1px 13px 1px;
+    margin: 0.7em;
     /* padding: 0.8em 0.75em 0.625em 0.75em; */
     min-width: 11em;
     vertical-align: top;
+    background-color: #FEFEFE;
+    border-radius: 4px;
 }
 
 .theme-minimal .channel:last-child {
@@ -42,13 +45,10 @@
 
 /** Channel Windows **/
 
-.theme-minimal .channel {
-    display: inline-block;
-    background-color: #FEFEFE;
-}
-
 .theme-minimal .channel.closed,
-.theme-minimal .channel.minimized > :not(.show-on-minimized):not(.header-bar) {
+.theme-minimal .channel.minimized > section,
+.theme-minimal .channel.minimized > footer:not(.show-on-minimized),
+.theme-minimal .channel.minimized .hide-on-minimized{
     display: none;
 }
 
@@ -59,13 +59,12 @@
 .theme-minimal .channel.maximized {
     position: fixed;
     width: 80%;
-    /* top: 5%; */
     left: 9%;
     margin-top: 5%;
-    /* margin-left: 0%; */
     z-index: 1;
-    box-shadow: 0em 0em 2em #888;
+    box-shadow: 0 0 2em #558;
 }
+
 
 /** Title Bar **/
 
@@ -90,14 +89,17 @@
 }
 
 .theme-minimal .header-bar-buttons {
-
     position: absolute;
     right: 2px;
     top: 0;
-    text-decoration: none;
-    /* font-weight: bold; */
 }
-    /* box-shadow: 1px 4px 30px #333; */
+.theme-minimal .header-bar-buttons a {
+    text-decoration: none;
+    color: #888;
+}
+.theme-minimal .header-bar-buttons a:hover {
+    color: black;
+}
 
 
 /** Sections **/

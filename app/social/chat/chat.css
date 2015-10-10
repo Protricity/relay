@@ -17,18 +17,16 @@
 }
 
 form[name=chat-form] {
-    /* max-width: 64em; */
+    min-width: 29em;
     font-family: monospace;
 }
 
 
 form[name=chat-form] input[name=message] {
-    width: 85%;
     font-family: monospace;
 }
 
 form[name=chat-form] input[type=submit] {
-    float: right;
 }
 
 form[name=chat-form] .pgp-message {

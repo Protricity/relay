@@ -19,7 +19,7 @@ Templates.socket.log.container = function(url, callback) {
              --><a href='#MAXIMIZE socket:{$url}'>[+]</a><!--\n\
              --><a href='#CLOSE socket:{$url}'>[x]</a>\n\
             </div>\n\
-            <div class='socket-log socket-log:{$url}'></div>\n\
+            <div class='socket-log socket-log:{$url} hide-on-minimized'></div>\n\
             <footer class='footer-bar'>&nbsp;</footer>\n\
         </article>";
 
