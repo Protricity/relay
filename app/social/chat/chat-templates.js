@@ -36,7 +36,6 @@ Templates.chat.form = function(channelPath, callback) {
                                 <input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' style='width: 100%;'/>\n\
                             </td>\n\
                             <td style='width:1px'>\n\
-                                &nbsp;\
                                 <input type='submit' value='Send' name='submit-send-chat' />\n\
                                 <input type='hidden' value='{$channel}' name='channel' />\n\
                             </td>\n\
