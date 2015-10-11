@@ -8,19 +8,29 @@ Templates.ks.log = Templates.ks.log || {};
 Templates.ks.log.container = function(url, callback) {
     // Template
     var LOG_TEMPLATE = "\
-        <article class='channel {$class}' data-sort='z'>\n\
+        <article class='channel ks-log:{$host}' data-sort='z'>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
+            <header class='header-bar'>\n\
+                <a href='#MAXIMIZE ks-log:{$host}'>\n\
+                    <span class='command'>KeySpace</span> {$host}\n\
+                </a>\n\
+            </header>\n\
+            <div class='header-bar-buttons'>\n\
+                <a href='#MINIMIZE put-preview:'>[-]</a><!--\n\
+             --><a href='#MAXIMIZE put-preview:'>[+]</a><!--\n\
+             --><a href='#CLOSE put-preview:'>[x]</a>\n\
+            </div>\n\
             <legend class='title'>\n\
-                <a href='#MINIMIZE {$class}'>\n\
-                    <span class='command'>KeySpace</span> {$ks_host}\n\
+                <a href='#MAXIMIZE ks-log:{$host}'>\n\
+                    <span class='command'>KeySpace</span> {$host}\n\
                 </a>\n\
             </legend>\n\
             <div class='title-commands'>\n\
-                <a class='title-command-minimize' href='#MINIMIZE {$class}'>[-]</a><!--\
-             --><a class='title-command-maximize' href='#MAXIMIZE {$class}'>[+]</a><!--\
-             --><a class='title-command-close' href='#CLOSE {$class}'>[x]</a>\n\
+                <a class='title-command-minimize' href='#MINIMIZE ks-log:{$host}'>[-]</a><!--\
+             --><a class='title-command-maximize' href='#MAXIMIZE ks-log:{$host}'>[+]</a><!--\
+             --><a class='title-command-close' href='#CLOSE ks-log:{$host}'>[x]</a>\n\
             </div>\n\
-            <fieldset class='ks-log-content:{$ks_host}'></fieldset>\n\
+            <fieldset class='ks-log-content:{$host}'></fieldset>\n\
             </form>\n\
         </article>";
 
@@ -29,13 +39,10 @@ Templates.ks.log.container = function(url, callback) {
     if(!host)
         throw new Error("Invalid Host: " + url);
 
-    var channelClass = "ks-log:" + host;
     // Callback
     return callback(LOG_TEMPLATE
-        .replace(/{\$class}/gi, channelClass)
-        .replace(/{\$ks_host}/gi, host)
-        .replace(/{\$ks_url}/gi, url),
-        channelClass
+        .replace(/{\$host}/gi, host)
+        .replace(/{\$url}/gi, url)
     );
 };
 

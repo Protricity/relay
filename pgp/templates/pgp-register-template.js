@@ -12,11 +12,15 @@ Templates.pgp.register.form = function(private_key_block, status_content, callba
             <article class='channel pgp:'>\n\
                 <script src='pgp/pgp-listeners.js'></script>\n\
                 <link rel='stylesheet' href='pgp/pgp.css' type='text/css'>\n\
-                <legend class='title'><span class='command'>Register</span> a new PGP Key Pair</legend>\n\
-                <div class='title-commands'>\n\
-                    <a class='title-command-minimize' href='#MINIMIZE pgp:'>[-]</a><!--\
-                     --><a class='title-command-maximize' href='#MAXIMIZE pgp:'>[+]</a><!--\
-                     --><a class='title-command-close' href='#CLOSE pgp:'>[x]</a>\n\
+                <header class='header-bar'>\n\
+                    <a href='#MAXIMIZE pgp:'>\n\
+                        <span class='command'>Register</span> a new PGP Key Pair\n\
+                    </a>\n\
+                </header>\
+                <div class='header-bar-buttons'>\n\
+                    <a href='#MINIMIZE pgp:'>[-]</a><!--\n\
+                 --><a href='#MAXIMIZE pgp:'>[+]</a><!--\n\
+                 --><a href='#CLOSE pgp:'>[x]</a>\n\
                 </div>\n\
                 <form name='pgp-register-form' action='#' method='post' >\n\
                     <code class='status-box'>{$status_content}</code><br/>\n\

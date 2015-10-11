@@ -17,7 +17,9 @@ Templates.ks.put.preview = function(content, callback) {
             <script src='ks/listeners/ks-put-preview-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
             <header class='header-bar'>\n\
-                <span class='command'>Preview</span><strong> Key Space</strong><span> content:</span>\
+                <a href='#MAXIMIZE {$class}'>\n\
+                    <span class='command'>Preview</span><strong> Key Space</strong><span> content:</span>\n\
+                </a>\n\
             </header>\n\
             <div class='header-bar-buttons'>\n\
                 <a href='#MINIMIZE put-preview:'>[-]</a><!--\n\

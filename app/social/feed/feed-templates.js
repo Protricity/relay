@@ -10,13 +10,15 @@ Templates.feed.container = function(commandString, callback) {
         <article class='channel feed feed:{$channel_path}'>\n\
             <script src='app/social/feed/feed-listeners.js'></script>\n\
             <link rel='stylesheet' href='app/social/feed/feed.css' type='text/css'>\n\
-            <legend class='title'>\
-                <span class='command'>Feed</span>: {$channel_path}\
-            </legend>\n\
-            <div class='title-commands'>\n\
-                <a class='title-command-minimize' href='#MINIMIZE feed:{$channel_path}'>[-]</a><!--\
-             --><a class='title-command-maximize' href='#MAXIMIZE feed:{$channel_path}'>[+]</a><!--\
-             --><a class='title-command-close' href='#CLOSE feed:{$channel_path}'>[x]</a>\n\
+            <header class='header-bar'>\n\
+                <a href='#MAXIMIZE feed:{$channel_path}'>\n\
+                    <span class='command'>Feed</span>: {$channel_path}</span>\n\
+                </a>\n\
+            </header>\
+            <div class='header-bar-buttons'>\n\
+                <a href='#MINIMIZE feed:{$channel_path}'>[-]</a><!--\n\
+             --><a href='#MAXIMIZE feed:{$channel_path}'>[+]</a><!--\n\
+             --><a href='#CLOSE feed:{$channel_path}'>[x]</a>\n\
             </div>\n\
             <div class='feed-entries feed-entries:{$channel_path}' onscroll='scrollFeed.apply(this, [event]);'>\n\
                 {$html_put_form}\n\

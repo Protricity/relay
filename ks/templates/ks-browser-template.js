@@ -10,13 +10,15 @@ Templates.ks.browser = function(responseText, callback) {
         <article class='channel ks-browser:{$browser_id} ks-browser ks-response-{$response_code}' data-browser-id='{$browser_id}'>\n\
             <script src='ks/ks-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
-            <legend class='title'>\n\
-                <span class='command'>GET</span> <span class='url'>{$request_url}</span>\n\
-            </legend>\n\
-            <div class='title-commands'>\n\
-                <a class='title-command-minimize' href='#MINIMIZE ks-browser:{$browser_id}'>[-]</a><!--\
-             --><a class='title-command-maximize' href='#MAXIMIZE ks-browser:{$browser_id}'>[+]</a><!--\
-             --><a class='title-command-close' href='#CLOSE ks-browser:{$browser_id}'>[x]</a>\n\
+            <header class='header-bar'>\n\
+                <a href='#MAXIMIZE ks-browser:{$browser_id}'>\n\
+                    <span class='command'>GET</span> <span class='url'>{$request_url}</span>\n\
+                </a>\n\
+            </header>\
+            <div class='header-bar-buttons'>\n\
+                <a href='#MINIMIZE ks-browser:{$browser_id}'>[-]</a><!--\n\
+             --><a href='#MAXIMIZE ks-browser:{$browser_id}'>[+]</a><!--\n\
+             --><a href='#CLOSE ks-browser:{$browser_id}'>[x]</a>\n\
             </div>\n\
             <nav>\n\
                 <form name='ks-browser-navigation-form'>\n\

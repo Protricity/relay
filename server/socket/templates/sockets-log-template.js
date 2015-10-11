@@ -12,7 +12,7 @@ Templates.socket.log.container = function(url, callback) {
         <article class='channel socket:{$url} minimized1' data-sort='z'>\n\
             <link rel='stylesheet' href='server/socket/sockets.css' type='text/css'>\n\
             <header class='header-bar'>\n\
-                <a href='#MINIMIZE socket:{$url}'>ws://{$host}</a>\n\
+                <a href='#MAXIMIZE socket:{$url}'>ws://{$host}</a>\n\
             </header>\
             <div class='header-bar-buttons'>\n\
                 <a href='#MINIMIZE socket:{$url}'>[-]</a><!--\n\

@@ -11,11 +11,15 @@ Templates.pgp.generate.form = function(user_id, callback) {
         <article class='channel pgp:'>\n\
             <script src='pgp/pgp-listeners.js'></script>\n\
             <link rel='stylesheet' href='pgp/pgp.css' type='text/css'>\n\
-            <legend class='title'><span class='command'>Generate</span> a New Identity</legend>\n\
-            <div class='title-commands'>\n\
-                <a class='title-command-minimize' href='#MINIMIZE pgp:'>[-]</a><!--\
-                 --><a class='title-command-maximize' href='#MAXIMIZE pgp:'>[+]</a><!--\
-                 --><a class='title-command-close' href='#CLOSE pgp:'>[x]</a>\n\
+            <header class='header-bar'>\n\
+                <a href='#MAXIMIZE pgp:'>\n\
+                    <span class='command'>Generate</span> a New Identity\n\
+                </a>\n\
+            </header>\
+            <div class='header-bar-buttons'>\n\
+                <a href='#MINIMIZE pgp:'>[-]</a><!--\n\
+             --><a href='#MAXIMIZE pgp:'>[+]</a><!--\n\
+             --><a href='#CLOSE pgp:'>[x]</a>\n\
             </div>\n\
             <form name='pgp-keygen-form' action='#' method='post'>\n\
                 <code class='status-box'>Use this form to generate a new PGP Key Identity</code>\n\

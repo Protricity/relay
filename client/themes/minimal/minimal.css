@@ -64,12 +64,12 @@
 .theme-minimal .channel.maximized {
     position: fixed;
     max-width: 80%;
-    left: 9%;
+    left: 20vw;
+    top: 10vw;
     margin-top: 5%;
     z-index: 2;
     box-shadow: 0 0 2em #558;
     font-size: large;
-
     transition: 500ms;
 }
 
