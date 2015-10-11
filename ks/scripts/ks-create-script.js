@@ -23,13 +23,13 @@ if(!exports) var exports = {};
             importScripts('framework/form/tabbed-form-builder.js');
 
 
-        var FORM_TITLE = "<i>Add a title for this article:</i></br>\n\
+        var FORM_TITLE = "<strong>Add a title for this article:</strong></br>\n\
                 <input type='text' name='{$field_name}' size='36' placeholder='Your Article Title' />\n\
                 <input type='submit' value='Next'/>";
 
-        var FORM_TAGS = "<i>Add search tags for this article:</i></br>\n\
+        var FORM_TAGS = "<strong>Add search tags for this article:</strong></br>\n\
                 <input type='text' name='{$field_name}' size='48' placeholder='[ex. search, tags, comma, delimited]' />\n\
-                <input type='submit' value='Next'/>"
+                <input type='submit' value='Next'/>";
 
         var builder = new TabbedFormBuilder(HTML_TEMPLATE);
         builder.addFormStep('title', 'Title', FORM_TITLE);
