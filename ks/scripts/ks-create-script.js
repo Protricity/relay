@@ -11,19 +11,40 @@ if(!exports) var exports = {};
     exports.runScript = function(fieldValues, callback) {
 
         var forms = {
-            '#default': "<i>Add a {$field_name} for this article:</i></br>\n\
-                <input type='text' name='{$field_name}' placeholder='Your Article {$field_name}' />\n\
+            '#default': "<i>Add a {$field_title} for this article:</i></br>\n\
+                <input type='text' name='{$field_name}' placeholder='Your Article {$field_title}' />\n\
                 <input type='submit' value='Next'/>",
 
             title: "<i>Add a title for this article:</i></br>\n\
-                <input type='text' name='{$field_name}' placeholder='Your Article Title' />\n\
+                <input type='text' name='{$field_name}' size='36' placeholder='Your Article Title' />\n\
                 <input type='submit' value='Next'/>",
 
             tags: "<i>Add search tags for this article:</i></br>\n\
-                <input type='text' name='{$field_name}' placeholder='[ex. search, tags, comma, delimited]' />\n\
+                <input type='text' name='{$field_name}' size='48' placeholder='[ex. search, tags, comma, delimited]' />\n\
                 <input type='submit' value='Next'/>"
         };
 
+        var formSteps = [
+            ['title', 'Title'],
+            ['time', 'Date/Time', function(tagName, tagValue, html) {
+                return html
+                    .replace(/{\$datetime}/g, Date.now())
+                    .replace(/{\$time}/g, tagValue);
+            }],
+            ['main', 'Content'],
+            ['details', 'Details'],
+            ['tags', 'Search Tags'],
+            ['footer', 'Footer']
+        ];
+
+        var HTML_TEMPLATE =
+            "\n<article data-tags='{$tags}'>" +
+            "\n\t<header>{$title}</header>" +
+            "\n\t<time datetime='{$datetime}'>{$time}</time>" +
+            "\n\t<main>{$main}</main>" +
+            "\n\t<details>{$details}</details>" +
+            "\n\t<footer>{$footer}</footer>" +
+            "\n</article>";
 
 
         var ARG_STEP_TEMPLATE = "\
@@ -51,42 +72,36 @@ if(!exports) var exports = {};
         </article>";
 //                <input type='hidden' name='command_string' value='{$command_string}' />\n\
 
-        if(!fieldValues.datetime)
-            fieldValues.datetime = Date.now();
-
-        var HTML_TEMPLATE =
-            "\n<article data-tags='{$tags}'>" +
-                "\n\t<header>{$title}</header>" +
-                "\n\t<time datetime='{$datetime}'>{$time}</time>" +
-                "\n\t<main>{$main}</main>" +
-                "\n\t<details>{$details}</details>" +
-                "\n\t<footer>{$footer}</footer>" +
-            "\n</article>";
-
         var formattedPreview = HTML_TEMPLATE;
-
-        var selectedField = null;
+        var formattedTemplate = HTML_TEMPLATE;
         var requiredFields = [];
         var html_steps = '';
+        var selectedStep = 0;
         var stepCount = 0;
-        var formattedTemplate = HTML_TEMPLATE;
-        var fieldTags = null;
-        while(fieldTags = /{\$([^}]+)}/g.exec(formattedTemplate)) {
-            var tagName = fieldTags[1];
-            var tagValue = ''; // "[ No " + tagName + " ]";
+
+        for(var i=0; i<formSteps.length; i++) {
+            var tagName = formSteps[i][0];
+            var tagTitle = formSteps[i][1];
+            var tagCall = formSteps[i][2] || function(tagName, tagValue, html) {
+                return html.replace('{$' + tagName + '}', tagValue);
+            };
+
             if(typeof fieldValues[tagName] === 'undefined') {
-                if(!selectedField)
-                    selectedField = tagName;
                 requiredFields.push(tagName);
+                formattedPreview = tagCall(tagName, '{&#36;' + tagName + '}', formattedPreview) || formattedPreview;
+                formattedTemplate = tagCall(tagName, '', formattedTemplate) || formattedTemplate;
 
             } else {
-                tagValue = fieldValues[tagName];
-                formattedPreview = formattedPreview.replace('{$' + tagName + '}', tagValue);
+                var tagValue = fieldValues[tagName];
+                formattedPreview = tagCall(tagName, tagValue, formattedPreview) || formattedPreview;
+                formattedTemplate = tagCall(tagName, tagValue, formattedTemplate) || formattedTemplate;
             }
-            formattedTemplate = formattedTemplate.replace('{$' + tagName + '}', tagValue);
-            html_steps += "<button " + (selectedField === tagName ? "style='border-style: inset;'" : '') + ">" + ++stepCount + ". " + tagName + "</button>";
+            html_steps += "<button " + (selectedStep === i ? "style='border-style: inset;'" : '') + ">" + ++stepCount + ". " + tagTitle + "</button>";
         }
-        formattedTemplate = formattedTemplate.replace(/<[^\/>][^>]*><\/[^>]+>/g, ''); // Empty tags
+
+        // Remove Empty tags
+        formattedTemplate = formattedTemplate.replace(/<[^\/>][^>]*><\/[^>]+>\n*/g, '');
+
         formattedPreview = formattedPreview
             .replace(/</g, '&lt;')
             .replace(/\$/g, '&#36;');
@@ -99,19 +114,22 @@ if(!exports) var exports = {};
                 <pre class='put-preview-source'>" + formattedPreview + "</pre>")
             .replace(/{\$html_steps}/i, html_steps);
 
-        if(selectedField) {
-            var form = (forms[selectedField] || forms['#default']) + '';
-            callback(html_preview
+        if(requiredFields.length > 0) {
+            var form = (forms[selectedStep] || forms['#default']) + '';
+            var stepTagName = formSteps[selectedStep][0];
+            var stepTagTitle = formSteps[selectedStep][1];
+            var final_html = html_preview
                 .replace(/{\$html_input}/i, form
-                    .replace(/{\$field_name}/ig, selectedField)
-                )
-            );
+                    .replace(/{\$field_name}/ig, stepTagName)
+                    .replace(/{\$field_title}/ig, stepTagTitle)
+                );
+            callback(final_html);
             return true;
         }
 
         // TODO status_content
         importScripts('ks/templates/ks-put-template.js');
-        Templates.ks.put.form(HTML_TEMPLATE, callback);
+        Templates.ks.put.form(formattedTemplate, callback);
         // Free up template resources
         delete Templates.ks.put.form;
 
