@@ -44,6 +44,10 @@ function TabbedFormBuilder(html_template_original) {
         formSteps.push(Array.prototype.slice.call(arguments));
     };
 
+    this.addFormTab = function(tabName, tabHTML, tabCallback) {
+
+    };
+
     this.render = function(fieldValues, callback){
 
         var html_template_output = html_template_original || '';
