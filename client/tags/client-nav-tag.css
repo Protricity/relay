@@ -16,8 +16,7 @@
 
 .navigation-commands {
     position: relative;
-    z-index: 999;
-
+    z-index: 1;
     display: inline-block;
     background-color: lightgrey;
     padding: 0.5em;

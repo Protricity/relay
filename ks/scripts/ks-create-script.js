@@ -10,6 +10,22 @@ if(!exports) var exports = {};
 
     exports.runScript = function(fieldValues, callback) {
 
+        var forms = {
+            '#default': "<i>Add a {$field_name} for this article:</i></br>\n\
+                <input type='text' name='{$field_name}' placeholder='Your Article {$field_name}' />\n\
+                <input type='submit' value='Next'/>",
+
+            title: "<i>Add a title for this article:</i></br>\n\
+                <input type='text' name='{$field_name}' placeholder='Your Article Title' />\n\
+                <input type='submit' value='Next'/>",
+
+            tags: "<i>Add search tags for this article:</i></br>\n\
+                <input type='text' name='{$field_name}' placeholder='[ex. search, tags, comma, delimited]' />\n\
+                <input type='submit' value='Next'/>"
+        };
+
+
+
         var ARG_STEP_TEMPLATE = "\
         <article class='channel put: maximized'>\n\
             <script src='ks/listeners/ks-put-script-listeners.js'></script>\n\
@@ -35,54 +51,65 @@ if(!exports) var exports = {};
         </article>";
 //                <input type='hidden' name='command_string' value='{$command_string}' />\n\
 
+        if(!fieldValues.datetime)
+            fieldValues.datetime = Date.now();
+
         var HTML_TEMPLATE =
-            "\n<article data-tags='" + (fieldValues.tags || '') + "'>" +
-                "\n\t<header>" + (fieldValues.title || 'Article Title') + "</header>" +
+            "\n<article data-tags='{$tags}'>" +
+                "\n\t<header>{$title}</header>" +
+                "\n\t<time datetime='{$datetime}'>{$time}</time>" +
+                "\n\t<main>{$main}</main>" +
+                "\n\t<details>{$details}</details>" +
+                "\n\t<footer>{$footer}</footer>" +
             "\n</article>";
 
-        var HTML_PREVIEW = "\n\
-            <strong>Preview</strong>:</br>\n\
-            <div class='put-preview-output'>" + HTML_TEMPLATE + "</div>\n\
-            <br/><strong>Code</strong>:\n\
-            <pre class='put-preview-source'>" + HTML_TEMPLATE.replace(/</g, '&lt;') + "</pre>\n\
-            <div class='put-preview-template' style='display: none;'>" + encodeURIComponent(HTML_TEMPLATE) + "</div>";
+        var formattedPreview = HTML_TEMPLATE;
 
-        var HTML_STEPS =
-            "<button style='border-style: inset;'>1. Title</button>" +
-            "<button>2. Tags</button>";
+        var selectedField = null;
+        var requiredFields = [];
+        var html_steps = '';
+        var stepCount = 0;
+        var formattedTemplate = HTML_TEMPLATE;
+        var fieldTags = null;
+        while(fieldTags = /{\$([^}]+)}/g.exec(formattedTemplate)) {
+            var tagName = fieldTags[1];
+            var tagValue = ''; // "[ No " + tagName + " ]";
+            if(typeof fieldValues[tagName] === 'undefined') {
+                if(!selectedField)
+                    selectedField = tagName;
+                requiredFields.push(tagName);
 
-        // Ask for article Title
-        if(typeof fieldValues.title === 'undefined') {
-            var HTML_INPUT_TITLE = "\
-                <i>1. Add a title for this article:</i></br>\n\
-                <input type='text' name='title' placeholder='Your Article Title' />\n\
-                <input type='submit' value='Next'/>";
-
-            callback(ARG_STEP_TEMPLATE
-                .replace(/{\$html_input}/i, HTML_INPUT_TITLE)
-                .replace(/{\$html_preview}/i, HTML_PREVIEW)
-                .replace(/{\$html_steps}/i, HTML_STEPS)
-            );
-            return true;
+            } else {
+                tagValue = fieldValues[tagName];
+                formattedPreview = formattedPreview.replace('{$' + tagName + '}', tagValue);
+            }
+            formattedTemplate = formattedTemplate.replace('{$' + tagName + '}', tagValue);
+            html_steps += "<button " + (selectedField === tagName ? "style='border-style: inset;'" : '') + ">" + ++stepCount + ". " + tagName + "</button>";
         }
+        formattedTemplate = formattedTemplate.replace(/<[^\/>][^>]*><\/[^>]+>/g, ''); // Empty tags
+        formattedPreview = formattedPreview
+            .replace(/</g, '&lt;')
+            .replace(/\$/g, '&#36;');
 
-        // Ask for Tags
-        if(typeof fieldValues.tags === 'undefined') {
-            var HTML_INPUT_TAGS = "\
-                <i>2. Add search tags for this article:</i></br>\n\
-                <input type='text' name='tags' placeholder='[ex. search, tags, comma, delimited]' />\n\
-                <input type='submit' value='Next'/>";
+        var html_preview = ARG_STEP_TEMPLATE
+            .replace(/{\$html_preview}/i, "\n\
+                <strong>Preview</strong>:</br>\n\
+                <div class='put-preview-output'>" + formattedTemplate + "</div>\n\
+                <br/><strong>Code</strong>:\n\
+                <pre class='put-preview-source'>" + formattedPreview + "</pre>")
+            .replace(/{\$html_steps}/i, html_steps);
 
-            callback(ARG_STEP_TEMPLATE
-                .replace(/{\$html_input}/i, HTML_INPUT_TAGS)
-                .replace(/{\$html_preview}/i, HTML_PREVIEW)
-                .replace(/{\$html_steps}/i, HTML_STEPS)
+        if(selectedField) {
+            var form = (forms[selectedField] || forms['#default']) + '';
+            callback(html_preview
+                .replace(/{\$html_input}/i, form
+                    .replace(/{\$field_name}/ig, selectedField)
+                )
             );
             return true;
         }
 
         // TODO status_content
-
         importScripts('ks/templates/ks-put-template.js');
         Templates.ks.put.form(HTML_TEMPLATE, callback);
         // Free up template resources

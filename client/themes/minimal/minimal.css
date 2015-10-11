@@ -34,7 +34,7 @@
     /* padding: 0.8em 0.75em 0.625em 0.75em; */
     min-width: 11em;
     vertical-align: top;
-    background-color: #FEFEFE;
+    background: #FEFEFE linear-gradient(to bottom right, #FFF, #FAFAFE);
     border-radius: 2px;
 }
 
@@ -63,10 +63,10 @@
 
 .theme-minimal .channel.maximized {
     position: fixed;
-    width: 80%;
+    max-width: 80%;
     left: 9%;
     margin-top: 5%;
-    z-index: 1;
+    z-index: 2;
     box-shadow: 0 0 2em #558;
     font-size: large;
 }
@@ -95,6 +95,7 @@
 }
 .theme-minimal .channel:hover .header-bar {
     font-weight: bold;
+    text-decoration: underline;
 }
 
 .theme-minimal .header-bar-buttons {
