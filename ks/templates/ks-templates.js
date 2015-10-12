@@ -22,7 +22,7 @@ KSTemplates.put.form = function(content, callback) {
 KSTemplates.put.preview = function(commandString, callback) {
     var match = /^put\.preview\s*([\s\S]*)$/im.exec(commandString);
     if(!match)
-        return false;
+        throw new Error("Invalid Preview Command: " + commandString);
 
     var content = match[1];
 
@@ -42,7 +42,7 @@ KSTemplates.put.preview = function(commandString, callback) {
 KSTemplates.put.script = function(commandString, callback) {
     var match = /^put\.script\s*([\s\S]*)$/im.exec(commandString);
     if(!match)
-        return false;
+        throw new Error("Invalid Script Command: " + commandString);
 
     var scriptURL = match[1];
     var scriptPath = scriptURL.split('?')[0];
@@ -51,7 +51,7 @@ KSTemplates.put.script = function(commandString, callback) {
     var html_script_options = '';
     self.exports = {};
     importScripts('ks/ks-content-scripts.js');
-    var scripts = self.exports;
+    var scripts = self.exports.getContentScripts();
 
     for(var i=0; i<scripts.length; i++) {
         var opts = scripts[i];
@@ -73,62 +73,6 @@ KSTemplates.put.script = function(commandString, callback) {
     };
     xhr.send();
     return true;
-};
-
-
-
-KSTemplates.put.script = function(commandString, callback, Client) {
-    var match = /^put\.template\s*([\s\S]*)$/im.exec(commandString);
-    if(!match)
-        return false;
-
-    var scriptURL = match[1];
-    var scriptPath = scriptURL.split('?')[0];
-    //var args = match[2].split(/\s+/);
-
-    var PUT_SELECT_TEMPLATE = "\
-        <article class='channel put: {$classes}'>\n\
-            <script src='ks/listeners/ks-put-script-listeners.js'></script>\n\
-            <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
-            <header class='header-bar show-on-minimized'>\n\
-                <strong>Choose a </strong><span class='command'>Template</span><span>:</span>\
-            </header>\n\
-            <div class='header-bar-buttons show-on-minimized'>\n\
-                <a href='#MINIMIZE put:'>[-]</a><!--\n\
-             --><a href='#MAXIMIZE put:'>[+]</a><!--\n\
-             --><a href='#CLOSE put:'>[x]</a>\n\
-            </div>\n\
-            <form name='ks-put-script-select-form'>\n\
-                Generate <strong>Key Space</strong> content with a <strong>Content Script</strong>:<br/>\n\
-                <select name='template'>\n\
-                    <option value=''>Choose a Content Script</option>\n\
-                    {$html_script_options}\n\
-                </select>\n\
-                <input type='submit' value='Start'/>\n\
-            </form>\n\
-            <footer class='footer-bar'>&nbsp;</footer>\n\
-        </article>";
-
-    var classes = [];
-
-    var html_script_options = '';
-    var scripts = Client.require('ks/ks-content-scripts.js').getContentScripts();
-    for(var i=0; i<scripts.length; i++) {
-        var opts = scripts[i];
-        var selectedHTML = '';
-        if(scriptPath && scriptPath === opts[0]) {
-            selectedHTML = ' selected="selected"';
-        }
-        html_script_options += "<option value='" + opts[0] + "'" + selectedHTML + ">" + opts[1] + "</option>\n";
-    }
-
-    // Callback
-    callback(PUT_SELECT_TEMPLATE
-            .replace(/{\$classes}/gi, classes ? classes.join(' ') : '')
-            .replace(/{\$html_script_options}/gi, html_script_options)
-            .replace(/{\$template_content}/gi, '')
-    );
-
 };
 
 

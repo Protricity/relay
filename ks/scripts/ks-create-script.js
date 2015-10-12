@@ -33,6 +33,7 @@ if(typeof document === 'object')
                 updatePreview(e, formElm);
                 return handleSubmitEvent(e, formElm);
 
+            case 'input':
             case 'keyup':
                 updatePreview(e, formElm);
                 if(e.keyCode == 13 && event.shiftKey)

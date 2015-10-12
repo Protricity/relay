@@ -20,51 +20,12 @@
                     e.preventDefault();
                 updatePutScriptSelectForm(e, formElm);
                 return true;
-            
-            case 'ks-put-script-form':
-                if(e.type === 'submit')
-                    e.preventDefault();
-                updatePutScriptForm(e, formElm);
-                return true;
 
             default:
                 return false;
         }
     }
-    
-    function updatePutScriptForm(e, formElm) {
-        var scriptURL = formElm.getAttribute('action');
-        var commandString = "PUT.TEMPLATE " + scriptURL + '?'; // Old vars
 
-        var inputs = formElm.querySelectorAll('input[type=text], textarea, select');
-        var oldQueryString = commandString.split('?', 2)[1] || '';
-        var queryString = oldQueryString ? '?' + oldQueryString : '';
-        for(var i=0; i<inputs.length; i++) {
-            var name = inputs[i].getAttribute('name') || i;
-            queryString =
-                (queryString ? queryString + '&' : '?') +
-                encodeURIComponent(name) + '=' + encodeURIComponent(inputs[i].value);
-        }
-
-        commandString = commandString.split('?')[0] + queryString;
-
-        console.log(commandString);
-
-        if(e.type === 'submit') {
-
-            var socketEvent = new CustomEvent('command', {
-                detail: commandString,
-                cancelable: true,
-                bubbles: true
-            });
-            formElm.dispatchEvent(socketEvent);
-
-        } else {
-
-
-            // Update Preview
-        }
-    }
 
     var lastTemplate = null;
     function updatePutScriptSelectForm(e, formElm) {
@@ -79,7 +40,7 @@
             lastTemplate = template;
             //console.log("Switch Template: ", templateElm.value);
 
-            var commandString = "PUT.TEMPLATE " + template;
+            var commandString = "PUT.SCRIPT " + template;
 
             var socketEvent = new CustomEvent('command', {
                 detail: commandString,

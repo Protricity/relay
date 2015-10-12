@@ -115,9 +115,9 @@
 
 /** Sections **/
 
-.theme-minimal article.channel > form, /** TOOD: ugly? **/
+.theme-minimal article.channel > form > section, 
 .theme-minimal article.channel > section {
-    padding: 1em;
+    padding: 0.5em 1em;
     border: 2px inset;
 }
 

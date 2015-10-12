@@ -16,12 +16,18 @@
             <label class='label-content'>
                 Create new <span class='html'>HTML</span> Content for your <strong>Key Space</strong>:
                 <br/><span class='info'>(You can also use a <a href='#PUT.SCRIPT'>Content Script</a>)</span>
-                <br/><textarea cols='50' rows='8' class='focus' name='content' required='required' placeholder='Type anything you like.\n\t<code>html tags</code>t<strong>allowed!</strong>'>{$content}</textarea>
+                <br/><textarea cols='50' rows='8' class='focus' name='content' required='required' placeholder='
+    Type anything you like.
+
+        <code>html tags</code>
+
+            <strong>allowed!</strong>
+                '>{$content}</textarea>
             </label><br/>
             <label class='label-submit hide-on-compact'>
-                <input type='submit' value='Publish' name='put' />
+                <input type='submit' value='Create' name='put' />
             </label>
-            <label class='label-path hide-on-compact'>to
+            <label class='label-path hide-on-compact'>in
                 <select name='path'>
                     <option value='~'>My Home Page</option>
                     <option disabled='disabled'>Friend's Web Space...</option>
