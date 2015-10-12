@@ -16,12 +16,12 @@ Templates.ks.put.preview = function(content, callback) {
         <article class='channel put-preview: {$classes}'>\n\
             <script src='ks/listeners/ks-put-preview-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
-            <header class='header-bar'>\n\
+            <header class='header-bar show-on-minimized'>\n\
                 <a href='#MAXIMIZE {$class}'>\n\
                     <span class='command'>Preview</span><strong> Key Space</strong><span> content:</span>\n\
                 </a>\n\
             </header>\n\
-            <div class='header-bar-buttons'>\n\
+            <div class='header-bar-buttons show-on-minimized'>\n\
                 <a href='#MINIMIZE put-preview:'>[-]</a><!--\n\
              --><a href='#MAXIMIZE put-preview:'>[+]</a><!--\n\
              --><a href='#CLOSE put-preview:'>[x]</a>\n\
@@ -52,7 +52,7 @@ Templates.ks.put.preview = function(content, callback) {
     );
 
     //<article class='channel put-preview: hide-on-compact'>\n\
-    //    <header class='header-bar'>\n\
+    //    <header class='header-bar show-on-minimized'>\n\
     //        <span class='command'>Preview</span><span class='html'> HTML</span>\
     //        <a class='header-bar-minimize' href='#MINIMIZE put-preview:'>[-]</a><!--\n\
     //     --><a class='header-bar-maximize' href='#MAXIMIZE put-preview:'>[+]</a>\n\

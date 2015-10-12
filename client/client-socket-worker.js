@@ -37,7 +37,7 @@ function ClientSocketWorker() {
     //}
 
     function onHashChange(e) {
-        var hashCommand = document.location.hash.replace(/^#/, '').trim();
+        var hashCommand = decodeURIComponent(document.location.hash.replace(/^#/, '').trim());
         document.location.hash = '';
         if(!hashCommand)
             return false;

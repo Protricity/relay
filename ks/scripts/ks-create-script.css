@@ -1,0 +1,18 @@
+/** Hide Radio Buttons **/
+form[name=ks-create-script-form] input[name=radio-step] { 
+display: none;
+}
+
+/** Tab Buttons **/
+form[name=ks-create-script-form] .button-step {
+    border: 2px outset;
+    padding: 0.1em 0.5em;
+    display: inline-block;
+    font-style: italic;
+    float: left;
+}
+
+/** Activated Tab Button **/
+form[name=ks-create-script-form] input[name=radio-step]:checked + .button-step {
+    border-style: inset;
+}

@@ -9,15 +9,15 @@ Templates.chat.form = function(channelPath, callback) {
         <article class='channel chat: chat:{$channel_path}'>\n\
             <script src='app/social/chat/chat-listeners.js'></script>\n\
             <link rel='stylesheet' href='app/social/chat/chat.css' type='text/css'>\n\
-            <header class='header-bar'>\n\
+            <header class='header-bar show-on-minimized'>\n\
                 <a href='#MAXIMIZE chat:{$channel_path}'><span class='command'>Join</span> {$channel}</a>\n\
             </header>\n\
-            <div class='header-bar-buttons'>\n\
+            <div class='header-bar-buttons show-on-minimized'>\n\
                 <a href='#MINIMIZE chat:{$channel_path}'>[-]</a><!--\n\
              --><a href='#MAXIMIZE chat:{$channel_path}'>[+]</a><!--\n\
              --><a href='#CLOSE chat:{$channel_path}'>[x]</a>\n\
             </div>\n\
-            <form name='chat-form'>\n\
+            <form name='chat-form show-on-minimized'>\n\
                 <table style='width:100%'>\n\
                     <tbody>\n\
                         <tr class='hide-on-minimized'>\n\
@@ -31,7 +31,7 @@ Templates.chat.form = function(channelPath, callback) {
                                 <fieldset class='chat-log chat-log:{$channel_path}'>Joining {$channel}...</fieldset>\n\
                             </td>\n\
                         </tr>\n\
-                        <tr>\n\
+                        <tr class='show-on-minimized'>\n\
                             <td colspan='2'>\n\
                                 <input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' style='width: 100%;'/>\n\
                             </td>\n\
@@ -43,7 +43,7 @@ Templates.chat.form = function(channelPath, callback) {
                     </tbody>\n\
                 </table>\n\
             </form>\n\
-            <footer class='footer-bar show-on-minimized'>&nbsp;</footer>\n\
+            <footer class='footer-bar'>&nbsp;</footer>\n\
         </article>";
 
 

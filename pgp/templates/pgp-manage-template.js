@@ -12,12 +12,12 @@ Templates.pgp.manage.form = function(status_content, callback) {
         <article class='channel pgp:'>\n\
             <script src='pgp/pgp-listeners.js'></script>\n\
             <link rel='stylesheet' href='pgp/pgp.css' type='text/css'>\n\
-            <header class='header-bar'>\n\
+            <header class='header-bar show-on-minimized'>\n\
                 <a href='#MAXIMIZE pgp-manage:'>\n\
                     <span class='command'>Manage</span> PGP Identities\n\
                 </a>\n\
             </header>\
-            <div class='header-bar-buttons'>\n\
+            <div class='header-bar-buttons show-on-minimized'>\n\
                 <a href='#MINIMIZE pgp-manage:'>[-]</a><!--\n\
              --><a href='#MAXIMIZE pgp-manage:'>[+]</a><!--\n\
              --><a href='#CLOSE pgp-manage:'>[x]</a>\n\

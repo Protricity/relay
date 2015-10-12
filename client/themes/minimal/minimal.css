@@ -51,8 +51,7 @@
 /** Channel Windows **/
 
 .theme-minimal .channel.closed,
-.theme-minimal .channel.minimized > section,
-.theme-minimal .channel.minimized > footer:not(.show-on-minimized),
+.theme-minimal .channel.minimized > :not(.show-on-minimized),
 .theme-minimal .channel.minimized .hide-on-minimized{
     display: none;
 }
@@ -116,6 +115,7 @@
 
 /** Sections **/
 
+.theme-minimal article.channel > form > section, /** TOOD: ugly? **/
 .theme-minimal article.channel > section {
     padding: 1em;
     border: 2px inset;

@@ -10,12 +10,12 @@ Templates.feed.container = function(commandString, callback) {
         <article class='channel feed feed:{$channel_path}'>\n\
             <script src='app/social/feed/feed-listeners.js'></script>\n\
             <link rel='stylesheet' href='app/social/feed/feed.css' type='text/css'>\n\
-            <header class='header-bar'>\n\
+            <header class='header-bar show-on-minimized'>\n\
                 <a href='#MAXIMIZE feed:{$channel_path}'>\n\
                     <span class='command'>Feed</span>: {$channel_path}</span>\n\
                 </a>\n\
             </header>\
-            <div class='header-bar-buttons'>\n\
+            <div class='header-bar-buttons show-on-minimized'>\n\
                 <a href='#MINIMIZE feed:{$channel_path}'>[-]</a><!--\n\
              --><a href='#MAXIMIZE feed:{$channel_path}'>[+]</a><!--\n\
              --><a href='#CLOSE feed:{$channel_path}'>[x]</a>\n\

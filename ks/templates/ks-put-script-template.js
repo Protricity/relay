@@ -19,10 +19,10 @@ Templates.ks.put.template = function(commandString, callback, Client) {
         <article class='channel put: {$classes}'>\n\
             <script src='ks/listeners/ks-put-script-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
-            <header class='header-bar'>\n\
+            <header class='header-bar show-on-minimized'>\n\
                 <strong>Choose a </strong><span class='command'>Template</span><span>:</span>\
             </header>\n\
-            <div class='header-bar-buttons'>\n\
+            <div class='header-bar-buttons show-on-minimized'>\n\
                 <a href='#MINIMIZE put:'>[-]</a><!--\n\
              --><a href='#MAXIMIZE put:'>[+]</a><!--\n\
              --><a href='#CLOSE put:'>[x]</a>\n\

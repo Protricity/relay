@@ -10,12 +10,12 @@ Templates.ks.log.container = function(url, callback) {
     var LOG_TEMPLATE = "\
         <article class='channel ks-log:{$host}' data-sort='z'>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
-            <header class='header-bar'>\n\
+            <header class='header-bar show-on-minimized'>\n\
                 <a href='#MAXIMIZE ks-log:{$host}'>\n\
                     <span class='command'>KeySpace</span> {$host}\n\
                 </a>\n\
             </header>\n\
-            <div class='header-bar-buttons'>\n\
+            <div class='header-bar-buttons show-on-minimized'>\n\
                 <a href='#MINIMIZE put-preview:'>[-]</a><!--\n\
              --><a href='#MAXIMIZE put-preview:'>[+]</a><!--\n\
              --><a href='#CLOSE put-preview:'>[x]</a>\n\

@@ -12,12 +12,12 @@ Templates.pgp.register.form = function(private_key_block, status_content, callba
             <article class='channel pgp:'>\n\
                 <script src='pgp/pgp-listeners.js'></script>\n\
                 <link rel='stylesheet' href='pgp/pgp.css' type='text/css'>\n\
-                <header class='header-bar'>\n\
+                <header class='header-bar show-on-minimized'>\n\
                     <a href='#MAXIMIZE pgp:'>\n\
                         <span class='command'>Register</span> a new PGP Key Pair\n\
                     </a>\n\
                 </header>\
-                <div class='header-bar-buttons'>\n\
+                <div class='header-bar-buttons show-on-minimized'>\n\
                     <a href='#MINIMIZE pgp:'>[-]</a><!--\n\
                  --><a href='#MAXIMIZE pgp:'>[+]</a><!--\n\
                  --><a href='#CLOSE pgp:'>[x]</a>\n\

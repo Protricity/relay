@@ -11,10 +11,10 @@ Templates.ks.put.form = function(content, callback) {
         <article class='channel put: compact'>\n\
             <script src='ks/listeners/ks-put-listeners.js'></script>\n\
             <link rel='stylesheet' href='ks/ks.css' type='text/css'>\n\
-            <header class='header-bar'>\n\
+            <header class='header-bar show-on-minimized'>\n\
                 <span class='command'>Put</span><span> content in your </span> <strong>Key Space</strong>\
             </header>\n\
-            <div class='header-bar-buttons'>\n\
+            <div class='header-bar-buttons show-on-minimized'>\n\
                 <a href='#MINIMIZE put:'>[-]</a><!--\n\
              --><a href='#MAXIMIZE put:'>[+]</a><!--\n\
              --><a href='#CLOSE put:'>[x]</a>\n\
@@ -39,7 +39,7 @@ Templates.ks.put.form = function(content, callback) {
             <footer class='footer-bar'>&nbsp;</footer>\n\
         </article>";
         //<article class='channel put-preview: hide-on-compact'>\n\
-        //    <header class='header-bar'>\n\
+        //    <header class='header-bar show-on-minimized'>\n\
         //        <span class='command'>Preview</span><span class='html'> HTML</span>\
         //        <a class='header-bar-minimize' href='#MINIMIZE put-preview:'>[-]</a><!--\n\
         //     --><a class='header-bar-maximize' href='#MAXIMIZE put-preview:'>[+]</a>\n\
