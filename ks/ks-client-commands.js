@@ -142,12 +142,18 @@ if(!exports) var exports = {};
      * @param commandString PUT [path] [content]
      */
     function putCommand(commandString) {
-        var match = /^put(?:\.(template|preview))?(?:\s+(\S+))?(?:\s+(\S+))?/im.exec(commandString);
+        var match = /^put(?:\.(template|preview|form))?(?:\s+([\s\S]+))?$/im.exec(commandString);
         if(!match)
             return false;
 
-        switch((match[1] || '').toLowerCase()) {
+        var subCommand = (match[1] || '').toLowerCase();
+
+        var showForm = false;
+        switch(subCommand) {
             case '':
+                break;
+            case 'form':
+                showForm = true;
                 break;
             case 'preview':
                 return putPreviewCommand(commandString);
@@ -157,23 +163,24 @@ if(!exports) var exports = {};
                 throw new Error("Invalid command: " + commandString);
         }
 
-        var path = match[2] || '~';
-        var content = match[3] || '';
+        //var path = match[2] || '~';
+        var content = match[2] || '';
+        if(!content)
+            showForm = true;
 
-        if(!/[~/a-z_-]+/i.test(path))
-            throw new Error("Invalid Path: " + path);
+        //if(!/[~/a-z_-]+/i.test(path))
+        //    throw new Error("Invalid Path: " + path);
 
-        if(content) {
-            // todo http form
-            Client.sendWithSocket(commandString);
-
-        } else {
+        if(showForm) {
             importScripts('ks/templates/ks-put-template.js');
             Templates.ks.put.form(content, function(html) {
                 Client.render("put:", html);
             });
             // Free up template resources
             delete Templates.ks.put.form;
+
+        } else {
+            Client.sendWithSocket(commandString);
         }
 
         return true;

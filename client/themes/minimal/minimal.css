@@ -209,6 +209,12 @@
 }
 
 
+/** Articles **/
+
+.default-article-theme {
+    background-color: #EEE;
+}
+
 /* Animation */
 
 @keyframes fade-in {
