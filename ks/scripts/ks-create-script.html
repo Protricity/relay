@@ -1,4 +1,4 @@
-<article class='channel put: maximized'>
+<article class='channel put: maximized hide-preview'>
     <script src='ks/scripts/ks-create-script.js'></script>
     <link href='ks/scripts/ks-create-script.css' type='text/css' rel='stylesheet' property='stylesheet'>
     <style>
@@ -45,7 +45,7 @@
         <label for='radio-step-3' class='button-step'>Time Stamp</label>
         <section class='section-step'>
             <strong>Add an <i>optional</i> <span class='timestamp'>Time Stamp</span> for this article:</strong><br>
-            <label for='date' class='button-step'>Time Stamp</label>
+            <label for='date'>Time Stamp</label>
             <input type='date' name='date' id='date' />
             <input type='submit' value='Add Signature...' />
         </section>
@@ -55,6 +55,7 @@
         <section class='section-step'>
             <strong>Add an <i>optional</i> signature to this article:</strong><br>
             <textarea name='footer' placeholder='Article Signature/Footer' cols='48' rows='3'></textarea>
+            <br/>
             <input type='submit' value='Select Theme...' />
         </section>
 
@@ -69,18 +70,18 @@
             <input type='submit' value='Finish'/>
         </section>
     </form>
-    <section>
-        <!--<strong>Theme</strong>:-->
-        <!--<label style="display: block;">-->
-            <!--<select name="theme" form="ks-create-script-form">-->
-            <!--</select>-->
-        <!--</label>-->
-        <!--<br />-->
+    <section class="put-preview-section" style="display: none;">
         <strong>Preview</strong>:
         <div class='put-preview-output'></div>
         <br />
         <strong>Code</strong>:
         <pre class='put-preview-source-output'></pre>
+        <!--<strong>Theme</strong>:-->
+        <!--<label style="display: block;">-->
+        <!--<select name="theme" form="ks-create-script-form">-->
+        <!--</select>-->
+        <!--</label>-->
+        <!--<br />-->
     </section>
     <footer class='footer-bar'>&nbsp;</footer>
 </article>

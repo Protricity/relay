@@ -67,7 +67,7 @@
     top: 10vw;
     margin-top: 5%;
     z-index: 2;
-    box-shadow: 0 0 2em #558;
+    box-shadow: 0 0 4em #558;
     font-size: large;
     transition: 500ms;
 }

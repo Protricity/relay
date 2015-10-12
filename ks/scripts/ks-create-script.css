@@ -8,6 +8,11 @@ form[name=ks-create-script-form] {
     /* font-style: italic; */
 }
 
+form[name=ks-create-script-form] .section-step {
+    clear: left;
+}
+
+
 /** Form Buttons **/
 form[name=ks-create-script-form] input,
 form[name=ks-create-script-form] select {
@@ -25,7 +30,7 @@ form[name=ks-create-script-form] .button-step {
     padding: 0.1em 0.5em;
     display: inline-block;
     /* font-style: italic; */
-    /* float: left; */
+    float: left;
 }
 
 /** Hide Future Tab Button **/
