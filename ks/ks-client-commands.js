@@ -57,8 +57,8 @@ if(!exports) var exports = {};
         return ksChallengeCommand(responseString);
     }
 
-    function putTemplateCommand(commandString) {
-        var match = /^put\.template\s*([\s\S]*)$/im.exec(commandString);
+    function putScriptCommand(commandString) {
+        var match = /^put\.script\s*([\s\S]*)$/im.exec(commandString);
         if(!match)
             return false;
 
@@ -109,12 +109,12 @@ if(!exports) var exports = {};
         }
 
 
-        importScripts('ks/templates/ks-put-script-template.js');
-        Templates.ks.put.template(commandString, function(html) {
+        importScripts('ks/templates/ks-templates.js');
+        KSTemplates.put.script(commandString, function(html) {
             Client.render("put:", html);
-        }, Client);
+        });
         // Free up template resources
-        delete Templates.ks.put.template;
+        delete KSTemplates;
 
         return true;
     }
@@ -125,14 +125,12 @@ if(!exports) var exports = {};
         if(!match)
             return false;
 
-        var content = match[1];
-
-        importScripts('ks/templates/ks-put-preview-template.js');
-        Templates.ks.put.preview(content, function(html) {
+        importScripts('ks/templates/ks-templates.js');
+        KSTemplates.put.preview(commandString, function(html) {
             Client.render("put-preview:", html);
         });
         // Free up template resources
-        delete Templates.ks.put.preview;
+        delete KSTemplates;
 
         return true;
     }
@@ -142,7 +140,7 @@ if(!exports) var exports = {};
      * @param commandString PUT [path] [content]
      */
     function putCommand(commandString) {
-        var match = /^put(?:\.(template|preview|form))?(?:\s+([\s\S]+))?$/im.exec(commandString);
+        var match = /^put(?:\.(script|preview|form))?(?:\s+([\s\S]+))?$/im.exec(commandString);
         if(!match)
             return false;
 
@@ -157,8 +155,8 @@ if(!exports) var exports = {};
                 break;
             case 'preview':
                 return putPreviewCommand(commandString);
-            case 'template':
-                return putTemplateCommand(commandString);
+            case 'script':
+                return putScriptCommand(commandString);
             default:
                 throw new Error("Invalid command: " + commandString);
         }
@@ -172,12 +170,12 @@ if(!exports) var exports = {};
         //    throw new Error("Invalid Path: " + path);
 
         if(showForm) {
-            importScripts('ks/templates/ks-put-template.js');
-            Templates.ks.put.form(content, function(html) {
+            importScripts('ks/templates/ks-templates.js');
+            KSTemplates.put.form(content, function(html) {
                 Client.render("put:", html);
             });
             // Free up template resources
-            delete Templates.ks.put.form;
+            delete Templates;
 
         } else {
             Client.sendWithSocket(commandString);
@@ -294,8 +292,8 @@ if(!exports) var exports = {};
                 // TODO: verify and decrypt content on the fly?
                 var signedBody = protectHTMLContent(contentData.content_verified);
 
-                importScripts('ks/templates/ks-response-template.js');
-                Templates.ks.response.body(
+                importScripts('ks/templates/ks-templates.js');
+                KSTemplates.response.body(
                     signedBody,
                     requestURL,
                     200,
@@ -304,12 +302,12 @@ if(!exports) var exports = {};
                     callback
                 );
                 // Free up template resources
-                delete Templates.ks.response.body;
+                delete KSTemplates;
 
             } else {
                 // If nothing found, show something, sheesh
-                importScripts('ks/templates/ks-response-template.js');
-                Templates.ks.response.body(
+                importScripts('ks/templates/ks-templates.js');
+                KSTemplates.response.body(
                     "<p>Request sent...</p>",
                     requestURL,
                     202,
@@ -318,7 +316,7 @@ if(!exports) var exports = {};
                     callback
                 );
                 // Free up template resources
-                delete Templates.ks.response.body;
+                delete KSTemplates;
             }
         });
     }
@@ -341,8 +339,8 @@ if(!exports) var exports = {};
             if(contentData) {
                 // TODO: verify and decrypt content on the fly? Maybe don't verify things being sent out
 
-                importScripts('ks/templates/ks-response-template.js');
-                Templates.ks.response.body(
+                importScripts('ks/templates/ks-templates.js');
+                KSTemplates.response.body(
                     contentData.content,
                     requestURL,
                     200,
@@ -351,7 +349,7 @@ if(!exports) var exports = {};
                     callback
                 );
                 // Free up template resources
-                delete Templates.ks.response.body;
+                delete KSTemplates;
 
             } else {
 
@@ -359,8 +357,8 @@ if(!exports) var exports = {};
                 get404IndexTemplate(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
                     responseHeaders += passedResponseHeaders;
 
-                    importScripts('ks/templates/ks-response-template.js');
-                    Templates.ks.response.body(
+                    importScripts('ks/templates/ks-templates.js');
+                    KSTemplates.response.body(
                         defaultResponseBody,
                         requestURL,
                         responseCode,
@@ -369,7 +367,7 @@ if(!exports) var exports = {};
                         callback
                     );
                     // Free up template resources
-                    delete Templates.ks.response.body;
+                    delete KSTemplates;
                 });
 
             }
@@ -396,8 +394,8 @@ if(!exports) var exports = {};
             getDefaultContentResponse(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
                 responseHeaders += "\nBrowser-ID: " + browserID;
 
-                importScripts('ks/templates/ks-response-template.js');
-                Templates.ks.response.body(
+                importScripts('ks/templates/ks-templates.js');
+                KSTemplates.response.body(
                     defaultResponseBody,
                     requestURL,
                     responseCode,
@@ -406,7 +404,7 @@ if(!exports) var exports = {};
                     callback
                 );
                 // Free up template resources
-                delete Templates.ks.response;
+                delete KSTemplates;
             });
         }
 
@@ -462,12 +460,12 @@ if(!exports) var exports = {};
         if(!browserID)
             throw new Error("Invalid Browser ID");
 
-        importScripts('ks/templates/ks-browser-template.js');
-        Templates.ks.browser(responseString, function(html) {
+        importScripts('ks/templates/ks-templates.js');
+        KSTemplates.browser(responseString, function(html) {
             Client.render("ks-browser:" + browserID, html);
         });
         // Free up template resources
-        delete Templates.ks.browser;
+        delete KSTemplates;
     }
 
     function protectHTMLContent(htmlContent) {
@@ -485,18 +483,20 @@ if(!exports) var exports = {};
         if(!host)
             throw new Error("Invalid Host: " + requestURL);
 
+        importScripts('ks/templates/ks-templates.js');
         if(!logContainerActive) {
             logContainerActive = true;
-            importScripts('ks/templates/ks-log-template.js');
-            Templates.ks.log.container(requestURL, function (html) {
+            KSTemplates.log.container(requestURL, function (html) {
                 Client.render("ks-log:" + host, html);
             });
         }
 
         var requestURLAnchorHTML = "<a href='" + requestURL + "'>" + requestURL + "</a>";
-        Templates.ks.log.entry(requestURLAnchorHTML, dir, function(html) {
+        KSTemplates.log.entry(requestURLAnchorHTML, dir, function(html) {
             Client.render("ks-log-content:", html, 'append');
         });
+        // Free up template resources
+        delete KSTemplates;
     };
 
     // Request/Response methods

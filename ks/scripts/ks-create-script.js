@@ -10,6 +10,7 @@ if(typeof document === 'object')
 
     document.addEventListener('submit', onFormEvent);
     document.addEventListener('keyup', onFormEvent);
+    document.addEventListener('input', onFormEvent);
 
     function onFormEvent(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
@@ -67,7 +68,7 @@ if(typeof document === 'object')
     function submitForm(e, formElm) {
         var template_html = parseTemplateHTML(e, formElm);
         ClientSocketWorker.sendCommand('PUT.FORM ' + template_html
-            .replace(/ *</g, '&lt;')
+            .replace(/</g, '&lt;')
             .replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '')     // Remove empty html tags
         );
     }
@@ -80,7 +81,7 @@ if(typeof document === 'object')
 
         formElm.parentNode.getElementsByClassName('put-preview-source-output')[0].innerHTML = template_html
             .replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '')     // Remove empty html tags
-            .replace(/ *</g, '&lt;');
+            .replace(/</g, '&lt;');
 
         //.replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '');     // Remove empty html tags
         formElm.parentNode.querySelector('.put-preview-section').style.display = 'block';

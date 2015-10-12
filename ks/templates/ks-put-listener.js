@@ -33,7 +33,7 @@
     function refreshHTTPPutForm(e, formElm) {
         var postContentElm = formElm.querySelector('textarea[name=content]');
 
-        formElm.parentNode.classList[postContentElm.value.length === 0 ? 'add' : 'remove']('compact');
+        formElm.classList[postContentElm.value.length === 0 ? 'add' : 'remove']('compact');
         if(!lastPostContent || lastPostContent != postContentElm.value || e.type === 'change') {
             lastPostContent = postContentElm.value;
 

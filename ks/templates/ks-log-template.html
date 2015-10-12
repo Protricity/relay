@@ -1,25 +1,14 @@
 <article class='channel ks-log:{$host}' data-sort='z'>
-    <link rel='stylesheet' href='ks/ks.css' type='text/css'>
+    <link rel='stylesheet' href='ks/ks.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         <a href='#MAXIMIZE ks-log:{$host}'>
             <span class='command'>KeySpace</span> {$host}
         </a>
     </header>
     <div class='header-bar-buttons show-on-minimized'>
-        <a href='#MINIMIZE put-preview:'>[-]</a><!--
-             --><a href='#MAXIMIZE put-preview:'>[+]</a><!--
-             --><a href='#CLOSE put-preview:'>[x]</a>
-    </div>
-    <legend class='title'>
-        <a href='#MAXIMIZE ks-log:{$host}'>
-            <span class='command'>KeySpace</span> {$host}
-        </a>
-    </legend>
-    <div class='title-commands'>
-        <a class='title-command-minimize' href='#MINIMIZE ks-log:{$host}'>[-]</a><!--
-             --><a class='title-command-maximize' href='#MAXIMIZE ks-log:{$host}'>[+]</a><!--
-             --><a class='title-command-close' href='#CLOSE ks-log:{$host}'>[x]</a>
+        <a href='#MINIMIZE ks-log:{$host}'>[-]</a><!--
+     --><a href='#MAXIMIZE ks-log:{$host}'>[+]</a><!--
+     --><a href='#CLOSE ks-log:{$host}'>[x]</a>
     </div>
     <fieldset class='ks-log-content:{$host}'></fieldset>
-    </form>
 </article>
