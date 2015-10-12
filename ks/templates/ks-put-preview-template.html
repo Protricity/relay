@@ -1,0 +1,28 @@
+<article class='channel put-preview: {$classes}'>
+    <script src='ks/listeners/ks-put-preview-listeners.js'></script>
+    <link rel='stylesheet' href='ks/ks.css' type='text/css'>
+    <header class='header-bar show-on-minimized'>
+        <a href='#MAXIMIZE {$class}'>
+            <span class='command'>Preview</span><strong> Key Space</strong><span> content:</span>
+        </a>
+    </header>
+    <div class='header-bar-buttons show-on-minimized'>
+        <a href='#MINIMIZE put-preview:'>[-]</a><!--
+             --><a href='#MAXIMIZE put-preview:'>[+]</a><!--
+             --><a href='#CLOSE put-preview:'>[x]</a>
+    </div>
+    <section class='put-preview-content:' style='position:relative;'>{$content}</section>
+    <br/>
+    <form name='ks-put-preview-form' >
+        <fieldset>
+            <legend>Drag and Drop Suggested Content</legend>
+            <div class='put-preview-template-content:'>
+                <header draggable='true'>Content Header</header>
+                <a draggable='true' href='#sdf'>URL Hyperlink</a>
+                <hr draggable='true' />
+                <footer draggable='true'>Content Footer</footer>
+            </div>
+        </fieldset>
+    </form>
+    <footer class='footer-bar'>&nbsp;</footer>
+</article>

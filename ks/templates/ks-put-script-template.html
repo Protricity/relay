@@ -1,0 +1,21 @@
+<article class='channel put: {$classes}'>
+    <script src='ks/listeners/ks-put-script-listeners.js'></script>
+    <link rel='stylesheet' href='ks/ks.css' type='text/css'>
+    <header class='header-bar show-on-minimized'>
+        <strong>Choose a </strong><span class='command'>Template</span><span>:</span>\
+    </header>
+    <div class='header-bar-buttons show-on-minimized'>
+        <a href='#MINIMIZE put:'>[-]</a><!--
+             --><a href='#MAXIMIZE put:'>[+]</a><!--
+             --><a href='#CLOSE put:'>[x]</a>
+    </div>
+    <form name='ks-put-script-select-form'>
+        Generate <strong>Key Space</strong> content with a <strong>Content Script</strong>:<br/>
+        <select name='template'>
+            <option value=''>Choose a Content Script</option>
+            {$html_script_options}
+        </select>
+        <input type='submit' value='Start'/>
+    </form>
+    <footer class='footer-bar'>&nbsp;</footer>
+</article>
