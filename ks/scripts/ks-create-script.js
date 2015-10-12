@@ -10,7 +10,6 @@ if(typeof document === 'object')
 
     document.addEventListener('submit', onFormEvent);
     document.addEventListener('keyup', onFormEvent);
-    //document.addEventListener('change', onFormEvent);
 
     function onFormEvent(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
@@ -30,6 +29,7 @@ if(typeof document === 'object')
     function handleCreateScriptForm(e, formElm) {
         switch(e.type) {
             case 'submit':
+                updatePreview(e, formElm);
                 return handleSubmitEvent(e, formElm);
 
             case 'keyup':
@@ -45,7 +45,6 @@ if(typeof document === 'object')
 
     function handleSubmitEvent(e, formElm) {
         e.preventDefault();
-        updatePreview(e, formElm);
         var radios = formElm.querySelectorAll('input[name=radio-step]');
         for(var i=0; i<radios.length; i++) {
             if(radios[i].checked) {
@@ -56,7 +55,6 @@ if(typeof document === 'object')
                     radios[i+1].checked = true;
                     var nextSection = radios[i+1].parentNode.querySelector('#' + radios[i+1].id + ' + label + .section-step');
                     var nextInput = nextSection.querySelector('input, textarea, select');
-                    console.log(radios[i+1].id, nextInput);
                     nextInput.focus();
                 }
                 return true;
@@ -70,23 +68,22 @@ if(typeof document === 'object')
         var template_html = parseTemplateHTML(e, formElm);
         ClientSocketWorker.sendCommand('PUT.FORM ' + template_html
             .replace(/ *</g, '&lt;')
-            //.replace(/\[\$[^}]+\]/g, '')                        // Remove empty variables
             .replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '')     // Remove empty html tags
         );
     }
 
     function updatePreview(e, formElm) {
         var template_html = parseTemplateHTML(e, formElm);
-//         console.log(template_html);
+
         formElm.parentNode.getElementsByClassName('put-preview-output')[0].innerHTML = template_html
             .replace(/\[\$[^}]+\]/g, '');                        // Remove empty variables
-        //.replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '');     // Remove empty html tags
 
         formElm.parentNode.getElementsByClassName('put-preview-source-output')[0].innerHTML = template_html
             .replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '')     // Remove empty html tags
             .replace(/ *</g, '&lt;');
-        //.replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '');     // Remove empty html tags
 
+        //.replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '');     // Remove empty html tags
+        formElm.parentNode.querySelector('.put-preview-section').style.display = 'block';
     }
 
 
