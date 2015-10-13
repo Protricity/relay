@@ -97,7 +97,7 @@ if(!exports) var exports = {};
                 Client
                     .require(scriptFound[0])
                     .runScript(fieldValues, function(html) {
-                        Client.render("put:", html
+                        Client.render("ks-put:", html
                             .replace(/{\$command_string}/ig, commandString)
                         );
                     });
@@ -109,12 +109,11 @@ if(!exports) var exports = {};
         }
 
 
-        importScripts('ks/templates/ks-templates.js');
-        KSTemplates.put.script(commandString, function(html) {
-            Client.render("put:", html);
-        });
-        // Free up template resources
-        delete KSTemplates;
+        Client
+            .require('ks/render/put-form/ks-put-script-form.js')
+            .renderPutScriptForm(commandString, function(html) {
+                Client.render("ks-put:", html);
+            });
 
         return true;
     }
@@ -125,12 +124,11 @@ if(!exports) var exports = {};
         if(!match)
             return false;
 
-        importScripts('ks/templates/ks-templates.js');
-        KSTemplates.put.preview(commandString, function(html) {
-            Client.render("put-preview:", html);
-        });
-        // Free up template resources
-        delete KSTemplates;
+        Client
+            .require('ks/render/put-form/ks-put-preview-form.js')
+            .renderPutPreviewForm(commandString, function(html) {
+                Client.render("ks-put-preview:", html);
+            });
 
         return true;
     }
@@ -170,12 +168,11 @@ if(!exports) var exports = {};
         //    throw new Error("Invalid Path: " + path);
 
         if(showForm) {
-            importScripts('ks/templates/ks-templates.js');
-            KSTemplates.put.form(content, function(html) {
-                Client.render("put:", html);
-            });
-            // Free up template resources
-            delete Templates;
+            Client
+                .require('ks/render/put-form/ks-put-form.js')
+                .renderPutForm(content, function(html) {
+                    Client.render("ks-put:", html);
+                });
 
         } else {
             Client.sendWithSocket(commandString);
@@ -186,7 +183,7 @@ if(!exports) var exports = {};
 
     function putResponse(responseString) {
         if(responseString.substr(0,3).toLowerCase() !== 'put')
-            return false; // throw new Error("Invalid PUT: " + responseString);
+            return false; // throw new Error("Invalid ks-put: " + responseString);
         throw new Error("Not Implemented: " + responseString);
         //Client.postResponseToClient(responseString);
         //return true;
@@ -292,31 +289,29 @@ if(!exports) var exports = {};
                 // TODO: verify and decrypt content on the fly?
                 var signedBody = protectHTMLContent(contentData.content_verified);
 
-                importScripts('ks/templates/ks-templates.js');
-                KSTemplates.response.body(
-                    signedBody,
-                    requestURL,
-                    200,
-                    "OK",
-                    passedResponseHeaders,
-                    callback
-                );
-                // Free up template resources
-                delete KSTemplates;
+                Client
+                    .require('ks/render/browser/ks-browser.js')
+                    .renderResponse(
+                        signedBody,
+                        requestURL,
+                        200,
+                        "OK",
+                        passedResponseHeaders,
+                        callback
+                    );
 
             } else {
                 // If nothing found, show something, sheesh
-                importScripts('ks/templates/ks-templates.js');
-                KSTemplates.response.body(
-                    "<p>Request sent...</p>",
-                    requestURL,
-                    202,
-                    "Request Sent",
-                    passedResponseHeaders,
-                    callback
-                );
-                // Free up template resources
-                delete KSTemplates;
+                Client
+                    .require('ks/render/browser/ks-browser.js')
+                    .renderResponse(
+                        "<p>Request sent...</p>",
+                        requestURL,
+                        202,
+                        "Request Sent",
+                        passedResponseHeaders,
+                        callback
+                    );
             }
         });
     }
@@ -339,17 +334,16 @@ if(!exports) var exports = {};
             if(contentData) {
                 // TODO: verify and decrypt content on the fly? Maybe don't verify things being sent out
 
-                importScripts('ks/templates/ks-templates.js');
-                KSTemplates.response.body(
-                    contentData.content,
-                    requestURL,
-                    200,
-                    "OK",
-                    passedResponseHeaders,
-                    callback
-                );
-                // Free up template resources
-                delete KSTemplates;
+                Client
+                    .require('ks/render/browser/ks-browser.js')
+                    .renderResponse(
+                        contentData.content,
+                        requestURL,
+                        200,
+                        "OK",
+                        passedResponseHeaders,
+                        callback
+                    );
 
             } else {
 
@@ -357,17 +351,16 @@ if(!exports) var exports = {};
                 get404IndexTemplate(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
                     responseHeaders += passedResponseHeaders;
 
-                    importScripts('ks/templates/ks-templates.js');
-                    KSTemplates.response.body(
-                        defaultResponseBody,
-                        requestURL,
-                        responseCode,
-                        responseText,
-                        responseHeaders,
-                        callback
-                    );
-                    // Free up template resources
-                    delete KSTemplates;
+                    Client
+                        .require('ks/render/browser/ks-browser.js')
+                        .renderResponse(
+                            defaultResponseBody,
+                            requestURL,
+                            responseCode,
+                            responseText,
+                            responseHeaders,
+                            callback
+                        );
                 });
 
             }
@@ -394,17 +387,16 @@ if(!exports) var exports = {};
             getDefaultContentResponse(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
                 responseHeaders += "\nBrowser-ID: " + browserID;
 
-                importScripts('ks/templates/ks-templates.js');
-                KSTemplates.response.body(
-                    defaultResponseBody,
-                    requestURL,
-                    responseCode,
-                    responseText,
-                    responseHeaders,
-                    callback
-                );
-                // Free up template resources
-                delete KSTemplates;
+                Client
+                    .require('ks/render/browser/ks-browser.js')
+                    .renderResponse(
+                        defaultResponseBody,
+                        requestURL,
+                        responseCode,
+                        responseText,
+                        responseHeaders,
+                        callback
+                    );
             });
         }
 
@@ -460,12 +452,11 @@ if(!exports) var exports = {};
         if(!browserID)
             throw new Error("Invalid Browser ID");
 
-        importScripts('ks/templates/ks-templates.js');
-        KSTemplates.browser(responseString, function(html) {
-            Client.render("ks-browser:" + browserID, html);
-        });
-        // Free up template resources
-        delete KSTemplates;
+        Client
+            .require('ks/render/browser/ks-browser.js')
+            .renderBrowser(responseString, function(html) {
+                Client.render("ks-browser:" + browserID, html);
+            });
     }
 
     function protectHTMLContent(htmlContent) {
@@ -483,20 +474,20 @@ if(!exports) var exports = {};
         if(!host)
             throw new Error("Invalid Host: " + requestURL);
 
-        importScripts('ks/templates/ks-templates.js');
+        var logExport = Client
+            .require('ks/render/log/ks-log-window.js');
+
         if(!logContainerActive) {
             logContainerActive = true;
-            KSTemplates.log.container(requestURL, function (html) {
+            logExport.renderLogWindow(requestURL, function (html) {
                 Client.render("ks-log:" + host, html);
             });
         }
 
         var requestURLAnchorHTML = "<a href='" + requestURL + "'>" + requestURL + "</a>";
-        KSTemplates.log.entry(requestURLAnchorHTML, dir, function(html) {
+        logExport.renderLogWindowEntry(requestURLAnchorHTML, dir, function(html) {
             Client.render("ks-log-content:", html, 'append');
         });
-        // Free up template resources
-        delete KSTemplates;
     };
 
     // Request/Response methods

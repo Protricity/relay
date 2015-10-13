@@ -1,17 +1,17 @@
-<article class='channel put: maximized hide-preview'>
-    <script src='ks/scripts/ks-create-script.js'></script>
-    <link href='ks/scripts/ks-create-script.css' type='text/css' rel='stylesheet' property='stylesheet'>
+<article class='channel ks-put: maximized hide-preview'>
+    <script src='ks/render/scripts/create-form/ks-script-create-form.js'></script>
+    <link href='ks/render/scripts/create-form/ks-script-create-form.css' type='text/css' rel='stylesheet' property='stylesheet'>
     <style>
         form[name=ks-create-script-form] .section-step { display: none; }
         form[name=ks-create-script-form] input[name=radio-step]:checked + .button-step + .section-step { display: inherit; }
     </style>
     <header class='header-bar show-on-minimized'>
-        <a href='#MAXIMIZE put:'>Simple Article Wizard</a>
+        <a href='#MAXIMIZE ks-put:'>Simple Article Wizard</a>
     </header>
     <div class='header-bar-buttons show-on-minimized'>
-        <a href='#MINIMIZE put:'>[-]</a><!--
-     --><a href='#MAXIMIZE put:'>[+]</a><!--
-     --><a href='#CLOSE put:'>[x]</a>
+        <a href='#MINIMIZE ks-put:'>[-]</a><!--
+     --><a href='#MAXIMIZE ks-put:'>[+]</a><!--
+     --><a href='#CLOSE ks-put:'>[x]</a>
     </div>
     <form name='ks-create-script-form' id='ks-create-script-form' action='#' onsubmit='return false;'>
 
@@ -20,7 +20,7 @@
     <header>[$title]</header>
     <time>[$date]</time>
     <main>
-    [$content]
+        [$content]
     </main>
     <footer>[$footer]</footer>
 </article>
@@ -67,7 +67,7 @@
             <strong>Select <i>optional</i> CSS stylesheet theme:</strong><br>
             <select name="theme" form="ks-create-script-form">
                 <option value="">No Theme</option>
-                <option value="default-article-theme">Default Article Theme</option>
+                <option value="default-article-theme" selected="selected">Default Article Theme</option>
             </select>
             <input type='submit' value='Finish'/>
         </section>

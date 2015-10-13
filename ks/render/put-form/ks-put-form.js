@@ -1,6 +1,8 @@
 /**
  * Created by ari on 7/2/2015.
  */
+// Client Script
+if(typeof document === 'object')
 (function() {
 
     var REFRESH_TIMEOUT = 200;
@@ -10,6 +12,11 @@
     self.addEventListener('submit', onFormEvent);
     self.addEventListener('input', onFormEvent);
     self.addEventListener('change', onFormEvent);
+    self.addEventListener('render', function(e) {
+        var formElm = e.target.querySelector('form[name^=ks-put-form]');
+        if(formElm)
+            onFormEvent(e, formElm);
+    });
 
     function onFormEvent(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
@@ -228,4 +235,23 @@
     // For HTTP Content Database access
     includeScript('ks/ks-db.js');
 
+})();
+
+// Worker Script
+else
+(function() {
+    var TEMPLATE_URL = 'ks/render/put-form/ks-put-form.html';
+
+    exports.renderPutForm = function(content, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", TEMPLATE_URL);
+        xhr.onload = function () {
+            callback(xhr.responseText
+                    .replace(/{\$content}/gi, content || '')
+            );
+        };
+        xhr.send();
+
+        return true;
+    };
 })();

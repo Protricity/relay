@@ -7,9 +7,6 @@
 
     // Events
 
-    self.addEventListener('submit', onFormEvent);
-    self.addEventListener('input', onFormEvent);
-    self.addEventListener('change', onFormEvent);
     self.addEventListener('click', onClickEvent);
     self.addEventListener('dragstart', onDragEvent);
 //     self.addEventListener('test', onUnitTestEvent);
@@ -87,29 +84,6 @@
         }
     }
 
-    function onFormEvent(e, formElm) {
-        if(!formElm) formElm = e.target.form ? e.target.form : e.target;
-        if(formElm.nodeName.toLowerCase() !== 'form')
-            return false;
-            
-        switch(formElm.getAttribute('name')) {
-            //case 'ks-put-form':
-            //    refreshHTTPPutForm(e, formElm);
-            //    if(e.type === 'submit')
-            //        e.preventDefault() ||
-            //        submitHTTPPutForm(e, formElm);
-            //    return true;
-
-            case 'ks-browser-navigation-form':
-                if(e.type === 'submit')
-                    e.preventDefault() ||
-                    submitHTTPBrowserNavigationForm(e, formElm);
-                return true;
-
-            default:
-                return false;
-        }
-    }
 
     var lastPostContent = null;
     function refreshHTTPPutForm(e, formElm) {
@@ -182,7 +156,7 @@
         //console.log(putPreviewElm, postContent);
         var commandString = "PUT.PREVIEW " + postContent;
         if(!previewCheckBoxElm.checked) // TODO Config
-            commandString = "CLOSE put-preview:";
+            commandString = "CLOSE ks-put-preview:";
 
         var socketEvent = new CustomEvent('command', {
             detail: commandString,
@@ -286,33 +260,6 @@
             });
         });
     }
-
-    function submitHTTPBrowserNavigationForm(e, formElm) {
-        var urlElm = formElm.querySelector('[name=url]');
-        if(!urlElm)
-            throw new Error("Could not find url input");
-        if(!urlElm.value)
-            return;
-
-        var browserID = null;
-        var targetElm = e.target || formElm;
-        while(!browserID && (targetElm = targetElm.parentNode))
-            browserID = targetElm.getAttribute('data-browser-id');
-        if(!browserID)
-            throw new Error("Browser ID not found");
-
-        var commandString = "GET " + urlElm.value;
-        commandString = addContentHeader(commandString, 'Browser-ID', browserID);
-
-        var commandEvent = new CustomEvent('command', {
-            detail: commandString,
-            cancelable: true,
-            bubbles: true
-        });
-        e.target.dispatchEvent(commandEvent);
-
-    }
-
 
     function verifyEncryptedContent(pgpMessageContent, callback) {
         var openpgp = self.openpgp;

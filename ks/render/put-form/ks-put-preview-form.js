@@ -1,6 +1,8 @@
 /**
  * Created by ari on 7/2/2015.
  */
+// Client Script
+if(typeof document === 'object')
 (function() {
 
     // Events
@@ -31,4 +33,29 @@
     }
 
 
+})();
+
+
+// Worker Script
+else
+(function() {
+    var TEMPLATE_URL = 'ks/render/put-form/ks-put-preview-form.html';
+
+    exports.renderPutPreviewForm = function(commandString, callback) {
+        var match = /^put\.preview\s*([\s\S]*)$/im.exec(commandString);
+        if(!match)
+            throw new Error("Invalid Preview Command: " + commandString);
+
+        var content = match[1];
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", TEMPLATE_URL);
+        xhr.onload = function () {
+            callback(xhr.responseText
+                    .replace(/{\$content}/gi, content || '')
+            );
+        };
+        xhr.send();
+        return true;
+    };
 })();

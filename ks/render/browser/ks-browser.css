@@ -1,0 +1,46 @@
+
+/** Script **/
+
+.channel.ks-response-400 {
+    border: 1px solid red;
+}
+
+.channel.ks-browser {
+    min-height: 15em;
+}
+
+.channel.ks-browser nav {
+    background-color: lightgray;
+    border: 1px outset;
+}
+
+.channel.ks-browser input[name=url] {
+    width: 21em;
+}
+
+.channel.ks-browser nav input[name=url] {
+    padding: 1px 5px;
+}
+
+.channel.ks-browser nav button {
+    /* height: 24px; */
+    /* vertical-align: top; */
+    margin: 1px;
+    border: 0;
+    font-size: larger;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px #999;
+    background-color: transparent;
+}
+
+.channel.ks-browser .ks-body {
+    min-height: 11em;
+}
+
+.channel.ks-browser .ks-status {
+    background-color: lightgrey;
+    padding: 0 0.5em;
+    color: #666;
+    font-style: italic;
+    border: 1px outset;
+}
