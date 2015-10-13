@@ -110,7 +110,7 @@ function ClientSocketWorker() {
         if(!args)
             throw new Error("Invalid Render: " + commandString);
 
-        var renderAction = 'replace';
+        var renderAction = null;
         var targetClass = args[1];
         var content = args[2];
 
@@ -139,12 +139,15 @@ function ClientSocketWorker() {
             renderAction = 'append';
         if(contentElement.classList.contains('prepend'))
             renderAction = 'prepend';
+        if(contentElement.classList.contains('replace'))
+            renderAction = 'replace';
         
         var bodyElm = document.getElementsByTagName('body')[0];
 
         var targetElement = null;
         switch(renderAction) {
-            case 'replace':
+            case null:
+            case 'replace': // TODO: replace must replace something
                 if(targetClass === '*') {
                     for(i=0; i<contentElements.length; i++)
                         bodyElm.appendChild(contentElements[i]);
@@ -168,6 +171,7 @@ function ClientSocketWorker() {
                         while(contentElements.length > 0) {
                             var lastPos = contentElements.length - 1;
                             contentElements[lastPos].classList.add('replaced');
+                            console.log('insertBefore(', contentElements[lastPos], targetElement, ')');
                             targetElement.parentNode.insertBefore(contentElements[lastPos], targetElement);
                         }
                         targetElement.parentNode.removeChild(targetElement);

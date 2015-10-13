@@ -1,13 +1,13 @@
-<article class='channel chat: chat:{$channel_path}'>
+<article class='channel chat: chat:{$channel_lowercase}'>
     <script src='app/social/chat/render/chat-window.js'></script>
     <link rel='stylesheet' href='app/social/chat/render/chat-window.css' type='text/css'>
     <header class='header-bar show-on-minimized'>
-        <a href='#MAXIMIZE chat:{$channel_path}'><span class='command'>Join</span> {$channel}</a>
+        <a href='#MAXIMIZE chat:{$channel_lowercase}'><span class='command'>Join</span> {$channel}</a>
     </header>
     <div class='header-bar-buttons show-on-minimized'>
-        <a href='#MINIMIZE chat:{$channel_path}'>[-]</a><!--
-     --><a href='#MAXIMIZE chat:{$channel_path}'>[+]</a><!--
-     --><a href='#CLOSE chat:{$channel_path}'>[x]</a>
+        <a href='#MINIMIZE chat:{$channel_lowercase}'>[-]</a><!--
+     --><a href='#MAXIMIZE chat:{$channel_lowercase}'>[+]</a><!--
+     --><a href='#CLOSE chat:{$channel_lowercase}'>[x]</a>
     </div>
     <form name='chat-form' class='show-on-minimized'>
         <table style='width:100%'>
@@ -15,12 +15,12 @@
                 <tr class='hide-on-minimized'>
                     <td style='vertical-align: top; width:1px;'>
                         <select multiple='multiple' name='user-list' size='5'>
-                            <optgroup class='chat-active-users:{$channel_path}' label='Active Users (0)'></optgroup>
-                            <optgroup class='chat-inactive-users:{$channel_path}' label='Inactive Users (0)'></optgroup>
+                            <optgroup class='chat-active-users:{$channel_lowercase}' label='Active Users (0)'></optgroup>
+                            <optgroup class='chat-inactive-users:{$channel_lowercase}' label='Inactive Users (0)'></optgroup>
                         </select>
                     </td>
                     <td colspan='2' style='vertical-align: top;'>
-                        <fieldset class='chat-log chat-log:{$channel_path}'>Joining {$channel}...</fieldset>
+                        <fieldset class='chat-log chat-log:{$channel_lowercase}'>Joining {$channel}...</fieldset>
                     </td>
                 </tr>
                 <tr class='show-on-minimized'>

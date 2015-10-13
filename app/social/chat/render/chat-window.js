@@ -12,6 +12,7 @@ if(typeof document === 'object')
     // Events
 
     self.addEventListener('submit', onFormEvent);
+    self.addEventListener('input', onFormEvent);
 
     function onFormEvent(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
@@ -22,6 +23,10 @@ if(typeof document === 'object')
             case 'chat-form':
                 if(e.type === 'submit')
                     submitChatForm(e, formElm);
+
+                var maximizedChannels = document.getElementsByClassName('maximized channel');
+                while(maximizedChannels.length > 0)
+                    maximizedChannels[0].classList.remove('maximized');
                 return true;
 
             default:
@@ -70,6 +75,7 @@ if(typeof document === 'object')
         formElm.dispatchEvent(socketEvent);
         if(socketEvent.defaultPrevented)
             messageElm.value = '';
+
         return false;
     }
 
@@ -103,8 +109,8 @@ else
         xhr.open("GET", TEMPLATE_URL);
         xhr.onload = function () {
             callback(xhr.responseText
-                .replace(/{\$channel_path}/gi, channelPath.toLowerCase())
                 .replace(/{\$channel}/gi, channelPath)
+                .replace(/{\$channel_lowercase}/gi, channelPath.toLowerCase())
             );
         };
         xhr.send();
@@ -181,7 +187,7 @@ else
 
 
     exports.renderChatUserList = function(channelPath, userList, callback) {
-        var optionHTML = "<optgroup class='chat-active-users:" + channelPath.toLowerCase() + "' label='Active Users (" + userList.length + ")'>\n";
+        var optionHTML = "<optgroup class='chat-active-users:" + channelPath.toLowerCase() + " replace' label='Active Users (" + userList.length + ")'>\n";
 
         for (var i = 0; i < userList.length; i++) {
             var username = userList[i];
