@@ -97,7 +97,7 @@ if(!exports) var exports = {};
                 Client
                     .require(scriptFound[0])
                     .runScript(fieldValues, function(html) {
-                        Client.render("ks-put:", html
+                        Client.render(html
                             .replace(/{\$command_string}/ig, commandString)
                         );
                     });
@@ -112,7 +112,7 @@ if(!exports) var exports = {};
         Client
             .require('ks/render/put-form/ks-put-script-form.js')
             .renderPutScriptForm(commandString, function(html) {
-                Client.render("ks-put:", html);
+                Client.render(html);
             });
 
         return true;
@@ -127,7 +127,7 @@ if(!exports) var exports = {};
         Client
             .require('ks/render/put-form/ks-put-preview-form.js')
             .renderPutPreviewForm(commandString, function(html) {
-                Client.render("ks-put-preview:", html);
+                Client.render(html);
             });
 
         return true;
@@ -171,7 +171,7 @@ if(!exports) var exports = {};
             Client
                 .require('ks/render/put-form/ks-put-form.js')
                 .renderPutForm(content, function(html) {
-                    Client.render("ks-put:", html);
+                    Client.render(html);
                 });
 
         } else {
@@ -455,7 +455,7 @@ if(!exports) var exports = {};
         Client
             .require('ks/render/browser/ks-browser.js')
             .renderBrowser(responseString, function(html) {
-                Client.render("ks-browser:" + browserID, html);
+                Client.render(html);
             });
     }
 
@@ -480,13 +480,13 @@ if(!exports) var exports = {};
         if(!logContainerActive) {
             logContainerActive = true;
             logExport.renderLogWindow(requestURL, function (html) {
-                Client.render("ks-log:" + host, html);
+                Client.render(html);
             });
         }
 
         var requestURLAnchorHTML = "<a href='" + requestURL + "'>" + requestURL + "</a>";
         logExport.renderLogWindowEntry(requestURLAnchorHTML, dir, function(html) {
-            Client.render("ks-log-content:", html, 'append');
+            Client.appendChild("ks-log-content:", html);
         });
     };
 

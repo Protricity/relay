@@ -9,7 +9,7 @@ Templates.pgp.manage.form = function(status_content, callback) {
 
     // Template
     var MANAGE_TEMPLATE = "\
-        <article class='channel pgp:'>\n\
+        <article class='pgp:'>\n\
             <script src='pgp/pgp-listeners.js'></script>\n\
             <link rel='stylesheet' href='pgp/pgp.css' type='text/css'>\n\
             <header class='header-bar show-on-minimized'>\n\

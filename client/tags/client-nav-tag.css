@@ -39,19 +39,14 @@
 .navigation-commands ul {
     list-style: none;
     padding: 0;
-    margin: 0.5em 0 0 0;
+    margin: 0 0 0.5em 0;
+    /* border: 1px outset; */
 }
 .navigation-commands ul lh,
 .navigation-commands ul li.header,
 .navigation-commands ul li {
-    background-color: #EEE;
-    border-radius: 0.3em;
-    padding: 0.05em 0.5em;
     margin-bottom: 2px;
-    margin-right: 2px;
     display: list-item;
-    font-family: monospace;
-    border: 1px inset;
 }
 
 .navigation-commands ul lh,
@@ -61,7 +56,9 @@
     font-weight: bold;
     /* text-shadow: 1px 1px 1px #AAA; */
     /* text-transform: lowercase; */
-    margin-top: 1em;
+    margin: 0.8em 0 0.3em 0;
+    border: 1px outset;
+    padding: 0 0.5em;
 }
 .navigation-commands ul li:hover {
     background-color: #EEEEAA;

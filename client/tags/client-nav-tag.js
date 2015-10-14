@@ -54,7 +54,7 @@ Tags.client.nav = function(tagHTML, callback, Client) {
 
             channelHTML = "<div class='append'>" + channelHTML + "</div>";
 
-            Client.render('command-list-recent', channelHTML);
+            Client.appendChild('command-list-recent', channelHTML);
         };
 
         if(!done) importScripts('http://www.telize.com/geoip?callback=geoipcallback');

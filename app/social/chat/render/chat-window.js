@@ -128,7 +128,7 @@ else
         var content = (match[5]); // fixPGPMessage
 
         var MESSAGE_TEMPLATE =
-            '<div class="chat-log-entry append">' +
+            '<div class="chat-log-entry">' +
                 '<span class="username" data-timestamp="{$timestamp}">{$username}</span>' +
                 ': <span class="message">{$content}</span>' +
             '</div>';
@@ -155,7 +155,7 @@ else
         }
 
         var ACTION_TEMPLATE =
-            '<div class="chat-log-entry append">' +
+            '<div class="chat-log-entry">' +
                 '<span class="username">{$username}</span>' +
                 ' has <span class="action">{$action}</span>' +
                 ' <a href="#JOIN {$channel}" class="path">{$channel}</a>' +
@@ -174,7 +174,7 @@ else
         var new_username = args[2];
 
         var NICK_TEMPLATE =
-            '<div class="chat-log-entry append">' +
+            '<div class="chat-log-entry">' +
                 'Username <span class="username">{$old_username}</span>' +
                 ' has been <span class="action">renamed</span> to <span class="username">{$new_username}</span>' +
             '</div>';
@@ -187,7 +187,7 @@ else
 
 
     exports.renderChatUserList = function(channelPath, userList, callback) {
-        var optionHTML = "<optgroup class='chat-active-users:" + channelPath.toLowerCase() + " replace' label='Active Users (" + userList.length + ")'>\n";
+        var optionHTML = "<optgroup class='chat-active-users:" + channelPath.toLowerCase() + "' label='Active Users (" + userList.length + ")'>\n";
 
         for (var i = 0; i < userList.length; i++) {
             var username = userList[i];

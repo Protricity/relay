@@ -9,7 +9,7 @@ Templates.pgp.register = Templates.pgp.register || {};
 Templates.pgp.register.form = function(private_key_block, status_content, callback) {
 
     var REGISTER_TEMPLATE = "\
-            <article class='channel pgp:'>\n\
+            <article class='pgp:'>\n\
                 <script src='pgp/pgp-listeners.js'></script>\n\
                 <link rel='stylesheet' href='pgp/pgp.css' type='text/css'>\n\
                 <header class='header-bar show-on-minimized'>\n\

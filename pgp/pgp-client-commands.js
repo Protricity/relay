@@ -49,7 +49,7 @@
 
         importScripts('pgp/templates/pgp-manage-template.js');
         Templates.pgp.manage.form(status_content, function(html) {
-            Client.render("pgp:", html);
+            Client.render(html);
         });
 
         // Query private key
@@ -62,7 +62,7 @@
             if(contentEntry) {
                 count++;
                 Templates.pgp.manage.entry(contentEntry, function(html) {
-                    Client.render("pgp-manage-entries:", html, 'append');
+                    Client.appendChild("pgp-manage-entries:", html);
                 });
 
             } else {
@@ -70,7 +70,7 @@
                     status_content = (status_content ? status_content + "<br/>" : '') + "<strong>No PGP Identities found</strong><br/>" +
                         "<span class='info'>You may <a href='#KEYGEN'>Generate</a>  a new PGP Key Pair Identity</span>";
                     Templates.pgp.manage.form(status_content, function(html) {
-                        Client.render("pgp:", html);
+                        Client.render(html);
                     });
                 }
                 // Free up template resources
@@ -136,7 +136,7 @@
 
                 importScripts('pgp/templates/pgp-register-template.js');
                 Templates.pgp.register.form(keyPair.privateKeyArmored, status_content, function(html) {
-                    Client.render("pgp:", html);
+                    Client.render(html);
                 });
                 // Free up template resources
                 delete Templates.pgp.register;
@@ -149,7 +149,7 @@
         } else {
             importScripts('pgp/templates/pgp-generate-template.js');
             Templates.pgp.generate.form('', function(html) {
-                Client.render("pgp:", html);
+                Client.render(html);
             });
             // Free up template resources
             delete Templates.pgp.generate;
@@ -215,7 +215,7 @@
             var status_content = "Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually";
             importScripts('pgp/templates/pgp-register-template.js');
             Templates.pgp.register.form('', status_content, function(html) {
-                Client.render("pgp:", html);
+                Client.render(html);
             });
             // Free up template resources
             delete Templates.pgp.register;

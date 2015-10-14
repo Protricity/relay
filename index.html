@@ -4,7 +4,7 @@
         <script src="client/client-socket-worker.js"></script>
         <script>
             // Render Navigation Menu
-            ClientSocketWorker.sendCommand("render * {$nav}");
+            ClientSocketWorker.sendCommand("render {$nav}");
 
             // Render PUT
             ClientSocketWorker.sendCommand("put");

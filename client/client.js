@@ -83,9 +83,28 @@ function Client() {
         }
     };
 
-    Client.render = function(targetClass, content) {
+    Client.render = function(content, callback) {
         parseClientTags(content, function(parsedContent) {
-            Client.postResponseToClient("RENDER " + targetClass + " " + parsedContent);
+            Client.postResponseToClient("RENDER " + parsedContent);
+            (callback || function(){})();
+        });
+    };
+
+    Client.appendChild = function(targetClass, childContent) {
+        parseClientTags(childContent, function(parsedContent) {
+            Client.postResponseToClient("APPEND " + targetClass + " " + parsedContent);
+        });
+    };
+
+    Client.prependChild = function(targetClass, childContent) {
+        parseClientTags(childContent, function(parsedContent) {
+            Client.postResponseToClient("PREPEND " + targetClass + " " + parsedContent);
+        });
+    };
+
+    Client.replace = function(targetClass, replaceContent) {
+        parseClientTags(replaceContent, function(parsedContent) {
+            Client.postResponseToClient("REPLACE " + targetClass + " " + parsedContent);
         });
     };
 
@@ -165,16 +184,12 @@ function Client() {
     // Client Render
     Client.addCommand(clientRenderCommand);
     function clientRenderCommand(commandString, e) {
-        // TODO: subcommands
-        var match = /^render(?:\s+(\S+))(?:\s+(\S+))$/im.exec(commandString);
-        if(!match)
+        if(!/^(render|replace|append|prepend)/i.test(commandString))
             return false;
-
-        var targetClass = match[1];
-        var content = match[2];
-        Client.render(targetClass, content);
+        parseClientTags(commandString, function(parsedCommandString) {
+            Client.postResponseToClient(parsedCommandString);
+        });
         return true;
     }
-
 
 })();

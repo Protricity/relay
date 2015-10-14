@@ -9,7 +9,7 @@ Templates.socket.log.container = function(url, callback) {
 
     // Template
     var SOCKET_TEMPLATE = "\
-        <article class='channel socket:{$url} minimized1' data-sort='z'>\n\
+        <article class='socket:{$url} minimized' data-sort='z'>\n\
             <link rel='stylesheet' href='server/socket/sockets.css' type='text/css'>\n\
             <header class='header-bar show-on-minimized'>\n\
                 <a href='#MAXIMIZE socket:{$url}'>ws://{$host}</a>\n\
@@ -30,20 +30,19 @@ Templates.socket.log.container = function(url, callback) {
 
     // Callback
     return callback(SOCKET_TEMPLATE
-            .replace(/{\$host}/gi, host)
-            .replace(/{\$url}/gi, url)
+        .replace(/{\$host}/gi, host)
+        .replace(/{\$url}/gi, url)
     );
 };
 
 
 Templates.socket.log.entry = function(socketMessageContent, direction, callback) {
     // Template
-    var SOCKET_TEMPLATE_LOG_ENTRY = "\
-        <div class='log-entry append'>\n\
-            <span class='direction'>{$DIR}</span>:\n\
-            <span class='message'>{$content}</span>\n\
-        </div>\
-    ";
+    var SOCKET_TEMPLATE_LOG_ENTRY =
+        "\n<div class='log-entry'>" +
+        "\n\t<span class='direction'>{$DIR}</span>:" +
+        "\n\t<span class='message'>{$content}</span>" +
+        "\n</div>";
 
     // Callback
     return callback(SOCKET_TEMPLATE_LOG_ENTRY
@@ -60,11 +59,10 @@ Templates.socket.log.entry = function(socketMessageContent, direction, callback)
 
 Templates.socket.log.action = function(action, callback) {
     // Template
-    var SOCKET_TEMPLATE_ACTION_ENTRY = "\
-        <div class='log-entry append'>\n\
-            <span class='action'>{$action}</span>\n\
-        </div>\n\
-        ";
+    var SOCKET_TEMPLATE_ACTION_ENTRY =
+        "\n<div class='log-entry'>" +
+        "\n\t<span class='action'>{$action}</span>" +
+        "\n</div>";
 
     // Callback
     callback(SOCKET_TEMPLATE_ACTION_ENTRY

@@ -7,7 +7,7 @@ Templates.feed = Templates.feed || {};
 Templates.feed.container = function(commandString, callback) {
 
     var FEED_TEMPLATE = "\
-        <article class='channel feed feed:{$channel_path}'>\n\
+        <article class='feed feed:{$channel_path}'>\n\
             <script src='app/social/feed/feed-listeners.js'></script>\n\
             <link rel='stylesheet' href='app/social/feed/feed.css' type='text/css'>\n\
             <header class='header-bar show-on-minimized'>\n\
@@ -48,7 +48,7 @@ Templates.feed.container = function(commandString, callback) {
 
 Templates.feed.entry = function(entryData, callback) {
     var FEED_TEMPLATE_ENTRY = "\
-        <article class='channel feed-entry feed-entry:{$uid} feed-unsorted' data-uid='{$uid}'>\n\
+        <article class='feed-entry feed-entry:{$uid} feed-unsorted' data-uid='{$uid}'>\n\
             <legend class='title'>Feed Post</legend>\n\
             <div class='title-commands'>\n\
                 <a class='title-command-minimize' href='#MINIMIZE feed-entry:{$uid}'>[-]</a><!--\

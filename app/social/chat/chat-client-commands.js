@@ -70,8 +70,9 @@
 
         var channelPath = match[2];
         renderChatWindow(channelPath, function() {
+            console.info("Channel has Activity: " + channelPath);
             chatExports.renderChatMessage(responseString, function(html) {
-                Client.render('chat-log:' + channelPath.toLowerCase(), html);
+                Client.appendChild('chat-log:' + channelPath.toLowerCase(), html);
             });
         });
         return true;
@@ -95,16 +96,19 @@
         var channelPath = match[2];
         var username = match[3];
         renderChatWindow(channelPath, function() {
+            console.info("Joined Channel: " + channelPath);
             chatExports.renderChatActionEntry(responseString, function(html) {
-                Client.render('chat-log:' + channelPath.toLowerCase(), html);
+                Client.appendChild('chat-log:' + channelPath.toLowerCase(), html);
             });
 
             var userList = channelUsers[channelPath.toLowerCase()];
+            if(!userList)
+                userList = channelUsers[channelPath.toLowerCase()] = [];
             if(userList.indexOf(username) == -1) {
                 userList.push(username);
                 userList.sort();
                 chatExports.renderChatUserList(channelPath, userList, function(html) {
-                    Client.render('chat-active-users:' + channelPath.toLowerCase(), html);
+                    Client.replace('chat-active-users:' + channelPath.toLowerCase(), html);
                 });
             }
         });
@@ -117,10 +121,14 @@
             return false;
         var channelPath = match[2];
         var userList = match[3].split(/\s+/img);
-        channelUsers[channelPath.toLowerCase()] = userList;
 
-        chatExports.renderChatUserList(channelPath, userList, function(html) {
-            Client.render('chat-active-users:' + channelPath.toLowerCase(), html);
+        renderChatWindow(channelPath, function () {
+            console.info("Channel has a user list: " + channelPath);
+            channelUsers[channelPath.toLowerCase()] = userList;
+
+            chatExports.renderChatUserList(channelPath, userList, function (html) {
+                Client.replace('chat-active-users:' + channelPath.toLowerCase(), html);
+            });
         });
         return true;
     }
@@ -140,6 +148,7 @@
         var username = match[3];
 
         renderChatWindow(channelPath, function () {
+            console.info("Channel Has Activity: " + channelPath);
             var userList = channelUsers[channelPath.toLowerCase()];
             var pos = userList.indexOf(username);
             if(pos === -1)
@@ -148,11 +157,11 @@
             userList.splice(pos, 1);
 
             chatExports.renderChatActionEntry(responseString, function(html) {
-                Client.render('chat-log:' + channelPath.toLowerCase(), html);
+                Client.appendChild('chat-log:' + channelPath.toLowerCase(), html);
             });
 
             chatExports.renderChatUserList(channelPath, userList, function(html) {
-                Client.render('chat-active-users:' + channelPath.toLowerCase(), html);
+                Client.replace('chat-active-users:' + channelPath.toLowerCase(), html);
             });
         });
         return true;
@@ -174,21 +183,25 @@
 
         var old_username = match[2];
         var new_username = match[3];
-        for (var channelPath in channelUsers) {
-            if (channelUsers.hasOwnProperty(channelPath)) {
-                (function (channelPath) {
-                    var userList = channelUsers[channelPath];
+        for (var channelPathLowerCase in channelUsers) {
+            if (channelUsers.hasOwnProperty(channelPathLowerCase)) {
+                (function (channelPathLowerCase) {
+                    var userList = channelUsers[channelPathLowerCase];
                     var pos = userList.indexOf(old_username);
                     if (pos >= 0) {
                         userList[pos] = new_username;
+
+                        // Render Nick Change Event
                         chatExports.renderChatNickChange(responseString, function (html) {
-                            Client.render('chat-log:' + channelPath.toLowerCase(), html);
+                            Client.appendChild('chat-log:' + channelPathLowerCase, html);
                         });
-                        chatExports.renderChatUserList(channelPath, userList, function(html) {
-                            Client.render('chat-active-users:' + channelPath.toLowerCase(), html);
+
+                        // Render New User List
+                        chatExports.renderChatUserList(channelPathLowerCase, userList, function(html) {
+                            Client.replace('chat-active-users:' + channelPathLowerCase, html);
                         });
                     }
-                })(channelPath);
+                })(channelPathLowerCase);
             }
         }
         return true;
@@ -208,20 +221,26 @@
         //var username = match[2];
         //var content = fixPGPMessage(match[3]);
         chatExports.renderChatMessage(responseString, function(html, username) {
-            Client.render('message:' + username, html);
+            Client.appendChild('message:' + username, html);
         });
         return true;
     }
 
+    var earlyRenderCallbacks = [];
+    var activeChannels = [];
     function renderChatWindow(channelPath, callback) {
         var channelPathLowerCase = channelPath.toLowerCase();
-        if(typeof channelUsers[channelPathLowerCase] === 'undefined') {
-            channelUsers[channelPathLowerCase] = [];
+        if(activeChannels.indexOf(channelPathLowerCase) === -1) {
+            if(callback)
+                earlyRenderCallbacks.push(callback);
+
             chatExports.renderChatWindow(channelPath, function(html) {
-                Client.render("chat:" + channelPathLowerCase, html);
-                console.info("New active channel: " + channelPath);
-                if(callback)
-                    callback();
+                Client.render(html, function() {
+                    activeChannels.push(channelPathLowerCase);
+                    for(var i=0; i<earlyRenderCallbacks.length; i++)
+                        earlyRenderCallbacks[i]();
+                    earlyRenderCallbacks = [];
+                });
             });
 
         } else {

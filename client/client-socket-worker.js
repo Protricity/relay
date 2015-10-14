@@ -7,12 +7,7 @@ function ClientSocketWorker() {
 }
 
 (function() {
-
-    var CLASS_CHANNEL = 'channel';
-    var CLASS_CHANNEL_CONTENT = 'channel-content';
-    var CLASS_CHANNEL_CONTAINER = 'channel-container';
-    var CLASS_CHANNEL_LIST = 'channel-list';
-    var CLASS_CHANNEL_LIST_ENTRY = 'channel-list-entry';
+    var NO_CLASS = '__no-class';
 
     var socketWorker = null;
     ClientSocketWorker.get = function() {
@@ -57,15 +52,22 @@ function ClientSocketWorker() {
             throw new Error("Invalid Command: " + responseString);
 
         var command = args[0].toLowerCase();
+
         switch(command) {
             case 'render':
                 render(responseString);
                 break;
 
+            case 'replace':
+            case 'append':
+            case 'prepend':
+                renderClass(responseString);
+                break;
+
             case 'minimize':
             case 'maximize':
             case 'close':
-                windowCommand(responseString);
+                renderWindowCommand(responseString);
                 break;
 
             default:
@@ -74,8 +76,8 @@ function ClientSocketWorker() {
         }
     };
 
-    function windowCommand(commandString) {
-        var args = /^(minimize|maximize|close)\s+(\S+)/mi.exec(commandString);
+    function renderWindowCommand(commandString) {
+        var args = /^(minimize|maximize|close)\s+(\S+)$/mi.exec(commandString);
         if(!args)
             throw new Error("Invalid Command: " + commandString);
 
@@ -104,88 +106,46 @@ function ClientSocketWorker() {
 
     }
 
-    function render(commandString) {
-//         console.log(commandString);
-        var args = /^render\s+(\S+)\s*([\s\S]*)$/mi.exec(commandString);
-        if(!args)
-            throw new Error("Invalid Render: " + commandString);
+    function renderClass(commandString) {
+        var args = /^(replace|append|prepend)\s+(\S+)\s+([\s\S]+)$/mi.exec(commandString);
+        if (!args)
+            throw new Error("Invalid Class Args: " + commandString);
 
-        var renderAction = null;
-        var targetClass = args[1];
-        var content = args[2];
+        var command = args[1].toLowerCase();
+        var targetClass = args[2];
+        var content = args[3];
 
-        var match;
-        while(match = /<script([^>]*)><\/script>/gi.exec(content)) {
-            var scriptContent = match[0];
-            content = content.replace(scriptContent, '');
-            var match2 = /\s*src=['"]([^'"]*)['"]/gi.exec(match[1]);
-            if(match2) {
-                var hrefValue = match2[1];
-                ClientSocketWorker.includeScript(hrefValue);
-
-            } else {
-                throw new Error("Invalid Script: " + scriptContent);
-            }
-        }
+        var includeScripts = [];
+        content = parseScripts(content, includeScripts);
 
         var htmlContainer = document.createElement('div');
         htmlContainer.innerHTML = content;
         var contentElements = htmlContainer.children;
         if(contentElements.length === 0)
-            throw new Error("First child missing", console.log(commandString, content, htmlContainer));
-        var contentElement = htmlContainer.children[0];
+            throw new Error("First child missing", console.log(content, htmlContainer));
 
-        if(contentElement.classList.contains('append'))
-            renderAction = 'append';
-        if(contentElement.classList.contains('prepend'))
-            renderAction = 'prepend';
-        if(contentElement.classList.contains('replace'))
-            renderAction = 'replace';
-        
-        var bodyElm = document.getElementsByTagName('body')[0];
+        var contentElement = htmlContainer.children[0];     // First Child
 
-        var targetElement = null;
-        switch(renderAction) {
-            case null:
-            case 'replace': // TODO: replace must replace something
-                if(targetClass === '*') {
-                    for(i=0; i<contentElements.length; i++)
-                        bodyElm.appendChild(contentElements[i]);
-                    targetElement = contentElement;
+        var targetElement;
+        switch(command) {
+            case 'replace':
+                var replaceElements = document.getElementsByClassName(targetClass);
+                if(replaceElements.length === 0)
+                    throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
 
-                } else {
-                    var targetElements = document.getElementsByClassName(targetClass);
-                    if(targetElements.length === 0) {
-                        while(contentElements.length > 0) {
-                            bodyElm.appendChild(contentElements[0]);
-                            //contentElements[0].classList.add('content-new')
-                        }
+                targetElement = replaceElements[0];
 
-                        if(targetElements.length === 0)
-                            throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
-                        targetElement = targetElements[0];
+                while(contentElements.length > 0)
+                    targetElement.parentNode.insertBefore(contentElements[contentElements.length - 1], targetElement);
 
-                    } else {
-                        targetElement = targetElements[0];
-
-                        while(contentElements.length > 0) {
-                            var lastPos = contentElements.length - 1;
-                            contentElements[lastPos].classList.add('replaced');
-                            console.log('insertBefore(', contentElements[lastPos], targetElement, ')');
-                            targetElement.parentNode.insertBefore(contentElements[lastPos], targetElement);
-                        }
-                        targetElement.parentNode.removeChild(targetElement);
-                        targetElement = contentElement;
-                    }
-
-                }
-
+                targetElement.parentNode.removeChild(targetElement);
+                targetElement = contentElement;
                 break;
 
             case 'prepend':
                 var prependTargets = document.getElementsByClassName(targetClass);
                 if(prependTargets.length === 0)
-                    throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
+                    throw new Error("Invalid prepend content. Missing class='" + targetClass + "'\n" + content);
                 targetElement = prependTargets[0];
 
                 if(targetElement.firstChild) {
@@ -201,7 +161,7 @@ function ClientSocketWorker() {
             case 'append':
                 var appendTargets = document.getElementsByClassName(targetClass);
                 if(appendTargets.length === 0)
-                    throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
+                    throw new Error("Invalid append content. Missing class='" + targetClass + "'\n" + content);
                 targetElement = appendTargets[0];
 
                 while(contentElements.length > 0)
@@ -210,14 +170,88 @@ function ClientSocketWorker() {
                 break;
 
             default:
-                throw new Error("Unknown render action: " + renderAction);
+                throw new Error("Invalid Command: " + command);
         }
 
-        var contentEvent = new CustomEvent('render', {
-            bubbles: true,
-            detail: content
+        // Include scripts after insert:
+        for(var ii=0; ii<includeScripts.length; ii++)
+            ClientSocketWorker.includeScript(includeScripts[ii]);
+
+        var contentEvent = new CustomEvent(command, {
+            bubbles: true
         });
         targetElement.dispatchEvent(contentEvent);
+    }
+
+    function render(commandString) {
+        var args = /^render\s+([\s\S]+)$/mi.exec(commandString);
+        if (!args)
+            throw new Error("Invalid Command: " + commandString);
+
+        var content = args[1];
+        var includeScripts = [];
+        content = parseScripts(content, includeScripts);
+
+        var htmlContainer = document.createElement('div');
+        htmlContainer.innerHTML = content;
+        var contentElements = htmlContainer.children;
+        if(contentElements.length === 0) {
+            htmlContainer.innerHTML = '<article class="' + NO_CLASS + '">' + content + '</article>';
+            var contentElements = htmlContainer.children;
+            if(contentElements.length === 0) 
+                throw new Error("First child missing", console.log(content, htmlContainer));
+        }
+
+        var contentElement = htmlContainer.children[0];     // First Child
+        if(contentElement.classList.length === 0)
+            contentElement.classList.add('__no-class');
+        var targetClass = contentElement.classList.item(0);
+
+        var targetElements = document.getElementsByClassName(targetClass);
+        var targetElement;
+        if(targetElements.length === 0) {
+            var bodyElm = document.getElementsByTagName('body')[0];
+            while(contentElements.length > 0)
+                bodyElm.appendChild(contentElements[0]);
+
+            if(targetElements.length === 0)
+                throw new Error("Shouldn't Happen. Missing class='" + targetClass + "'\n" + content);
+            targetElement = targetElements[0];
+
+        } else {
+            targetElement = targetElements[0];
+
+            while(contentElements.length > 0)
+                targetElement.parentNode.insertBefore(contentElements[contentElements.length - 1], targetElement);
+            targetElement.parentNode.removeChild(targetElement);
+            targetElement = contentElement;
+        }
+
+        // Include scripts after insert:
+        for(var ii=0; ii<includeScripts.length; ii++)
+            ClientSocketWorker.includeScript(includeScripts[ii]);
+
+        var contentEvent = new CustomEvent('render', {
+            bubbles: true
+        });
+        targetElement.dispatchEvent(contentEvent);
+    }
+
+    function parseScripts(content, includeScripts) {
+        var match;
+        while(match = /<script([^>]*)><\/script>/gi.exec(content)) {
+            var scriptContent = match[0];
+            content = content.replace(scriptContent, '');
+            var match2 = /\s*src=['"]([^'"]*)['"]/gi.exec(match[1]);
+            if(match2) {
+                var hrefValue = match2[1];
+                includeScripts.push(hrefValue);
+
+            } else {
+                throw new Error("Invalid Script: " + scriptContent);
+            }
+        }
+        return content;
     }
 })();
 

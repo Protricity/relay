@@ -8,7 +8,7 @@ Templates.pgp = Templates.pgp || {};
 Templates.pgp.generate = Templates.pgp.generate || {};
 Templates.pgp.generate.form = function(user_id, callback) {
     var GENERATE_TEMPLATE = "\
-        <article class='channel pgp:'>\n\
+        <article class='pgp:'>\n\
             <script src='pgp/pgp-listeners.js'></script>\n\
             <link rel='stylesheet' href='pgp/pgp.css' type='text/css'>\n\
             <header class='header-bar show-on-minimized'>\n\

@@ -21,11 +21,7 @@
 
 /** Channels **/
 
-.theme-minimal .channel:not(.replaced) {
-    animation: fade-in-resize 1s ease-in-out;
-}
-
-.theme-minimal .channel {
+.theme-minimal > article {
     display: inline-block;
     position: relative;
     /*transition: opacity 0.4s ease-in-out;*/
@@ -38,29 +34,29 @@
     border-radius: 2px;
 }
 
-.theme-minimal .channel:hover {
+.theme-minimal > article:hover {
     /*cursor: pointer;*/
     box-shadow: 1px 2px 6px #999;
 }
 
-.theme-minimal .channel:last-child {
+.theme-minimal > article:last-child {
     margin: 4px 1px 0 1px;
 }
 
 
 /** Channel Windows **/
 
-.theme-minimal .channel.closed,
-.theme-minimal .channel.minimized > :not(.show-on-minimized),
-.theme-minimal .channel.minimized .hide-on-minimized{
+.theme-minimal > article.closed,
+.theme-minimal > article.minimized > :not(.show-on-minimized),
+.theme-minimal > article.minimized .hide-on-minimized{
     display: none;
 }
 
-.theme-minimal .channel.minimized {
+.theme-minimal > article.minimized {
     min-width: 16em;
 }
 
-.theme-minimal .channel.maximized {
+.theme-minimal > article.maximized {
     position: fixed;
     max-width: 80%;
     left: 20vw;
@@ -94,7 +90,7 @@
     padding: 0 0 0.1em 0;
     /* border-top: 2px double threedface; */
 }
-.theme-minimal .channel:hover .header-bar {
+.theme-minimal > article:hover .header-bar {
     font-weight: bold;
     text-decoration: underline;
 }
@@ -115,8 +111,8 @@
 
 /** Sections **/
 
-.theme-minimal article.channel > form > section, 
-.theme-minimal article.channel > section {
+.theme-minimal > article > form > section,
+.theme-minimal > article > section {
     padding: 0.5em 1em;
     border: 2px inset;
 }
