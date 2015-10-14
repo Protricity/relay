@@ -29,14 +29,12 @@ li {
 
 .theme-minimal > article {
     display: inline-block;
+    margin: 0 0 1em 0.5em;
     position: relative;
     /*transition: opacity 0.4s ease-in-out;*/
     border: 2px outset;
-    margin: 0.7em;
-    /* padding: 0.8em 0.75em 0.625em 0.75em; */
-    min-width: 11em;
     vertical-align: top;
-    background: #FEFEFE linear-gradient(to bottom right, #FFF, #FAFAFE);
+    background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
     border-radius: 2px;
 }
 
@@ -123,12 +121,15 @@ li {
 /** Sections **/
 
 .theme-minimal > article > main {
-    padding: 0.5em 1em;
+    padding: 0.5em 1em 1em 1em;
     border: 2px inset;
+    background-color: white;
 }
+.theme-minimal > article > form > section,
 .theme-minimal > article > section {
-    padding: 0.2em 1em;
-    border: 1px inset;
+    padding: 0.2em 0.5em 1.0em 0.5em;
+    border: 2px inset;
+    background-color: white;
 }
 
 

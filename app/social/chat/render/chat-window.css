@@ -52,6 +52,7 @@ form[name=chat-form] .chat-log {
     max-height: 18em;
     max-width: 45em;
     min-width: 25em;
+    background-color: white;
 }
 
 form[name=chat-form] .chat-log .chat-log-entry {
