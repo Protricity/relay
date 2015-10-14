@@ -1,0 +1,13 @@
+<article class='socket:{$url} minimized' data-sort='z'>
+    <link rel='stylesheet' href='server/socket/templates/socket-log-window.css' type='text/css' property="stylesheet">
+    <header class='header-bar show-on-minimized'>
+        <a href='#MAXIMIZE socket:{$url}'>ws://{$host}</a>
+    </header>
+    <div class='header-bar-buttons show-on-minimized'>
+        <a href='#MINIMIZE socket:{$url}'>[-]</a><!--
+     --><a href='#MAXIMIZE socket:{$url}'>[+]</a><!--
+     --><a href='#CLOSE socket:{$url}'>[x]</a>
+    </div>
+    <main class='socket-log socket-log:{$url} hide-on-minimized'></main>
+    <footer class='footer-bar'>&nbsp;</footer>
+</article>

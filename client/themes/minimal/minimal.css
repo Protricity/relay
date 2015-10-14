@@ -1,3 +1,9 @@
+/** BODY **/
+
+body.theme-minimal {
+    font-family: monospace;
+}
+
 /** Hover **/
 
 .theme-minimal .navigation-commands:hover {
@@ -8,7 +14,7 @@
 
 /** General **/
 
-.theme-minimal {
+li {
     font-family: monospace;
     color: #333;
 }
@@ -40,7 +46,7 @@
 }
 
 .theme-minimal > article:last-child {
-    margin: 4px 1px 0 1px;
+    /* margin: 4px 1px 0 1px; */
 }
 
 
@@ -65,9 +71,14 @@
     z-index: 2;
     box-shadow: 0 0 4em #558;
     font-size: large;
+
     transition: 500ms;
 }
 
+.theme-minimal > article:not(.maximized) {
+    transition: 0.5s;
+    transition-delay: 0.5s;
+}
 
 /** Title Bar **/
 
@@ -111,10 +122,13 @@
 
 /** Sections **/
 
-.theme-minimal > article > form > section,
-.theme-minimal > article > section {
+.theme-minimal > article > main {
     padding: 0.5em 1em;
     border: 2px inset;
+}
+.theme-minimal > article > section {
+    padding: 0.2em 1em;
+    border: 1px inset;
 }
 
 

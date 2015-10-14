@@ -9,7 +9,7 @@ Templates.pgp.identify = Templates.pgp.identify || {};
 Templates.pgp.identify.form = function(responseString, socket_url, CONFIG, callback) {
 
     var IDENTIFY_TEMPLATE = "\
-        <article class='channel identify:'>\n\
+        <article class='identify:'>\n\
             <script src='pgp/pgp-listeners.js'></script>\n\
             <link rel='stylesheet' href='pgp/pgp.css' type='text/css'>\n\
             <legend class='title'><span class='command'>Identify</span> yourself to the network</legend>\n\
@@ -158,7 +158,7 @@ Templates.pgp.identify.form = function(responseString, socket_url, CONFIG, callb
 Templates.pgp.identify.successForm = function(idsigString, socket_url, CONFIG, callback) {
 
     var IDENTIFY_TEMPLATE_SUCCESS = "\
-        <article class='channel identify:'>\n\
+        <article class='identify:'>\n\
             <script src='pgp/pgp-listeners.js'></script>\n\
             <link rel='stylesheet' href='pgp/pgp.css' type='text/css'>\n\
             <legend class='title'><span class='command'>IDSIG</span> Successful</legend>\n\

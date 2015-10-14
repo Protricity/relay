@@ -3,28 +3,36 @@
 
 
 .navigation-commands {
-    border: 1px solid;
-    display: block;
-    min-width: 5em;
-
-    /*transition: min-width 0.5s, transform 0.5s;*/
-}
-
-.navigation-commands:hover {
-    /*min-width: 12em;*/
-}
-
-.navigation-commands {
-    position: relative;
-    z-index: 1;
-    display: inline-block;
+    width: 6em;
+    /* position: relative; */
+    /* z-index: 1; */
     background-color: lightgrey;
     padding: 0.5em;
     margin-bottom: 0.5em;
-    animation: fade-in;
+    /* animation: fade-in; */
     /* border: 2px groove threedface; */
-    vertical-align: top;
+    /* vertical-align: top; */
+    border: 1px outset;
+    border-radius: 4px;
+    transition: width 0.5s;
+    transition-delay: 0.2s;
+    float: left;
 }
+.navigation-commands:not(.closed),
+.navigation-commands:hover {
+    width: 13em;
+    transition: width 0.2s;
+}
+.navigation-commands.closed {
+    border-radius: 0.5em;
+    border-style: inherit;
+}
+
+.navigation-commands.closed:not(:hover) .hide-on-close {
+    display: none;
+}
+
+/** Open/Close Button **/
 
 .navigation-commands header button {
     border: 1px inset;
@@ -32,27 +40,28 @@
 .navigation-commands.closed header button {
     border-style: outset;
 }
+
 .navigation-commands header {
     font-weight: bold;
     text-shadow: 1px 1px 1px #AAA;
 }
 .navigation-commands ul {
     list-style: none;
-    padding: 0;
-    margin: 0 0 0.5em 0;
+    padding: 0 0 0.5em 0;
     /* border: 1px outset; */
+    margin: 0;
+    background-color: #DDD;
 }
 .navigation-commands ul lh,
 .navigation-commands ul li.header,
 .navigation-commands ul li {
-    margin-bottom: 2px;
+    margin: 0 0.5em;
     display: list-item;
 }
 
 .navigation-commands ul lh,
 .navigation-commands ul li.header {
     background-color: #BFBFBF;
-    border-style: outset;
     font-weight: bold;
     /* text-shadow: 1px 1px 1px #AAA; */
     /* text-transform: lowercase; */
@@ -62,22 +71,4 @@
 }
 .navigation-commands ul li:hover {
     background-color: #EEEEAA;
-}
-
-.navigation-commands {
-    border: 1px outset;
-    border-radius: 4px;
-}
-.navigation-commands.closed {
-    border-radius: 0.5em;
-    border-style: inherit;
-}
-.navigation-commands.closed .hide-on-close {
-    display: none;
-}
-.navigation-commands.closed:hover .hide-on-close {
-    display: block;
-}
-.navigation-commands.closed:hover span.hide-on-close {
-    display: inline;
 }

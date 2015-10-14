@@ -1,4 +1,4 @@
-<article class='channel ks-browser:{$browser_id} ks-browser ks-response-{$response_code}' data-browser-id='{$browser_id}'>
+<article class='ks-browser:{$browser_id} ks-browser ks-response-{$response_code}' data-browser-id='{$browser_id}'>
     <script src='ks/templates/ks-browser.js'></script>
     <link rel='stylesheet' href='ks/templates/ks-browser.css' type='text/css'>
     <header class='header-bar show-on-minimized'>
@@ -20,6 +20,6 @@
             <button type='submit' name='navigate'>&#8476;</button>
         </form>
     </nav>
-    <section class='ks-body'>{$response_body}</section>
+    <main class='ks-body'>{$response_body}</main>
     <footer class='ks-status'>{$response_code} {$response_text}</footer>
 </article>
