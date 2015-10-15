@@ -56,6 +56,71 @@
         return ksChallengeCommand(responseString);
     }
 
+    /**
+     *
+     * @param commandString PUT [path] [content]
+     */
+    function putCommand(commandString) {
+        var match = /^put(?:\.(script|preview|form))?(?:\s+([\s\S]+))?$/im.exec(commandString);
+        if(!match)
+            return false;
+
+        var subCommand = (match[1] || '').toLowerCase();
+
+        var showForm = false;
+        switch(subCommand) {
+            case '':
+                break;
+            case 'form':
+                showForm = true;
+                break;
+            case 'preview':
+                return putPreviewCommand(commandString);
+            case 'script':
+                return putScriptCommand(commandString);
+            default:
+                throw new Error("Invalid command: " + commandString);
+        }
+
+        //var path = match[2] || '~';
+        var content = (match[2] || '').trim();
+        if(!content)
+            showForm = true;
+
+        //if(!/[~/a-z_-]+/i.test(path))
+        //    throw new Error("Invalid Path: " + path);
+
+        if(showForm) {
+            Client
+                .require('ks/render/put-form/ks-put-form.js')
+                .renderPutForm(content, function(html) {
+                    Client.render(html);
+                });
+            return true;
+
+        } else {
+            try {
+                var pgpMessage = openpgp.message.readArmored(commandString);
+                var encIDs = pgpEncryptedMessage.getEncryptionKeyIds();
+                var pgp_id_public = encIDs[0].toHex().toUpperCase();
+                Client.sendWithSocket(commandString);
+                return true;
+
+            } catch (e) {
+                console.log(e);
+            }
+
+            // TODO check for multiple pgp ids
+            Client
+                .require('ks/render/put-form/ks-put-choose-identity-form.js')
+                .renderPutChooseIdentityForm(content, function(html) {
+                    Client.render(html);
+                });
+            return true;
+        }
+
+    }
+
     function putScriptCommand(commandString) {
         var match = /^put\.script\s*([\s\S]*)$/im.exec(commandString);
         if(!match)
@@ -132,53 +197,6 @@
         return true;
     }
 
-    /**
-     *
-     * @param commandString PUT [path] [content]
-     */
-    function putCommand(commandString) {
-        var match = /^put(?:\.(script|preview|form))?(?:\s+([\s\S]+))?$/im.exec(commandString);
-        if(!match)
-            return false;
-
-        var subCommand = (match[1] || '').toLowerCase();
-
-        var showForm = false;
-        switch(subCommand) {
-            case '':
-                break;
-            case 'form':
-                showForm = true;
-                break;
-            case 'preview':
-                return putPreviewCommand(commandString);
-            case 'script':
-                return putScriptCommand(commandString);
-            default:
-                throw new Error("Invalid command: " + commandString);
-        }
-
-        //var path = match[2] || '~';
-        var content = match[2] || '';
-        if(!content)
-            showForm = true;
-
-        //if(!/[~/a-z_-]+/i.test(path))
-        //    throw new Error("Invalid Path: " + path);
-
-        if(showForm) {
-            Client
-                .require('ks/render/put-form/ks-put-form.js')
-                .renderPutForm(content, function(html) {
-                    Client.render(html);
-                });
-
-        } else {
-            Client.sendWithSocket(commandString);
-        }
-
-        return true;
-    }
 
     function putResponse(responseString) {
         if(responseString.substr(0,3).toLowerCase() !== 'put')

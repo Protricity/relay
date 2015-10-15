@@ -1,0 +1,27 @@
+<article class='ks-put: maximized'>
+    <script src='ks/render/put-form/ks-put-form.js'></script>
+    <link rel='stylesheet' href='ks/render/put-form/ks-put-form.css' type='text/css' property="stylesheet">
+    <header class='header-bar show-on-minimized'>
+        <a href='#MAXIMIZE ks-put:'>
+            <span class='command'>Select</span><span> a </span><strong>Key Space</strong>
+        </a>
+    </header>
+    <div class='header-bar-buttons show-on-minimized'>
+        <a href='#MINIMIZE ks-put:'>[-]</a><!--
+     --><a href='#MAXIMIZE ks-put:'>[+]</a><!--
+     --><a href='#CLOSE ks-put:'>[x]</a>
+    </div>
+    <main>
+        <form name='ks-put-choose-identity-form'>
+            Which <strong>Key Space</strong> would you like to store this content in?<br/>
+            <label class='label-path hide-on-compact'>in
+                <select name='pgp_id_public'>
+                    <option value=''>Select a PGP Identity</option>
+                    <option disabled='disabled'>Look up an identity...</option>
+                    <option disabled='disabled'>Create a new identity...</option>
+                </select>
+            </label>&nbsp;
+        </form>
+    </main>
+    <footer class='footer-bar'>&nbsp;</footer>
+</article>
