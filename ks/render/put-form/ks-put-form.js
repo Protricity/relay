@@ -5,7 +5,7 @@
 if(typeof document === 'object')
 (function() {
 
-    var REFRESH_TIMEOUT = 200;
+    var REFRESH_TIMEOUT = 20;
 
     // Events
 

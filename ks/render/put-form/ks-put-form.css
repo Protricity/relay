@@ -10,9 +10,32 @@ form[name=ks-put-form] input {
 
 /** Compact **/
 
+/*article.ks-put\3A:not(.compact) .hide-on-compact {}*/
 article.ks-put\3A.compact .hide-on-compact {
-    display:none;
+    animation: ks-put-form-max-height 1s ease-in 0.3s forwards;
 }
+
+/*article.ks-put\3A .show-on-compact {}*/
 article.ks-put\3A:not(.compact) .show-on-compact {
-    display:none;
+    animation: ks-put-form-max-height 1s ease-in 0.7s forwards;
+}
+
+@keyframes ks-put-form-max-height {
+    100% {
+        visibility: hidden;
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        position: absolute;
+    }
+    99% {
+        visibility: visible;
+        /*margin: 1em;*/
+    }
+    0% {
+        max-height: 5em;
+        opacity: 1;
+    }
 }
