@@ -40,7 +40,7 @@ if(typeof document === 'object')
     function refreshHTTPPutForm(e, formElm) {
         var postContentElm = formElm.querySelector('textarea[name=content]');
 
-        formElm.classList[postContentElm.value.length === 0 ? 'add' : 'remove']('compact');
+        formElm.parentNode.parentNode.classList[postContentElm.value.length === 0 ? 'add' : 'remove']('compact');
         if(!lastPostContent || lastPostContent != postContentElm.value || e.type === 'change') {
             lastPostContent = postContentElm.value;
 
@@ -145,8 +145,8 @@ if(typeof document === 'object')
         var timestamp = Date.now();
 
         var postContent = postContentElm.value.trim();
-        if(!postContent.length)
-            return false;
+        //if(!postContent.length)
+        //    return false;
 
         var contentDiv = document.createElement('div');
         contentDiv.innerHTML = postContent;

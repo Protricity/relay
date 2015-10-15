@@ -50,8 +50,8 @@ form[name=chat-form] .pgp-message:hover {
 form[name=chat-form] .chat-log {
     overflow: auto;
     max-height: 18em;
-    max-width: 45em;
-    min-width: 25em;
+    max-width: 48em;
+    min-width: 32em;
     background-color: white;
 }
 

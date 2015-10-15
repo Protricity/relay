@@ -47,16 +47,18 @@ else
                 throw new Error("Invalid Preview Command: " + commandString);
 
             var content = match[1];
-
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", TEMPLATE_URL);
-            xhr.onload = function () {
-                callback(xhr.responseText
-                        .replace(/{\$content}/gi, content || '')
-                );
-            };
-            xhr.send();
+            callback(content);
             return true;
+
+            //var xhr = new XMLHttpRequest();
+            //xhr.open("GET", TEMPLATE_URL);
+            //xhr.onload = function () {
+            //    callback(xhr.responseText
+            //            .replace(/{\$content}/gi, content || '')
+            //    );
+            //};
+            //xhr.send();
+            //return true;
         };
     })();
 if (!module) var module = {};

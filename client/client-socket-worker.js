@@ -134,21 +134,22 @@ function ClientSocketWorker() {
 
         var targetElement;
         switch(command) {
-            case 'replace':
+            case 'replace': // Replaces inner content of target element
                 var replaceElements = document.getElementsByClassName(targetClass);
                 if(replaceElements.length === 0)
                     throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
 
                 targetElement = replaceElements[0];
+                targetElement.innerHTML = '';
 
                 while(contentElements.length > 0)
-                    targetElement.parentNode.insertBefore(contentElements[contentElements.length - 1], targetElement);
+                    targetElement.appendChild(contentElements[0]);
 
-                targetElement.parentNode.removeChild(targetElement);
+                //targetElement.parentNode.removeChild(targetElement);
                 targetElement = contentElement;
                 break;
 
-            case 'prepend':
+            case 'prepend': // Prepends inner content to target element
                 var prependTargets = document.getElementsByClassName(targetClass);
                 if(prependTargets.length === 0)
                     throw new Error("Invalid prepend content. Missing class='" + targetClass + "'\n" + content);
@@ -164,7 +165,7 @@ function ClientSocketWorker() {
                 targetElement.scrollTop = 0;
                 break;
 
-            case 'append':
+            case 'append': // Appends inner content to target element
                 var appendTargets = document.getElementsByClassName(targetClass);
                 if(appendTargets.length === 0)
                     throw new Error("Invalid append content. Missing class='" + targetClass + "'\n" + content);

@@ -191,7 +191,7 @@
         Client
             .require('ks/render/put-form/ks-put-preview-form.js')
             .renderPutPreviewForm(commandString, function(html) {
-                Client.render(html);
+                Client.replace('ks-put-preview:', html);
             });
 
         return true;

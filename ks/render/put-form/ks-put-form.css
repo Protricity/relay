@@ -6,3 +6,13 @@ form[name=ks-put-form] input {
     padding: 0.5em 1em;
     margin: 0.5em 0;
 }
+
+
+/** Compact **/
+
+article.ks-put\3A.compact .hide-on-compact {
+    display:none;
+}
+article.ks-put\3A:not(.compact) .show-on-compact {
+    display:none;
+}

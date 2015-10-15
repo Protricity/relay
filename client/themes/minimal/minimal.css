@@ -74,42 +74,37 @@ li {
     transition-delay: 0.2s;
 }
 
-/** Title Bar **/
+/** Headers and Footers **/
 
-.theme-minimal .footer-bar,
-.theme-minimal .header-bar {
-    width: 100%;
+.theme-minimal > article > footer,
+.theme-minimal > article > header {
+    /* width: 100%; */
     background: linear-gradient(to bottom right, #E5DDD5, #F5FFF5);
     text-indent: 0.3em;
-}
-
-.theme-minimal .header-bar {
-    /* margin: 0 0 1em 0; */
     padding: 0 0 0.3em 0;
     border-bottom: 2px double threedface;
-    /* font-size: larger; */
-    /* box-shadow: 0px 0px 22px #EFEFEF; */
 }
-.theme-minimal .footer-bar {
+
+.theme-minimal > article > footer:last-of-type {
     /* margin: 1em 0 0 0; */
     padding: 0 0 0.1em 0;
     /* border-top: 2px double threedface; */
 }
-.theme-minimal > article:hover .header-bar {
+.theme-minimal > article:hover > header:first-of-type {
     font-weight: bold;
     text-decoration: underline;
 }
 
-.theme-minimal .header-bar-buttons {
+.theme-minimal > article > .header-bar-buttons {
     position: absolute;
     right: 2px;
     top: 0;
 }
-.theme-minimal .header-bar-buttons a {
+.theme-minimal > article > .header-bar-buttons a {
     text-decoration: none;
     color: #888;
 }
-.theme-minimal .header-bar-buttons a:hover {
+.theme-minimal > article > .header-bar-buttons a:hover {
     color: black;
 }
 
@@ -121,7 +116,20 @@ li {
 .theme-minimal > article > section {
     padding: 0.5em 1em 0.5em 1em;
     border: 2px inset;
+    background-color: #F5F5FA;
+}
+.theme-minimal > article > main {
     background-color: white;
+}
+
+.theme-minimal > article.maximized > main,
+.theme-minimal > article.maximized > form > section,
+.theme-minimal > article.maximized > section {
+    padding: 1em 2em 1em 2em;
+}
+
+.theme-minimal > article.maximized > main {
+    border: 3px inset;
 }
 
 
