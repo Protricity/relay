@@ -1,35 +1,50 @@
 
 /* Navigation */
 
-
 .navigation-commands {
-    width: 6em;
-    /* position: relative; */
-    /* z-index: 1; */
+    float: left;
+
     background-color: lightgrey;
     padding: 0.5em;
     margin-bottom: 0.5em;
-    /* animation: fade-in; */
-    /* border: 2px groove threedface; */
-    /* vertical-align: top; */
     border: 1px outset;
     border-radius: 4px;
-    transition: width 0.5s;
+
+    overflow: hidden;
+    white-space: nowrap;
+
+    max-width: 5.5em;
+    max-height: 1.6em;
+    transition: max-width 0.5s, max-height 1s;
     transition-delay: 0.2s;
-    float: left;
 }
+
 .navigation-commands:not(.closed),
-.navigation-commands:hover {
-    width: 13em;
-    transition: width 0.2s;
+.navigation-commands:hover{
+    max-height: 50em;
+    max-width: 100%;
+    transition-delay: 0s;
 }
+
+.navigation-commands:hover {
+    /*     cursor: pointer; */
+    box-shadow: 1px 2px 6px #999;
+}
+
 .navigation-commands.closed {
     border-radius: 0.5em;
     border-style: inherit;
 }
 
+.navigation-commands .hide-on-close {
+    opacity: 1;
+    transition: opacity 1s;
+}
+
 .navigation-commands.closed:not(:hover) .hide-on-close {
-    display: none;
+    opacity: 0;
+    transition: opacity 0.5s;
+    transition-delay: 0.2s;
 }
 
 /** Open/Close Button **/
@@ -51,12 +66,15 @@
     /* border: 1px outset; */
     margin: 0;
     background-color: #DDD;
+    /* display: inline-block; */
 }
 .navigation-commands ul lh,
 .navigation-commands ul li.header,
 .navigation-commands ul li {
     margin: 0 0.5em;
     display: list-item;
+    /* white-space: nowrap; */
+    overflow: hidden;
 }
 
 .navigation-commands ul lh,

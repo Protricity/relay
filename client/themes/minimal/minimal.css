@@ -4,12 +4,6 @@ body.theme-minimal {
     font-family: monospace;
 }
 
-/** Hover **/
-
-.theme-minimal .navigation-commands:hover {
-    /*     cursor: pointer; */
-    box-shadow: 1px 2px 6px #999;
-}
 
 
 /** General **/
