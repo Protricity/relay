@@ -9,9 +9,10 @@
 //var proxy['post'] = 'rest.post';
 
 
-if(!exports) var exports = {}; 
+if (!module) var module = {};
+if (!module.exports) module.exports = {};
 
-exports.initClientCommands = function(Client) {
+module.exports.initClientCommands = function(Client) {
 
     // HTTP Commands
     Client.addCommand(importHTTPCommands);

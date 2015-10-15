@@ -1,9 +1,10 @@
 /**
  * Created by ari on 9/22/2015.
  */
-if(!exports) var exports = {};
+if (!module) var module = {};
+if (!module.exports) module.exports = {};
 
-exports.initSocketServerCommands = function(SocketServer) {
+module.exports.initSocketServerCommands = function(SocketServer) {
     SocketServer.addCommand(getCommandSocket);
     SocketServer.addCommand(putCommandSocket);
     SocketServer.addCommand(ksAuthCommandSocket);
@@ -12,7 +13,7 @@ exports.initSocketServerCommands = function(SocketServer) {
     //SocketServer.addEventListener('connection', onSocketConnection);
 };
 
-exports.initHTTPServerCommands = function(HTTPServer) {
+module.exports.initHTTPServerCommands = function(HTTPServer) {
     HTTPServer.addCommand(getCommandHTTP);
     HTTPServer.addCommand(putCommandHTTP);
 

@@ -1,8 +1,9 @@
 /**
  * Created by ari on 9/22/2015.
  */
-if(!exports) var exports = {};
-exports.initSocketServerCommandProxies = function(SocketServer) {
+if (!module) var module = {};
+if (!module.exports) module.exports = {};
+module.exports.initSocketServerCommandProxies = function(SocketServer) {
     // Socket Command Proxies
 
     // HTTP Commands

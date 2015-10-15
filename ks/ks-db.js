@@ -2,8 +2,9 @@
  * Created by ari on 7/2/2015.
  */
 "use strict";
-if(!exports) var exports = {};
-exports.KeySpaceDB = KeySpaceDB;
+if (!module) var module = {};
+if (!module.exports) module.exports = {};
+module.exports.KeySpaceDB = KeySpaceDB;
 
 
 KeySpaceDB.DB_VERSION               = 1;
@@ -415,7 +416,7 @@ function KeySpaceDB(dbReadyCallback) {
     };
 
 
-    exports.test = function() {
+    module.exports.test = function() {
         KeySpaceDB();
 
         var options = {

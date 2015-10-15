@@ -1,8 +1,9 @@
 /**
  * Created by ari on 9/22/2015.
  */
-if(!exports) var exports = {};
-exports.initSocketServerCommands = function(SocketServer) {
+if (!module) var module = {};
+if (!module.exports) module.exports = {};
+module.exports.initSocketServerCommands = function(SocketServer) {
     //SocketServer.addEventListener('connection', initClient);
     SocketServer.addCommand(messageClient);
     SocketServer.addCommand(joinChannel);

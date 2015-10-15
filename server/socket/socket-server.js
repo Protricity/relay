@@ -8,8 +8,9 @@
  * Created by ari on 9/22/2015.
  */
 
-if(!exports) var exports = {};
-exports.SocketServer = SocketServer;
+if (!module) var module = {};
+if (!module.exports) module.exports = {};
+module.exports.SocketServer = SocketServer;
 
 SocketServer.DEFAULT_PORTS = 7314;
 

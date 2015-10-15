@@ -62,40 +62,43 @@ if(typeof document === 'object')
 
 // Worker Script
 else
-(function() {
-    var TEMPLATE_URL = 'ks/render/put-form/ks-put-script-form.html';
+    (function() {
+        var TEMPLATE_URL = 'ks/render/put-form/ks-put-script-form.html';
 
-    exports.renderPutScriptForm = function(commandString, callback) {
-        var match = /^put\.script\s*([\s\S]*)$/im.exec(commandString);
-        if(!match)
-            throw new Error("Invalid Script Command: " + commandString);
+        module.exports.renderPutScriptForm = function(commandString, callback) {
+            var match = /^put\.script\s*([\s\S]*)$/im.exec(commandString);
+            if(!match)
+                throw new Error("Invalid Script Command: " + commandString);
 
-        var scriptURL = match[1];
-        var scriptPath = scriptURL.split('?')[0];
-        //var args = match[2].split(/\s+/);
+            var scriptURL = match[1];
+            var scriptPath = scriptURL.split('?')[0];
+            //var args = match[2].split(/\s+/);
 
-        var html_script_options = '';
-        self.exports = {};
-        importScripts('ks/ks-content-scripts.js');
-        var scripts = self.exports.getContentScripts();
+            var html_script_options = '';
+            self.exports = {};
+            self.module = {exports: {}};
+            importScripts('ks/ks-content-scripts.js');
+            var scripts = self.module.exports.getContentScripts();
 
-        for(var i=0; i<scripts.length; i++) {
-            var opts = scripts[i];
-            var selectedHTML = '';
-            if(scriptPath && scriptPath === opts[0]) {
-                selectedHTML = ' selected="selected"';
+            for(var i=0; i<scripts.length; i++) {
+                var opts = scripts[i];
+                var selectedHTML = '';
+                if(scriptPath && scriptPath === opts[0]) {
+                    selectedHTML = ' selected="selected"';
+                }
+                html_script_options += "<option value='" + opts[0] + "'" + selectedHTML + ">" + opts[1] + "</option>\n";
             }
-            html_script_options += "<option value='" + opts[0] + "'" + selectedHTML + ">" + opts[1] + "</option>\n";
-        }
 
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", TEMPLATE_URL);
-        xhr.onload = function () {
-            callback(xhr.responseText
-                    .replace(/{\$html_script_options}/gi, html_script_options)
-            );
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", TEMPLATE_URL);
+            xhr.onload = function () {
+                callback(xhr.responseText
+                        .replace(/{\$html_script_options}/gi, html_script_options)
+                );
+            };
+            xhr.send();
+            return true;
         };
-        xhr.send();
-        return true;
-    };
-})();
+    })();
+if (!module) var module = {};
+if (!module.exports) module.exports = {};

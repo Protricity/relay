@@ -1,0 +1,50 @@
+<article class='pgp: maximized'>
+    <script src='pgp/render/keygen/pgp-keygen-form.js'></script>
+    <link rel='stylesheet' href='pgp/render/keygen/pgp-keygen-form.css' type='text/css' property="stylesheet">
+    <header class='header-bar show-on-minimized'>
+        <a href='#MAXIMIZE pgp:'>
+            <span class='command'>Generate</span> a New Identity
+        </a>
+    </header>
+    <div class='header-bar-buttons show-on-minimized'>
+        <a href='#MINIMIZE pgp:'>[-]</a><!--
+     --><a href='#MAXIMIZE pgp:'>[+]</a><!--
+     --><a href='#CLOSE pgp:'>[x]</a>
+    </div>
+    <main>
+        <form name='pgp-keygen-form' action='#' method='post'>
+            <code class='status-box'>Use this form to generate a new PGP Key Identity</code>
+
+            <label><br/><strong>Select key strength: </strong><br />
+                (<i class='info'>or: your fear level for getting hacked<br/>on a scale from 512 to 4096</i>)<br/>
+                <select name='bits'>
+                    <option value='512'>512 (Weak Sauce)</option>
+                    <option value='1024' selected='selected'>1024 (Casual Security)</option>
+                    <option value='2048'>2048 (Stronger Security)</option>
+                    <option value='4096'>4096 (Very Stronger Security)</option>
+                </select>
+                <br/></label>
+
+            <label><br/><strong>Select a user ID: </strong><br/>
+                (<i class='info'>can be a user name, email address, or both. <br />
+                    also, once created, it cannot be changed,<br/>
+                    sorry about that. It's a security thing)</i><br/>
+                <input type='text' name='user_id' value='{$user_id}' required='required' size='36' placeholder='"Your Name" <your@email.com>' />
+                <br/></label>
+
+            <label><br/><strong>Choose a passphrase to secure your PGP Key Pair: </strong><br/>
+                (<i class='info'>This is optional, but a good idea. <br />
+                    You will be asked for the passphrase <br/>
+                    any time your private key is used. <br/>
+                    the good news is you can change or remove it later :</i>)<br/>
+                <input type='password' name='passphrase' disabled="disabled"/>
+                <br/></label>
+
+            <label><br/><strong>Generate:</strong><br/>
+                (<i class='info'>Create a new PGP Public/Private Key Pair Identity</i>)<br/>
+                <input type='submit' value='Generate'  name='submit-generate' />
+            </label>
+            or <a href='#REGISTER'>Load your own PGP private key</a>
+        </form>
+    </main>
+</article>

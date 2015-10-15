@@ -1,0 +1,18 @@
+
+form[name=pgp-register-form] textarea[name=private_key] {
+    font-family: monospace;
+}
+
+
+form[name=pgp-register-form] select,
+form[name=pgp-register-form] input {
+    padding: 0.5em 1em;
+    margin: 0.5em;
+    border-radius: 0.6em;
+    border-width: 1px;
+}
+
+form[name=pgp-register-form] input[type=submit] {
+    padding: 1em 2em;
+    border-radius: 1em;
+}

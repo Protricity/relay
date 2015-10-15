@@ -21,11 +21,13 @@ function Sockets(socketURL) {
     };
 
     self.exports = {};
+    self.module = {exports: {}};
     importScripts('server/socket/sockets-defaults.js');
-    var socketDefaults = self.exports;
-    self.exports = {};
-    importScripts('server/socket/templates/socket-log-window.js');
-    var templateExports = self.exports;
+    var socketDefaults = self.module.exports;
+
+    self.module = {exports: {}};
+    importScripts('server/socket/render/socket-log-window.js');
+    var templateExports = self.module.exports;
 
     Sockets.getAll = function() { return activeSockets; };
 

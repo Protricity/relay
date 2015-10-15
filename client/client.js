@@ -3,8 +3,9 @@
  */
 "use strict";
 
-if(!exports) var exports = {};
-exports.Client = Client;
+if (!module) var module = {};
+if (!module.exports) module.exports = {};
+module.exports.Client = Client;
 
 var tagCallbacks = {};
 
@@ -140,9 +141,11 @@ function Client() {
     Client.require = function(path) {
         if(typeof require === 'function')
             return require('../' + path);
+
         self.exports = {};
+        self.module = {exports: {}};
         importScripts(path);
-        return self.exports;
+        return self.module.exports;
     };
 
     Client.require('client/client-command-proxies.js')

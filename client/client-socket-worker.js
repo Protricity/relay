@@ -90,9 +90,15 @@ function ClientSocketWorker() {
         var targetElement = targetElements[0];
         var hasClass = targetElement.classList.contains(command + 'd');
 
-        var maximizedElms = document.getElementsByClassName('maximized');
-        while(maximizedElms.length > 0)
-            maximizedElms[0].classList.remove('maximized');
+        switch(command) {
+            case 'maximize':
+                var maximizedElms = document.getElementsByClassName('maximized');
+                while(maximizedElms.length > 0)
+                    maximizedElms[0].classList.remove('maximized');
+                break;
+            default:
+                break;
+        }
 
         if(hasClass) {
             targetElement.classList.remove(command + 'd');

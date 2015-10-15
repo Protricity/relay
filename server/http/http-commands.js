@@ -1,9 +1,9 @@
 /**
  * Created by ari on 9/22/2015.
  */
-if(!exports) var exports = {};
-
-exports.initHTTPServerCommands = function(HTTPServer) {
+if (!module) var module = {};
+if (!module.exports) module.exports = {};
+module.exports.initHTTPServerCommands = function(HTTPServer) {
     HTTPServer.addCommand(getStaticHTTPCommand);
 
     require('../../ks/ks-server-commands.js')

@@ -3,11 +3,13 @@
  */
 
 // TODO: theme
-if (!exports) var exports = {};
-exports.tags = [
+if (!module) var module = {};
+if (!module.exports) module.exports = {};
+module.exports.tags = [
     [/^{\$nav[^}]*}$/i, function(tagHTML, callback, Client) {
+        self.exports = {};
+        self.module = {exports: {}};
         importScripts('client/tags/client-nav-tag.js');
-        Tags.client.nav(tagHTML, callback, Client);
-        delete Tags.client.nav;
+        self.module.exports.renderNavTag(tagHTML, callback, Client);
     }]
 ];

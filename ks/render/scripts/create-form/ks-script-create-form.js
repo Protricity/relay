@@ -2,7 +2,6 @@
  * Created by ari on 10/8/2015.
  */
 
-if(!exports) var exports = {};
 
 // Client Script
 if(typeof document === 'object')
@@ -112,10 +111,9 @@ if(typeof document === 'object')
 // Worker Script
 else
 (function() {
-
     var TEMPLATE_URL = "ks/render/scripts/create-form/ks-script-create-form.html";
 
-    exports.runScript = function(commandString, callback) {
+    module.exports.runScript = function(commandString, callback) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", TEMPLATE_URL);
         xhr.onload = function () {
@@ -126,3 +124,5 @@ else
         return true;
     };
 })();
+if (!module) var module = {};
+if (!module.exports) module.exports = {};

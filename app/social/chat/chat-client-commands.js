@@ -4,15 +4,16 @@
 (function() {
 
     self.exports = {};
+    self.module = {exports: {}};
     importScripts('app/social/chat/render/chat-window.js');
-    var chatExports = self.exports;
+    var chatExports = self.module.exports;
 
     var PATH_PREFIX_CHAT = 'chat:';
     var PATH_PREFIX_CHAT_USER_LIST = 'chat-user-list:';
 
     var PATH_PREFIX_MESSAGE = 'message:';
 
-    var activeChannels = [];
+    //var activeChannels = [];
 
 
     Client.addCommand(joinCommand);

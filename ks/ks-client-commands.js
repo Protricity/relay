@@ -1,7 +1,6 @@
 /**
  * Created by ari.
  */
-if(!exports) var exports = {};
 (function() {
 
     //if(typeof Client === 'undefined')

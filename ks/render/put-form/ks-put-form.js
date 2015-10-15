@@ -239,19 +239,21 @@ if(typeof document === 'object')
 
 // Worker Script
 else
-(function() {
-    var TEMPLATE_URL = 'ks/render/put-form/ks-put-form.html';
+    (function() {
+        var TEMPLATE_URL = 'ks/render/put-form/ks-put-form.html';
 
-    exports.renderPutForm = function(content, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", TEMPLATE_URL);
-        xhr.onload = function () {
-            callback(xhr.responseText
-                    .replace(/{\$content}/gi, content || '')
-            );
+        module.exports.renderPutForm = function(content, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", TEMPLATE_URL);
+            xhr.onload = function () {
+                callback(xhr.responseText
+                        .replace(/{\$content}/gi, content || '')
+                );
+            };
+            xhr.send();
+
+            return true;
         };
-        xhr.send();
-
-        return true;
-    };
-})();
+    })();
+if (!module) var module = {};
+if (!module.exports) module.exports = {};

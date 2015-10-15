@@ -47,8 +47,9 @@
         if(!match)
             return false;
 
-        importScripts('pgp/templates/pgp-manage-template.js');
-        Templates.pgp.manage.form(status_content, function(html) {
+        var templateExports = require('pgp/render/manage/pgp-manage-form.js');
+
+        templateExports.renderPGPManageForm(status_content, function(html) {
             Client.render(html);
         });
 
@@ -61,7 +62,7 @@
 
             if(contentEntry) {
                 count++;
-                Templates.pgp.manage.entry(contentEntry, function(html) {
+                templateExports.renderPGPManageFormEntry(contentEntry, function(html) {
                     Client.appendChild("pgp-manage-entries:", html);
                 });
 
@@ -69,7 +70,7 @@
                 if(count === 0) {
                     status_content = (status_content ? status_content + "<br/>" : '') + "<strong>No PGP Identities found</strong><br/>" +
                         "<span class='info'>You may <a href='#KEYGEN'>Generate</a>  a new PGP Key Pair Identity</span>";
-                    Templates.pgp.manage.form(status_content, function(html) {
+                    templateExports.renderPGPManageForm(status_content, function(html) {
                         Client.render(html);
                     });
                 }
@@ -106,7 +107,11 @@
                 userID = contents; return '';
             });
 
-            var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
+            self.exports = {};
+            self.module = {exports: {}};
+            importScripts('pgp/lib/openpgpjs/openpgp.js');
+            var openpgp = self.module.exports;
+            //var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
             openpgp.generateKeyPair({
                 keyType:1,
                 numBits:bits,
@@ -126,7 +131,6 @@
                 //var publicKeyBlock = publicKey.armor();
 
                 var status_content = "\
-                    Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually\n\
                     <span class='success'>PGP Key Pair generated successfully</span><br/><br/>\n\
                     <span class='info'>You may now register the following identity:</span><br/>\n\
                     User ID: <strong>" + userIDString.replace(/</g, '&lt;') + "</strong><br/>\n\
@@ -134,12 +138,10 @@
                     Public Key ID: <strong>" + newPublicKeyID + "</strong><br/>\n\
                     Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
 
-                importScripts('pgp/templates/pgp-register-template.js');
-                Templates.pgp.register.form(keyPair.privateKeyArmored, status_content, function(html) {
+                var templateExports = require('pgp/render/register/pgp-register-form.js');
+                templateExports.renderPGPRegisterForm(keyPair.privateKeyArmored, status_content, function(html) {
                     Client.render(html);
                 });
-                // Free up template resources
-                delete Templates.pgp.register;
                 return true;
 
             });
@@ -147,12 +149,11 @@
             return true;
 
         } else {
-            importScripts('pgp/templates/pgp-generate-template.js');
-            Templates.pgp.generate.form('', function(html) {
+            var templateExports = require('pgp/render/keygen/pgp-keygen-form.js');
+
+            templateExports.renderPGPKeyGenForm('', function(html) {
                 Client.render(html);
             });
-            // Free up template resources
-            delete Templates.pgp.generate;
 
             return true;
         }
@@ -167,7 +168,10 @@
             return false;
 
         if(match[1]) {
-            var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
+            self.exports = {};
+            self.module = {exports: {}};
+            importScripts('pgp/lib/openpgpjs/openpgp.js');
+            var openpgp = self.module.exports;
 
             var privateKeyBlock = (match[1] || '').replace(/(\r\n|\r|\n)/g, '\r\n');
             var privateKey = openpgp.key.readArmored(privateKeyBlock).keys[0];
@@ -213,8 +217,9 @@
 
         } else {
             var status_content = "Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually";
-            importScripts('pgp/templates/pgp-register-template.js');
-            Templates.pgp.register.form('', status_content, function(html) {
+
+            var templateExports = require('pgp/render/register/pgp-register-form.js');
+            templateExports.renderPGPRegisterForm('', status_content, function(html) {
                 Client.render(html);
             });
             // Free up template resources
@@ -273,9 +278,8 @@
     }
 
     function require(path) {
-        self.module = {
-            exports: {}
-        };
+        self.exports = {};
+        self.module = {exports: {}};
         importScripts(path);
         return self.module.exports;
     }
