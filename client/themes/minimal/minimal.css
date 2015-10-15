@@ -57,18 +57,21 @@ li {
 .theme-minimal > article.maximized {
     position: fixed;
     max-width: 80%;
-    left: 20vw;
-    bottom: 10vw;
+    /* left: 20vw; */
+    /* bottom: 10vw; */
     margin-top: 5%;
     z-index: 2;
     box-shadow: 0 0 4em #558;
     font-size: large;
     transition: 500ms;
+    bottom: 50%;
+    right: 50%;/* bring your own prefixes */
+    transform: translate(50%, 50%);
 }
 
 .theme-minimal > article:not(.maximized) {
-    transition: 0.5s;
-    transition-delay: 0.5s;
+    transition: 0.5s ease-in-out;
+    transition-delay: 0.2s;
 }
 
 /** Title Bar **/

@@ -18,7 +18,7 @@ if(typeof document === 'object')
 // Worker Script
 else
     (function() {
-        exports.renderSocketLogContainer = function(url, callback) {
+        module.exports.renderSocketLogContainer = function(url, callback) {
             var match = url.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
             var host = match[4];
             if(!host)
@@ -39,7 +39,7 @@ else
             return true;
         };
 
-        exports.renderSocketLogEntry = function(socketMessageContent, direction, callback) {
+        module.exports.renderSocketLogEntry = function(socketMessageContent, direction, callback) {
             // Template
             var SOCKET_TEMPLATE_LOG_ENTRY =
                 "\n<div class='log-entry'>" +
@@ -60,7 +60,7 @@ else
         };
 
 
-        exports.renderSocketLogActionEntry = function(action, callback) {
+        module.exports.renderSocketLogActionEntry = function(action, callback) {
             // Template
             var SOCKET_TEMPLATE_ACTION_ENTRY =
                 "\n<div class='log-entry'>" +
@@ -73,3 +73,5 @@ else
             );
         };
     })();
+if (!module) var module = {};
+if (!module.exports) module.exports = {};
