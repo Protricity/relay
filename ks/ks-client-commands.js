@@ -112,8 +112,8 @@
 
             // TODO check for multiple pgp ids
             Client
-                .require('ks/render/put-form/ks-put-choose-identity-form.js')
-                .renderPutChooseIdentityForm(content, function(html) {
+                .require('ks/render/put-form/ks-put-choose-key-form.js')
+                .renderPutChooseKeyForm(content, function(html) {
                     Client.render(html);
                 });
             return true;

@@ -80,7 +80,7 @@ if(typeof document === 'object')
             .replace(/\[\$[^}]+\]/g, '');                        // Remove empty variables
 
         formElm.parentNode.getElementsByClassName('put-preview-source-output')[0].innerHTML = template_html
-            .replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '')     // Remove empty html tags
+            .replace(/<[^\/>][^>]*>\s*<\/[^>]+>/gm, '')     // Remove empty html tags
             .replace(/</g, '&lt;');
 
         //.replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '');     // Remove empty html tags
