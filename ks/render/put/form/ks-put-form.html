@@ -16,15 +16,26 @@
 
             <label class='label-path hide-on-compact'>
                 Select a PGP Identity:<br/>
-                <select name='pgp_id_public'>
+                <select name='pgp_id_public' style='width: 20em;'>
                     <option value=''>Select a PGP Identity</option>
                     {$html_pgp_id_public_options}
                     <option disabled='disabled'>Look up an identity...</option>
                     <option disabled='disabled'>Create a new identity...</option>
                 </select>
-                <select name='auto_pgp_id_public' style="width: 13em;">
+                <select name='auto_pgp_id_public' style="width: 13em; float:right;">
                     <option value=''>Ask me every time (safer)</option>
                     <option value='default'>Use this Identity by default</option>
+                </select>
+                <br/>
+                <br/>
+            </label>
+
+            <label class='label-submit hide-on-compact hide-on-no-passphrase-required'>
+                A <span class='passphrase'>passphrase</span> is required to use this <strong>PGP Identity</strong>:<br />
+                <input type='password' name='passphrase' style='width: 18em;'/>
+                <select name='auto_pgp_id_public' style="width: 13em; float:right;">
+                    <option value=''>Ask me every time (safer)</option>
+                    <option value='memory'>Keep private key decrypted in memory (less safe)</option>
                 </select>
                 <br/>
                 <br/>
@@ -52,22 +63,11 @@
                     <option disabled='disabled'>Other Web Space...</option>
                 </select>
             </label>
-
-            <label class='label-submit hide-on-compact hide-on-no-passphrase-required'>
-                <br/>
-                <br/>
-                A <span class='passphrase'>passphrase</span> is required to use this <strong>PGP Identity</strong>:<br />
-                <input type='password' name='passphrase'/>
-                <select name='auto_pgp_id_public' style="width: 13em;">
-                    <option value=''>Ask me every time (safer)</option>
-                    <option value='memory'>Keep private key decrypted in memory (less safe)</option>
-                </select>
-            </label>
         </form>
     </main>
     <header class="section-bar hide-on-compact">
         <label>
-            <input type="checkbox" />
+            <input type="checkbox" style="vertical-align:bottom;" />
             Preview Content
         </label>
     </header>
@@ -80,7 +80,7 @@
     </section>
     <header class="section-bar hide-on-compact">
         <label>
-            <input type="checkbox" />
+            <input type="checkbox" style="vertical-align:bottom;" />
             &uarr; Drag and Drop Suggested Content into Preview &uarr;
         </label>
     </header>

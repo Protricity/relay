@@ -1,5 +1,5 @@
 
-/** Script **/
+/** Form **/
 
 form[name=ks-put-form] select,
 form[name=ks-put-form] input {
@@ -8,12 +8,25 @@ form[name=ks-put-form] input {
     border-radius: 0.6em;
     border-width: 1px;
     font-family: monospace;
+}
+
+form[name=ks-put-form] input[type=submit]:enabled {
     font-weight: bold;
+    transition: 2s;
+    transition-delay: 1s;
+    box-shadow: 0 0 3em #5F5;
+    cursor: pointer;
 }
 
 
 form[name=ks-put-form].no-passphrase-required .hide-on-no-passphrase-required {
     display: none;
+}
+
+form[name=ks-put-form].passphrase-accepted input[type=password] {
+    font-weight: bold;
+    color: green;
+    background-color: #EFFFEF;
 }
 
 /** Compact **/

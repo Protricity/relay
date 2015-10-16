@@ -42,7 +42,9 @@ if(typeof document === 'object')
         var passphrase_required = formElm.pgp_id_public.value.split(',')[1] === '1';
         var passphrase = formElm.passphrase.value;
 
-        formElm.put.disabled = passphrase_required || !pgp_id_public;
+        var disableSubmit = (passphrase_required || !pgp_id_public) || formElm.content.value.length === 0;
+        if(formElm.put.disabled !== disableSubmit)
+            formElm.put.disabled = disableSubmit;
         formElm.classList[!passphrase_required ? 'add' : 'remove']('no-passphrase-required');
 
         formElm.parentNode.parentNode.classList[formElm.content.value.length === 0 ? 'add' : 'remove']('compact');
@@ -70,7 +72,8 @@ if(typeof document === 'object')
                         privateKey.primaryKey.decrypt(passphrase);
 
                 if (privateKey.primaryKey.isDecrypted) {
-                    formElm.put.disabled = false;
+                    if(formElm.put.disabled === true)
+                        formElm.put.disabled = false;
                     if(!formElm.classList.contains('passphrase-accepted'))
                         formElm.classList.add('passphrase-accepted');
 
@@ -88,92 +91,94 @@ if(typeof document === 'object')
         var pgp_id_public = formElm.pgp_id_public.value.split(',')[0];
         var passphrase_required = formElm.pgp_id_public.value.split(',')[1] === '1';
         var passphrase = formElm.passphrase.value;
+        var contentPath = formElm.path.value;
+        var postContent = formElm.content.value;
+        var statusBoxElm = formElm.getElementsByClassName('status-box')[0];
 
-        var pathElm = formElm.querySelector('*[name=path]');
-        if (!pathElm)
-            throw new Error("No channel field found");
+        if(!pgp_id_public)
+            throw new Error("No PGP Key selected");
+        if(!contentPath)
+            throw new Error("No Path provided");
 
-        //var commandString = "PUT " + pathElm.value.trim() + " " + formElm.content.value.trim();
+        if(contentPath[0] === '~') {
+            contentPath = contentPath.substr(1);
+            if(!contentPath || contentPath[0] !== '/')
+                contentPath = '/' + contentPath;
+            contentPath = '/home/' + pgp_id_public.substr(pgp_id_public.length-16) + contentPath;
+        }
 
-        //var socketEvent = new CustomEvent('command', {
-        //    detail: commandString,
-        //    cancelable: true,
-        //    bubbles: true
-        //});
-        //formElm.dispatchEvent(socketEvent);
+        if (contentPath[0] !== '/')
+            contentPath = '/' + contentPath;
 
+        // Query private key
+        var path = 'http://' + pgp_id_public + '.ks/.private/id';
+        KeySpaceDB.queryOne(path, function (err, privateKeyBlock) {
+            if (err)
+                throw new Error(err);
+            if (!privateKeyBlock)
+                throw new Error("Private key not found: " + selectedPrivateKeyID);
 
+            var privateKey = openpgp.key.readArmored(privateKeyBlock.content).keys[0];
+            if (!privateKey.primaryKey.isDecrypted)
+                if (passphrase)
+                    privateKey.primaryKey.decrypt(passphrase);
 
-        //// Query private key
-        //var path = 'http://' + selectedPublicKeyID + '.ks/.private/id';
-        //KeySpaceDB.queryOne(path, function (err, privateKeyBlock) {
-        //    if (err)
-        //        throw new Error(err);
-        //    if (!privateKeyBlock)
-        //        throw new Error("Private key not found: " + selectedPrivateKeyID);
-        //
-        //    var privateKey = openpgp.key.readArmored(privateKeyBlock.content).keys[0];
-        //    if (!privateKey.primaryKey.isDecrypted)
-        //        if (passphrase)
-        //            privateKey.primaryKey.decrypt(passphrase);
-        //
-        //    if (!privateKey.primaryKey.isDecrypted) {
-        //        var errMSG = passphrase === ''
-        //            ? 'PGP key pair requires a passphrase'
-        //            : 'Invalid PGP passphrase';
-        //        //setStatus(formElm, "<span class='error'>" + errMSG + "</span>", 2, true);
-        //        formElm.passphrase.focus();
-        //        throw new Error(errMSG);
-        //    }
+            if (!privateKey.primaryKey.isDecrypted) {
+                var errMSG = passphrase === ''
+                    ? 'PGP key pair requires a passphrase'
+                    : 'Invalid PGP passphrase';
+                statusBoxElm.innerHTML = "<span class='error'>" + errMSG + "</span>";
+                formElm.passphrase.focus();
+                throw new Error(errMSG);
+            }
 
-            //    var author = privateKey.getUserIds()[0];
-            //    var fixedPostPath = fixHomePath(pathElm.value, selectedPublicKeyID);
-            //    if (fixedPostPath[0] !== '/')
-            //        fixedPostPath = '/' + fixedPostPath;
-            //
-            //    var timestamp = Date.now();
-            //
-            //    var contentDiv = document.createElement('div');
-            //    contentDiv.innerHTML = postContent;
-            //    var articleElm = contentDiv.querySelector('article');
-            //    if (!articleElm) {
-            //        contentDiv.innerHTML = "<article>" + contentDiv.innerHTML + "</article>";
-            //        articleElm = contentDiv.querySelector('article');
-            //    }
-            //    articleElm.setAttribute('data-author', author);
-            //    articleElm.setAttribute('data-path', fixedPostPath);
-            //    articleElm.setAttribute('data-timestamp', timestamp.toString());
-            //    postContent = articleElm.outerHTML;
-            //    postContent = protectHTMLContent(postContent, formElm);
-            //
-            //    setStatus(formElm, "<span class='command'>Encrypt</span>ing content...");
-            //    openpgp.encryptMessage(privateKey, postContent)
-            //        .then(function (pgpEncryptedString) {
-            //            setStatus(formElm, "Adding post to database...");
-            //
-            //            var pgpEncryptedMessage = openpgp.message.readArmored(pgpEncryptedString);
-            //
-            //            KeySpaceDB.addVerifiedContentToDB(pgpEncryptedString, selectedPublicKeyID, fixedPostPath, timestamp, {}, function (err, insertData) {
-            //                if (err)
-            //                    throw new Error(err);
-            //
-            //                var commandString = "PUT " + fixedPostPath + " " + pgpEncryptedString;
-            //
-            //                var socketEvent = new CustomEvent('command', {
-            //                    detail: commandString,
-            //                    cancelable: true,
-            //                    bubbles: true
-            //                });
-            //                formElm.dispatchEvent(socketEvent);
-            //
-            //                if (!socketEvent.defaultPrevented)
-            //                    throw new Error("Socket event for new post was not handled");
-            //
-            //                setStatus(formElm, "<span class='command'>Put</span> <span class='success'>Successful</span>");
-            //                postContentElm.value = '';
-            //            });
-            //        });
-            //});
+            var author = privateKey.getUserIds()[0];
+            var timestamp = Date.now();
+
+            var contentDiv = document.createElement('div');
+            contentDiv.innerHTML = postContent;
+            var articleElm = contentDiv.querySelector('article');
+            if (!articleElm) {
+                contentDiv.innerHTML = "<article>" + contentDiv.innerHTML + "</article>";
+                articleElm = contentDiv.querySelector('article');
+            }
+            articleElm.setAttribute('data-author', author);
+            articleElm.setAttribute('data-path', fixedPostPath);
+            articleElm.setAttribute('data-timestamp', timestamp.toString());
+            postContent = articleElm.outerHTML;
+            postContent = protectHTMLContent(postContent, formElm);
+
+            statusBoxElm.innerHTML = "<span class='command'>Encrypt</span>ing content...";
+
+            openpgp.encryptMessage(privateKey, postContent)
+                .then(function (pgpEncryptedString) {
+                    setStatus(formElm, "Adding post to database...");
+
+                    var pgpEncryptedMessage = openpgp.message.readArmored(pgpEncryptedString);
+
+                    KeySpaceDB.addVerifiedContentToDB(pgpEncryptedString, pgp_id_public, contentPath, timestamp, {},
+                        function (err, insertData) {
+                            if (err)
+                                throw new Error(err);
+
+                            var commandString = "PUT " + contentPath + " " + pgpEncryptedString;
+
+                            var socketEvent = new CustomEvent('command', {
+                                detail: commandString,
+                                cancelable: true,
+                                bubbles: true
+                            });
+                            formElm.dispatchEvent(socketEvent);
+
+                            if (!socketEvent.defaultPrevented)
+                                throw new Error("Socket event for new post was not handled");
+
+                            statusBoxElm.innerHTML = "<span class='command'>Put</span> <span class='success'>Successful</span>";
+                            formElm.content.value = '';
+                        }
+                    );
+                });
+        });
     }
 
     function updatePutPreview(e, formElm) {
@@ -325,7 +330,8 @@ else
                         "<option value='" + contentEntry.pgp_id_public + ',' + (contentEntry.passphrase_required?1:0) + "'" +
                             (default_pgp_id_public === contentEntry.pgp_id_public ? ' selected="selected"' : '') +
                             ">" +
-                        contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) + ' ' + contentEntry.user_id +
+                        (contentEntry.passphrase_required?'* ':'&nbsp;  ') +
+                        contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) + ' - ' + contentEntry.user_id +
                         "</option>";
 
                 } else {
@@ -339,8 +345,6 @@ else
                         );
                     };
                     xhr.send();
-                    // Free up template resources
-                    //delete Templates.pgp.manage;
                 }
             });
 

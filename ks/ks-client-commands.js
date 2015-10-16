@@ -61,34 +61,37 @@
      * @param commandString PUT [path] [content]
      */
     function putCommand(commandString) {
-        var match = /^put(?:\.(script|preview|form))?(?:\s+([\s\S]+))?$/im.exec(commandString);
+        var match = /^put(?:\.(script|preview|form|manage))?/im.exec(commandString);
         if(!match)
             return false;
 
         var subCommand = (match[1] || '').toLowerCase();
 
-        var showForm = false;
         switch(subCommand) {
             case '':
-                break;
             case 'form':
-                showForm = true;
-                break;
+                return putFormCommand(commandString);
             case 'preview':
                 return putPreviewCommand(commandString);
             case 'script':
                 return putScriptCommand(commandString);
+            case 'manage':
+                return putManageCommand(commandString);
             default:
                 throw new Error("Invalid command: " + commandString);
         }
+    }
+
+    function putFormCommand(commandString) {
+        var match = /^put(?:\.(form))?(?:\s+([\s\S]+))?$/im.exec(commandString);
+        if(!match)
+            throw new Error("Invalid Command: " + commandString);
 
         //var path = match[2] || '~';
+        var showForm = match[1].toLowerCase() === 'form';
         var content = (match[2] || '').trim();
         if(!content)
             showForm = true;
-
-        //if(!/[~/a-z_-]+/i.test(path))
-        //    throw new Error("Invalid Path: " + path);
 
         if(showForm) {
             Client
@@ -96,7 +99,6 @@
                 .renderPutForm(content, function(html) {
                     Client.render(html);
                 });
-            return true;
 
         } else {
             try {
@@ -105,9 +107,9 @@
                 var encIDs = pgpEncryptedMessage.getEncryptionKeyIds();
                 var pgp_id_public = encIDs[0].toHex().toUpperCase();
 
-                // TODO: insert into keyspace. Display
+                // TODO: insert into keyspace. Display PUT.MANAGE content-url
                 Client.sendWithSocket(commandString);
-                return true;
+                return;
 
             } catch (e) {
                 console.log(e);
@@ -119,15 +121,13 @@
                 .renderPutSelectKeyForm(content, function(html) {
                     Client.render(html);
                 });
-            return true;
         }
-
     }
 
     function putScriptCommand(commandString) {
         var match = /^put\.script\s*([\s\S]*)$/im.exec(commandString);
         if(!match)
-            return false;
+            throw new Error("Invalid Command: " + commandString);
 
         var scriptURL = match[1];
         match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(scriptURL);
@@ -189,13 +189,26 @@
     function putPreviewCommand(commandString) {
         var match = /^put.preview\s*([\s\S]+)$/im.exec(commandString);
         if(!match)
-            return false;
+            throw new Error("Invalid Command: " + commandString);
 
         Client
             .require('ks/render/put/preview/ks-put-preview-form.js')
             .renderPutPreviewForm(commandString, function(html) {
                 Client.replace('ks-put-preview:', html);
             });
+
+        return true;
+    }
+
+
+
+    function putManageCommand(commandString) {
+        var match = /^put.manage\s*([\s\S]+)$/im.exec(commandString);
+        if(!match)
+            throw new Error("Invalid Command: " + commandString);
+
+        var contentURL = match[1];
+        throw new Error(contentURL);
 
         return true;
     }
