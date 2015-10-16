@@ -92,7 +92,7 @@
 
         if(showForm) {
             Client
-                .require('ks/render/put-form/ks-put-form.js')
+                .require('ks/render/put/form/ks-put-form.js')
                 .renderPutForm(content, function(html) {
                     Client.render(html);
                 });
@@ -100,9 +100,12 @@
 
         } else {
             try {
+                // Only encrypted messages will be accepted
                 var pgpMessage = openpgp.message.readArmored(commandString);
                 var encIDs = pgpEncryptedMessage.getEncryptionKeyIds();
                 var pgp_id_public = encIDs[0].toHex().toUpperCase();
+
+                // TODO: insert into keyspace. Display
                 Client.sendWithSocket(commandString);
                 return true;
 
@@ -112,8 +115,8 @@
 
             // TODO check for multiple pgp ids
             Client
-                .require('ks/render/put-form/ks-put-choose-key-form.js')
-                .renderPutChooseKeyForm(content, function(html) {
+                .require('ks/render/put/select-key/ks-put-select-key-form.js')
+                .renderPutSelectKeyForm(content, function(html) {
                     Client.render(html);
                 });
             return true;
@@ -174,7 +177,7 @@
 
 
         Client
-            .require('ks/render/put-form/ks-put-script-form.js')
+            .require('ks/render/put/script/ks-put-script-form.js')
             .renderPutScriptForm(commandString, function(html) {
                 Client.render(html);
             });
@@ -189,7 +192,7 @@
             return false;
 
         Client
-            .require('ks/render/put-form/ks-put-preview-form.js')
+            .require('ks/render/put/preview/ks-put-preview-form.js')
             .renderPutPreviewForm(commandString, function(html) {
                 Client.replace('ks-put-preview:', html);
             });
@@ -550,9 +553,7 @@
     }
 
     function require(path) {
-        self.module = {
-            exports: {}
-        };
+        self.module = {exports: {}};
         importScripts(path);
         return self.module.exports;
     }

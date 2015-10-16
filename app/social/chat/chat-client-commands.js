@@ -107,6 +107,7 @@
                 userList = channelUsers[channelPath.toLowerCase()] = [];
             if(userList.indexOf(username) == -1) {
                 userList.push(username);
+
                 userList.sort();
                 chatExports.renderChatUserList(channelPath, userList, function(html) {
                     Client.replace('chat-users:' + channelPath.toLowerCase(), html);
@@ -122,6 +123,9 @@
             return false;
         var channelPath = match[2];
         var userList = match[3].split(/\s+/img);
+        userList = userList.filter(function (value, index, self) {
+            return self.indexOf(value) === index;
+        });
 
         renderChatWindow(channelPath, function () {
             console.info("Channel has a user list: " + channelPath);
@@ -184,6 +188,7 @@
 
         var old_username = match[2];
         var new_username = match[3];
+        var found = false;
         for (var channelPathLowerCase in channelUsers) {
             if (channelUsers.hasOwnProperty(channelPathLowerCase)) {
                 (function (channelPathLowerCase) {
@@ -201,11 +206,15 @@
                         chatExports.renderChatUserList(channelPathLowerCase, userList, function(html) {
                             Client.replace('chat-users:' + channelPathLowerCase, html);
                         });
+                        found = true;
                     }
                 })(channelPathLowerCase);
             }
         }
-        return true;
+        if(found)
+            return true;
+
+        throw new Error("Nick not found in user list: " + old_username);
     }
 
 

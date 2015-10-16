@@ -63,7 +63,7 @@ if(typeof document === 'object')
 // Worker Script
 else
     (function() {
-        var TEMPLATE_URL = 'ks/render/put-form/ks-put-script-form.html';
+        var TEMPLATE_URL = 'ks/render/put/script/ks-put-script-form.html';
 
         module.exports.renderPutScriptForm = function(commandString, callback) {
             var match = /^put\.script\s*([\s\S]*)$/im.exec(commandString);

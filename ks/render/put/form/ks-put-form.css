@@ -5,19 +5,26 @@ form[name=ks-put-form] select,
 form[name=ks-put-form] input {
     padding: 0.5em 1em;
     margin: 0.5em 0;
+    border-radius: 0.6em;
+    border-width: 1px;
+    font-family: monospace;
 }
 
+
+form[name=ks-put-form].no-passphrase-required .hide-on-no-passphrase-required {
+    display: none;
+}
 
 /** Compact **/
 
 /*article.ks-put\3A:not(.compact) .hide-on-compact {}*/
 article.ks-put\3A.compact .hide-on-compact {
-    animation: ks-put-form-max-height 0.5s ease-in 0s forwards;
+    animation: ks-put-form-max-height 1s ease-out 0s forwards;
 }
 
 /*article.ks-put\3A .show-on-compact {}*/
 article.ks-put\3A:not(.compact) .show-on-compact {
-    animation: ks-put-form-max-height 1s ease-in 0.7s forwards;
+    animation: ks-put-form-max-height 1s ease-out 0.7s forwards;
 }
 
 @keyframes ks-put-form-max-height {

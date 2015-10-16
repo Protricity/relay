@@ -253,7 +253,7 @@ function KeySpaceDB(dbReadyCallback) {
                             cursor.continue();
 
                     } else {
-                            callback(null, null, cursor);
+                        callback(null, null, cursor);
                     }
                 };
                 cursor.onerror = function(err) {

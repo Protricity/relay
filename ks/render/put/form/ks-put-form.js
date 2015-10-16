@@ -22,7 +22,7 @@ if(typeof document === 'object')
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
         if(formElm.nodeName.toLowerCase() !== 'form')
             return false;
-            
+
         switch(formElm.getAttribute('name')) {
             case 'ks-put-form':
                 refreshHTTPPutForm(e, formElm);
@@ -38,11 +38,16 @@ if(typeof document === 'object')
 
     var lastPostContent = null;
     function refreshHTTPPutForm(e, formElm) {
-        var postContentElm = formElm.querySelector('textarea[name=content]');
+        var pgp_id_public = formElm.pgp_id_public.value.split(',')[0];
+        var passphrase_required = formElm.pgp_id_public.value.split(',')[1] === '1';
+        var passphrase = formElm.passphrase.value;
 
-        formElm.parentNode.parentNode.classList[postContentElm.value.length === 0 ? 'add' : 'remove']('compact');
-        if(!lastPostContent || lastPostContent != postContentElm.value || e.type === 'change') {
-            lastPostContent = postContentElm.value;
+        formElm.put.disabled = passphrase_required;
+        formElm.classList[!passphrase_required ? 'add' : 'remove']('no-passphrase-required');
+
+        formElm.parentNode.parentNode.classList[formElm.content.value.length === 0 ? 'add' : 'remove']('compact');
+        if(!lastPostContent || lastPostContent != formElm.content.value || e.type === 'change') {
+            lastPostContent = formElm.content.value;
 
             if(refreshHTTPPutForm.previewTimeout)
                 clearTimeout(refreshHTTPPutForm.previewTimeout);
@@ -50,28 +55,32 @@ if(typeof document === 'object')
                 updatePutPreview(e, formElm);
             }, REFRESH_TIMEOUT)
         }
+
+        // TODO: test passphrase
     }
+
 
     function submitHTTPPutForm(e, formElm) {
         e.preventDefault();
-
-        var passphraseElm = formElm.querySelector('*[name=passphrase][type=password], [type=password]');
-        var postContentElm = formElm.querySelector('textarea[name=content]');
-        var postContent = postContentElm.value.trim();
+        var pgp_id_public = formElm.pgp_id_public.value.split(',')[0];
+        var passphrase_required = formElm.pgp_id_public.value.split(',')[1] === '1';
+        var passphrase = formElm.passphrase.value;
 
         var pathElm = formElm.querySelector('*[name=path]');
         if (!pathElm)
             throw new Error("No channel field found");
 
-        var commandString = "PUT " + pathElm + " " + postContent;
+        //var commandString = "PUT " + pathElm.value.trim() + " " + formElm.content.value.trim();
 
-        var socketEvent = new CustomEvent('command', {
-            detail: commandString,
-            cancelable: true,
-            bubbles: true
-        });
-        formElm.dispatchEvent(socketEvent);
-        //
+        //var socketEvent = new CustomEvent('command', {
+        //    detail: commandString,
+        //    cancelable: true,
+        //    bubbles: true
+        //});
+        //formElm.dispatchEvent(socketEvent);
+
+
+
         //// Query private key
         //var path = 'http://' + selectedPublicKeyID + '.ks/.private/id';
         //KeySpaceDB.queryOne(path, function (err, privateKeyBlock) {
@@ -80,7 +89,6 @@ if(typeof document === 'object')
         //    if (!privateKeyBlock)
         //        throw new Error("Private key not found: " + selectedPrivateKeyID);
         //
-        //    var passphrase = passphraseElm.value || '';
         //    var privateKey = openpgp.key.readArmored(privateKeyBlock).keys[0];
         //    if (!privateKey.primaryKey.isDecrypted)
         //        if (passphrase)
@@ -90,59 +98,59 @@ if(typeof document === 'object')
         //        var errMSG = passphrase === ''
         //            ? 'PGP key pair requires a passphrase'
         //            : 'Invalid PGP passphrase';
-        //        setStatus(formElm, "<span class='error'>" + errMSG + "</span>", 2, true);
-        //        passphraseElm.focus();
+        //        //setStatus(formElm, "<span class='error'>" + errMSG + "</span>", 2, true);
+        //        formElm.passphrase.focus();
         //        throw new Error(errMSG);
         //    }
-        //
-        //    var author = privateKey.getUserIds()[0];
-        //    var fixedPostPath = fixHomePath(pathElm.value, selectedPublicKeyID);
-        //    if (fixedPostPath[0] !== '/')
-        //        fixedPostPath = '/' + fixedPostPath;
-        //
-        //    var timestamp = Date.now();
-        //
-        //    var contentDiv = document.createElement('div');
-        //    contentDiv.innerHTML = postContent;
-        //    var articleElm = contentDiv.querySelector('article');
-        //    if (!articleElm) {
-        //        contentDiv.innerHTML = "<article>" + contentDiv.innerHTML + "</article>";
-        //        articleElm = contentDiv.querySelector('article');
-        //    }
-        //    articleElm.setAttribute('data-author', author);
-        //    articleElm.setAttribute('data-path', fixedPostPath);
-        //    articleElm.setAttribute('data-timestamp', timestamp.toString());
-        //    postContent = articleElm.outerHTML;
-        //    postContent = protectHTMLContent(postContent, formElm);
-        //
-        //    setStatus(formElm, "<span class='command'>Encrypt</span>ing content...");
-        //    openpgp.encryptMessage(privateKey, postContent)
-        //        .then(function (pgpEncryptedString) {
-        //            setStatus(formElm, "Adding post to database...");
-        //
-        //            var pgpEncryptedMessage = openpgp.message.readArmored(pgpEncryptedString);
-        //
-        //            KeySpaceDB.addVerifiedContentToDB(pgpEncryptedString, selectedPublicKeyID, fixedPostPath, timestamp, {}, function (err, insertData) {
-        //                if (err)
-        //                    throw new Error(err);
-        //
-        //                var commandString = "PUT " + fixedPostPath + " " + pgpEncryptedString;
-        //
-        //                var socketEvent = new CustomEvent('command', {
-        //                    detail: commandString,
-        //                    cancelable: true,
-        //                    bubbles: true
-        //                });
-        //                formElm.dispatchEvent(socketEvent);
-        //
-        //                if (!socketEvent.defaultPrevented)
-        //                    throw new Error("Socket event for new post was not handled");
-        //
-        //                setStatus(formElm, "<span class='command'>Put</span> <span class='success'>Successful</span>");
-        //                postContentElm.value = '';
-        //            });
-        //        });
-        //});
+
+            //    var author = privateKey.getUserIds()[0];
+            //    var fixedPostPath = fixHomePath(pathElm.value, selectedPublicKeyID);
+            //    if (fixedPostPath[0] !== '/')
+            //        fixedPostPath = '/' + fixedPostPath;
+            //
+            //    var timestamp = Date.now();
+            //
+            //    var contentDiv = document.createElement('div');
+            //    contentDiv.innerHTML = postContent;
+            //    var articleElm = contentDiv.querySelector('article');
+            //    if (!articleElm) {
+            //        contentDiv.innerHTML = "<article>" + contentDiv.innerHTML + "</article>";
+            //        articleElm = contentDiv.querySelector('article');
+            //    }
+            //    articleElm.setAttribute('data-author', author);
+            //    articleElm.setAttribute('data-path', fixedPostPath);
+            //    articleElm.setAttribute('data-timestamp', timestamp.toString());
+            //    postContent = articleElm.outerHTML;
+            //    postContent = protectHTMLContent(postContent, formElm);
+            //
+            //    setStatus(formElm, "<span class='command'>Encrypt</span>ing content...");
+            //    openpgp.encryptMessage(privateKey, postContent)
+            //        .then(function (pgpEncryptedString) {
+            //            setStatus(formElm, "Adding post to database...");
+            //
+            //            var pgpEncryptedMessage = openpgp.message.readArmored(pgpEncryptedString);
+            //
+            //            KeySpaceDB.addVerifiedContentToDB(pgpEncryptedString, selectedPublicKeyID, fixedPostPath, timestamp, {}, function (err, insertData) {
+            //                if (err)
+            //                    throw new Error(err);
+            //
+            //                var commandString = "PUT " + fixedPostPath + " " + pgpEncryptedString;
+            //
+            //                var socketEvent = new CustomEvent('command', {
+            //                    detail: commandString,
+            //                    cancelable: true,
+            //                    bubbles: true
+            //                });
+            //                formElm.dispatchEvent(socketEvent);
+            //
+            //                if (!socketEvent.defaultPrevented)
+            //                    throw new Error("Socket event for new post was not handled");
+            //
+            //                setStatus(formElm, "<span class='command'>Put</span> <span class='success'>Successful</span>");
+            //                postContentElm.value = '';
+            //            });
+            //        });
+            //});
     }
 
     function updatePutPreview(e, formElm) {
@@ -249,17 +257,47 @@ if(typeof document === 'object')
 // Worker Script
 else
     (function() {
-        var TEMPLATE_URL = 'ks/render/put-form/ks-put-form.html';
+        var TEMPLATE_URL = 'ks/render/put/form/ks-put-form.html';
 
         module.exports.renderPutForm = function(content, callback) {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", TEMPLATE_URL);
-            xhr.onload = function () {
-                callback(xhr.responseText
-                        .replace(/{\$content}/gi, content || '')
-                );
-            };
-            xhr.send();
+            self.module = {exports: {}};
+            importScripts('ks/ks-db.js');
+            var KeySpaceDB = self.module.exports.KeySpaceDB;
+
+            var contentEscaped = content
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+
+            // Query private key
+            var path = '/.private/id';
+            var html_pgp_id_public_options = '';
+            KeySpaceDB.queryAll(path, function(err, contentEntry) {
+                if(err)
+                    throw new Error(err);
+
+                if(contentEntry) {
+                    html_pgp_id_public_options +=
+                        "<option value='" + contentEntry.pgp_id_public + ',' + (contentEntry.passphrase_required?1:0) + "'>" +
+                        contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) + ' ' + contentEntry.user_id +
+                        "</option>";
+
+                } else {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("GET", TEMPLATE_URL);
+                    xhr.onload = function () {
+                        callback(xhr.responseText
+                            .replace(/{\$content}/gi, content)
+                            .replace(/{\$content_escaped}/gi, contentEscaped)
+                            .replace(/{\$html_pgp_id_public_options}/gi, html_pgp_id_public_options)
+                        );
+                    };
+                    xhr.send();
+                    // Free up template resources
+                    //delete Templates.pgp.manage;
+                }
+            });
 
             return true;
         };

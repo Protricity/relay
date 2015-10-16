@@ -24,6 +24,7 @@
     max-height: 50em;
     max-width: 100%;
     transition-delay: 0s;
+    transition: 0.5s ease-in-out;
 }
 
 .navigation-commands:hover {
@@ -44,7 +45,7 @@
 .navigation-commands.closed:not(:hover) .hide-on-close {
     opacity: 0;
     transition: opacity 0.5s;
-    transition-delay: 0.2s;
+    transition-delay: 0.6s;
 }
 
 /** Open/Close Button **/

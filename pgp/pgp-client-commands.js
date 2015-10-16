@@ -53,7 +53,7 @@
             Client.render(html);
         });
 
-        // Query private key
+        // Query private keys
         var path = '/.private/id';
         var count = 0;
         getKeySpaceDB().queryAll(path, function(err, contentEntry) {
@@ -166,6 +166,8 @@
         var match = /^register\s*([\s\S]+)?$/im.exec(commandString);
         if(!match)
             return false;
+
+        // TODO: require passphrase on register?
 
         if(match[1]) {
             self.exports = {};

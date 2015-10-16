@@ -1,6 +1,6 @@
 <article class='ks-put: maximized compact'>
-    <script src='ks/render/put-form/ks-put-form.js'></script>
-    <link rel='stylesheet' href='ks/render/put-form/ks-put-form.css' type='text/css' property="stylesheet">
+    <script src='ks/render/put/form/ks-put-form.js'></script>
+    <link rel='stylesheet' href='ks/render/put/form/ks-put-form.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         <a href='#MAXIMIZE ks-put:'>
             <span class='command'>Put</span><span> content in your </span> <strong>Key Space</strong>
@@ -12,18 +12,32 @@
      --><a href='#CLOSE ks-put:'>[x]</a>
     </div>
     <main>
-        <form name='ks-put-form'>
+        <form name='ks-put-form' class='no-passphrase-required'>
+
+            <label class='label-path hide-on-compact'>
+                Select a PGP Identity:<br/>
+                <select name='pgp_id_public'>
+                    <option value=''>Select a PGP Identity</option>
+                    {$html_pgp_id_public_options}
+                    <option disabled='disabled'>Look up an identity...</option>
+                    <option disabled='disabled'>Create a new identity...</option>
+                </select>
+                <br/>
+                <br/>
+            </label>
+
             <label class='label-content'>
-                Create new <span class='html'>HTML</span> Content for your <strong>Key Space</strong>:
-                <br/><textarea cols='64' rows='8' class='focus' name='content' required='required' placeholder='
+                <strong>Create</strong> new <span class='html'>HTML</span> Content for your <strong>Key Space</strong>:
+                <br/><textarea cols='64' rows='8' name='content' required='required' placeholder='
     Type anything you like.
 
         <code>html tags</code>
 
             <strong>allowed!</strong>
                 '>{$content}</textarea>
+                <br />
             </label>
-            <br class="hide-on-compact"/>
+
             <label class='label-submit hide-on-compact'>
                 <input type='submit' value='Create' name='put' />
             </label>
@@ -33,10 +47,22 @@
                     <option disabled='disabled'>Friend's Web Space...</option>
                     <option disabled='disabled'>Other Web Space...</option>
                 </select>
-            </label>&nbsp;
+            </label>
+
+            <label class='label-submit hide-on-compact hide-on-no-passphrase-required'>
+                <br/>
+                <br/>
+                A <strong class='passphrase'>passphrase</strong> is required to use this <strong>PGP Identity</strong>:<br />
+                <input type='password' name='passphrase'/>
+            </label>
         </form>
     </main>
-    <header class="section-bar hide-on-compact">Preview Content</header>
+    <header class="section-bar hide-on-compact">
+        <label>
+            <input type="checkbox" />
+            Preview Content
+        </label>
+    </header>
     <section class="hide-on-compact">
         <div class='ks-put-preview:' style="position: relative;">
             <code class='status-box'>
@@ -44,7 +70,12 @@
             </code>
         </div>
     </section>
-    <header class="section-bar hide-on-compact">&uarr;Drag and Drop Suggested Content into Preview&uarr;</header>
+    <header class="section-bar hide-on-compact">
+        <label>
+            <input type="checkbox" />
+            &uarr; Drag and Drop Suggested Content into Preview &uarr;
+        </label>
+    </header>
     <section class="hide-on-compact">
         <form name='ks-put-preview-form' >
             <div class='put-preview-template-content:'>
@@ -55,14 +86,13 @@
             </div>
         </form>
     </section>
-    <header class="section-bar">
-        <a href='#PUT.SCRIPT'>Content Script</a>s
-    </header>
     <section class="show-on-compact">
         <a href='#PUT.SCRIPT' class='status-box'>
             You can also use a <strong>Content Script</strong> to generate <br/>
             <strong class="key-space">Key Space</strong> content quickly and easily...
        </a>
     </section>
-    <footer class='footer-bar'>&nbsp;</footer>
+    <footer class='footer-bar hide-on-compact'>
+        <a href='#PUT.SCRIPT'>or try content script</a>s...
+    </footer>
 </article>

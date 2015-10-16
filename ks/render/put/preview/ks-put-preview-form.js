@@ -39,7 +39,7 @@ if(typeof document === 'object')
 // Worker Script
 else
     (function() {
-        var TEMPLATE_URL = 'ks/render/put-form/ks-put-preview-form.html';
+        var TEMPLATE_URL = 'ks/render/put/preview/ks-put-preview-form.html';
 
         module.exports.renderPutPreviewForm = function(commandString, callback) {
             var match = /^put\.preview\s*([\s\S]*)$/im.exec(commandString);
