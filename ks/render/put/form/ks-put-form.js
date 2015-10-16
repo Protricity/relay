@@ -42,7 +42,7 @@ if(typeof document === 'object')
         var passphrase_required = formElm.pgp_id_public.value.split(',')[1] === '1';
         var passphrase = formElm.passphrase.value;
 
-        formElm.put.disabled = passphrase_required;
+        formElm.put.disabled = passphrase_required || !pgp_id_public;
         formElm.classList[!passphrase_required ? 'add' : 'remove']('no-passphrase-required');
 
         formElm.parentNode.parentNode.classList[formElm.content.value.length === 0 ? 'add' : 'remove']('compact');
@@ -56,7 +56,30 @@ if(typeof document === 'object')
             }, REFRESH_TIMEOUT)
         }
 
-        // TODO: test passphrase
+        if(pgp_id_public && passphrase_required) {
+            var path = 'http://' + pgp_id_public + '.ks/.private/id';
+            KeySpaceDB.queryOne(path, function (err, privateKeyBlock) {
+                if (err)
+                    throw new Error(err);
+                if (!privateKeyBlock)
+                    throw new Error("Private key not found: " + pgp_id_public);
+
+                var privateKey = openpgp.key.readArmored(privateKeyBlock.content).keys[0];
+                if (!privateKey.primaryKey.isDecrypted)
+                    if (passphrase)
+                        privateKey.primaryKey.decrypt(passphrase);
+
+                if (privateKey.primaryKey.isDecrypted) {
+                    formElm.put.disabled = false;
+                    if(!formElm.classList.contains('passphrase-accepted'))
+                        formElm.classList.add('passphrase-accepted');
+
+                } else {
+                    if(formElm.classList.contains('passphrase-accepted'))
+                        formElm.classList.remove('passphrase-accepted');
+                }
+            });
+        }
     }
 
 
@@ -89,7 +112,7 @@ if(typeof document === 'object')
         //    if (!privateKeyBlock)
         //        throw new Error("Private key not found: " + selectedPrivateKeyID);
         //
-        //    var privateKey = openpgp.key.readArmored(privateKeyBlock).keys[0];
+        //    var privateKey = openpgp.key.readArmored(privateKeyBlock.content).keys[0];
         //    if (!privateKey.primaryKey.isDecrypted)
         //        if (passphrase)
         //            privateKey.primaryKey.decrypt(passphrase);
@@ -252,6 +275,22 @@ if(typeof document === 'object')
     // For HTTP Content Database access
     includeScript('ks/ks-db.js');
 
+    // For PGP Decryption in chat rooms
+    var openPGPScriptPath = 'pgp/lib/openpgpjs/openpgp.js';
+    includeScript(openPGPScriptPath, function() {
+
+        var timeout = setInterval(function() {
+            var src = openPGPScriptPath.replace('/openpgp.', '/openpgp.worker.');
+            if(!window.openpgp || window.openpgp._worker_init)
+                return;
+            window.openpgp.initWorker(src);
+            window.openpgp._worker_init = true;
+            clearInterval(timeout);
+            console.info("OpenPGP Worker Loaded: " + src);
+        }, 500);
+    });
+
+
 })();
 
 // Worker Script
@@ -273,13 +312,19 @@ else
             // Query private key
             var path = '/.private/id';
             var html_pgp_id_public_options = '';
+            var default_pgp_id_public = null;
             KeySpaceDB.queryAll(path, function(err, contentEntry) {
                 if(err)
                     throw new Error(err);
 
                 if(contentEntry) {
+                    if(!default_pgp_id_public)
+                        default_pgp_id_public = contentEntry.pgp_id_public;
+
                     html_pgp_id_public_options +=
-                        "<option value='" + contentEntry.pgp_id_public + ',' + (contentEntry.passphrase_required?1:0) + "'>" +
+                        "<option value='" + contentEntry.pgp_id_public + ',' + (contentEntry.passphrase_required?1:0) + "'" +
+                            (default_pgp_id_public === contentEntry.pgp_id_public ? ' selected="selected"' : '') +
+                            ">" +
                         contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) + ' ' + contentEntry.user_id +
                         "</option>";
 

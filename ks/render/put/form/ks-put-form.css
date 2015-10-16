@@ -3,11 +3,12 @@
 
 form[name=ks-put-form] select,
 form[name=ks-put-form] input {
-    padding: 0.5em 1em;
+    padding: 0.7em 0.8em;
     margin: 0.5em 0;
     border-radius: 0.6em;
     border-width: 1px;
     font-family: monospace;
+    font-weight: bold;
 }
 
 
