@@ -19,7 +19,7 @@ if(typeof document === 'object')
 else
     (function() {
         module.exports.renderNavTag = function(tagHTML, callback, Client) {
-            var TEMPLATE_URL = 'client/tags/client-nav-tag.html';
+            var TEMPLATE_URL = 'client/render/tags/client-nav-tag.html';
 
             var xhr = new XMLHttpRequest();
             xhr.open("GET", TEMPLATE_URL);
