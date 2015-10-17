@@ -276,7 +276,6 @@ function KeySpaceDB(dbReadyCallback) {
         })
     };
 
-// TODO listings and variables
 // TODO: calculate domain names that resolve to key ids
 // TODO: D4819140521D4941.ks + [] => myspace.az12332432523.nks - [] => D4819140521D4941.ks
 // TODO: 521D4941.ks + [] => myspace.abc123.nks - [] => 521D4941.ks

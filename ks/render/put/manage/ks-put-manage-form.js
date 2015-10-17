@@ -47,13 +47,26 @@ else
                 if(err)
                     throw new Error(err);
 
-                if(!contentEntry)
-                    throw new Error("Could not find: " + url);
+                if(!contentEntry) {
+                    status_content += (status_content ? '<br/>' : '') +
+                        "<span class='error'>Not Found: " + url + "</span>";
+                    contentEntry = {
+                        content: null,
+                        path: null,
+                        pgp_id_private: null,
+                        pgp_id_public: null,
+                        timestamp: null,
+                        user_id: null
+                    }
+                }
 
                 var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
                 //var pgpEncryptedMessage = openpgp.cleartext.readArmored(contentEntry.content);
-                var pgpClearSignedMessage = openpgp.cleartext.readArmored(contentEntry.content);
-                var verifiedContent = pgpClearSignedMessage.getText();
+                var verifiedContent = null;
+                if(contentEntry.content) {
+                    var pgpClearSignedMessage = openpgp.cleartext.readArmored(contentEntry.content);
+                    verifiedContent = pgpClearSignedMessage.getText();
+                }
                 //var encIDs = getEncryptionKeyIds(pgpClearSignedMessage.packets);
                 //var pgp_id_public = encIDs[0].toHex().toUpperCase();
 

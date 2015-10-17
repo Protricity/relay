@@ -111,11 +111,10 @@
                         var url = "http://" + insertData.pgp_id_public + '.ks/' + insertData.path;
 
                         Client.sendWithSocket(commandString);
-                        status_content = "<span class='command'>Put</span> <span class='success'>Successful</span>: " +
-                            "<a href='" + url + "'>" + url + "</a>";
+                        status_content = "<strong>Key Space</strong> content stored <span class='success'>Successful</span>: " +
+                            "<br/><a href='" + url + "'>" + insertData.path + "</a>";
 
                         putManageCommand("PUT.MANAGE " + url, status_content);
-
                     });
                 return true;
 
@@ -123,7 +122,6 @@
                 status_content = "<span class='error'>" + e.message + "</span>";
                 console.error(e);
             }
-
         }
 
         // If anything goes wrong, show form
@@ -211,15 +209,15 @@
 
 
     function putManageCommand(commandString, status_content) {
-        var match = /^put.manage\s*([\s\S]+)$/im.exec(commandString);
+        var match = /^put.manage\s*(\S+)?$/im.exec(commandString);
         if(!match)
             throw new Error("Invalid Command: " + commandString);
 
-        var contentURL = match[1];
+        var contentURL = match[1] || '';
 
         require('ks/render/put/manage/ks-put-manage-form.js')
             .renderPutManageForm(contentURL, status_content, function(html) {
-                Client.replace('ks-put:', html);
+                Client.render(html);
             });
 
         return true;
