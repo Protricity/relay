@@ -115,7 +115,7 @@ function Client() {
 
 
     function parseClientTags(tagHTML, callback) {
-        var match = /{\$([a-z][^}]+)}/.exec(tagHTML);
+        var match = /\{([a-z][^}]+)}/.exec(tagHTML);
         if (!match) {
             callback(tagHTML);
             return;
