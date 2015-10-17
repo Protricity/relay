@@ -40,7 +40,7 @@ function KeySpaceDB(dbReadyCallback) {
 
         // First Time
         if (typeof indexedDB !== 'undefined') {
-            console.info("indexedDB.open(", KeySpaceDB.DB_NAME, KeySpaceDB.DB_VERSION, ")");
+            //console.info("indexedDB.open(", KeySpaceDB.DB_NAME, KeySpaceDB.DB_VERSION, ")");
             var openRequest = indexedDB.open(KeySpaceDB.DB_NAME, KeySpaceDB.DB_VERSION);
 
             openRequest.onsuccess = function (e) {
@@ -149,6 +149,7 @@ function KeySpaceDB(dbReadyCallback) {
 
                     decryptedContent.encrypted = pgpSignedContent;
                     decryptedContent.pgp_id_public = pgp_id_public;
+                    console.info("Verified Signed Content for: " + pgp_id_public);
                     callback(null, decryptedContent);
                 })
                 .catch(function(err) {
