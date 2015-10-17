@@ -30,8 +30,7 @@ li {
     vertical-align: top;
     background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
     border-radius: 2px;
-
-    max-height: 30em;
+    max-height: 50em;
     transition: 0.5s ease-out;
     transition-delay: 0.2s;
 }
@@ -102,7 +101,7 @@ li {
 }
 .theme-minimal > article:hover > header:first-of-type {
     font-weight: bold;
-    text-decoration: underline;
+/*     text-decoration: underline; */
 }
 
 .theme-minimal > article > .header-bar-buttons {

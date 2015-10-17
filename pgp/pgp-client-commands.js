@@ -51,32 +51,33 @@
 
         templateExports.renderPGPManageForm(status_content, function(html) {
             Client.render(html);
-        });
 
-        // Query private keys
-        var path = '/.private/id';
-        var count = 0;
-        getKeySpaceDB().queryAll(path, function(err, contentEntry) {
-            if(err)
-                throw new Error(err);
+            // Query private keys
+            var path = '/.private/id';
+            var count = 0;
+            getKeySpaceDB().queryAll(path, function(err, contentEntry) {
+                if(err)
+                    throw new Error(err);
 
-            if(contentEntry) {
-                count++;
-                templateExports.renderPGPManageFormEntry(contentEntry, function(html) {
-                    Client.appendChild("pgp-manage-entries:", html);
-                });
-
-            } else {
-                if(count === 0) {
-                    status_content = (status_content ? status_content + "<br/>" : '') + "<strong>No PGP Identities found</strong><br/>" +
-                        "<span class='info'>You may <a href='#KEYGEN'>Generate</a>  a new PGP Key Pair Identity</span>";
-                    templateExports.renderPGPManageForm(status_content, function(html) {
-                        Client.render(html);
+                if(contentEntry) {
+                    count++;
+                    templateExports.renderPGPManageFormEntry(contentEntry, function(html) {
+                        Client.appendChild("pgp-manage-entries:", html);
                     });
+
+                } else {
+                    if(count === 0) {
+                        status_content = (status_content ? status_content + "<br/>" : '') + "<strong>No PGP Identities found</strong><br/>" +
+                            "<span class='info'>You may <a href='#KEYGEN'>Generate</a>  a new PGP Key Pair Identity</span>";
+                        templateExports.renderPGPManageForm(status_content, function(html) {
+                            Client.render(html);
+                        });
+                    }
+                    // Free up template resources
+                    //delete Templates.pgp.manage;
                 }
-                // Free up template resources
-                //delete Templates.pgp.manage;
-            }
+            });
+
         });
         return true;
     }

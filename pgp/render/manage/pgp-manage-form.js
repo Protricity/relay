@@ -175,17 +175,20 @@ else
 
         module.exports.renderPGPManageFormEntry = function (contentEntry, callback) {
             var MANAGE_TEMPLATE_ENTRY = "\
-            <label>\n\
-                <fieldset class='pgp-id-box pgp-id-box:{$id_public}'>\n\
-                    <legend class='title'>\n\
-                        <input type='checkbox' value='{$id_public}' name='selected:{$id_public}'/> <span class='user'>{$user_id}</span>\n\
-                    </legend>\n\
-                    <strong>Public ID:&nbsp;&nbsp;</strong> <span class='fingerprint'>{$id_public}</span><br/>\n\
-                    <strong>Private ID:&nbsp;</strong> <span class='fingerprint'>{$id_private}</span><br/>\n\
-                    <strong>User ID:&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='user'>{$user_id}</span><br/>\n\
-                    <strong>Passphrase:&nbsp;</strong> {$passphrase_required}<br/>\n\
-                </fieldset>\n\
-            </label>";
+            <div class='pgp-manage-entries:'>\
+                <label>\n\
+                    <fieldset class='pgp-id-box pgp-id-box:{$id_public}'>\n\
+                        <legend class='title'>\n\
+                            <input type='checkbox' value='{$id_public}' name='selected:{$id_public}'/> <span class='user'>{$user_id}</span>\n\
+                        </legend>\n\
+                        <strong>Public ID:&nbsp;&nbsp;</strong> <span class='fingerprint'>{$id_public}</span><br/>\n\
+                        <strong>Private ID:&nbsp;</strong> <span class='fingerprint'>{$id_private}</span><br/>\n\
+                        <strong>User ID:&nbsp;&nbsp;&nbsp;&nbsp;</strong> <span class='user'>{$user_id}</span><br/>\n\
+                        <strong>Passphrase:&nbsp;</strong> {$passphrase_required}<br/>\n\
+                    </fieldset>\n\
+                </label>\
+            </div>\
+";
 
             // Callback
             callback(MANAGE_TEMPLATE_ENTRY
