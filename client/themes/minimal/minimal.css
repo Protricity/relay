@@ -30,6 +30,10 @@ li {
     vertical-align: top;
     background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
     border-radius: 2px;
+
+    max-height: 40em;
+    transition: 0.5s ease-out;
+    transition-delay: 0.2s;
 }
 
 .theme-minimal > article:hover {
@@ -44,17 +48,24 @@ li {
 
 /** Channel Windows **/
 
-.theme-minimal > article.closed,
-.theme-minimal > article.minimized > :not(.show-on-minimized),
-.theme-minimal > article.minimized .hide-on-minimized{
+/*.theme-minimal > article.minimized > :not(.show-on-minimized),*/
+/*.theme-minimal > article.minimized .hide-on-minimized{*/
+.theme-minimal > article.closed {
     display: none;
 }
 
+.theme-minimal > article:not(.minimized) {
+}
 .theme-minimal > article.minimized {
     min-width: 16em;
+    max-height: 20px;
+    overflow: hidden;
+    transition: 1s ease-in;
+    transition-delay: 0s;
 }
 
 .theme-minimal > article.maximized {
+
     position: fixed;
     /* max-width: 80%; */
     /* left: 20vw; */
@@ -70,8 +81,6 @@ li {
 }
 
 .theme-minimal > article:not(.maximized) {
-    transition: 0.5s ease-in-out;
-    transition-delay: 0.2s;
 }
 
 /** Headers and Footers **/
