@@ -3,19 +3,16 @@
 
 .navigation-commands {
     float: left;
-
     background-color: lightgrey;
     padding: 0.5em;
     margin-bottom: 0.5em;
     border: 1px outset;
     border-radius: 4px;
-
     overflow: hidden;
     white-space: nowrap;
-
     max-width: 5.5em;
     max-height: 1.6em;
-    transition: max-width 0.5s, max-height 1s;
+    transition: max-width 2s, max-height 2s;
     transition-delay: 0.2s;
 }
 
@@ -24,7 +21,7 @@
     max-height: 50em;
     max-width: 100%;
     transition-delay: 0s;
-    transition: 0.5s ease-in-out;
+    transition: max-height 0.5s ease-in-out;
 }
 
 .navigation-commands:hover {
