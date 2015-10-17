@@ -84,14 +84,15 @@
     }
 
     function putFormCommand(commandString) {
-        var match = /^put(?:\.(form))?(?:\s+(\S+))?(?:\s+([\s\S]+))?$/im.exec(commandString);
+        var match = /^put(?:\.(form))?(?:\s+--id\s+(\w+))?(?:\s+(\S+))?(?:\s+([\s\S]+))?$/im.exec(commandString);
         if(!match)
             throw new Error("Invalid Command: " + commandString);
 
         //var path = match[2] || '~';
         var showForm = (match[1] || '').toLowerCase() === 'form';
-        var putPath = (match[2] || '').trim();
-        var content = (match[3] || '').trim();
+        var pgp_id_public = match[2] || null;
+        var putPath = (match[3] || '').trim();
+        var content = (match[4] || '').trim();
         if(!content)
             showForm = true;
 
@@ -114,8 +115,13 @@
                         status_content = "<strong>Key Space</strong> content stored <span class='success'>Successful</span>: " +
                             "<br/><a href='" + url + "'>" + insertData.path + "</a>";
 
-                        putManageCommand("PUT.MANAGE " + url, status_content);
-                    });
+                        require('ks/render/put/manage/ks-put-manage-form.js')
+                            .renderPutManageForm(url, status_content, function(html) {
+                                Client.replace('ks-put:', html);
+                            });
+                    },
+                    pgp_id_public
+                );
                 return true;
 
             } catch (e) {
@@ -213,7 +219,7 @@
         if(!match)
             throw new Error("Invalid Command: " + commandString);
 
-        var contentURL = match[1] || '';
+        var contentURL = match[1] || '/';
 
         require('ks/render/put/manage/ks-put-manage-form.js')
             .renderPutManageForm(contentURL, status_content, function(html) {

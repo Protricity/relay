@@ -156,24 +156,26 @@ if(typeof document === 'object')
                 .then(function (pgpSignedContent) {
                     var pgpClearSignedMessage = openpgp.cleartext.readArmored(pgpSignedContent);
 
-                    // Add PublicKeyEncryptedSessionKey
+                    //Add PublicKeyEncryptedSessionKey
                     var symAlgo = openpgp.key.getPreferredSymAlgo(privateKey);
                     var encryptionKeyPacket = privateKey.getEncryptionKeyPacket();
                     if (encryptionKeyPacket) {
-                        var pkESKeyPacket = new openpgp.packet.PublicKeyEncryptedSessionKey();
-                        pkESKeyPacket.publicKeyId = encryptionKeyPacket.getKeyId();
-                        pkESKeyPacket.publicKeyAlgorithm = encryptionKeyPacket.algorithm;
-                        pkESKeyPacket.sessionKey = publicKey;
-                        pkESKeyPacket.sessionKeyAlgorithm = openpgp.enums.read(openpgp.enums.symmetric, symAlgo);
-                        pkESKeyPacket.encrypt(encryptionKeyPacket);
-                        pgpClearSignedMessage.packets.push(pkESKeyPacket);
-
+                       var pkESKeyPacket = new openpgp.packet.PublicKeyEncryptedSessionKey();
+                       pkESKeyPacket.publicKeyId = encryptionKeyPacket.getKeyId();
+                       pkESKeyPacket.publicKeyAlgorithm = encryptionKeyPacket.algorithm;
+                       pkESKeyPacket.sessionKey = publicKey;
+                       pkESKeyPacket.sessionKeyAlgorithm = openpgp.enums.read(openpgp.enums.symmetric, symAlgo);
+                       pkESKeyPacket.encrypt(encryptionKeyPacket);
+                       pgpClearSignedMessage.packets.push(pkESKeyPacket);
+                    
                     } else {
-                        throw new Error('Could not find valid key packet for encryption in key ' + key.primaryKey.getKeyId().toHex());
+                       throw new Error('Could not find valid key packet for encryption in key ' + key.primaryKey.getKeyId().toHex());
                     }
-                    pgpSignedContent = pgpClearSignedMessage.armor();
 
-                    var commandString = "PUT " + contentPath + " " + pgpSignedContent;
+                    var finalPGPSignedContent = pgpClearSignedMessage.armor();
+                    //console.log(pgpSignedContent, finalPGPSignedContent);
+
+                    var commandString = "PUT --id " + pgp_id_public + " " + contentPath + " " + pgpSignedContent; // finalPGPSignedContent;
 
                     var socketEvent = new CustomEvent('command', {
                         detail: commandString,
@@ -218,16 +220,6 @@ if(typeof document === 'object')
 
         var previewElm = document.getElementsByClassName('ks-put-preview:')[0];
         previewElm.innerHTML = postContent;
-        //var commandString = "PUT.PREVIEW " + postContent;
-        //var socketEvent = new CustomEvent('command', {
-        //    detail: commandString,
-        //    cancelable:true,
-        //    bubbles:true
-        //});
-        //formElm.dispatchEvent(socketEvent);
-        //
-        //if(!socketEvent.defaultPrevented)
-        //    throw new Error("Socket event for new post was not handled");
     }
 
 

@@ -122,14 +122,16 @@ function KeySpaceDB(dbReadyCallback) {
     }
 
 
-    KeySpaceDB.verifySignedContent = function(pgpSignedContent, callback) {
+    KeySpaceDB.verifySignedContent = function(pgpSignedContent, callback, pgp_id_public) {
         if(typeof openpgp === 'undefined')
             var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
 
         var pgpClearSignedMessage = openpgp.cleartext.readArmored(pgpSignedContent);
         pgpSignedContent = pgpClearSignedMessage.armor();
-        var encIDs = getEncryptionKeyIds(pgpClearSignedMessage.packets);
-        var pgp_id_public = encIDs[0].toHex().toUpperCase();
+        if(!pgp_id_public) {
+            var encIDs = getEncryptionKeyIds(pgpClearSignedMessage.packets);
+            pgp_id_public = encIDs[0].toHex().toUpperCase();
+        }
 
         // Query public key
         var path = 'http://' + pgp_id_public + '.ks/public/id';
@@ -158,7 +160,8 @@ function KeySpaceDB(dbReadyCallback) {
         });
     };
 
-    KeySpaceDB.verifyAndAddContentToDB = function(pgpSignedContent, callback) {
+    KeySpaceDB.verifyAndAddContentToDB = function(pgpSignedContent, callback, pgp_id_public) {
+        console.log("ADDING", arguments);
         KeySpaceDB.verifySignedContent(pgpSignedContent,
             function(err, verifiedContent) {
                 if(err)
@@ -167,15 +170,19 @@ function KeySpaceDB(dbReadyCallback) {
                 if(typeof openpgp === 'undefined')
                     var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
 
+                var pgp_id_public = verifiedContent.pgp_id_public;
                 var pgpClearSignedMessage = openpgp.cleartext.readArmored(pgpSignedContent);
-                var encIDs = getEncryptionKeyIds(pgpClearSignedMessage.packets);
-                var pgp_id_public = encIDs[0].toHex().toUpperCase();
+//                 if(!pgp_id_public) {
+//                     var encIDs = getEncryptionKeyIds(pgpClearSignedMessage.packets);
+//                     var pgp_id_public = encIDs[0].toHex().toUpperCase();
+//                 }
 
                 var path = /data-path=["'](\S+)["']/i.exec(verifiedContent.text)[1];
                 var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(verifiedContent.text)[1]);
 
                 KeySpaceDB.addVerifiedContentToDB(pgpSignedContent, pgp_id_public, path, timestamp, {}, callback);
-            }
+            },
+            pgp_id_public
         );
     };
 

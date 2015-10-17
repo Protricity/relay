@@ -57,7 +57,10 @@ else
                         pgp_id_public: null,
                         timestamp: null,
                         user_id: null
-                    }
+                    };
+                    var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(url);
+                    contentEntry.pgp_id_public = match[4];
+                    contentEntry.path = match[5].toLowerCase() || '';
                 }
 
                 var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
