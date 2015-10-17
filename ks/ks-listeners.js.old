@@ -236,7 +236,7 @@
                 .then(function(pgpEncryptedString) {
                 setStatus(formElm, "Adding post to database...");
 
-                var pgpEncryptedMessage = openpgp.message.readArmored(pgpEncryptedString);
+                var pgpSignedContent = openpgp.cleartext.readArmored(pgpEncryptedString);
 
                 KeySpaceDB.addVerifiedContentToDB(pgpEncryptedString, selectedPublicKeyID, fixedPostPath, timestamp, {}, function(err, insertData) {
                     if(err)
@@ -259,63 +259,6 @@
                 });
             });
         });
-    }
-
-    function verifyEncryptedContent(pgpMessageContent, callback) {
-        var openpgp = self.openpgp;
-        if(typeof self.openpgp === 'undefined')
-            openpgp = require('openpgp');
-
-        var pgpEncryptedMessage = openpgp.message.readArmored(pgpMessageContent);
-        var encIDs = pgpEncryptedMessage.getEncryptionKeyIds();
-        var pgp_id_public = encIDs[0].toHex().toUpperCase();
-
-        // Query public key
-        var path = 'http://' + pgp_id_public + '.ks/public/id';
-        KeySpaceDB.queryOne(path, function(err, publicKeyBlock) {
-            if(err)
-                throw new Error(err);
-            if(!publicKeyBlock)
-                throw new Error("Public key not found: " + pgp_id_public);
-
-            var publicKey = openpgp.key.readArmored(publicKeyBlock);
-
-            openpgp.verifyClearSignedMessage(publicKey.keys, pgpEncryptedMessage)
-                .then(function(verifiedContent) {
-                    for(var i=0; i<verifiedContent.signatures.length; i++)
-                        if(!verifiedContent.signatures[i].valid)
-                            throw new Error("Invalid Signature: " + verifiedContent.signatures[i].keyid.toHex().toUpperCase());
-
-                    verifiedContent.encrypted = pgpMessageContent;
-                    verifiedContent.signingKeyId = pgp_id_public;
-                    callback(null, verifiedContent);
-                })
-                .catch(function(err) {
-                    callback(err, null);
-                });
-        });
-    }
-
-    function verifyAndAddContentToDB(pgpEncryptedPost, callback) {
-        verifyEncryptedContent(pgpEncryptedPost,
-            function(err, verifiedContent) {
-                if(err)
-                    throw new Error(err);
-
-                var openpgp = self.openpgp;
-                if(typeof openpgp === 'undefined')
-                    openpgp = require('openpgp');
-
-                var pgpEncryptedMessage = openpgp.message.readArmored(pgpEncryptedPost);
-                var encIDs = pgpEncryptedMessage.getEncryptionKeyIds();
-                var pgp_id_public = encIDs[0].toHex().toUpperCase();
-
-                var path = /data-path=["'](\S+)["']/i.exec(verifiedContent)[1];
-                var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(verifiedContent)[1]);
-
-                KeySpaceDB.addVerifiedContentToDB(pgpEncryptedPost, pgp_id_public, path, timestamp, {}, callback);
-            }
-        );
     }
 
 

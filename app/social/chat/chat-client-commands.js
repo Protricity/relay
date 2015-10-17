@@ -110,7 +110,7 @@
 
                 userList.sort();
                 chatExports.renderChatUserList(channelPath, userList, function(html) {
-                    Client.replace('chat-users:' + channelPath.toLowerCase(), html);
+                    Client.replace('chat-active-users:' + channelPath.toLowerCase(), html);
                 });
             }
         });
@@ -132,7 +132,7 @@
             channelUsers[channelPath.toLowerCase()] = userList;
 
             chatExports.renderChatUserList(channelPath, userList, function (html) {
-                Client.replace('chat-users:' + channelPath.toLowerCase(), html);
+                Client.replace('chat-active-users:' + channelPath.toLowerCase(), html);
             });
         });
         return true;
@@ -166,7 +166,7 @@
             });
 
             chatExports.renderChatUserList(channelPath, userList, function(html) {
-                Client.replace('chat-users:' + channelPath.toLowerCase(), html);
+                Client.replace('chat-active-users:' + channelPath.toLowerCase(), html);
             });
         });
         return true;
@@ -204,7 +204,7 @@
 
                         // Render New User List
                         chatExports.renderChatUserList(channelPathLowerCase, userList, function(html) {
-                            Client.replace('chat-users:' + channelPathLowerCase, html);
+                            Client.replace('chat-active-users:' + channelPathLowerCase, html);
                         });
                         found = true;
                     }

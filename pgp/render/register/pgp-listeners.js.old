@@ -609,5 +609,5 @@
 //var keys = (new openpgp.Keyring.localstore()).loadPrivate();
 
 
-//var pgpMessage = openpgp.message.readArmored(encryptedMessage);
+//var pgpMessage = openpgp.cleartext.readArmored(encryptedMessage);
 //var encIDs = pgpMessage.getEncryptionKeyIds();

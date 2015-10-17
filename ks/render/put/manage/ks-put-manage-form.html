@@ -1,0 +1,45 @@
+<article class='ks-put-manage:{$url} maximized compact'>
+    <script src='ks/render/put/manage/ks-put-manage-form.js'></script>
+    <link rel='stylesheet' href='ks/render/put/manage/ks-put-manage-form.css' type='text/css' property="stylesheet">
+    <header class='header-bar show-on-minimized'>
+        <a href='#MAXIMIZE ks-put-manage:{$url}'>
+            Manage KeySpace Content: {$path}
+        </a>
+    </header>
+    <div class='header-bar-buttons show-on-minimized'>
+        <a href='#MINIMIZE ks-put-manage:{$url}'>[-]</a><!--
+     --><a href='#MAXIMIZE ks-put-manage:{$url}'>[+]</a><!--
+     --><a href='#CLOSE ks-put-manage:{$url}'>[x]</a>
+    </div>
+    <main>
+        <form name='ks-put-manage-form' class='no-passphrase-required'>
+            <code class="status-box">{$status_content}</code>
+
+            <label class='label-content'>
+                <strong>Edit</strong> <span class='html'>HTML</span>
+                Content for your <i>existing</i> <strong>Key Space</strong> entry
+            </label>
+        </form>
+    </main>
+    <header class="section-bar hide-on-compact">
+        <label>
+            <input type="checkbox" style="vertical-align:bottom;" />
+            Preview Content
+        </label>
+    </header>
+    <section class="hide-on-compact">
+        <div class='ks-put-preview:' style="position: relative;">
+            {$content}
+        </div>
+    </section>
+    <header class="section-bar">
+        Delete <strong>Key Space</strong> Content
+    </header>
+    <section class="show-on-compact">
+        <a href='#PUT.DELETE'>
+            <span class='command'>Delete</span> existing <strong>Key Space</strong> content. <br/>
+            If content has already been published, a delete request will be create.<br/>
+            <span class='warn'>Unpublished <strong>Key Space</strong> content cannot be recovered once deleted</span>
+       </a>
+    </section>
+</article>

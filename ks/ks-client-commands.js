@@ -38,7 +38,8 @@
             var privateKey = openpgp.key.readArmored(contentData.content).keys[0];
 
             // TODO: handle passphrase
-            openpgp.decryptMessage(privateKey, pgpEncryptedMessage).then(function(decryptedChallenge) {
+            openpgp.decryptMessage(privateKey, pgpEncryptedMessage)
+                .then(function(decryptedChallenge) {
                 //challengeValidations.push([pgp_id_public, decryptedChallenge]);
                 Client.sendWithSocket("KS-VALIDATE " + decryptedChallenge);
 
@@ -71,8 +72,8 @@
             case '':
             case 'form':
                 return putFormCommand(commandString);
-            case 'preview':
-                return putPreviewCommand(commandString);
+            //case 'preview':
+            //    return putPreviewCommand(commandString);
             case 'script':
                 return putScriptCommand(commandString);
             case 'manage':
@@ -83,45 +84,55 @@
     }
 
     function putFormCommand(commandString) {
-        var match = /^put(?:\.(form))?(?:\s+([\s\S]+))?$/im.exec(commandString);
+        var match = /^put(?:\.(form))?(?:\s+(\S+))?(?:\s+([\s\S]+))?$/im.exec(commandString);
         if(!match)
             throw new Error("Invalid Command: " + commandString);
 
         //var path = match[2] || '~';
-        var showForm = match[1].toLowerCase() === 'form';
-        var content = (match[2] || '').trim();
+        var showForm = (match[1] || '').toLowerCase() === 'form';
+        var putPath = (match[2] || '').trim();
+        var content = (match[3] || '').trim();
         if(!content)
             showForm = true;
 
-        if(showForm) {
-            Client
-                .require('ks/render/put/form/ks-put-form.js')
-                .renderPutForm(content, function(html) {
-                    Client.render(html);
-                });
-
-        } else {
+        var status_content = '';
+        if(!showForm) {
             try {
                 // Only encrypted messages will be accepted
-                var pgpMessage = openpgp.message.readArmored(commandString);
-                var encIDs = pgpEncryptedMessage.getEncryptionKeyIds();
-                var pgp_id_public = encIDs[0].toHex().toUpperCase();
+                var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
+                var pgpMessage = openpgp.cleartext.readArmored(content);
+                var pgpSignedContent = pgpMessage.armor();
 
-                // TODO: insert into keyspace. Display PUT.MANAGE content-url
-                Client.sendWithSocket(commandString);
-                return;
+                getKeySpaceDB().verifyAndAddContentToDB(pgpSignedContent,
+                    function (err, insertData) {
+                        if (err)
+                            throw new Error(err);
+
+                        var url = "http://" + insertData.pgp_id_public + '.ks/' + insertData.path;
+
+                        Client.sendWithSocket(commandString);
+                        status_content = "<span class='command'>Put</span> <span class='success'>Successful</span>: " +
+                            "<a href='" + url + "'>" + url + "</a>";
+
+                        putManageCommand("PUT.MANAGE " + url, status_content);
+
+                    });
+                return true;
 
             } catch (e) {
-                console.log(e);
+                status_content = "<span class='error'>" + e.message + "</span>";
+                console.error(e);
             }
 
-            // TODO check for multiple pgp ids
-            Client
-                .require('ks/render/put/select-key/ks-put-select-key-form.js')
-                .renderPutSelectKeyForm(content, function(html) {
-                    Client.render(html);
-                });
         }
+
+        // If anything goes wrong, show form
+        require('ks/render/put/form/ks-put-form.js')
+            .renderPutForm('', status_content, function(html) {
+                Client.render(html);
+            });
+
+        return true;
     }
 
     function putScriptCommand(commandString) {
@@ -140,7 +151,7 @@
             queryString = match[6] || '';
 
         var scriptFound = null;
-        var scripts = Client.require('ks/ks-content-scripts.js').getContentScripts();
+        var scripts = require('ks/ks-content-scripts.js').getContentScripts();
         for(var i=0; i<scripts.length; i++) {
             var opts = scripts[i];
             var selectedHTML = '';
@@ -161,8 +172,7 @@
 
         if(scriptFound) {
             try {
-                Client
-                    .require(scriptFound[0])
+                require(scriptFound[0])
                     .runScript(fieldValues, function(html) {
                         Client.render(html
                             .replace(/{\$command_string}/ig, commandString)
@@ -176,8 +186,7 @@
         }
 
 
-        Client
-            .require('ks/render/put/script/ks-put-script-form.js')
+        require('ks/render/put/script/ks-put-script-form.js')
             .renderPutScriptForm(commandString, function(html) {
                 Client.render(html);
             });
@@ -186,29 +195,32 @@
     }
 
 
-    function putPreviewCommand(commandString) {
-        var match = /^put.preview\s*([\s\S]+)$/im.exec(commandString);
-        if(!match)
-            throw new Error("Invalid Command: " + commandString);
-
-        Client
-            .require('ks/render/put/preview/ks-put-preview-form.js')
-            .renderPutPreviewForm(commandString, function(html) {
-                Client.replace('ks-put-preview:', html);
-            });
-
-        return true;
-    }
-
+    //function putPreviewCommand(commandString) {
+    //    var match = /^put.preview\s*([\s\S]+)$/im.exec(commandString);
+    //    if(!match)
+    //        throw new Error("Invalid Command: " + commandString);
+    //
+    //    require('ks/render/put/preview/ks-put-preview-form.js')
+    //        .renderPutPreviewForm(commandString, function(html) {
+    //            Client.replace('ks-put-preview:', html);
+    //        });
+    //
+    //    return true;
+    //}
 
 
-    function putManageCommand(commandString) {
+
+    function putManageCommand(commandString, status_content) {
         var match = /^put.manage\s*([\s\S]+)$/im.exec(commandString);
         if(!match)
             throw new Error("Invalid Command: " + commandString);
 
         var contentURL = match[1];
-        throw new Error(contentURL);
+
+        require('ks/render/put/manage/ks-put-manage-form.js')
+            .renderPutManageForm(contentURL, status_content, function(html) {
+                Client.replace('ks-put:', html);
+            });
 
         return true;
     }
@@ -284,6 +296,8 @@
         return true;
     }
 
+
+
     function addURLsToDB(responseContent) {
         var referrerURL = getContentHeader(responseContent, 'Request-Url');
         if(!referrerURL)
@@ -322,8 +336,7 @@
                 // TODO: verify and decrypt content on the fly?
                 var signedBody = protectHTMLContent(contentData.content_verified);
 
-                Client
-                    .require('ks/render/browser/ks-browser.js')
+                require('ks/render/browser/ks-browser.js')
                     .renderResponse(
                         signedBody,
                         requestURL,
@@ -335,8 +348,7 @@
 
             } else {
                 // If nothing found, show something, sheesh
-                Client
-                    .require('ks/render/browser/ks-browser.js')
+                require('ks/render/browser/ks-browser.js')
                     .renderResponse(
                         "<p>Request sent...</p>",
                         requestURL,
@@ -367,8 +379,7 @@
             if(contentData) {
                 // TODO: verify and decrypt content on the fly? Maybe don't verify things being sent out
 
-                Client
-                    .require('ks/render/browser/ks-browser.js')
+                require('ks/render/browser/ks-browser.js')
                     .renderResponse(
                         contentData.content,
                         requestURL,
@@ -384,8 +395,7 @@
                 get404IndexTemplate(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
                     responseHeaders += passedResponseHeaders;
 
-                    Client
-                        .require('ks/render/browser/ks-browser.js')
+                    require('ks/render/browser/ks-browser.js')
                         .renderResponse(
                             defaultResponseBody,
                             requestURL,
@@ -420,8 +430,7 @@
             getDefaultContentResponse(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
                 responseHeaders += "\nBrowser-ID: " + browserID;
 
-                Client
-                    .require('ks/render/browser/ks-browser.js')
+                require('ks/render/browser/ks-browser.js')
                     .renderResponse(
                         defaultResponseBody,
                         requestURL,
@@ -485,8 +494,7 @@
         if(!browserID)
             throw new Error("Invalid Browser ID");
 
-        Client
-            .require('ks/render/browser/ks-browser.js')
+        require('ks/render/browser/ks-browser.js')
             .renderBrowser(responseString, function(html) {
                 Client.render(html);
             });
@@ -507,8 +515,7 @@
         if(!host)
             throw new Error("Invalid Host: " + requestURL);
 
-        var logExport = Client
-            .require('ks/render/log/ks-log-window.js');
+        var logExport = require('ks/render/log/ks-log-window.js');
 
         if(!logContainerActive) {
             logContainerActive = true;

@@ -140,12 +140,12 @@ function ClientSocketWorker() {
                     throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
 
                 targetElement = replaceElements[0];
-                targetElement.innerHTML = '';
+                //targetElement.innerHTML = '';
 
                 while(contentElements.length > 0)
-                    targetElement.appendChild(contentElements[0]);
+                    targetElement.parentNode.insertBefore(contentElements[0], targetElement);
 
-                //targetElement.parentNode.removeChild(targetElement);
+                targetElement.parentNode.removeChild(targetElement);
                 targetElement = contentElement;
                 break;
 

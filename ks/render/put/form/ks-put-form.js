@@ -119,6 +119,8 @@ if(typeof document === 'object')
                 throw new Error("Private key not found: " + selectedPrivateKeyID);
 
             var privateKey = openpgp.key.readArmored(privateKeyBlock.content).keys[0];
+            var publicKey = privateKey.toPublic();
+
             if (!privateKey.primaryKey.isDecrypted)
                 if (passphrase)
                     privateKey.primaryKey.decrypt(passphrase);
@@ -143,40 +145,48 @@ if(typeof document === 'object')
                 articleElm = contentDiv.querySelector('article');
             }
             articleElm.setAttribute('data-author', author);
-            articleElm.setAttribute('data-path', fixedPostPath);
+            articleElm.setAttribute('data-path', contentPath);
             articleElm.setAttribute('data-timestamp', timestamp.toString());
             postContent = articleElm.outerHTML;
             postContent = protectHTMLContent(postContent, formElm);
 
             statusBoxElm.innerHTML = "<span class='command'>Encrypt</span>ing content...";
 
-            openpgp.encryptMessage(privateKey, postContent)
-                .then(function (pgpEncryptedString) {
-                    setStatus(formElm, "Adding post to database...");
+            openpgp.signClearMessage(privateKey, postContent)
+                .then(function (pgpSignedContent) {
+                    var pgpClearSignedMessage = openpgp.cleartext.readArmored(pgpSignedContent);
 
-                    var pgpEncryptedMessage = openpgp.message.readArmored(pgpEncryptedString);
+                    // Add PublicKeyEncryptedSessionKey
+                    var symAlgo = openpgp.key.getPreferredSymAlgo(privateKey);
+                    var encryptionKeyPacket = privateKey.getEncryptionKeyPacket();
+                    if (encryptionKeyPacket) {
+                        var pkESKeyPacket = new openpgp.packet.PublicKeyEncryptedSessionKey();
+                        pkESKeyPacket.publicKeyId = encryptionKeyPacket.getKeyId();
+                        pkESKeyPacket.publicKeyAlgorithm = encryptionKeyPacket.algorithm;
+                        pkESKeyPacket.sessionKey = publicKey;
+                        pkESKeyPacket.sessionKeyAlgorithm = openpgp.enums.read(openpgp.enums.symmetric, symAlgo);
+                        pkESKeyPacket.encrypt(encryptionKeyPacket);
+                        pgpClearSignedMessage.packets.push(pkESKeyPacket);
 
-                    KeySpaceDB.addVerifiedContentToDB(pgpEncryptedString, pgp_id_public, contentPath, timestamp, {},
-                        function (err, insertData) {
-                            if (err)
-                                throw new Error(err);
+                    } else {
+                        throw new Error('Could not find valid key packet for encryption in key ' + key.primaryKey.getKeyId().toHex());
+                    }
+                    pgpSignedContent = pgpClearSignedMessage.armor();
 
-                            var commandString = "PUT " + contentPath + " " + pgpEncryptedString;
+                    var commandString = "PUT " + contentPath + " " + pgpSignedContent;
 
-                            var socketEvent = new CustomEvent('command', {
-                                detail: commandString,
-                                cancelable: true,
-                                bubbles: true
-                            });
-                            formElm.dispatchEvent(socketEvent);
+                    var socketEvent = new CustomEvent('command', {
+                        detail: commandString,
+                        cancelable: true,
+                        bubbles: true
+                    });
+                    formElm.dispatchEvent(socketEvent);
 
-                            if (!socketEvent.defaultPrevented)
-                                throw new Error("Socket event for new post was not handled");
+                    if (!socketEvent.defaultPrevented)
+                        throw new Error("Socket event for new post was not handled");
 
-                            statusBoxElm.innerHTML = "<span class='command'>Put</span> <span class='success'>Successful</span>";
-                            formElm.content.value = '';
-                        }
-                    );
+                    statusBoxElm.innerHTML = "<span class='command'>Put</span> <span class='success'>Successful</span>";
+                    formElm.content.value = '';
                 });
         });
     }
@@ -206,16 +216,18 @@ if(typeof document === 'object')
         postContent = articleElm.outerHTML;
         postContent = protectHTMLContent(postContent, formElm);
 
-        var commandString = "PUT.PREVIEW " + postContent;
-        var socketEvent = new CustomEvent('command', {
-            detail: commandString,
-            cancelable:true,
-            bubbles:true
-        });
-        formElm.dispatchEvent(socketEvent);
-
-        if(!socketEvent.defaultPrevented)
-            throw new Error("Socket event for new post was not handled");
+        var previewElm = document.getElementsByClassName('ks-put-preview:')[0];
+        previewElm.innerHTML = postContent;
+        //var commandString = "PUT.PREVIEW " + postContent;
+        //var socketEvent = new CustomEvent('command', {
+        //    detail: commandString,
+        //    cancelable:true,
+        //    bubbles:true
+        //});
+        //formElm.dispatchEvent(socketEvent);
+        //
+        //if(!socketEvent.defaultPrevented)
+        //    throw new Error("Socket event for new post was not handled");
     }
 
 
@@ -303,7 +315,7 @@ else
     (function() {
         var TEMPLATE_URL = 'ks/render/put/form/ks-put-form.html';
 
-        module.exports.renderPutForm = function(content, callback) {
+        module.exports.renderPutForm = function(content, status_content, callback) {
             self.module = {exports: {}};
             importScripts('ks/ks-db.js');
             var KeySpaceDB = self.module.exports.KeySpaceDB;
@@ -339,7 +351,8 @@ else
                     xhr.open("GET", TEMPLATE_URL);
                     xhr.onload = function () {
                         callback(xhr.responseText
-                            .replace(/{\$content}/gi, content)
+                                .replace(/{\$status_content}/gi, status_content)
+                                .replace(/{\$content}/gi, content)
                             .replace(/{\$content_escaped}/gi, contentEscaped)
                             .replace(/{\$html_pgp_id_public_options}/gi, html_pgp_id_public_options)
                         );

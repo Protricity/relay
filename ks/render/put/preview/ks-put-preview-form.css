@@ -1,8 +1,0 @@
-
-/** Script **/
-
-form[name=ks-put-preview-form] select,
-form[name=ks-put-preview-form] input {
-    padding: 0.5em 1em;
-    margin: 0.5em 0;
-}
