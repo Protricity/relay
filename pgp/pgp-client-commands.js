@@ -52,32 +52,6 @@
         templateExports.renderPGPManageForm(status_content, function(html) {
             Client.render(html);
 
-            // Query private keys
-            var path = '/.private/id';
-            var count = 0;
-            getKeySpaceDB().queryAll(path, function(err, contentEntry) {
-                if(err)
-                    throw new Error(err);
-
-                if(contentEntry) {
-                    count++;
-                    templateExports.renderPGPManageFormEntry(contentEntry, function(html) {
-                        Client.appendChild("pgp-manage-entries:", html);
-                    });
-
-                } else {
-                    if(count === 0) {
-                        status_content = (status_content ? status_content + "<br/>" : '') + "<strong>No PGP Identities found</strong><br/>" +
-                            "<span class='info'>You may <a href='#KEYGEN'>Generate</a>  a new PGP Key Pair Identity</span>";
-                        templateExports.renderPGPManageForm(status_content, function(html) {
-                            Client.render(html);
-                        });
-                    }
-                    // Free up template resources
-                    //delete Templates.pgp.manage;
-                }
-            });
-
         });
         return true;
     }
@@ -176,13 +150,16 @@
             importScripts('pgp/lib/openpgpjs/openpgp.js');
             var openpgp = self.module.exports;
 
+            var KeySpaceDB = getKeySpaceDB();
             var privateKeyBlock = (match[1] || '').replace(/(\r\n|\r|\n)/g, '\r\n');
             var privateKey = openpgp.key.readArmored(privateKeyBlock).keys[0];
             var privateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();
+            privateKeyID = privateKeyID.substr(privateKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
 
             var publicKey = privateKey.toPublic();
             var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
             var publicKeyBlock = publicKey.armor();
+            publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
 
             var userIDString = privateKey.getUserIds().join('; ');
 
@@ -212,7 +189,10 @@
                         <span class='info'>You may now make use of your new identity:</span><br/>\n\
                         User ID: <strong>" + userIDString.replace(/</g, '&lt;') + "</strong><br/>";
 
-                    manageCommand("MANAGE", e, status_content);
+                    require('pgp/render/manage/pgp-manage-form.js')
+                        .renderPGPManageForm(status_content, function(html) {
+                            Client.replace('pgp:', html);
+                        });
 
                 });
             });
@@ -244,7 +224,7 @@
         var publicKeyIDs = match[1].trim().split(/\W+/g);
         for(var i=0; i<publicKeyIDs.length; i++) {
             (function (publicKeyID) {
-                publicKeyID = publicKeyID.substr(publicKeyID.length - 16);
+                publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
 
                 // Query private key(s)
                 var privateKeyPath = 'http://' + publicKeyID + '.ks/.private/id';

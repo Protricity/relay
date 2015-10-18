@@ -9307,7 +9307,9 @@
             if (!(buf instanceof Uint8Array)) {
                 throw new Error('Invalid type: buf not an Uint8Array');
             }
-            if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+            if (typeof self !== 'undefined' && self.nfCrypto && self.nfCrypto.getRandomValues) {
+                self.nfCrypto.getRandomValues(buf);
+            } else if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
                 window.crypto.getRandomValues(buf);
             } else if (typeof window !== 'undefined' && typeof window.msCrypto === 'object' && typeof window.msCrypto.getRandomValues === 'function') {
                 window.msCrypto.getRandomValues(buf);

@@ -128,7 +128,7 @@
         });
 
         renderChatWindow(channelPath, function () {
-            console.info("Channel has a user list: " + channelPath);
+//             console.info("Channel has a user list: " + channelPath);
             channelUsers[channelPath.toLowerCase()] = userList;
 
             chatExports.renderChatUserList(channelPath, userList, function (html) {

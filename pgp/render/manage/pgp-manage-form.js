@@ -158,22 +158,55 @@ if(typeof document === 'object')
 // Worker Script
 else
     (function() {
-        module.exports.renderPGPManageForm = function (status_content, callback) {
-            var TEMPLATE_URL = "pgp/render/manage/pgp-manage-form.html";
+        module.exports.renderPGPManageForm = renderPGPManageForm;
+        function renderPGPManageForm (status_content, callback) {
 
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", TEMPLATE_URL);
-            xhr.onload = function () {
-                callback(xhr.responseText
-                        .replace(/{\$status_content}/gi, status_content || '')
-                );
-            };
-            xhr.send();
+            self.exports = {};
+            self.module = {exports: {}};
+            importScripts('ks/ks-db.js');
+            var KeySpaceDB = self.module.exports.KeySpaceDB;
+
+            var html_manage_entries = '';
+
+            // Query private keys
+            var path = '/.private/id';
+            var count = 0;
+            KeySpaceDB.queryAll(path, function(err, contentEntry) {
+                if(err)
+                    throw new Error(err);
+
+                if(contentEntry) {
+
+                    count++;
+                    renderPGPManageFormEntry(contentEntry, function(html) {
+                        html_manage_entries += html;
+                    });
+
+                } else {
+                    if(count === 0)
+                        status_content = (status_content ? status_content + "<br/>" : '') + "<strong>No PGP Identities found</strong><br/>" +
+                            "<span class='info'>You may <a href='#KEYGEN'>Generate</a>  a new PGP Key Pair Identity</span>";
+
+                    var TEMPLATE_URL = "pgp/render/manage/pgp-manage-form.html";
+
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("GET", TEMPLATE_URL);
+                    xhr.onload = function () {
+                        callback(xhr.responseText
+                            .replace(/{\$status_content}/gi, status_content || '')
+                            .replace(/{\$html_manage_entries}/gi, html_manage_entries || '')
+                        );
+                    };
+                    xhr.send();
+                }
+            });
+
+
             return true;
-        };
+        }
 
-
-        module.exports.renderPGPManageFormEntry = function (contentEntry, callback) {
+        module.exports.renderPGPManageFormEntry = renderPGPManageFormEntry;
+        function renderPGPManageFormEntry(contentEntry, callback) {
             var MANAGE_TEMPLATE_ENTRY = "\
             <div class='pgp-manage-entries:'>\
                 <label>\n\
@@ -207,7 +240,7 @@ else
                 //.replace(/{\$class}/gi, privateKeyData.default === '1' ? " pgp-id-box-default" : "")
                 //.replace(/{\$default}/gi, privateKeyData.default)
             );
-        };
+        }
 
     })();
 if (!module) var module = {};

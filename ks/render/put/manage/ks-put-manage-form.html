@@ -11,35 +11,32 @@
      --><a href='#MAXIMIZE ks-put-manage:{$url}'>[+]</a><!--
      --><a href='#CLOSE ks-put-manage:{$url}'>[x]</a>
     </div>
-    <section class="">
-        <ul>
-            <li>.</li>
-            <li>..</li>
-        </ul>
-    </section>
+
     <header class="section-bar">
-        <strong>Key Space</strong> Entries
+        <strong>Entry</strong> Info
     </header>
-    <section class="">
-        <div class='ks-put-manage-entries:'>
-        </div>
+    <section class="ks-put-manage-info">
+        {$html_info}
     </section>
+
     <header class="section-bar">
-        Preview <strong>Key Space</strong> Content
+        <strong>Key Space</strong> Content
     </header>
-    <section class="">
-        <div class='ks-put-manage-preview:' style="position: relative;">
-        </div>
-    </section>
+    <section class="ks-put-manage-content:" style="position: relative; white-space: pre;">{$html_content}</section>
+
     <header class="section-bar">
-        Delete <strong>Key Space</strong> Content
+        Other <strong>Key Space</strong> Entries
     </header>
-    <section class="show-on-compact">
-        <a href='#PUT.DELETE'>
-            <span class='command'>Delete</span> existing <strong>Key Space</strong> content. <br/>
-            If content has already been published, a delete request will be create.<br/>
-            <span class='warn'>Unpublished <strong>Key Space</strong> content cannot be recovered once deleted</span>
-       </a>
+    <section class="ks-put-manage-entry-list:">
+        {$html_entry_list}
     </section>
+
+    <header class="section-bar">
+        Other <strong>Key Space</strong> Files
+    </header>
+    <section class="ks-put-manage-file-list:">
+        {$html_file_list}
+    </section>
+
     <footer>&nbsp;</footer>
 </article>

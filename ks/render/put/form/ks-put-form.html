@@ -16,17 +16,17 @@
             <code class="status-box">{$status_content}</code>
 
             <label class='label-path hide-on-compact'>
-                Select a PGP Identity:<br/>
+                <strong>Select</strong> a PGP Identity:<br/>
                 <select name='pgp_id_public' style='width: 20em;'>
                     <option value=''>Select a PGP Identity</option>
                     {$html_pgp_id_public_options}
-                    <option disabled='disabled'>Look up an identity...</option>
-                    <option disabled='disabled'>Create a new identity...</option>
                 </select>
                 <select name='auto_pgp_id_public' style="width: 13em; float:right;">
                     <option value=''>Ask me every time (safer)</option>
                     <option value='default'>Use this Identity by default</option>
                 </select>
+                <br/>
+                or <a href="#KEYGEN">create</a> a new identity...
                 <br/>
                 <br/>
             </label>

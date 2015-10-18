@@ -16,6 +16,8 @@ KeySpaceDB.DB_INDEX_PATH            = 'path';
 KeySpaceDB.DB_INDEX_ID_PATH         = 'id_path';
 KeySpaceDB.DB_INDEX_TIMESTAMP       = 'timestamp';
 
+KeySpaceDB.DB_PGP_KEY_LENGTH        = 8;
+
 // Config Database
 function KeySpaceDB(dbReadyCallback) {
     return KeySpaceDB.getDBInstance(dbReadyCallback);
@@ -194,9 +196,11 @@ function KeySpaceDB(dbReadyCallback) {
         if(!pgp_id_public)
             throw new Error("Invalid PGP Public Key ID");
 
+        pgp_id_public = pgp_id_public.toUpperCase();
+        pgp_id_public = pgp_id_public.substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+
         if(path[0] === '/')
             path = path.substr(1);
-        pgp_id_public = pgp_id_public.toUpperCase();
 
         var insertData = {
             'pgp_id_public': pgp_id_public,
@@ -300,11 +304,11 @@ function KeySpaceDB(dbReadyCallback) {
             
         var publicKeyID = null;
         if(host) {
-            match = /^([^.]*\.)?([a-f0-9]{16})\.ks$/i.exec(host);
+            match = /^([^.]*\.)?([a-f0-9]{8,16})\.ks$/i.exec(host);
             if (!match)
-                throw new Error("Host must match [PGP KEY ID (16)].ks: " + contentURI);
+                throw new Error("Host must match [PGP KEY ID (8 or 16)].ks: " + contentURI);
             publicKeyID = match[2].toUpperCase();
-            publicKeyID = publicKeyID.substr(publicKeyID.length - 16);
+            publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
         }
 
         KeySpaceDB(function(err, db) {
@@ -316,11 +320,19 @@ function KeySpaceDB(dbReadyCallback) {
                     .transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readwrite")
                     .objectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
 
+                var contentPathLowBound = contentPath;
+                var contentPathHighBound = contentPath;
+                if(contentPath[contentPath.length-1] === '*') {
+                    contentPathLowBound = contentPathLowBound.substr(0, contentPath.length-2);
+                    contentPathHighBound = contentPathLowBound + '\uffff';
+                    console.log(contentPathLowBound, contentPathHighBound);
+                }
+
                 var pathIndex = dbStore.index(KeySpaceDB.DB_INDEX_PATH);
-                var queryRange = IDBKeyRange.bound([contentPath, 0], [contentPath, 2443566558308], true, true);
+                var queryRange = IDBKeyRange.bound([contentPathLowBound, 0], [contentPathHighBound, 2443566558308], true, true);
                 if(publicKeyID) {
                     pathIndex = dbStore.index(KeySpaceDB.DB_INDEX_ID_PATH);
-                    queryRange = IDBKeyRange.bound([publicKeyID, contentPath, 0], [publicKeyID, contentPath, 2443566558308], true, true);
+                    queryRange = IDBKeyRange.bound([publicKeyID, contentPathLowBound, 0], [publicKeyID, contentPathHighBound, 2443566558308], true, true);
                 }
 
                 var cursor = pathIndex.openCursor(queryRange, 'prev');
