@@ -8,7 +8,7 @@
 
             // Render PUT
 //            ClientSocketWorker.sendCommand("put");
-            ClientSocketWorker.sendCommand("put.manage irc://8564729C.ks/public/id");
+            ClientSocketWorker.sendCommand("put.manage relay://71E56CFB.ks/public/id");
 //            ClientSocketWorker.sendCommand("put.script ks/scripts/ks-create-script.js");
 
             // Render KeyGen
@@ -23,9 +23,9 @@
 //
 //            navigator.registerContentHandler('application/x-ks', 'soup?url=%s', 'SoupWeb™')
 //
-//            navigator.registerProtocolHandler("socket",
-//                    "?uri=%s",
-//                    "Socket handler");
+            navigator.registerProtocolHandler("web+relay",
+                    "?uri=%s",
+                    "Socket handler");
         </script>
         <link rel="stylesheet" href="client/themes/minimal/minimal.css" type="text/css" />
     </head>

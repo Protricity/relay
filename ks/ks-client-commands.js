@@ -395,7 +395,7 @@
 
             } else {
 
-                importScripts('ks/pages/404.js');
+                importScripts('ks/render/browser/pages/404.js');
                 get404IndexTemplate(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
                     responseHeaders += passedResponseHeaders;
 

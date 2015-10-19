@@ -7,9 +7,14 @@ function ClientSocketWorker() {
 }
 
 (function() {
-    var NO_CLASS = '__no-class';
+    var NO_CLASS = '_you_got_no-class';
 
     var socketWorker = null;
+    document.addEventListener('click', onClickEvent);
+    document.addEventListener('command', onCommandEvent);
+    window.addEventListener('hashchange', onHashChange);
+    //window.onbeforeunload = onBeforeUnload;
+
     ClientSocketWorker.get = function() {
         if(!socketWorker) {
             socketWorker = new Worker('worker.js');
@@ -19,27 +24,6 @@ function ClientSocketWorker() {
         }
         return socketWorker;
     };
-
-    document.addEventListener('command', function(e) {
-        var commandString = e.detail || e.data;
-        ClientSocketWorker.sendCommand(commandString);
-        e.preventDefault();
-    });
-
-    window.addEventListener('hashchange', onHashChange);
-    //window.onbeforeunload = function (e) {
-    //    return "Relay client will disconnect";
-    //}
-
-    function onHashChange(e) {
-        var hashCommand = decodeURIComponent(document.location.hash.replace(/^#/, '').trim());
-        document.location.hash = '';
-        if(!hashCommand)
-            return false;
-        console.log("Hash Command: ", hashCommand);
-        ClientSocketWorker.sendCommand(hashCommand);
-    }
-
 
     ClientSocketWorker.sendCommand = function (commandString) {
         ClientSocketWorker.get()
@@ -75,6 +59,37 @@ function ClientSocketWorker() {
                 break;
         }
     };
+
+    // Events
+
+    function onClickEvent(e) {
+        if(e.target.nodeName.toLowerCase() !== 'a')
+            return;
+        e.preventDefault();
+        var commandString = "GET " + e.target.href;
+        ClientSocketWorker.sendCommand(commandString);
+    }
+
+    function onCommandEvent(e) {
+        var commandString = e.detail || e.data;
+        ClientSocketWorker.sendCommand(commandString);
+        e.preventDefault();
+    }
+    function onBeforeUnload(e) {
+        return "Relay client will disconnect";
+    }
+
+    function onHashChange(e) {
+        var hashCommand = decodeURIComponent(document.location.hash.replace(/^#/, '').trim());
+        document.location.hash = '';
+        if(!hashCommand)
+            return false;
+        console.log("Hash Command: ", hashCommand);
+        ClientSocketWorker.sendCommand(hashCommand);
+    }
+
+
+
 
     function renderWindowCommand(commandString) {
         var args = /^(minimize|maximize|close)\s+(\S+)$/mi.exec(commandString);

@@ -9,6 +9,7 @@ if(typeof document === 'object')
 
     // Events
 
+    self.addEventListener('click', onClickEvent);
     //self.addEventListener('submit', onFormEvent);
     //self.addEventListener('input', onFormEvent);
     //self.addEventListener('change', onFormEvent);
@@ -31,6 +32,24 @@ if(typeof document === 'object')
     //    }
     //}
 
+    function onClickEvent(e) {
+        if(e.target.nodeName.toLowerCase() !== 'a')
+            return;
+        e.preventDefault();
+        var anchorElement= e.target;
+        //var match = anchorElement.href.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
+        //var scheme = match[2];
+        //if(scheme.substr(0, 6).toLowerCase() !== 'relay')
+        //    return;
+
+        var commandString = "GET " + anchorElement.href;
+        var commandEvent = new CustomEvent('command', {
+            detail: commandString,
+            cancelable: true,
+            bubbles: true
+        });
+        e.target.dispatchEvent(commandEvent);
+    }
 })();
 
 if (!module) var module = {};
