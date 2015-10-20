@@ -66,7 +66,7 @@ if (!module.exports) module.exports = {};
 
         url = url.toLowerCase();
         var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(url);
-        var pgp_id_public = match[4];
+        var pgp_id_public = (match[4] || '').split('.')[0];
         var path = match[5] || '';
 
         var file_search_pattern = '';
@@ -171,10 +171,29 @@ if (!module.exports) module.exports = {};
 
 
         function renderFileList(callback) {
-            var urlDir = url.replace(/\\/g, '/')
+            var dirPath = path
+                .replace(/\\/g, '/')
                 .replace(/\/[^\/]*\/?$/, '');
-            file_search_pattern = urlDir + '/*';
+            var dirURL = (pgp_id_public ? 'http://' + pgp_id_public + '.ks' : '') +
+                dirPath;
+            file_search_pattern = dirURL + '/*';
             var new_html_file_list = '';
+
+            new_html_file_list += '\n\t<tr>';
+            new_html_file_list += "\n\t\t<td><a href='#PUT.MANAGE " + dirURL + "'>.</a></td>";
+            new_html_file_list += '\n\t</tr>';
+
+            if(dirPath) {
+                var parentDirPath = dirPath
+                    .replace(/\\/g, '/')
+                    .replace(/\/[^\/]*\/?$/, '');
+                var parentDirURL = (pgp_id_public ? 'http://' + pgp_id_public + '.ks' : '') +
+                    parentDirPath;
+                new_html_file_list += '\n\t<tr>';
+                new_html_file_list += "\n\t\t<td><a href='#PUT.MANAGE " + parentDirURL + "'>..</a></td>";
+                new_html_file_list += '\n\t</tr>';
+            }
+
             KeySpaceDB.queryAll(file_search_pattern, function (err, contentEntry) {
                 if (err)
                     throw new Error(err);

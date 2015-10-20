@@ -1,15 +1,15 @@
-<article class='ks-put-manage:{$url} maximized compact'>
+<article class='ks-put-manage: maximized compact'>
     <script src='ks/render/put/manage/ks-put-manage-form.js'></script>
     <link rel='stylesheet' href='ks/render/put/manage/ks-put-manage-form.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
-        <a href='#MAXIMIZE ks-put-manage:{$url}'>
+        <a href='#MAXIMIZE ks-put-manage:'>
             Manage: {$url}
         </a>
     </header>
     <div class='header-bar-buttons show-on-minimized'>
-        <a href='#MINIMIZE ks-put-manage:{$url}'>[-]</a><!--
-     --><a href='#MAXIMIZE ks-put-manage:{$url}'>[+]</a><!--
-     --><a href='#CLOSE ks-put-manage:{$url}'>[x]</a>
+        <a href='#MINIMIZE ks-put-manage:'>[-]</a><!--
+     --><a href='#MAXIMIZE ks-put-manage:'>[+]</a><!--
+     --><a href='#CLOSE ks-put-manage:'>[x]</a>
     </div>
 
     <header class="section-bar">
@@ -29,20 +29,22 @@
     <header class="section-bar">
         Content
     </header>
-    <section class="ks-put-manage-content:" style="position: relative; white-space: pre;">{$html_content}</section>
-
-    <header class="section-bar">
-        Other Entries
-    </header>
-    <section class="ks-put-manage-entry-list:">
-        {$html_entry_list}
-    </section>
+    <section class="ks-put-manage-content:" style="position: relative; white-space: pre;"><!--
+     -->{$html_content}<!--
+ --></section>
 
     <header class="section-bar">
         Other Files {$file_search_pattern}
     </header>
     <section class="ks-put-manage-file-list:">
         {$html_file_list}
+    </section>
+
+    <header class="section-bar">
+        Other Entries {$path}
+    </header>
+    <section class="ks-put-manage-entry-list:">
+        {$html_entry_list}
     </section>
 
     <footer>&nbsp;</footer>

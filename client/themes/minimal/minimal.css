@@ -43,7 +43,9 @@ li {
 
 .theme-minimal > article > section {
     max-height: 20em;
+    max-width: 80vw;
     overflow-y: auto;
+    overflow-x: auto;
 }
 
 .theme-minimal > article:hover {

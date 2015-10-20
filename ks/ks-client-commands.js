@@ -62,7 +62,7 @@
      * @param commandString PUT [path] [content]
      */
     function putCommand(commandString) {
-        var match = /^put(?:\.(script|preview|form|manage))?/im.exec(commandString);
+        var match = /^put(?:\.(script|preview|form|manage|publish|delete))?/im.exec(commandString);
         if(!match)
             return false;
 
@@ -78,11 +78,27 @@
                 return putScriptCommand(commandString);
             case 'manage':
                 return putManageCommand(commandString);
+            case 'delete':
+                return putDeleteCommand(commandString);
+            case 'publish':
+                return putPublishCommand(commandString);
             default:
                 throw new Error("Invalid command: " + commandString);
         }
     }
 
+    function putPublishCommand(commandString) {
+        var match = /^put\.publish\s*([\s\S]*)$/im.exec(commandString);
+        if(!match)
+            throw new Error("Invalid Command: " + commandString);
+
+        var ksURL = match[1];
+        match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(ksURL);
+        if(!match)
+            throw new Error("Invalid Keyspace URI: " + url);
+    }
+
+    // TODO: review command
     function putFormCommand(commandString) {
         var match = /^put(?:\.(form))?(?:\s+--id\s+(\w+))?(?:\s+(\S+))?(?:\s+([\s\S]+))?$/im.exec(commandString);
         if(!match)

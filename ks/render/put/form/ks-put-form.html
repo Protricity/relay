@@ -64,6 +64,14 @@
                     <option disabled='disabled'>Other Web Space...</option>
                 </select>
             </label>
+            <br/>
+            <label class='label-auto-publish hide-on-compact'>and then
+                <select name='auto_publish' style="width: 13em;">
+                    <option value=''>Leave unpublished until published manually (safest)</option>
+                    <option value='auto'>Auto publish</option>
+                    <option value='auto-asap'>Auto publish ASAP</option>
+                </select>
+            </label>
         </form>
     </main>
     <header class="section-bar hide-on-compact">
@@ -79,29 +87,29 @@
             </code>
         </div>
     </section>
-    <header class="section-bar hide-on-compact">
-        <label>
-            <input type="checkbox" style="vertical-align:bottom;" />
-            &uarr; Drag and Drop Suggested Content into Preview &uarr;
-        </label>
-    </header>
-    <section class="hide-on-compact">
-        <form name='ks-put-preview-form' >
-            <div class='put-preview-template-content:'>
-                <header draggable='true'>Content Header</header>
-                <a draggable='true' href='#sdf'>URL Hyperlink</a>
-                <hr draggable='true' />
-                <footer draggable='true'>Content Footer</footer>
-            </div>
-        </form>
-    </section>
+    <!--<header class="section-bar hide-on-compact">-->
+        <!--<label>-->
+            <!--<input type="checkbox" style="vertical-align:bottom;" />-->
+            <!--&uarr; Drag and Drop Suggested Content into Preview &uarr;-->
+        <!--</label>-->
+    <!--</header>-->
+    <!--<section class="hide-on-compact">-->
+        <!--<form name='ks-put-preview-form' >-->
+            <!--<div class='put-preview-template-content:'>-->
+                <!--<header draggable='true'>Content Header</header>-->
+                <!--<a draggable='true' href='#sdf'>URL Hyperlink</a>-->
+                <!--<hr draggable='true' />-->
+                <!--<footer draggable='true'>Content Footer</footer>-->
+            <!--</div>-->
+        <!--</form>-->
+    <!--</section>-->
     <section class="show-on-compact">
         <a href='#PUT.SCRIPT'>
             You can also use a <strong>Content Script</strong> to generate <br/>
             <strong class="key-space">Key Space</strong> content quickly and easily...
        </a>
     </section>
-    <footer class='footer-bar hide-on-compact'>
+    <footer class='footer-bar'>
         <a href='#PUT.SCRIPT'>or try content script</a>s...
     </footer>
 </article>
