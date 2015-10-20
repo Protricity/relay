@@ -1,7 +1,19 @@
 
+.ks-put-manage-commands > a {
+    display: inline-block;
+    text-decoration: none;
+    background: ButtonFace;
+    color: ButtonText;
+    border-color: ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight;
+    padding: 0.7em 0.8em;
+    border-radius: 0.6em;
+    border: 1px outset;
+}
+
 /** Form **/
 
 form[name=ks-put-manage-form] select,
+form[name=ks-put-manage-form] button,
 form[name=ks-put-manage-form] input {
     padding: 0.7em 0.8em;
     margin: 0.5em 0;
@@ -27,36 +39,4 @@ form[name=ks-put-manage-form].passphrase-accepted input[type=password] {
     font-weight: bold;
     color: green;
     background-color: #EFFFEF;
-}
-
-/** Compact **/
-
-/*article.ks-put\3A:not(.compact) .hide-on-compact {}*/
-article.ks-put\3A.compact .hide-on-compact {
-    animation: ks-put-manage-form-max-height 1s ease-out 0s forwards;
-}
-
-/*article.ks-put\3A .show-on-compact {}*/
-article.ks-put\3A:not(.compact) .show-on-compact {
-    animation: ks-put-manage-form-max-height 1s ease-out 0.7s forwards;
-}
-
-@keyframes ks-put-manage-form-max-height {
-    100% {
-        visibility: hidden;
-        max-height: 0;
-        opacity: 0;
-        overflow: hidden;
-        margin: 0;
-        padding: 0;
-        position: absolute;
-    }
-    99% {
-        visibility: visible;
-        /*margin: 1em;*/
-    }
-    0% {
-        max-height: 5em;
-        opacity: 1;
-    }
 }

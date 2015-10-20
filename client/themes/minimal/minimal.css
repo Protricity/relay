@@ -21,6 +21,7 @@ li {
 
 /** Channels **/
 
+
 .theme-minimal > article {
     display: inline-block;
     margin: 0 0 1em 0.5em;
@@ -30,10 +31,19 @@ li {
     vertical-align: top;
     background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
     border-radius: 2px;
-    max-height: 50em;
-    overflow-y: auto;
+    
     transition: 0.5s ease-out;
     transition-delay: 0.2s;
+}
+
+.theme-minimal > article > main {
+    max-height: 50em;
+    overflow-y: auto;
+}
+
+.theme-minimal > article > section {
+    max-height: 20em;
+    overflow-y: auto;
 }
 
 .theme-minimal > article:hover {

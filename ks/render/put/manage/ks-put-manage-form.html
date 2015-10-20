@@ -3,7 +3,7 @@
     <link rel='stylesheet' href='ks/render/put/manage/ks-put-manage-form.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         <a href='#MAXIMIZE ks-put-manage:{$url}'>
-            Manage: {$path}
+            Manage: {$url}
         </a>
     </header>
     <div class='header-bar-buttons show-on-minimized'>
@@ -20,19 +20,26 @@
     </section>
 
     <header class="section-bar">
-        <strong>Key Space</strong> Content
+        Commands
+    </header>
+    <section class="ks-put-manage-commands">
+        {$html_commands}
+    </section>
+
+    <header class="section-bar">
+        Content
     </header>
     <section class="ks-put-manage-content:" style="position: relative; white-space: pre;">{$html_content}</section>
 
     <header class="section-bar">
-        Other <strong>Key Space</strong> Entries
+        Other Entries
     </header>
     <section class="ks-put-manage-entry-list:">
         {$html_entry_list}
     </section>
 
     <header class="section-bar">
-        Other <strong>Key Space</strong> Files
+        Other Files {$file_search_pattern}
     </header>
     <section class="ks-put-manage-file-list:">
         {$html_file_list}

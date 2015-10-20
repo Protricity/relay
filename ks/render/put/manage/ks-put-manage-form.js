@@ -64,10 +64,13 @@ if (!module.exports) module.exports = {};
         importScripts('ks/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;
 
+        url = url.toLowerCase();
         var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(url);
         var pgp_id_public = match[4];
         var path = match[5] || '';
 
+        var file_search_pattern = '';
+        var html_commands = '';
         var html_file_list = '';
         var html_entry_list = '';
         var html_content = '';
@@ -81,7 +84,10 @@ if (!module.exports) module.exports = {};
                     if(xhr.status !== 200)
                         throw new Error("Error: " + xhr.responseText);
                     callback(xhr.responseText
+                        .replace(/{\$url}/gi, url)
                         .replace(/{\$path}/gi, path)
+                        .replace(/{\$file_search_pattern}/gi, file_search_pattern)
+                        .replace(/{\$html_commands}/gi, html_commands)
                         .replace(/{\$html_info}/gi, html_info)
                         .replace(/{\$html_file_list}/gi, html_file_list)
                         .replace(/{\$html_entry_list}/gi, html_entry_list)
@@ -109,6 +115,14 @@ if (!module.exports) module.exports = {};
                     };
                     contentEntry.pgp_id_public = pgp_id_public;
                     contentEntry.path = path.toLowerCase();
+
+                    html_commands += "\n<a href='#PUT.FORM " + url + "'>Add</a>";
+
+                } else {
+                    if(contentEntry.published !== true)
+                        html_commands += "\n<a href='#PUT.PUBLISH " + url + "'>Publish</a>";
+                    html_commands += "\n<a href='#PUT.FORM " + url + "'>Edit</a>";
+                    html_commands += "\n<a href='#PUT.DELETE " + url + "'>Delete</a>";
                 }
 
                 var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
@@ -145,7 +159,7 @@ if (!module.exports) module.exports = {};
                 if(contentEntry.timestamp)
                     html_info +=
                         "\n\t<tr>" +
-                        "\n\t\t<td class='name'>Create Date</td>" +
+                        "\n\t\t<td class='name'>Created</td>" +
                         "\n\t\t<td class='value'>" + timeSince(contentEntry.timestamp) + " ago</td>" +
                         "\n\t</tr>";
 
@@ -157,9 +171,11 @@ if (!module.exports) module.exports = {};
 
 
         function renderFileList(callback) {
-
+            var urlDir = url.replace(/\\/g, '/')
+                .replace(/\/[^\/]*\/?$/, '');
+            file_search_pattern = urlDir + '/*';
             var new_html_file_list = '';
-            KeySpaceDB.queryAll(url + '*', function (err, contentEntry) {
+            KeySpaceDB.queryAll(file_search_pattern, function (err, contentEntry) {
                 if (err)
                     throw new Error(err);
                 if (contentEntry) {
