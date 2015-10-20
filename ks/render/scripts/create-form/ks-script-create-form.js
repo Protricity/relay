@@ -115,11 +115,11 @@ else
 
     module.exports.runScript = function(commandString, callback) {
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", TEMPLATE_URL);
-        xhr.onload = function () {
-            callback(xhr.responseText);
-        };
+        xhr.open("GET", TEMPLATE_URL, false);
         xhr.send();
+        if(xhr.status !== 200)
+            throw new Error("Error: " + xhr.responseText);
+        callback(xhr.responseText);
 
         return true;
     };

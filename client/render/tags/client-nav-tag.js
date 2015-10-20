@@ -22,47 +22,46 @@ else
             var TEMPLATE_URL = 'client/render/tags/client-nav-tag.html';
 
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", TEMPLATE_URL);
-            xhr.onload = function () {
+            xhr.open("GET", TEMPLATE_URL, false);
+            xhr.send();
+            if(xhr.status !== 200)
+                throw new Error("Error: " + xhr.responseText);
                 callback(xhr.responseText);
 
-                var done = false;
-                setTimeout(function() {
+            var done = false;
+            setTimeout(function() {
 
-                    self.geoipcallback = function(result) {
-                        if(done)
-                            return;
-                        done = true;
+                self.geoipcallback = function(result) {
+                    if(done)
+                        return;
+                    done = true;
 
-                        if (result.country_name)
-                            result.country = result.country_name;
-                        if (result.region_name)
-                            result.region = result.region_name;
-                        if (result.zip_code)
-                            result.postal_code = result.zip_code;
-                        if (result.timezone)
-                            result.time_zone = result.timezone;
+                    if (result.country_name)
+                        result.country = result.country_name;
+                    if (result.region_name)
+                        result.region = result.region_name;
+                    if (result.zip_code)
+                        result.postal_code = result.zip_code;
+                    if (result.timezone)
+                        result.time_zone = result.timezone;
 
-                        var channelHTML = "<li><a href='#JOIN /country/" + result.country_code + "'><span class='command'>Join</span> <strong>" + result.country + "</strong></a></li>";
-                        channelHTML += "<li><a href='#JOIN /region/" + result.region_code + "'><span class='command'>Join</span> <strong>" + result.region + "</strong></a></li>";
-                        channelHTML += "<li><a href='#JOIN /city/" + result.city + "'><span class='command'>Join</span> <strong>" + result.city + "</strong></a></li>";
-                        channelHTML += "<li><a href='#JOIN /zipcode/" + result.postal_code + "'><span class='command'>Join</span> <strong>" + result.postal_code + "</strong></a></li>";
-    //                channelList.innerHTML+= "<li><a href='#JOIN /timezone/" + result.time_zone + "'><span class='command'>Join</span> <strong>" + result.time_zone + "</strong></a></li>";
-                        channelHTML += "<li><a href='#JOIN /ip/" + result.ip + "'><span class='command'>Join</span> <strong>" + result.ip + "</strong></a></li>";
+                    var channelHTML = "<li><a href='#JOIN /country/" + result.country_code + "'><span class='command'>Join</span> <strong>" + result.country + "</strong></a></li>";
+                    channelHTML += "<li><a href='#JOIN /region/" + result.region_code + "'><span class='command'>Join</span> <strong>" + result.region + "</strong></a></li>";
+                    channelHTML += "<li><a href='#JOIN /city/" + result.city + "'><span class='command'>Join</span> <strong>" + result.city + "</strong></a></li>";
+                    channelHTML += "<li><a href='#JOIN /zipcode/" + result.postal_code + "'><span class='command'>Join</span> <strong>" + result.postal_code + "</strong></a></li>";
+//                channelList.innerHTML+= "<li><a href='#JOIN /timezone/" + result.time_zone + "'><span class='command'>Join</span> <strong>" + result.time_zone + "</strong></a></li>";
+                    channelHTML += "<li><a href='#JOIN /ip/" + result.ip + "'><span class='command'>Join</span> <strong>" + result.ip + "</strong></a></li>";
 
-                        //channelHTML = "<div class='append'>" + channelHTML + "</div>";
+                    //channelHTML = "<div class='append'>" + channelHTML + "</div>";
 
-                        Client.appendChild('command-list-recent', channelHTML);
-                    };
+                    Client.appendChild('command-list-recent', channelHTML);
+                };
 
-                    if(!done) importScripts('http://www.telize.com/geoip?callback=geoipcallback');
-                    if(!done) importScripts('https://freegeoip.net/json/?callback=geoipcallback');
+                if(!done) importScripts('http://www.telize.com/geoip?callback=geoipcallback');
+                if(!done) importScripts('https://freegeoip.net/json/?callback=geoipcallback');
 
-                }, 100);
+            }, 100);
 
-
-            };
-            xhr.send();
 
             return true;
 

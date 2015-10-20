@@ -190,14 +190,14 @@ else
                     var TEMPLATE_URL = "pgp/render/manage/pgp-manage-form.html";
 
                     var xhr = new XMLHttpRequest();
-                    xhr.open("GET", TEMPLATE_URL);
-                    xhr.onload = function () {
-                        callback(xhr.responseText
-                            .replace(/{\$status_content}/gi, status_content || '')
-                            .replace(/{\$html_manage_entries}/gi, html_manage_entries || '')
-                        );
-                    };
+                    xhr.open("GET", TEMPLATE_URL, false);
                     xhr.send();
+                    if(xhr.status !== 200)
+                        throw new Error("Error: " + xhr.responseText);
+                    callback(xhr.responseText
+                        .replace(/{\$status_content}/gi, status_content || '')
+                        .replace(/{\$html_manage_entries}/gi, html_manage_entries || '')
+                    );
                 }
             });
 

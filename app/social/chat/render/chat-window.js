@@ -85,14 +85,14 @@ else
 
         module.exports.renderChatWindow = function(channelPath, callback) {
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", TEMPLATE_URL);
-            xhr.onload = function () {
-                callback(xhr.responseText
-                    .replace(/{\$channel}/gi, channelPath)
-                    .replace(/{\$channel_lowercase}/gi, channelPath.toLowerCase())
-                );
-            };
+            xhr.open("GET", TEMPLATE_URL, false);
             xhr.send();
+            if(xhr.status !== 200)
+                throw new Error("Error: " + xhr.responseText);
+            callback(xhr.responseText
+                .replace(/{\$channel}/gi, channelPath)
+                .replace(/{\$channel_lowercase}/gi, channelPath.toLowerCase())
+            );
 
             return true;
         };

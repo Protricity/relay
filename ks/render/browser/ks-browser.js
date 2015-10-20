@@ -102,17 +102,17 @@ else
                 throw new Error("Unknown browser-id for response:\n" + responseText);
 
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", TEMPLATE_URL);
-            xhr.onload = function () {
-                callback(xhr.responseText
-                    .replace(/{\$response_body}/gi, responseBody)
-                    .replace(/{\$response_code}/gi, responseCode)
-                    .replace(/{\$response_text}/gi, responseCodeText)
-                    .replace(/{\$browser_id}/gi, browserID)
-                    .replace(/{\$request_url}/gi, requestURL)
-                );
-            };
+            xhr.open("GET", TEMPLATE_URL, false);
             xhr.send();
+            if(xhr.status !== 200)
+                throw new Error("Error: " + xhr.responseText);
+            callback(xhr.responseText
+                .replace(/{\$response_body}/gi, responseBody)
+                .replace(/{\$response_code}/gi, responseCode)
+                .replace(/{\$response_text}/gi, responseCodeText)
+                .replace(/{\$browser_id}/gi, browserID)
+                .replace(/{\$request_url}/gi, requestURL)
+            );
             //KeySpaceDB.listURLIndex(contentURL, function(urls) {
             //    var pathHTML = "<ul class='path-index'>";
             //

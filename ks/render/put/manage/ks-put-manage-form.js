@@ -76,17 +76,17 @@ if (!module.exports) module.exports = {};
             renderFileList(function() {
                 renderEntries(function() {
                     var xhr = new XMLHttpRequest();
-                    xhr.open("GET", TEMPLATE_URL);
-                    xhr.onload = function () {
-                        callback(xhr.responseText
-                            .replace(/{\$path}/gi, path)
-                            .replace(/{\$html_info}/gi, html_info)
-                            .replace(/{\$html_file_list}/gi, html_file_list)
-                            .replace(/{\$html_entry_list}/gi, html_entry_list)
-                            .replace(/{\$html_content}/gi, html_content)
-                        );
-                    };
+                    xhr.open("GET", TEMPLATE_URL, false);
                     xhr.send();
+                    if(xhr.status !== 200)
+                        throw new Error("Error: " + xhr.responseText);
+                    callback(xhr.responseText
+                        .replace(/{\$path}/gi, path)
+                        .replace(/{\$html_info}/gi, html_info)
+                        .replace(/{\$html_file_list}/gi, html_file_list)
+                        .replace(/{\$html_entry_list}/gi, html_entry_list)
+                        .replace(/{\$html_content}/gi, html_content)
+                    );
                 })
             })
         });

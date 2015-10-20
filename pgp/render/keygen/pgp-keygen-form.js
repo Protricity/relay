@@ -76,13 +76,13 @@ else
         var TEMPLATE_URL = "pgp/render/keygen/pgp-keygen-form.html";
 
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", TEMPLATE_URL);
-        xhr.onload = function () {
-            callback(xhr.responseText
-                .replace(/{\$user_id}/gi, user_id.replace(/</g, '&lt;'))
-            );
-        };
+        xhr.open("GET", TEMPLATE_URL, false);
         xhr.send();
+        if(xhr.status !== 200)
+            throw new Error("Error: " + xhr.responseText);
+        callback(xhr.responseText
+            .replace(/{\$user_id}/gi, user_id.replace(/</g, '&lt;'))
+        );
         return true;
     };
 

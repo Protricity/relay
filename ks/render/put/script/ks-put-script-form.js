@@ -90,13 +90,13 @@ else
             }
 
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", TEMPLATE_URL);
-            xhr.onload = function () {
-                callback(xhr.responseText
-                        .replace(/{\$html_script_options}/gi, html_script_options)
-                );
-            };
+            xhr.open("GET", TEMPLATE_URL, false);
             xhr.send();
+            if(xhr.status !== 200)
+                throw new Error("Error: " + xhr.responseText);
+            callback(xhr.responseText
+                    .replace(/{\$html_script_options}/gi, html_script_options)
+            );
             return true;
         };
     })();

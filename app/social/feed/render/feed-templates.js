@@ -104,14 +104,14 @@ else
         module.exports.renderFeedContainer = function(tagHTML, callback, Client) {
             var TEMPLATE_URL = 'app/social/feed/render/feed-container.html';
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", TEMPLATE_URL);
-            xhr.onload = function () {
-                callback(xhr.responseText
-                                .replace(/{\$channel_path}/gi, '')
-                                .replace(/{\$html_put_form}/gi, putFormTemplate)
-                );
-            };
+            xhr.open("GET", TEMPLATE_URL, false);
             xhr.send();
+            if(xhr.status !== 200)
+                throw new Error("Error: " + xhr.responseText);
+            callback(xhr.responseText
+                .replace(/{\$channel_path}/gi, '')
+                .replace(/{\$html_put_form}/gi, putFormTemplate)
+            );
 
             return true;
 
