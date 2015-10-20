@@ -63,9 +63,17 @@ function ClientSocketWorker() {
     // Events
 
     function onClickEvent(e) {
-        if(e.target.nodeName.toLowerCase() !== 'a')
+        if(e.defaultPrevented
+            || e.target.nodeName.toLowerCase() !== 'a')
             return;
         e.preventDefault();
+
+        if(e.target.hash
+            && e.target.host == document.location.host
+            && e.target.pathname == document.location.pathname
+            )
+            return onHashChange(e, e.target.hash);
+
         var commandString = "GET " + e.target.href;
         ClientSocketWorker.sendCommand(commandString);
     }
@@ -73,17 +81,18 @@ function ClientSocketWorker() {
     function onCommandEvent(e) {
         var commandString = e.detail || e.data;
         ClientSocketWorker.sendCommand(commandString);
-        e.preventDefault();
     }
     function onBeforeUnload(e) {
         return "Relay client will disconnect";
     }
 
-    function onHashChange(e) {
-        var hashCommand = decodeURIComponent(document.location.hash.replace(/^#/, '').trim());
+    function onHashChange(e, hash) {
+        hash = hash || document.location.hash;
+        var hashCommand = decodeURIComponent(hash.replace(/^#/, '').trim());
         document.location.hash = '';
         if(!hashCommand)
             return false;
+        e.preventDefault();
         console.log("Hash Command: ", hashCommand);
         ClientSocketWorker.sendCommand(hashCommand);
     }

@@ -512,25 +512,22 @@
         return htmlContent;
     }
 
-    var logContainerActive = false;
     var logKSRequest = function(requestURL, dir) {
         var match = requestURL.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));
         var host = match[4];
         if(!host)
             throw new Error("Invalid Host: " + requestURL);
 
-        var logExport = require('ks/render/log/ks-log-window.js');
+        var logExport = require('client/render/log/log-window.js');
 
-        if(!logContainerActive) {
-            logContainerActive = true;
-            logExport.renderLogWindow(requestURL, function (html) {
-                Client.render(html);
-            });
-        }
+        // Render log window
+        logExport.renderLogWindow(function(html) {
+            Client.render(html);
+        });
 
         var requestURLAnchorHTML = "<a href='" + requestURL + "'>" + requestURL + "</a>";
-        logExport.renderLogWindowEntry(requestURLAnchorHTML, dir, function(html) {
-            Client.appendChild("ks-log-content:", html);
+        logExport.renderLogEntry(requestURLAnchorHTML, dir, function(html) {
+            Client.appendChild("log-content:", html);
         });
     };
 

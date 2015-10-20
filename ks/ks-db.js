@@ -325,7 +325,6 @@ function KeySpaceDB(dbReadyCallback) {
                 if(contentPath[contentPath.length-1] === '*') {
                     contentPathLowBound = contentPathLowBound.substr(0, contentPath.length-2);
                     contentPathHighBound = contentPathLowBound + '\uffff';
-                    console.log(contentPathLowBound, contentPathHighBound);
                 }
 
                 var pathIndex = dbStore.index(KeySpaceDB.DB_INDEX_PATH);

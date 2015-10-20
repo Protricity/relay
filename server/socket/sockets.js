@@ -26,8 +26,13 @@ function Sockets(socketURL) {
     var socketDefaults = self.module.exports;
 
     self.module = {exports: {}};
-    importScripts('server/socket/render/socket-log-window.js');
-    var templateExports = self.module.exports;
+    importScripts('client/render/log/log-window.js');
+    var logExports = self.module.exports;
+
+    // Render log window
+    logExports.renderLogWindow(function(html) {
+        Client.render(html);
+    });
 
     Sockets.getAll = function() { return activeSockets; };
 
@@ -51,8 +56,8 @@ function Sockets(socketURL) {
                 if(eventListeners[i][0] === 'open')
                     eventListeners[i][1](newSocket);
 
-            templateExports.renderSocketLogActionEntry("SOCKET OPEN: " + newSocket.url, function(html) {
-                Client.appendChild('socket-log:' + newSocket.url, html);
+            logExports.renderLogActionEntry("SOCKET OPEN: " + newSocket.url, function(html) {
+                Client.appendChild('log-content:', html);
             });
 
             setTimeout(function () {
@@ -87,8 +92,8 @@ function Sockets(socketURL) {
                 Sockets.get(socketURL);
             }, Sockets.SOCKET_RECONNECT_INTERVAL);
 
-            templateExports.renderSocketLogActionEntry("SOCKET CLOSED: " + newSocket.url, function(html) {
-                Client.appendChild('socket-log:' + newSocket.url, html);
+            logExports.renderLogActionEntry("SOCKET CLOSED: " + newSocket.url, function(html) {
+                Client.appendChild('log-content:', html);
             });
         }
 
@@ -97,8 +102,8 @@ function Sockets(socketURL) {
             Client.processResponse(e.data, e);
             var socket = e.target;
             if(socket instanceof WebSocket) {
-                templateExports.renderSocketLogEntry(e.data, 'I', function(html) {
-                    Client.appendChild('socket-log:' + socket.url, html);
+                logExports.renderLogEntry(e.data, 'I', function(html) {
+                    Client.appendChild('log-content:', html);
                 });
             }
         }
@@ -110,10 +115,6 @@ function Sockets(socketURL) {
         newSocket.addEventListener('message', Sockets.callEventListeners);
         newSocket.addEventListener('open', Sockets.callEventListeners);
         newSocket.addEventListener('close', Sockets.callEventListeners);
-
-        templateExports.renderSocketLogContainer(newSocket.url, function(html) {
-            Client.render(html);
-        });
 
         return newSocket;
     };
@@ -192,8 +193,8 @@ function Sockets(socketURL) {
 
     Sockets.send = function(commandString, e, withSocket) {
         function send(socket){
-            templateExports.renderSocketLogEntry(commandString, 'O', function(html) {
-                Client.appendChild('socket-log:' + socket.url, html);
+            logExports.renderLogEntry(commandString, 'O', function(html) {
+                Client.appendChild('log-content:', html);
             });
             socket.send(commandString);
         }

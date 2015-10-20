@@ -33,7 +33,8 @@ if(typeof document === 'object')
     //}
 
     function onClickEvent(e) {
-        if(e.target.nodeName.toLowerCase() !== 'a')
+        if(e.defaultPrevented 
+            || e.target.nodeName.toLowerCase() !== 'a')
             return;
         e.preventDefault();
         var anchorElement= e.target;
@@ -168,9 +169,10 @@ if (!module.exports) module.exports = {};
                     callback();
                     return;
                 }
+                var requestURL = "http://" + contentEntry.pgp_id_public + ".ks/" + contentEntry.path;
 
                 new_html_file_list += '\n\t<tr>';
-                new_html_file_list += "\n\t\t<td>" + contentEntry.path + "</td>";
+                new_html_file_list += "\n\t\t<td><a href='#PUT.MANAGE " + requestURL + "'>" + contentEntry.path + "</a></td>";
                 new_html_file_list += '\n\t</tr>';
             });
         }

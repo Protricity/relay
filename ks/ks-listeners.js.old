@@ -14,7 +14,8 @@
     //self.addEventListener('dragover', onDragEvent);
 
     function onClickEvent(e) {
-        if(e.target.nodeName.toLowerCase() !== 'a')
+        if(e.defaultPrevented
+                       || e.target.nodeName.toLowerCase() !== 'a')
             return;
         var anchorElement= e.target;
         var match = anchorElement.href.match(new RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"));

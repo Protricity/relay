@@ -146,6 +146,7 @@ else
                 "{$response_body}";
 
             headers = headers ? "\n" + headers.trim() : '';
+            body = body || '<code>No Body</code>';
 
             callback(
                 RESPONSE_BODY_TEMPLATE
