@@ -511,38 +511,38 @@ if(typeof require !== 'function')
         });
     };
 
-    module.exports.test = function() {
-        KeySpaceDB();
-
-        var options = {
-            numBits: 512,
-            userId: 'Test <test@example.org>'
-        };
-
-        if(typeof openpgp === 'undefined')
-            var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
-
-        //console.log("Generating test keypair...");
-        openpgp.generateKeyPair(options)
-            .then(function(keypair) {
-            var postContent = '<article data-path="/test/path" data-timestamp="' + Date.now() + '"></article>';
-                var newPrivateKeyID = keypair.key.primaryKey.getKeyId().toHex().toUpperCase();
-                var newPublicKeyID = keypair.key.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
-
-                openpgp.encryptMessage(keypair.key, postContent)
-                .then(function(pgpEncryptedContent) {
-                    setTimeout(function() {
-                        KeySpaceDB.addVerifiedContentToDB(pgpEncryptedContent, newPublicKeyID, '/test/path', Date.now(), function() {
-                            KeySpaceDB.queryOne('http://' + newPublicKeyID + '.ks/test/path', function(err, content) {
-                                if(err)
-                                    throw new Error(err);
-                                //console.log("Content: ", err, content);
-                            })
-                        });
-                    },1);
-                });
-            KeySpaceDB.addURLToDB('http://test.ks/path', 'http://test.ks/referrer');
-        })
-    };
+    //module.exports.test = function() {
+    //    KeySpaceDB();
+    //
+    //    var options = {
+    //        numBits: 512,
+    //        userId: 'Test <test@example.org>'
+    //    };
+    //
+    //    if(typeof openpgp === 'undefined')
+    //        var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
+    //
+    //    //console.log("Generating test keypair...");
+    //    openpgp.generateKeyPair(options)
+    //        .then(function(keypair) {
+    //        var postContent = '<article data-path="/test/path" data-timestamp="' + Date.now() + '"></article>';
+    //            var newPrivateKeyID = keypair.key.primaryKey.getKeyId().toHex().toUpperCase();
+    //            var newPublicKeyID = keypair.key.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+    //
+    //            openpgp.encryptMessage(keypair.key, postContent)
+    //            .then(function(pgpEncryptedContent) {
+    //                setTimeout(function() {
+    //                    KeySpaceDB.addVerifiedContentToDB(pgpEncryptedContent, newPublicKeyID, '/test/path', Date.now(), function() {
+    //                        KeySpaceDB.queryOne('http://' + newPublicKeyID + '.ks/test/path', function(err, content) {
+    //                            if(err)
+    //                                throw new Error(err);
+    //                            //console.log("Content: ", err, content);
+    //                        })
+    //                    });
+    //                },1);
+    //            });
+    //        KeySpaceDB.addURLToDB('http://test.ks/path', 'http://test.ks/referrer');
+    //    })
+    //};
 
 })(require);
