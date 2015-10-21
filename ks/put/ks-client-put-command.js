@@ -49,15 +49,15 @@ module.exports.initClientKSPutCommands = function(Client) {
 
     // TODO: review command
     function putFormCommand(commandString) {
-        var match = /^put(?:\.(form))?(?:\s+--id\s+(\w+))?(?:\s+(\S+))?(?:\s+([\s\S]+))?$/im.exec(commandString);
+        var match = /^put(?:\.(form))?(?:\s+--id\s+(\w+))?(?:\s+([\s\S]+))?$/im.exec(commandString);
         if (!match)
             throw new Error("Invalid Command: " + commandString);
 
         //var path = match[2] || '~';
         var showForm = (match[1] || '').toLowerCase() === 'form';
         var pgp_id_public = match[2] || null;
-        var putPath = (match[3] || '').trim();
-        var content = (match[4] || '').trim();
+        //var putPath = (match[3] || '').trim();
+        var content = (match[3] || '').trim();
         if (!content)
             showForm = true;
 
@@ -105,7 +105,7 @@ module.exports.initClientKSPutCommands = function(Client) {
         // If anything goes wrong, show form
         self.module = {exports: {}};
         importScripts('ks/put/render/form/ks-put-form.js');
-        self.module.exports.renderPutForm('', status_content, function (html) {
+        self.module.exports.renderPutForm(content, status_content, function (html) {
             Client.render(html);
         });
 

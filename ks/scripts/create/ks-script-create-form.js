@@ -111,7 +111,7 @@ if(typeof document === 'object')
 // Worker Script
 else
 (function() {
-    var TEMPLATE_URL = "ks/scripts/create-form/ks-script-create-form.html";
+    var TEMPLATE_URL = "ks/scripts/create/ks-script-create-form.html";
 
     module.exports.runScript = function(commandString, callback) {
         var xhr = new XMLHttpRequest();

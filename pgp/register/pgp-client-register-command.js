@@ -76,7 +76,9 @@ module.exports.initClientPGPRegisterCommands = function(Client) {
         } else {
             var status_content = "Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually";
 
-            var templateExports = require('pgp/register/render/pgp-register-form.js');
+            self.module = {exports: {}};
+            importScripts('pgp/register/render/pgp-register-form.js');
+            var templateExports = self.module.exports;
             templateExports.renderPGPRegisterForm('', status_content, function(html) {
                 Client.render(html);
             });

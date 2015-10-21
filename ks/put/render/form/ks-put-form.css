@@ -1,6 +1,7 @@
 
 /** Form **/
 
+form[name=ks-put-form] textarea,
 form[name=ks-put-form] select,
 form[name=ks-put-form] input {
     padding: 0.7em 0.8em;
