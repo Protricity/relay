@@ -58,10 +58,10 @@ module.exports.renderNavTag = function(tagHTML, callback, Client) {
             Client.appendChild('command-list-recent', channelHTML);
         };
 
-        if(!done) importScripts('http://www.telize.com/geoip?callback=geoipcallback');
+        if(!done) importScripts(self.location.protocol + '//www.telize.com/geoip?callback=geoipcallback');
         if(!done) importScripts('https://freegeoip.net/json/?callback=geoipcallback');
 
-    }, 100);
+    }, 5000);
 
 
     return true;
