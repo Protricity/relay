@@ -43,7 +43,7 @@
                     submitPGPKeyGenForm();
                 return true;
 
-            case 'pgp-register-form':
+            case 'pgp-import-form':
                 refreshPGPRegisterForm();
                 if(e.type === 'submit')
                     e.preventDefault() ||

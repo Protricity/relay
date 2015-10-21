@@ -16,10 +16,10 @@ if(typeof document === 'object')
                 return false;
 
             switch(formElm.getAttribute('name')) {
-                case 'pgp-register-form':
-                    refreshPGPRegisterForm(e, formElm);
+                case 'pgp-import-form':
+                    refreshPGPImportForm(e, formElm);
                     if(e.type === 'submit')
-                        submitPGPRegisterForm(e, formElm);
+                        submitPGPImportForm(e, formElm);
                     return true;
 
                 default:
@@ -28,7 +28,7 @@ if(typeof document === 'object')
         }
 
 
-        function refreshPGPRegisterForm(e, formElm) {
+        function refreshPGPImportForm(e, formElm) {
             var submitElm = formElm.querySelector('input[type=submit]');
             submitElm.setAttribute('disabled', 'disabled');
             var privateKeyBlock = formElm.querySelector('textarea[name=private_key]').value;
@@ -37,14 +37,14 @@ if(typeof document === 'object')
             }
         }
 
-        function submitPGPRegisterForm(e, formElm) {
+        function submitPGPImportForm(e, formElm) {
             e.preventDefault();
             var privateKeyBlock = formElm.querySelector('textarea[name=private_key]').value;
 
             if(privateKeyBlock.indexOf("-----BEGIN PGP PRIVATE KEY BLOCK-----") === -1)
                 throw new Error("PGP PRIVATE KEY BLOCK not found");
 
-            var commandString = "PGP.REGISTER " + privateKeyBlock;
+            var commandString = "PGP.IMPORT " + privateKeyBlock;
 
             var messageEvent = new CustomEvent('command', {
                 detail: commandString,
@@ -58,8 +58,8 @@ if(typeof document === 'object')
 // Worker Script
 else
     (function() {
-        module.exports.renderPGPRegisterForm = function (private_key_block, status_content, callback) {
-            var TEMPLATE_URL = "pgp/register/render/pgp-register-form.html";
+        module.exports.renderPGPImportForm = function (private_key_block, status_content, callback) {
+            var TEMPLATE_URL = "pgp/import/render/pgp-import-form.html";
 
             var EXAMPLE_PUBLIC_KEY =
                 "Example: \n\n"
