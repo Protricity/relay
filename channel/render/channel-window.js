@@ -21,9 +21,6 @@ if(typeof document === 'object')
                 if(e.type === 'submit')
                     submitChatForm(e, formElm);
 
-                var maximizedChannels = document.getElementsByClassName('maximized channel');
-                while(maximizedChannels.length > 0)
-                    maximizedChannels[0].classList.remove('maximized');
                 return true;
 
             default:
