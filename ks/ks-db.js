@@ -130,7 +130,7 @@ if(typeof require !== 'function')
     }
 
 
-    KeySpaceDB.verifySignedContent = function(pgpSignedContent, callback, pgp_id_public) {
+    KeySpaceDB.verifySignedContent = function(pgpSignedContent, pgp_id_public, callback) {
         if(typeof openpgp === 'undefined')
             var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
 
@@ -168,9 +168,11 @@ if(typeof require !== 'function')
         });
     };
 
-    KeySpaceDB.verifyAndAddContentToDB = function(pgpSignedContent, callback, pgp_id_public) {
+    KeySpaceDB.verifyAndAddContentToDB = function(pgpSignedContent, pgp_id_public, callback) {
         console.log("ADDING", arguments);
-        KeySpaceDB.verifySignedContent(pgpSignedContent,
+        KeySpaceDB.verifySignedContent(
+            pgpSignedContent,
+            pgp_id_public,
             function(err, verifiedContent) {
                 if(err)
                     throw new Error(err);
@@ -189,8 +191,7 @@ if(typeof require !== 'function')
                 var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(verifiedContent.text)[1]);
 
                 KeySpaceDB.addVerifiedContentToDB(pgpSignedContent, pgp_id_public, path, timestamp, {}, callback);
-            },
-            pgp_id_public
+            }
         );
     };
 

@@ -232,7 +232,7 @@ function ClientSocketWorker() {
         var contentElements = htmlContainer.children;
         if(contentElements.length === 0) {
             htmlContainer.innerHTML = '<article class="' + NO_CLASS + '">' + content + '</article>';
-            var contentElements = htmlContainer.children;
+            contentElements = htmlContainer.children;
             if(contentElements.length === 0) 
                 throw new Error("First child missing", console.log(content, htmlContainer));
         }
@@ -241,6 +241,11 @@ function ClientSocketWorker() {
         if(contentElement.classList.length === 0)
             contentElement.classList.add('__no-class');
         var targetClass = contentElement.classList.item(0);
+
+        // Hide maximized windows
+        var maximizedElms = document.getElementsByClassName('maximized');
+        while(maximizedElms.length > 0)
+            maximizedElms[0].classList.remove('maximized');
 
         var targetElements = document.getElementsByClassName(targetClass);
         var targetElement;

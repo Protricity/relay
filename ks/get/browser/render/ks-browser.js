@@ -86,7 +86,7 @@ if(typeof document === 'object')
 // Worker Script
 else
     (function() {
-        var TEMPLATE_URL = 'ks/get/render/browser/ks-browser.html';
+        var TEMPLATE_URL = 'ks/get/browser/render//ks-browser.html';
 
         module.exports.renderBrowser = function(responseText, callback) {
             var headerBody = responseText;

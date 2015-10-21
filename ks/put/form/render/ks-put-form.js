@@ -175,7 +175,7 @@ if(typeof document === 'object')
                     var finalPGPSignedContent = pgpClearSignedMessage.armor();
                     //console.log(pgpSignedContent, finalPGPSignedContent);
 
-                    var commandString = "PUT --id " + pgp_id_public + " " + contentPath + " " + pgpSignedContent; // finalPGPSignedContent;
+                    var commandString = "PUT " + pgp_id_public + " " + pgpSignedContent; // finalPGPSignedContent;
 
                     var socketEvent = new CustomEvent('command', {
                         detail: commandString,
@@ -305,7 +305,7 @@ if(typeof document === 'object')
 // Worker Script
 else
     (function() {
-        var TEMPLATE_URL = 'ks/put/render/form/ks-put-form.html';
+        var TEMPLATE_URL = 'ks/put/form/render/ks-put-form.html';
 
         module.exports.renderPutForm = function(content, status_content, callback) {
             self.module = {exports: {}};
