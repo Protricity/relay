@@ -1,0 +1,49 @@
+<article class='pgp-manage:'>
+    <script src='pgp/manage/render/pgp-manage-form.js'></script>
+    <link rel='stylesheet' href='pgp/manage/render/pgp-manage-form.css' type='text/css' property="stylesheet">
+    <header class='header-bar show-on-minimized'>
+        <a href='#MAXIMIZE pgp-manage:'>
+            <span class='command'>Manage</span> PGP Identities
+        </a>
+    </header>
+    <div class='header-bar-buttons show-on-minimized'>
+        <a href='#MINIMIZE pgp-manage:'>[-]</a><!--
+     --><a href='#MAXIMIZE pgp-manage:'>[+]</a><!--
+     --><a href='#CLOSE pgp-manage:'>[x]</a>
+    </div>
+    <main>
+        <form name='pgp-manage-form' action='#'>
+            <code class='status-box'>{$status_content}</code>
+            <div class='pgp-manage-entries:'>
+                {$html_manage_entries}
+            </div>
+            <label>
+                <strong>Action:&nbsp;&nbsp;</strong>
+                <span class='action span-action'>No Keys Selected</span>
+                <br/>
+            </label>
+            <label>
+                <strong>Client:</strong>
+                <select name='action'>
+                    <option value=''>Select action</option>
+                    <option value='default [$id_private_list]'>Make Default Identity</option>
+                    <option value='@passphrase [$id_private]'>Change Password</option>
+                    <option value='sign [$id_private_list]'>Sign Message</option>
+                    <option value='verify [$id_private_list]'>Verify Message</option>
+                    <option value='encrypt [$id_private_list]'>Encrypt Message</option>
+                    <option value='decrypt [$id_private_list]'>Decrypt Message</option>
+                    <option value='@export.public [$id_private]'>Export Public Key Block</option>
+                    <option value='@export.private [$id_private]'>Export Private Key Block</option>
+                    <option value='@unregister [$id_private]'>Unregister Private Key Identity</option>
+                    <option value='keygen'>Generate a new Identity</option>
+                </select>
+                <br/>
+            </label>
+            <label>
+                <strong>Submit:&nbsp;&nbsp;</strong>
+                <input type='submit' />
+                <br/>
+            </label>
+        </form>
+    </main>
+</article>

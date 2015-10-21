@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Test - User Index Template</title>
+    <link rel="stylesheet" href="../../../template/base/base.css" type="text/css" />
+    <link rel="stylesheet" href="../../../template/minimal/minimal.css" type="text/css" />
+    <link rel="stylesheet" href="../../ks.css" type="text/css">
+    <script src="../../ks-db.js"></script>
+    <script src="user-index.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            getUserIndexTemplate("GET socket://3110FF44/~/", function(responseHTML) {
+                document.querySelector('.ks-body').innerHTML = responseHTML;
+            })
+        });
+
+    </script>
+</head>
+<body class="theme-minimal">
+<article class="channel get:1 ks-browser ks-response-404" data-browser-id="1">
+    <header><span class="command">GET</span> <span class="url">socket://3110FF44/~/</span></header>
+    <div class="title-commands"><a class="title-command-minimize" href="#MINIMIZE get:1">[-]</a><a class="title-command-maximize" href="#MAXIMIZE get:1">[+]</a>
+        <a class="title-command-close" href="#CLOSE get:1">[x]</a></div>
+    <nav><form name="ks-browser-navigation-form"><button type="submit" name="back">⇦</button><button type="submit" name="forward">⇨</button>
+        <button type="submit" name="home">⌂</button><input name="url" type="text" value="socket://3110FF44/~/"><button type="submit" name="navigate">ℜ</button></form></nav>
+    <section class="ks-body"></section>
+    <footer class="ks-status">200 OK</footer></article>
+
+</body>
+</html>

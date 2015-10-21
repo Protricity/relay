@@ -1,0 +1,27 @@
+{
+  "name": "relay",
+  "description": "Relay Client and Server",
+  "version": "0.0.2",
+  "homepage": "http://relay.co.il/",
+  "main": "src/index.js",
+  "directories": {
+    "lib": "src"
+  },
+  "scripts": {
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "indexeddb-js": "0.0.14",
+    "openpgp": "^1.3.0",
+    "sqlite3": "3.1.0",
+    "ws": "^0.8.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://Protricity@github.com/Protricity/relay.git"
+  },
+  "gitHead___": "e2e04b04ea318b4c64cb95c6c174749a524f49ef",
+  "bugs": {
+    "url": "https://github.com/Protricity/relay/issues"
+  }
+}
