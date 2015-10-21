@@ -7,11 +7,11 @@ if (!module.exports) module.exports = {};
 
 (function() {
     module.exports.renderKeySpaceTag = function(tagHTML, callback) {
-        var match = /^\{ks::[^}]*}$/.exec(tagHTML);
+        var match = /^\{ks::([^}\s]*)[^}]*}$/.exec(tagHTML);
         if(!match)
             throw new Error("Invalid Tag: " + tagHTML);
 
-        var subTag = match[1].toLowerCase();
+        var subTag = (match[1] || '').toLowerCase();
         switch(subTag) {
             case 'index':
                 renderKeySpaceIndexTag(tagHTML, callback);

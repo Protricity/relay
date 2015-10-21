@@ -15,7 +15,7 @@ module.exports.tags = [
     [/^\{ks::[^}]*}$/i, function(tagHTML, callback, Client) {
         self.exports = {};
         self.module = {exports: {}};
-        importScripts('ks/tags/render/ks-tags.js');
+        importScripts('ks/tags/ks-tags.js');
         self.module.exports.renderKeySpaceTag(tagHTML, callback, Client);
     }]
 ];
