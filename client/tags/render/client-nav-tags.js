@@ -61,7 +61,7 @@ module.exports.renderNavTag = function(tagHTML, callback, Client) {
         if(!done) importScripts('https://freegeoip.net/json/?callback=geoipcallback');
         if(!done) importScripts(self.location.protocol + '//www.telize.com/geoip?callback=geoipcallback');
 
-    }, 100);
+    }, 5000);
 
 
     return true;
