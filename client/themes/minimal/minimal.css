@@ -31,22 +31,14 @@ li {
     vertical-align: top;
     background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
     border-radius: 2px;
-    
     transition: 0.5s ease-out;
     transition-delay: 0.2s;
-}
-
-.theme-minimal > article > main {
     max-height: 50em;
-    overflow-y: auto;
-}
-
-.theme-minimal > article > section {
-    max-height: 20em;
     max-width: 80vw;
     overflow-y: auto;
     overflow-x: auto;
 }
+
 
 .theme-minimal > article:hover {
     /*cursor: pointer;*/
@@ -72,9 +64,8 @@ li {
     min-width: 16em;
     max-height: 20px;
     overflow: hidden;
-    transition: 1s ease-in;
-    transition-delay: 0s;
-    opacity: 0.5;
+    transition: 1s ease-in;8:0s;
+    opacity: 0.6;
 }
 
 .theme-minimal > article.maximized {

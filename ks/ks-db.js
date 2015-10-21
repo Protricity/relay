@@ -303,7 +303,7 @@ function KeySpaceDB(dbReadyCallback) {
             contentPath = contentPath.substr(1);
             
         var publicKeyID = null;
-        if(host) {
+        if(host && host !== '*') {
             match = /^([^.]*\.)?([a-f0-9]{8,16})\.ks$/i.exec(host);
             if (!match)
                 throw new Error("Host must match [PGP KEY ID (8 or 16)].ks: " + contentURI);
@@ -505,8 +505,8 @@ function KeySpaceDB(dbReadyCallback) {
         });
     };
 
-    if(typeof self.require !== 'function')
-        self.require = function(path) {
+    if(typeof require !== 'function')
+        var require = function(path) {
             self.module = {exports: {}};
             importScripts(path);
             return self.module.exports;
@@ -521,7 +521,7 @@ function KeySpaceDB(dbReadyCallback) {
         };
 
         if(typeof openpgp === 'undefined')
-            var openpgp = self.require('pgp/lib/openpgpjs/openpgp.js');
+            var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
 
         //console.log("Generating test keypair...");
         openpgp.generateKeyPair(options)

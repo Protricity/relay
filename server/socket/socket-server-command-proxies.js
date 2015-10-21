@@ -12,7 +12,7 @@ module.exports.initSocketServerCommandProxies = function(SocketServer) {
     //});
     SocketServer.addCommand(httpCommand);
     function httpCommand(commandString, client) {
-        if(!/^(get|post|put|delete|patch|head|http|ks-auth|ks-validate)/i.test(commandString))
+        if(!/^(get|post|put|delete|patch|head|http|auth)/i.test(commandString))
             return false;
         SocketServer.removeCommand(httpCommand);
 
@@ -34,9 +34,9 @@ module.exports.initSocketServerCommandProxies = function(SocketServer) {
             return false;
         SocketServer.removeCommand(chatCommand);
 
-        require('../../app/social/chat/chat-server-commands.js')
+        require('../../channel/channel-server-commands.js')
             .initSocketServerCommands(SocketServer);
-        console.log("Loaded app/social/chat/chat-server-commands.js");
+        console.log("Loaded channel/channel-server-commands.js");
 
         return false;
     }

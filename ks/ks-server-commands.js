@@ -22,7 +22,7 @@ module.exports.initHTTPServerCommands = function(HTTPServer) {
 var keySpaceClients = {};
 var keySpaceChallenges = {};
 function ksAuthCommandSocket(commandString, client) {
-    var match = /^ks-auth\s+(.*)$/i.exec(commandString);
+    var match = /^auth\s+(.*)$/i.exec(commandString);
     if(!match)
         return false;
 
@@ -40,7 +40,7 @@ function ksAuthCommandSocket(commandString, client) {
 }
 
 function ksValidateCommandSocket(commandString, client) {
-    var match = /^ks-validate\s+(.*)?$/i.exec(commandString);
+    var match = /^auth.validate\s+(.*)?$/i.exec(commandString);
     if(!match)
         return false;
 
@@ -85,7 +85,7 @@ function sendKeySpaceAuth(pgp_id_public, client) {
 
         openpgp.encryptMessage(publicKey, authCode)
             .then(function(encryptedMessage) {
-                client.send("KS-CHALLENGE " + encryptedMessage);
+                client.send("AUTH.CHALLENGE " + encryptedMessage);
 
             }).catch(function(error) {
                 client.send("ERROR " + error);
@@ -100,7 +100,10 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
     var requestPath = "/public/id";
     var requestURL = "http://" + pgp_id_public + ".ks" + requestPath;
     var loaded = false;
-    getKeySpaceDB().queryOne(requestURL, function (err, contentData) {
+
+    var KeySpaceDB = require('./ks-db.js').KeySpaceDB;
+
+    KeySpaceDB.queryOne(requestURL, function (err, contentData) {
         if (err)
             return callback(err);
 
@@ -136,7 +139,7 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
 
                 // TODO: client config cache settings
                 // Cache Public Key
-                getKeySpaceDB().addVerifiedContentToDB(publicKey.armor(), pgp_id_public, requestPath, publicKeyCreateDate.getTime(), {},
+                KeySpaceDB.addVerifiedContentToDB(publicKey.armor(), pgp_id_public, requestPath, publicKeyCreateDate.getTime(), {},
                     function(err, insertData) {
                         if(err)
                             throw new Error(err);
@@ -247,8 +250,10 @@ function handleHTTPSocketResponse(responseString, client) {
 }
 
 function addURLsToDB(responseContent, referrerURL) {
+    var KeySpaceDB = require('./ks-db.js').KeySpaceDB;
+
     responseContent.replace(/<a[^>]+href=['"]([^'">]+)['"][^>]*>([^<]+)<\/a>/gi, function(match, url, text, offset, theWholeThing) {
-        getKeySpaceDB().addURLToDB(url, referrerURL);
+        KeySpaceDB.addURLToDB(url, referrerURL);
     });
 }
 
@@ -268,7 +273,10 @@ function executeServerGetRequest(requestString, callback) {
     // Check local cache to see what can be displayed while waiting
     var requestURL = getRequestURL(requestString);
     //console.info("GET ", requestURL);
-    getKeySpaceDB().queryOne(requestURL, function (err, contentData) {
+
+    var KeySpaceDB = require('./ks-db.js').KeySpaceDB;
+
+    KeySpaceDB.queryOne(requestURL, function (err, contentData) {
         if(err)
             throw new Error(err);
 
@@ -342,15 +350,6 @@ function generateUID(format) {
     });
 }
 
-function getKeySpaceDB() {
-    if(typeof KeySpaceDB === 'undefined') {
-        if(typeof importScripts === "function")
-            importScripts('ks/ks-db.js');
-        else
-            return require('./ks-db.js').KeySpaceDB;
-    }
-    return KeySpaceDB;
-}
 
 exports.test = function() {
     console.log('Test Complete: ' + __filename);

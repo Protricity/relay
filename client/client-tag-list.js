@@ -8,14 +8,14 @@ module.exports.tags = [
     [/^\{nav[^}]*}$/i, function(tagHTML, callback, Client) {
         self.exports = {};
         self.module = {exports: {}};
-        importScripts('client/render/tags/client-nav-tag.js');
+        importScripts('client/tags/render/client-nav-tags.js');
         self.module.exports.renderNavTag(tagHTML, callback, Client);
     }],
 
     [/^\{ks::[^}]*}$/i, function(tagHTML, callback, Client) {
         self.exports = {};
         self.module = {exports: {}};
-        importScripts('ks/render/tags/ks-tags.js');
+        importScripts('ks/tags/render/ks-tags.js');
         self.module.exports.renderKeySpaceTag(tagHTML, callback, Client);
     }]
 ];

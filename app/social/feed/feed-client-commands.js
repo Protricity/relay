@@ -29,7 +29,11 @@
             Client.render(html);
         });
 
-        getKeySpaceDB().queryContentFeed(
+        self.module = {exports: {}};
+        importScripts('ks/ks-db.js');
+        var KeySpaceDB = self.module.exports.KeySpaceDB;
+
+        KeySpaceDB.queryContentFeed(
             [feedStartTime, feedEndTime],
             function(err, data) {
                 console.info("CONTENT: ", err, data);
@@ -43,14 +47,5 @@
         return true;
     }
 
-    function getKeySpaceDB() {
-        if(typeof self.KeySpaceDB === 'undefined') {
-            if(typeof importScripts === "function")
-                importScripts('ks/ks-db.js');
-            else
-                self.KeySpaceDB = require('./ks-db.js').KeySpaceDB;
-        }
-        return self.KeySpaceDB;
-    }
 
 })();
