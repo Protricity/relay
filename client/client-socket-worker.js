@@ -125,14 +125,17 @@ function ClientSocketWorker() {
                 break;
         }
 
-        if(hasClass) {
-            targetElement.classList.remove(command + 'd');
+        for(var i=0; i<targetElements.length; i++) {
+            targetElement = targetElements[i];
+            if(hasClass) {
+                targetElement.classList.remove(command + 'd');
 
-        } else {
-            targetElement.classList.remove('minimized');
-            targetElement.classList.remove('maximized');
-            targetElement.classList.remove('closed');
-            targetElement.classList.add(command + 'd');
+            } else {
+                targetElement.classList.remove('minimized');
+                targetElement.classList.remove('maximized');
+                targetElement.classList.remove('closed');
+                targetElement.classList.add(command + 'd');
+            }
         }
 
     }

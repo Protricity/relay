@@ -90,7 +90,7 @@ if(typeof document === 'object')
             //registerCommand("REGISTER " + keyPair.privateKeyArmored);
 
             var messageEvent = new CustomEvent('command', {
-                detail: "PGP.REGISTER.FORM " + keyPair.privateKeyArmored,
+                detail: "PGP.IMPORT.FORM " + keyPair.privateKeyArmored,
                 cancelable:true
             });
             document.dispatchEvent(messageEvent);
@@ -108,9 +108,9 @@ if(typeof document === 'object')
             //        Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
             //
             //self.module = {exports: {}};
-            //importScripts('pgp/register/render/pgp-register-form.js');
+            //importScripts('pgp/import/render/pgp-import-form.js');
             //var templateExports = self.module.exports;
-            //templateExports.renderPGPRegisterForm(keyPair.privateKeyArmored, status_content, function(html) {
+            //templateExports.renderPGPImportForm(keyPair.privateKeyArmored, status_content, function(html) {
             //    Client.render(html);
             //});
             //return true;

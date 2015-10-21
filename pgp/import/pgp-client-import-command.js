@@ -2,15 +2,15 @@
  * Ari 7/2/2015.
  */
 if (!module) var module = {exports:{}};
-module.exports.initClientPGPRegisterCommands = function(Client) {
-    Client.addCommand(registerCommand);
-    Client.addCommand(unregisterCommand);
+module.exports.initClientPGPImportCommands = function(Client) {
+    Client.addCommand(importCommand);
+    Client.addCommand(deleteCommand);
 
     /**
-     * @param commandString REGISTER
+     * @param commandString PGP.IMPORT
      */
-    function registerCommand(commandString, e) {
-        var match = /^pgp\.register(\.form)?\s*([\s\S]+)?$/im.exec(commandString);
+    function importCommand(commandString, e) {
+        var match = /^pgp\.import(\.form)?\s*([\s\S]+)?$/im.exec(commandString);
         if(!match)
             return false;
 
@@ -22,7 +22,7 @@ module.exports.initClientPGPRegisterCommands = function(Client) {
         var privateKeyBlock = (match[2] || '').replace(/(\r\n|\r|\n)/g, '\r\n');
         var showForm = (match[1] || '').toLowerCase() === '.form';
 
-        var status_content = "Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually";
+        var status_content = "Paste a new PGP PRIVATE KEY BLOCK to import a new PGP Identity manually";
 
         var privateKeyID, publicKeyID, userIDString, publicKeyBlock;
         if(privateKeyBlock) {
@@ -45,7 +45,7 @@ module.exports.initClientPGPRegisterCommands = function(Client) {
 
             status_content = "\
                     <span class='success'>PGP Key Pair generated successfully</span><br/><br/>\n\
-                    <span class='info'>You may now register the following identity:</span><br/>\n\
+                    <span class='info'>You may now import (register) the following identity:</span><br/>\n\
                     User ID: <strong>" + userIDString.replace(/</g, '&lt;') + "</strong><br/>\n\
                     Private Key ID: <strong>" + privateKeyID + "</strong><br/>\n\
                     Public Key ID: <strong>" + publicKeyID + "</strong><br/>\n\
@@ -77,7 +77,7 @@ module.exports.initClientPGPRegisterCommands = function(Client) {
                         throw new Error(err);
 
                     status_content = "\
-                        <span class='success'>PGP Key Pair registered successfully</span><br/><br/>\n\
+                        <span class='success'>PGP Key Pair imported successfully</span><br/><br/>\n\
                         <span class='info'>You may now make use of your new identity:</span><br/>\n\
                         User ID: <strong>" + userIDString.replace(/</g, '&lt;') + "</strong><br/>";
 
@@ -93,9 +93,9 @@ module.exports.initClientPGPRegisterCommands = function(Client) {
 
         } else {
             self.module = {exports: {}};
-            importScripts('pgp/register/render/pgp-register-form.js');
+            importScripts('pgp/import/render/pgp-import-form.js');
             var templateExports = self.module.exports;
-            templateExports.renderPGPRegisterForm(privateKeyBlock, status_content, function(html) {
+            templateExports.renderPGPImportForm(privateKeyBlock, status_content, function(html) {
                 Client.render(html);
             });
             return true;
@@ -105,10 +105,10 @@ module.exports.initClientPGPRegisterCommands = function(Client) {
 
 
     /**
-     * @param commandString UNREGISTER [PGP Private Key Fingerprint]
+     * @param commandString DELETE [PGP Private Key ID]
      */
-    function unregisterCommand(commandString, e) {
-        var match = /^pgp.unregister\s+(.*)$/im.exec(commandString);
+    function deleteCommand(commandString, e) {
+        var match = /^pgp.delete\s+(.*)$/im.exec(commandString);
         if(!match)
             return false;
 

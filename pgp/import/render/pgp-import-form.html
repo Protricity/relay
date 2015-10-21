@@ -1,9 +1,9 @@
 <article class='pgp: maximized'>
-    <script src='pgp/register/render/pgp-register-form.js'></script>
-    <link rel='stylesheet' href='pgp/register/render/pgp-register-form.css' type='text/css' property="stylesheet">
+    <script src='pgp/import/render/pgp-import-form.js'></script>
+    <link rel='stylesheet' href='pgp/import/render/pgp-import-form.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'> 
         <a href='#MAXIMIZE pgp:'> 
-            <span class='command'>Register</span> a new PGP Key Pair 
+            <span class='command'>Import</span> a new PGP Key Pair
         </a> 
     </header> 
     <div class='header-bar-buttons show-on-minimized'> 
@@ -12,13 +12,13 @@
      --><a href='#CLOSE pgp:'>[x]</a> 
     </div> 
     <main>
-        <form name='pgp-register-form' action='#' method='post' > 
-            <code class='status-box'>{$status_content}</code><br/> 
-            <label><strong>Paste a PGP Private key block into the box below to register:</strong><br/> 
+        <form name='pgp-import-form' action='#' method='post' >
+            <code class='status-box'>{$status_content}</code>
+            <label><strong>Paste a PGP Private key block into the box below:</strong><br/>
                 <textarea name='private_key' required='required' placeholder='{$example_public_key}' rows='12' cols='68'>{$private_key_block}</textarea> 
             </label> 
-            <br/><br/><span class='text-register'>Register</span>:<br/> 
-            <input type='submit' name='submit-register' value='Register'/> 
+            <br/><br/><strong>Import</strong> this PGP Identity into your Relay Client:<br/>
+            <input type='submit' name='submit-import' value='Import'/>
             or <a href='#PGP.KEYGEN'>Generate a new PGP Key pair</a>
         </form> 
     </main>
