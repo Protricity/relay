@@ -23,11 +23,19 @@ function HTTPServer() {
         ports = (ports || HTTPServer.DEFAULT_PORTS).toString();
         var http = require('http');
         ports.replace(/\d+/g, function(port) {
-            var server = http.createServer(HTTPServer.execute);
-            server.listen(parseInt(port));
-            servers.push(server);
-            console.log('HTTP Server running on port ' + port);
+            try {
+                var server = http.createServer(HTTPServer.execute);
+                server.listen(parseInt(port));
+                servers.push(server);
+                console.log('HTTP Server running on port ' + port);
+
+            } catch (e) {
+                console.error(e);
+            }
         });
+
+        if(servers.length === 0)
+            throw new Error("Server failed");
     };
 
 
