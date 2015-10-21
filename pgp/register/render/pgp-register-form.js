@@ -44,7 +44,7 @@ if(typeof document === 'object')
             if(privateKeyBlock.indexOf("-----BEGIN PGP PRIVATE KEY BLOCK-----") === -1)
                 throw new Error("PGP PRIVATE KEY BLOCK not found");
 
-            var commandString = "REGISTER " + privateKeyBlock;
+            var commandString = "PGP.REGISTER " + privateKeyBlock;
 
             var messageEvent = new CustomEvent('command', {
                 detail: commandString,
