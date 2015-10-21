@@ -3,5 +3,6 @@
  */
 
 
-ClientSockets.addURL('ws://' + location.host.split(':')[0] + ':7314/socket');
-ClientSockets.addURL('ws://relay.co.il:7314/relay-server/socket');
+var protocol = document.location.protocol === 'https:' ? 'wss://' : 'ws://';
+ClientSockets.addURL(protocol + location.host.split(':')[0] + ':7314/socket');
+ClientSockets.addURL(protocol + 'relay.co.il:7314/relay-server/socket');
