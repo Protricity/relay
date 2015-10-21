@@ -10,33 +10,50 @@ module.exports.initClientPGPRegisterCommands = function(Client) {
      * @param commandString REGISTER
      */
     function registerCommand(commandString, e) {
-        var match = /^pgp.register\s*([\s\S]+)?$/im.exec(commandString);
+        var match = /^pgp\.register(\.form)?\s*([\s\S]+)?$/im.exec(commandString);
         if(!match)
             return false;
 
-        // TODO: require passphrase on register?
+        self.module = {exports: {}};
+        importScripts('ks/ks-db.js');
+        var KeySpaceDB = self.module.exports.KeySpaceDB;
 
-        if(match[1]) {
+        // TODO: require passphrase on register?
+        var privateKeyBlock = (match[2] || '').replace(/(\r\n|\r|\n)/g, '\r\n');
+        var showForm = (match[1] || '').toLowerCase() === '.form';
+
+        var status_content = "Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually";
+
+        var privateKeyID, publicKeyID, userIDString, publicKeyBlock;
+        if(privateKeyBlock) {
             self.exports = {};
             self.module = {exports: {}};
             importScripts('pgp/lib/openpgpjs/openpgp.js');
             var openpgp = self.module.exports;
 
-            self.module = {exports: {}};
-            importScripts('ks/ks-db.js');
-            var KeySpaceDB = self.module.exports.KeySpaceDB;
 
-            var privateKeyBlock = (match[1] || '').replace(/(\r\n|\r|\n)/g, '\r\n');
             var privateKey = openpgp.key.readArmored(privateKeyBlock).keys[0];
-            var privateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();
+            privateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();
             privateKeyID = privateKeyID.substr(privateKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
 
             var publicKey = privateKey.toPublic();
-            var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
-            var publicKeyBlock = publicKey.armor();
+            publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+            publicKeyBlock = publicKey.armor();
             publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
 
-            var userIDString = privateKey.getUserIds().join('; ');
+            userIDString = privateKey.getUserIds().join('; ');
+
+            status_content = "\
+                    <span class='success'>PGP Key Pair generated successfully</span><br/><br/>\n\
+                    <span class='info'>You may now register the following identity:</span><br/>\n\
+                    User ID: <strong>" + userIDString.replace(/</g, '&lt;') + "</strong><br/>\n\
+                    Private Key ID: <strong>" + privateKeyID + "</strong><br/>\n\
+                    Public Key ID: <strong>" + publicKeyID + "</strong><br/>\n\
+                    Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
+        }
+
+
+        if(!showForm && privateKeyBlock) {
 
             var customFields = {
                 pgp_id_private: privateKeyID,
@@ -59,31 +76,28 @@ module.exports.initClientPGPRegisterCommands = function(Client) {
                     if(err)
                         throw new Error(err);
 
-                    var status_content = "\
+                    status_content = "\
                         <span class='success'>PGP Key Pair registered successfully</span><br/><br/>\n\
                         <span class='info'>You may now make use of your new identity:</span><br/>\n\
                         User ID: <strong>" + userIDString.replace(/</g, '&lt;') + "</strong><br/>";
 
-                    require('pgp/manage/render/pgp-manage-form.js')
-                        .renderPGPManageForm(status_content, function(html) {
-                            Client.replace('pgp:', html);
-                        });
+                    self.module = {exports: {}};
+                    importScripts('pgp/manage/render/pgp-manage-form.js');
+                    self.module.exports.renderPGPManageForm(status_content, function(html) {
+                        Client.replace('pgp:', html);
+                    });
 
                 });
             });
             return true;
 
         } else {
-            var status_content = "Paste a new PGP PRIVATE KEY BLOCK to register a new PGP Identity manually";
-
             self.module = {exports: {}};
             importScripts('pgp/register/render/pgp-register-form.js');
             var templateExports = self.module.exports;
-            templateExports.renderPGPRegisterForm('', status_content, function(html) {
+            templateExports.renderPGPRegisterForm(privateKeyBlock, status_content, function(html) {
                 Client.render(html);
             });
-            // Free up template resources
-            delete Templates.pgp.register;
             return true;
 
         }

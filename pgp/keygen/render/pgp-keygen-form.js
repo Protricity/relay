@@ -85,29 +85,35 @@ if(typeof document === 'object')
             var privateKey = keyPair.key;
             var newPrivateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();
             var newPublicKeyID = privateKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
-            console.log("TODO FORM with New PGP Key Generated: ", newPrivateKeyID, newPublicKeyID);
+            //console.log("TODO FORM with New PGP Key Generated: ", newPrivateKeyID, newPublicKeyID);
 
             //registerCommand("REGISTER " + keyPair.privateKeyArmored);
 
-            var userIDString = privateKey.getUserIds().join('; ');
-
-            //var publicKeyBlock = publicKey.armor();
-
-            var status_content = "\
-                    <span class='success'>PGP Key Pair generated successfully</span><br/><br/>\n\
-                    <span class='info'>You may now register the following identity:</span><br/>\n\
-                    User ID: <strong>" + userIDString.replace(/</g, '&lt;') + "</strong><br/>\n\
-                    Private Key ID: <strong>" + newPrivateKeyID + "</strong><br/>\n\
-                    Public Key ID: <strong>" + newPublicKeyID + "</strong><br/>\n\
-                    Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
-
-            self.module = {exports: {}};
-            importScripts('pgp/register/render/pgp-register-form.js');
-            var templateExports = self.module.exports;
-            templateExports.renderPGPRegisterForm(keyPair.privateKeyArmored, status_content, function(html) {
-                Client.render(html);
+            var messageEvent = new CustomEvent('command', {
+                detail: "PGP.REGISTER.FORM " + keyPair.privateKeyArmored,
+                cancelable:true
             });
-            return true;
+            document.dispatchEvent(messageEvent);
+
+            //var userIDString = privateKey.getUserIds().join('; ');
+            //
+            ////var publicKeyBlock = publicKey.armor();
+            //
+            //var status_content = "\
+            //        <span class='success'>PGP Key Pair generated successfully</span><br/><br/>\n\
+            //        <span class='info'>You may now register the following identity:</span><br/>\n\
+            //        User ID: <strong>" + userIDString.replace(/</g, '&lt;') + "</strong><br/>\n\
+            //        Private Key ID: <strong>" + newPrivateKeyID + "</strong><br/>\n\
+            //        Public Key ID: <strong>" + newPublicKeyID + "</strong><br/>\n\
+            //        Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
+            //
+            //self.module = {exports: {}};
+            //importScripts('pgp/register/render/pgp-register-form.js');
+            //var templateExports = self.module.exports;
+            //templateExports.renderPGPRegisterForm(keyPair.privateKeyArmored, status_content, function(html) {
+            //    Client.render(html);
+            //});
+            //return true;
 
         });
     }

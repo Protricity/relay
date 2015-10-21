@@ -65,6 +65,8 @@ function ksValidateCommandSocket(commandString, client) {
 }
 
 function sendKeySpaceAuth(pgp_id_public, client) {
+    if(client.readyState !== client.OPEN)
+        throw new Error("Client is not open");
     if(typeof keySpaceClients[pgp_id_public] === 'undefined')
         keySpaceClients[pgp_id_public] = [];
 
