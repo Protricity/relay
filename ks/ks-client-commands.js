@@ -13,8 +13,8 @@ module.exports.initClientKSCommands = function(Client) {
         Client.removeCommand(importGETCommand);
         Client.removeResponse(importGETCommand);
         self.module = {exports: {}};
-        importScripts('ks/get/ks-client-get-command.js');
-        console.info("Loaded: ks/get/ks-client-get-command.js");
+        importScripts('ks/get/ks-client-get-commands.js');
+        console.info("Loaded: ks/get/ks-client-get-commands.js");
         module.exports.initClientKSGetCommands(Client);
         return false;
     }
@@ -29,9 +29,9 @@ module.exports.initClientKSCommands = function(Client) {
         Client.removeCommand(importPUTCommand);
         Client.removeResponse(importPUTCommand);
         self.module = {exports: {}};
-        importScripts('ks/put/ks-client-put-command.js');
+        importScripts('ks/put/ks-client-put-commands.js');
         module.exports.initClientKSPutCommands(Client);
-        console.info("Loaded: ks/put/ks-client-put-command.js");
+        console.info("Loaded: ks/put/ks-client-put-commands.js");
         return false;
     }
 

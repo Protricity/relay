@@ -36,7 +36,7 @@ if(typeof document === 'object')
 if (!module) var module = {exports:{}};
 // Worker Scripts
 (function() {
-    var TEMPLATE_URL = 'ks/put/render/manage/ks-put-manage-form.html';
+    var TEMPLATE_URL = 'ks/put/manage/render/ks-put-manage-form.html';
 
     module.exports.renderPutManageForm = function(url, status_content, callback) {
         self.module = {exports: {}};
