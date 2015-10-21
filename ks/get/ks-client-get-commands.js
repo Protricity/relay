@@ -20,6 +20,7 @@ module.exports.initClientKSGetCommands = function(Client) {
         executeRemoteGETRequest(commandString, function(responseString) {
             renderResponseString(responseString);
         });
+        return true;
     }
 
     function getResponse(requestString) {
@@ -115,7 +116,7 @@ module.exports.initClientKSGetCommands = function(Client) {
 
             if(contentData) {
                 // TODO: verify and decrypt content on the fly?
-                var signedBody = protectHTMLContent(contentData.content_verified);
+                var signedBody = protectHTMLContent(contentData.content);
 
                 self.module = {exports: {}};
                 importScripts('ks/get/browser/render//ks-browser.js');
