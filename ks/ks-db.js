@@ -169,7 +169,7 @@ if(typeof require !== 'function')
     };
 
     KeySpaceDB.verifyAndAddContentToDB = function(pgpSignedContent, pgp_id_public, callback) {
-        console.log("ADDING", arguments);
+//         console.log("ADDING", arguments);
         KeySpaceDB.verifySignedContent(
             pgpSignedContent,
             pgp_id_public,
