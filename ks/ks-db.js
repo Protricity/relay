@@ -2,8 +2,7 @@
  * Created by ari on 7/2/2015.
  */
 "use strict";
-if (!module) var module = {};
-if (!module.exports) module.exports = {};
+if (!module) var module = {exports: {}};
 module.exports.KeySpaceDB = KeySpaceDB;
 
 
@@ -23,7 +22,14 @@ function KeySpaceDB(dbReadyCallback) {
     return KeySpaceDB.getDBInstance(dbReadyCallback);
 }
 
-(function() {
+if(typeof require !== 'function')
+    var require = function(path) {
+        self.module = {exports: {}};
+        importScripts(path);
+        return self.module.exports;
+    };
+
+(function(require) {
     if(typeof indexedDB === 'undefined')
         var mongodb     = require('mongodb'),
             MongoClient = mongodb.MongoClient;
@@ -505,13 +511,6 @@ function KeySpaceDB(dbReadyCallback) {
         });
     };
 
-    if(typeof require !== 'function')
-        var require = function(path) {
-            self.module = {exports: {}};
-            importScripts(path);
-            return self.module.exports;
-        };
-
     module.exports.test = function() {
         KeySpaceDB();
 
@@ -546,4 +545,4 @@ function KeySpaceDB(dbReadyCallback) {
         })
     };
 
-})();
+})(require);

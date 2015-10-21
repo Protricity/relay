@@ -180,7 +180,7 @@ module.exports.initClientKSGetCommands = function(Client) {
 
             } else {
 
-                importScripts('ks/get/render/browser/pages/404.js');
+                importScripts('ks/get/render/pages/404.js');
                 get404IndexTemplate(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
                     responseHeaders += passedResponseHeaders;
 

@@ -79,6 +79,7 @@ function ClientSocketWorker() {
     }
 
     function onCommandEvent(e) {
+        e.preventDefault();
         var commandString = e.detail || e.data;
         ClientSocketWorker.sendCommand(commandString);
     }

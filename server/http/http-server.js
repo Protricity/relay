@@ -20,7 +20,7 @@ function HTTPServer() {
         if(servers.length > 0)
             throw new Error("HTTP Server already started");
 
-        ports = ports || HTTPServer.DEFAULT_PORTS;
+        ports = (ports || HTTPServer.DEFAULT_PORTS).toString();
         var http = require('http');
         ports.replace(/\d+/g, function(port) {
             var server = http.createServer(HTTPServer.execute);
