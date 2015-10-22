@@ -7,7 +7,7 @@ module.exports.initClientKSPutFormCommand = function(Client) {
     Client.addCommand(putFormAddCommand);
 
     /**
-     * @param commandString PUT [path] [content]
+     * @param commandString PUT[.FORM] [path] [content]
      */
     function putFormCommand(commandString) {
         var match = /^put$|^put\.form(?:\s+([\s\S]+))?$/im.exec(commandString);
@@ -27,8 +27,10 @@ module.exports.initClientKSPutFormCommand = function(Client) {
 
         return true;
     }
+
+
     /**
-     * @param commandString PUT [path] [content]
+     * @param commandString PUT.FORM.ADD [path] [content]
      */
     function putFormAddCommand(commandString) {
         var match = /^put\.form\.add(?:\s+([\s\S]+))?$/im.exec(commandString);
