@@ -1,4 +1,22 @@
+/** Table **/
+.ks-put-manage-info > table {
+    width: 100%;
+    text-align: left;
+}
+.ks-put-manage-info > table > tbody > tr > th {
+    color: #999;
+    /*border-bottom: 1px solid;*/
+    /* text-align: right; */
+}
+.ks-put-manage-info > table > tbody > tr > th:first-child,
+.ks-put-manage-info > table > tbody > tr > td:first-child {
+    color: #999;
+    text-align: right;
+    padding-right: 1em;
+    font-weight: bold;
+}
 
+/** Commands **/
 
 .ks-put-manage-commands > form {
     display: inline-block;

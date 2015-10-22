@@ -120,7 +120,7 @@ if (!module) var module = {exports:{}};
                         throw new Error("Error: " + xhr.responseText);
                     callback(xhr.responseText
                         .replace(/{\$classes}/gi, classes.length>0 ? ' ' + classes.join(' ') : '')
-                        .replace(/{\$entry_uid}/gi, entry_uid)
+                        .replace(/{\$uid}/gi, entry_uid)
                         .replace(/{\$url}/gi, url)
                         .replace(/{\$path}/gi, path)
                         .replace(/{\$file_search_pattern}/gi, file_search_pattern)
@@ -153,64 +153,78 @@ if (!module) var module = {exports:{}};
                     contentEntry.pgp_id_public = pgp_id_public;
                     contentEntry.path = path.toLowerCase();
 
-                    //html_commands += "\n<a href='#PUT.FORM " + url + "'>Add</a>";
                     classes.push('no-entry');
 
                 } else {
-                    entry_uid = contentEntry.pgp_id_public = ' ' + contentEntry.timestamp;
+                    entry_uid = contentEntry.pgp_id_public + ' ' + contentEntry.timestamp;
                     if(contentEntry.published === true)
                         classes.push('published');
 
                     // TODO: check for private/hidden files
-                        //html_commands += "\n<a href='#PUT.PUBLISH " + uid + "'>Publish</a>";
-                    //html_commands += "\n<a href='#PUT.FORM " + uid + "'>Edit</a>";
-                    //html_commands += "\n<a href='#PUT.DELETE " + uid + "'>Delete</a>";
                 }
 
-                //if(typeof openpgp === 'undefined') {
-                //    self.module = {exports: {}};
-                //    importScripts('pgp/lib/openpgpjs/openpgp.js');
-                //    var openpgp = self.module.exports;
-                //}
-                //var pgpEncryptedMessage = openpgp.cleartext.readArmored(contentEntry.content);
-                //var verifiedContent = null;
-                if (contentEntry.content) {
-//                     var pgpClearSignedMessage = openpgp.cleartext.readArmored(contentEntry.content);
-//                    html_content = contentEntry.content; // pgpClearSignedMessage.getText();
-
+                if (contentEntry.content)
                     html_content = contentEntry.content
                         .replace(/&/g, '&amp;')
                         .replace(/</g, '&lt;')
                         .replace(/>/g, '&gt;')
                         .replace(/"/g, '&quot;');
 
-                }
 
-                html_info = '<table>';
+                var new_html_info = '';
 
                 if(url)
-                    html_info +=
+                    new_html_info +=
                         "\n\t<tr>" +
                         "\n\t\t<td class='name'>URL</td>" +
                         "\n\t\t<td class='value'><a href='" + url + "'>" + url + "</td>" +
                         "\n\t</tr>";
 
-                if(contentEntry.pgp_id_public)
-                    html_info +=
+                new_html_info +=
+                    "\n\t<tr>" +
+                    "\n\t\t<td class='name'>Public ID</td>" +
+                    "\n\t\t<td class='value'><span class='pgp-id-public'>" + contentEntry.pgp_id_public + "</span></td>" +
+                    "\n\t</tr>";
+
+                if(contentEntry.pgp_id_private)
+                    new_html_info +=
                         "\n\t<tr>" +
-                        "\n\t\t<td class='name'>Public ID</td>" +
-                        "\n\t\t<td class='value'>" + contentEntry.pgp_id_public + "</td>" +
+                        "\n\t\t<td class='name'>Private ID</td>" +
+                        "\n\t\t<td class='value'><span class='pgp-id-private'>" + contentEntry.pgp_id_private + "</span></td>" +
                         "\n\t</tr>";
 
-                if(contentEntry.timestamp)
-                    html_info +=
+                if(contentEntry.user_id)
+                    new_html_info +=
                         "\n\t<tr>" +
-                        "\n\t\t<td class='name'>Created</td>" +
-                        "\n\t\t<td class='value'>" + timeSince(contentEntry.timestamp) + " ago</td>" +
+                        "\n\t\t<td class='name'>User ID</td>" +
+                        "\n\t\t<td class='value'><span class='user-id'>" + contentEntry.user_id + "</span></td>" +
                         "\n\t</tr>";
 
+                if(typeof contentEntry.passphrase_required === 'boolean')
+                    new_html_info +=
+                        "\n\t<tr>" +
+                        "\n\t\t<td class='name'>Passphrase</td>" +
+                        "\n\t\t<td class='value'>" +
+                            (contentEntry.passphrase_required ? "<span class='yes'>Yes</span>" : "<span class='no'>No</span>")
+                        + "</td>" +
+                        "\n\t</tr>";
 
-                html_info += '\n</table>';
+                new_html_info +=
+                    "\n\t<tr>" +
+                    "\n\t\t<td class='name'>Created</td>" +
+                    "\n\t\t<td class='value'><span class='created'>" + timeSince(contentEntry.timestamp) + "</span> ago</td>" +
+                    "\n\t</tr>";
+
+                new_html_info +=
+                    "\n\t<tr>" +
+                    "\n\t\t<td class='name'>Published</td>" +
+                    "\n\t\t<td class='value'>" +
+                        (contentEntry.published === true ? "<span class='yes'>Yes</span>" : "<span class='no'>No</span>")
+                    + "</td>" +
+                    "\n\t</tr>";
+
+
+                html_info = new_html_info; //'<table>\n' + new_html_info + '\n</table>';
                 callback();
             });
         }
