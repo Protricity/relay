@@ -1,11 +1,14 @@
 
 
-.ks-put-manage-commands > a {
+.ks-put-manage-commands > form {
     display: inline-block;
-    text-decoration: none;
-    background: ButtonFace;
-    color: ButtonText;
-    border-color: ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight;
+}
+.ks-put-manage-commands > form > button {
+    /* display: inline-block; */
+    /* text-decoration: none; */
+    /* background: ButtonFace; */
+    /* color: ButtonText; */
+    /* border-color: ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight; */
     padding: 0.7em 0.8em;
     border-radius: 0.6em;
     border: 1px outset;
@@ -13,31 +16,13 @@
 
 /** Form **/
 
-form[name=ks-put-manage-form] select,
-form[name=ks-put-manage-form] button,
-form[name=ks-put-manage-form] input {
-    padding: 0.7em 0.8em;
-    margin: 0.5em 0;
-    border-radius: 0.6em;
-    border-width: 1px;
-    font-family: monospace;
-}
-
-form[name=ks-put-manage-form] input[type=submit]:enabled {
-    font-weight: bold;
-    transition: 2s;
-    transition-delay: 1s;
-    box-shadow: 0 0 3em #5F5;
-    cursor: pointer;
-}
-
-
-form[name=ks-put-manage-form].no-passphrase-required .hide-on-no-passphrase-required {
+article:not(.no-entry) form[name=ks-put-manage-add-form] {
     display: none;
 }
 
-form[name=ks-put-manage-form].passphrase-accepted input[type=password] {
-    font-weight: bold;
-    color: green;
-    background-color: #EFFFEF;
+article.published form[name=ks-put-manage-publish-form],
+article.no-entry form[name=ks-put-manage-publish-form],
+article.no-entry form[name=ks-put-manage-edit-form],
+article.no-entry form[name=ks-put-manage-delete-form] {
+    display: none;
 }

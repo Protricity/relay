@@ -280,6 +280,8 @@ if(typeof require !== 'function')
                 getRequest.onerror = function(e) {
                     callback(e.target, null, getRequest);
                 };
+            } else {
+                throw new Error("Not implemented");
             }
         });
     };
