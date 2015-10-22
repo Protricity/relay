@@ -24,7 +24,7 @@ module.exports.initClientCommands = function(Client) {
         self.module = {exports: {}};
         importScripts('ks/ks-client-commands.js');
         module.exports.initClientKSCommands(Client);
-        console.info("Loaded: pgp/pgp-client-commands.js");
+//         console.info("Loaded: pgp/pgp-client-commands.js");
         return false;
     }
 
@@ -36,7 +36,7 @@ module.exports.initClientCommands = function(Client) {
         Client.removeCommand(importPGPCommands);
         importScripts('pgp/pgp-client-commands.js');
         module.exports.initClientPGPCommands(Client);
-        console.info("Loaded: pgp/pgp-client-commands.js");
+//         console.info("Loaded: pgp/pgp-client-commands.js");
         return false;
     }
 
@@ -50,7 +50,7 @@ module.exports.initClientCommands = function(Client) {
         Client.removeResponse(importChatCommands);
         importScripts('channel/channel-client-commands.js');
         module.exports.initClientChannelCommands(Client);
-        console.info("Loaded: channel/channel-client-commands.js");
+//         console.info("Loaded: channel/channel-client-commands.js");
         return false;
     }
 

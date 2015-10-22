@@ -242,15 +242,19 @@ function ClientSocketWorker() {
             contentElement.classList.add('__no-class');
         var targetClass = contentElement.classList.item(0);
 
-        // Hide maximized windows
-        var maximizedElms = document.getElementsByClassName('maximized');
-        while(maximizedElms.length > 0)
-            maximizedElms[0].classList.remove('maximized');
 
         var targetElements = document.getElementsByClassName(targetClass);
         var targetElement;
         if(targetElements.length === 0) {
             var bodyElm = document.getElementsByTagName('body')[0];
+
+            // Hide maximized windows
+            var maximizedElms = document.getElementsByClassName('maximized');
+            while(maximizedElms.length > 0)
+                maximizedElms[0].classList.remove('maximized');
+            // Maximize new window
+            contentElements[0].classList.add('maximized');
+
             while(contentElements.length > 0)
                 bodyElm.appendChild(contentElements[0]);
 

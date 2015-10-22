@@ -2,8 +2,10 @@
  * Created by ari.
  */
 if (!module) var module = {exports:{}};
-module.exports.initClientKSPutSocketCommand = function(Client) {
+module.exports.initClientKSPutKeySpaceCommand = function(Client) {
     Client.addCommand(putCommand);
+    console.info("Loaded: " + self.location);
+
 
     // TODO: review command
     function putCommand(commandString) {
@@ -44,7 +46,8 @@ module.exports.initClientKSPutSocketCommand = function(Client) {
                     Client.replace('ks-put:', html);
                 });
 
-                Client.sendWithSocket(commandString);
+                // TODO: auto publish?
+                //Client.sendWithSocket(commandString);
             }
         );
         return true;

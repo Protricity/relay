@@ -5,15 +5,27 @@ if (!module) var module = {exports:{}};
 module.exports.initClientKSPutCommands = function(Client) {
 
     // HTTP PUT Command
-    Client.addCommand(importPutSocketCommand);
-    function importPutSocketCommand(commandString, e) {
+    Client.addCommand(importPutKeySpaceCommand);
+    function importPutKeySpaceCommand(commandString, e) {
         if(!/^put\s+/im.test(commandString))
             return false;
-        Client.removeCommand(importPutSocketCommand);
+        Client.removeCommand(importPutKeySpaceCommand);
         self.module = {exports: {}};
-        importScripts('ks/put/socket/ks-client-put-socket-command.js');
-        module.exports.initClientKSPutSocketCommand(Client);
-        console.info("Loaded: ks/put/socket/ks-client-put-socket-command.js");
+        importScripts('ks/put/keyspace/ks-client-put-keyspace-command.js');
+        module.exports.initClientKSPutKeySpaceCommand(Client);
+        return false;
+    }
+
+    // HTTP PUT.PUBLISH Command
+    Client.addCommand(importPutPublishCommand);
+    function importPutPublishCommand(commandString, e) {
+        if(!/^put\.publish\s+/im.test(commandString))
+            return false;
+        Client.removeCommand(importPutPublishCommand);
+        self.module = {exports: {}};
+        importScripts('ks/put/publish/ks-client-put-publish-command.js');
+        module.exports.initClientKSPutPublishCommand(Client);
+        //console.info("Loaded: ks/put/publish/ks-client-put-keyspace-command.js");
         return false;
     }
 
@@ -26,7 +38,6 @@ module.exports.initClientKSPutCommands = function(Client) {
         self.module = {exports: {}};
         importScripts('ks/put/form/ks-client-put-form-command.js');
         module.exports.initClientKSPutFormCommand(Client);
-        console.info("Loaded: ks/put/form/ks-client-put-form-command.js");
         return false;
     }
 
@@ -40,7 +51,6 @@ module.exports.initClientKSPutCommands = function(Client) {
         self.module = {exports: {}};
         importScripts('ks/put/manage/ks-client-put-manage-command.js');
         module.exports.initClientKSPutManageCommand(Client);
-        console.info("Loaded: ks/put/manage/ks-client-put-manage-command.js");
         return false;
     }
 
