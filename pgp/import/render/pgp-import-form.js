@@ -58,7 +58,7 @@ if(typeof document === 'object')
 // Worker Script
 else
     (function() {
-        module.exports.renderPGPImportForm = function (private_key_block, status_content, callback) {
+        module.exports.renderPGPImportForm = function (private_key_block, status_box, callback) {
             var TEMPLATE_URL = "pgp/import/render/pgp-import-form.html";
 
             var EXAMPLE_PUBLIC_KEY =
@@ -89,7 +89,7 @@ else
             if(xhr.status !== 200)
                 throw new Error("Error: " + xhr.responseText);
             callback(xhr.responseText
-                .replace(/{\$status_content}/gi, status_content || '')
+                .replace(/{\$status_box}/gi, status_box || '')
                 .replace(/{\$private_key_block}/gi, private_key_block)
                 .replace(/{\$example_public_key}/gi, EXAMPLE_PUBLIC_KEY)
             );

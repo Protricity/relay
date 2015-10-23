@@ -159,7 +159,7 @@ if(typeof document === 'object')
 else
     (function() {
         module.exports.renderPGPManageForm = renderPGPManageForm;
-        function renderPGPManageForm (status_content, callback) {
+        function renderPGPManageForm (status_box, callback) {
 
             self.exports = {};
             self.module = {exports: {}};
@@ -184,7 +184,7 @@ else
 
                 } else {
                     if(count === 0)
-                        status_content = (status_content ? status_content + "<br/>" : '') + "<strong>No PGP Identities found</strong><br/>" +
+                        status_box = (status_box ? status_box + "<br/>" : '') + "<strong>No PGP Identities found</strong><br/>" +
                             "<span class='info'>You may <a href='#KEYGEN'>Generate</a>  a new PGP Key Pair Identity</span>";
 
                     var TEMPLATE_URL = "pgp/manage/render/pgp-manage-form.html";
@@ -195,7 +195,7 @@ else
                     if(xhr.status !== 200)
                         throw new Error("Error: " + xhr.responseText);
                     callback(xhr.responseText
-                        .replace(/{\$status_content}/gi, status_content || '')
+                        .replace(/{\$status_box}/gi, status_box || '')
                         .replace(/{\$html_manage_entries}/gi, html_manage_entries || '')
                     );
                 }

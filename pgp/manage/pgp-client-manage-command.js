@@ -7,9 +7,9 @@ module.exports.initClientPGPManageCommand = function(Client) {
 
     /**
      * @param commandString
-     * @param status_content
+     * @param status_box
      */
-    function manageCommand(commandString, e, status_content) {
+    function manageCommand(commandString, e, status_box) {
         var match = /^pgp.manage/i.exec(commandString);
         if(!match)
             return false;
@@ -18,7 +18,7 @@ module.exports.initClientPGPManageCommand = function(Client) {
         importScripts('pgp/manage/render/pgp-manage-form.js');
         var templateExports = self.module.exports;
 
-        templateExports.renderPGPManageForm(status_content, function(html) {
+        templateExports.renderPGPManageForm(status_box, function(html) {
             Client.render(html);
         });
         return true;
