@@ -22,7 +22,7 @@ module.exports.initClientPGPImportCommands = function(Client) {
         var privateKeyBlock = (match[2] || '').replace(/(\r\n|\r|\n)/g, '\r\n');
         var showForm = (match[1] || '').toLowerCase() === '.form';
 
-        var status_content = "Paste a new PGP PRIVATE KEY BLOCK to import a new PGP Identity manually";
+        var status_box = "Paste a new PGP PRIVATE KEY BLOCK to import a new PGP Identity manually";
 
         var privateKeyID, publicKeyID, userIDString, publicKeyBlock;
         if(privateKeyBlock) {
@@ -43,7 +43,7 @@ module.exports.initClientPGPImportCommands = function(Client) {
 
             userIDString = privateKey.getUserIds().join('; ');
 
-            status_content = "\
+            status_box = "\
                     <span class='success'>PGP Key Pair generated successfully</span><br/><br/>\n\
                     <span class='info'>You may now import (register) the following identity:</span><br/>\n\
                     User ID: <strong>" + userIDString.replace(/</g, '&lt;') + "</strong><br/>\n\
@@ -76,14 +76,14 @@ module.exports.initClientPGPImportCommands = function(Client) {
                     if(err)
                         throw new Error(err);
 
-                    status_content = "\
+                    status_box = "\
                         <span class='success'>PGP Key Pair imported successfully</span><br/><br/>\n\
                         <span class='info'>You may now make use of your new identity:</span><br/>\n\
                         User ID: <strong>" + userIDString.replace(/</g, '&lt;') + "</strong><br/>";
 
                     self.module = {exports: {}};
                     importScripts('pgp/manage/render/pgp-manage-form.js');
-                    self.module.exports.renderPGPManageForm(status_content, function(html) {
+                    self.module.exports.renderPGPManageForm(status_box, function(html) {
                         Client.replace('pgp:', html);
                     });
 
@@ -95,7 +95,7 @@ module.exports.initClientPGPImportCommands = function(Client) {
             self.module = {exports: {}};
             importScripts('pgp/import/render/pgp-import-form.js');
             var templateExports = self.module.exports;
-            templateExports.renderPGPImportForm(privateKeyBlock, status_content, function(html) {
+            templateExports.renderPGPImportForm(privateKeyBlock, status_box, function(html) {
                 Client.render(html);
             });
             return true;

@@ -307,7 +307,7 @@ else
     (function() {
         var TEMPLATE_URL = 'ks/put/form/render/ks-put-form.html';
 
-        module.exports.renderPutForm = function(content, status_content, callback) {
+        module.exports.renderPutForm = function(content, status_box, callback) {
             self.module = {exports: {}};
             importScripts('ks/ks-db.js');
             var KeySpaceDB = self.module.exports.KeySpaceDB;
@@ -345,7 +345,7 @@ else
                     if(xhr.status !== 200)
                         throw new Error("Error: " + xhr.responseText);
                         callback(xhr.responseText
-                            .replace(/{\$status_content}/gi, status_content)
+                            .replace(/{\$status_box}/gi, status_box)
                             .replace(/{\$content}/gi, content)
                             .replace(/{\$content_escaped}/gi, contentEscaped)
                             .replace(/{\$html_pgp_id_public_options}/gi, html_pgp_id_public_options)

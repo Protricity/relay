@@ -162,7 +162,7 @@ function ClientSocketWorker() {
 
         var targetElement;
         switch(command) {
-            case 'replace': // Replaces inner content of target element
+            case 'replace': // Replaces entire target element
                 var replaceElements = document.getElementsByClassName(targetClass);
                 if(replaceElements.length === 0)
                     throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
@@ -173,7 +173,9 @@ function ClientSocketWorker() {
                 while(contentElements.length > 0)
                     targetElement.parentNode.insertBefore(contentElements[0], targetElement);
 
-                targetElement.parentNode.removeChild(targetElement);
+                // Remove all existing elements
+                while(replaceElements.length > 0)
+                    replaceElements[0].parentNode.removeChild(replaceElements[0]);
                 targetElement = contentElement;
                 break;
 

@@ -38,17 +38,15 @@ module.exports.initClientKSPutKeySpaceCommand = function(Client) {
 
                 var url = "http://" + insertData.pgp_id_public + '.ks/' + insertData.path;
 
-                var status_content = "<strong>Key Space</strong> content stored <span class='success'>Successful</span>: " +
+                var status_box = "<strong>Key Space</strong> content stored <span class='success'>Successful</span>: " +
                     "<br/><a href='" + url + "'>" + insertData.path + "</a>";
 
                 self.module = {exports: {}};
                 importScripts('ks/put/manage/render/ks-put-manage-form.js');
-                self.module.exports.renderPutManageForm(url, status_content, function (html) {
-                    Client.replace('ks-put:', html);
+                self.module.exports.renderPutManageForm(url, status_box, function (html) {
+                    Client.render(html);
+                    Client.postResponseToClient("CLOSE ks-put:");
                 });
-
-                // TODO: auto publish?
-                //Client.sendWithSocket(commandString);
             }
         );
         return true;

@@ -92,7 +92,7 @@ if (!module) var module = {exports:{}};
 (function() {
     var TEMPLATE_URL = 'ks/put/manage/render/ks-put-manage-form.html';
 
-    module.exports.renderPutManageForm = function(url, status_content, callback) {
+    module.exports.renderPutManageForm = function(url, status_box, callback) {
         self.module = {exports: {}};
         importScripts('ks/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;
@@ -121,6 +121,7 @@ if (!module) var module = {exports:{}};
                     callback(xhr.responseText
                         .replace(/{\$classes}/gi, classes.length>0 ? ' ' + classes.join(' ') : '')
                         .replace(/{\$uid}/gi, entry_uid)
+                        .replace(/{\$status_box}/gi, status_box)
                         .replace(/{\$url}/gi, url)
                         .replace(/{\$path}/gi, path)
                         .replace(/{\$file_search_pattern}/gi, file_search_pattern)
@@ -140,7 +141,7 @@ if (!module) var module = {exports:{}};
                     throw new Error(err);
 
                 if (!contentEntry) {
-                    status_content += (status_content ? '<br/>' : '') +
+                    status_box += (status_box ? '<br/>' : '') +
                         "<span class='error'>Not Found: " + url + "</span>";
                     contentEntry = {
                         content: "<code>No Content</code>",

@@ -53,7 +53,7 @@ module.exports.initClientPGPKeyGenCommand = function(Client) {
 
                 //var publicKeyBlock = publicKey.armor();
 
-                var status_content = "\
+                var status_box = "\
                     <span class='success'>PGP Key Pair generated successfully</span><br/><br/>\n\
                     <span class='info'>You may now import the following identity:</span><br/>\n\
                     User ID: <strong>" + userIDString.replace(/</g, '&lt;') + "</strong><br/>\n\
@@ -64,7 +64,7 @@ module.exports.initClientPGPKeyGenCommand = function(Client) {
                 self.module = {exports: {}};
                 importScripts('pgp/import/render/pgp-import-form.js');
                 var templateExports = self.module.exports;
-                templateExports.renderPGPImportForm(keyPair.privateKeyArmored, status_content, function(html) {
+                templateExports.renderPGPImportForm(keyPair.privateKeyArmored, status_box, function(html) {
                     Client.render(html);
                 });
                 return true;
