@@ -39,7 +39,7 @@ function HTTPServer() {
     };
 
 
-
+    var handlerCounter = 0;
     var commandHandlers = [];
     //var proxyList = [];
     //var requestHandlers = [];
@@ -48,6 +48,7 @@ function HTTPServer() {
         if(commandHandlers.indexOf(commandCallback) >= 0)
             throw new Error("HTTP Server Command Callback already added: " + commandCallback);
         commandHandlers.push(commandCallback);
+        handlerCounter++;
     };
 
     HTTPServer.removeCommand = function (commandCallback) {
@@ -55,6 +56,7 @@ function HTTPServer() {
         if(pos === -1)
             throw new Error("HTTP Server Command Callback not added: " + commandCallback);
         commandHandlers.splice(pos, 1);
+        handlerCounter++;
     };
 
     require('./http-commands.js')
@@ -63,15 +65,17 @@ function HTTPServer() {
     //require('./http-defaults.js').initHTTPServerCommands(HTTPServer);
 
     HTTPServer.execute = function(request, response) {
-        var oldLength = commandHandlers.length;
+        var oldCounter = handlerCounter;
         for(var i=0; i<commandHandlers.length; i++)
             if(commandHandlers[i](request, response))
                 return true;
 
-        if(commandHandlers.length > oldLength)
-            for(i=oldLength; i<commandHandlers.length; i++)
-                if(commandHandlers[i](request, response) === true)
-                    return true;
+        if(handlerCounter > oldCounter)
+            // Commands were added or removed, so try again
+            return HTTPServer.execute(request, response);
+            //for(i=oldLength; i<commandHandlers.length; i++)
+            //    if(commandHandlers[i](request, response) === true)
+            //        return true;
 
         var err = "HTTP Server Command Handlers (" + commandHandlers.length + ") could not handle: " + request.method + ' ' + request.url;
         response.writeHead(400, "Command Failed");

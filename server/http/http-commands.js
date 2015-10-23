@@ -7,7 +7,7 @@ module.exports.initHTTPServerCommands = function(HTTPServer) {
     HTTPServer.addCommand(getStaticHTTPCommand);
 
     require('../../ks/ks-server-commands.js')
-        .initHTTPServerCommands(HTTPServer);
+        .initHTTPServerKSCommands(HTTPServer);
     console.log("Loaded ks/ks-server-commands.js");
 };
 

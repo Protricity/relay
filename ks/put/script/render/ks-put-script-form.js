@@ -29,7 +29,7 @@ if(typeof document === 'object')
     }
 
 
-    var lastTemplate = null;
+//     var lastTemplate = null;
     function updatePutScriptSelectForm(e, formElm) {
         e.preventDefault();
 
@@ -40,24 +40,18 @@ if(typeof document === 'object')
         if(!template)
             return;
 
-        console.log(template, submitElm);
         submitElm.removeAttribute('disabled');
 
-        if(!lastTemplate || lastTemplate !== template) {
-            lastTemplate = template;
-            //console.log("Switch Template: ", templateElm.value);
+        var commandString = "PUT.SCRIPT " + template;
 
-            var commandString = "PUT.SCRIPT " + template;
-
-            var socketEvent = new CustomEvent('command', {
-                detail: commandString,
-                cancelable: true,
-                bubbles: true
-            });
-            formElm.dispatchEvent(socketEvent);
-        }
+        var socketEvent = new CustomEvent('command', {
+            detail: commandString,
+            cancelable: true,
+            bubbles: true
+        });
+        formElm.dispatchEvent(socketEvent);
     }
-
+    
 })();
 
 // Worker Scripts

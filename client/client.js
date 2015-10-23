@@ -14,6 +14,7 @@ function Client() {
 
 (function() {
 
+    var handlerCounter = 0;
     var responseHandlers = [];
     var commandHandlers = [];
 
@@ -28,6 +29,7 @@ function Client() {
         if(commandHandlers.indexOf(commandCallback) >= 0)
             throw new Error("Command Callback already added: " + commandCallback);
         commandHandlers[prepend ? 'unshift' : 'push'](commandCallback);
+        handlerCounter++;
     };
 
     Client.removeCommand = function (commandCallback) {
@@ -35,12 +37,14 @@ function Client() {
         if(pos === -1)
             throw new Error("Command Callback not added: " + commandCallback);
         commandHandlers.splice(pos, 1);
+        handlerCounter++;
     };
 
     Client.addResponse = function (responseCallback, prepend) {
         if(responseHandlers.indexOf(responseCallback) >= 0)
             throw new Error("Response Callback already added: " + responseCallback);
         responseHandlers[prepend ? 'unshift' : 'push'](responseCallback);
+        handlerCounter++;
     };
 
     Client.removeResponse = function (responseCallback) {
@@ -48,23 +52,23 @@ function Client() {
         if(pos === -1)
             throw new Error("Response Callback not added: " + responseCallback);
         responseHandlers.splice(pos, 1);
+        handlerCounter++;
     };
 
     Client.execute = function(commandString, e) {
-        var oldLength = commandHandlers.length;
+        var oldCounter = handlerCounter;
         for(var i=0; i<commandHandlers.length; i++)
             if(commandHandlers[i](commandString, e))
                 return true;
 
-        if(commandHandlers.length > oldLength) {
+        if(handlerCounter > oldCounter)
+            // Commands were added or removed, so try again
             return Client.execute(commandString, e);
 
-        } else {
-            var err = "Client Command Handlers (" + commandHandlers.length + ") could not handle: " + commandString;
-            console.error(err, commandHandlers);
-            //Client.postResponseToClient("ERROR " + err);
-            return false;
-        }
+        var err = "Client Command Handlers (" + commandHandlers.length + ") could not handle: " + commandString;
+        console.error(err, commandHandlers);
+        //Client.postResponseToClient("ERROR " + err);
+        return false;
     };
 
     Client.processResponse = function(responseString, e) {
