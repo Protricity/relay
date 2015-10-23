@@ -16,6 +16,15 @@
     font-weight: bold;
 }
 
+/** Content **/
+
+.ks-put-manage-content {
+    white-space: pre;
+    overflow: auto;
+    max-height: 10em;
+    max-width: 32vw;
+}
+
 /** Commands **/
 
 .ks-put-manage-commands > form {
