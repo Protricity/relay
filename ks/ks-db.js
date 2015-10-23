@@ -171,6 +171,7 @@ if(typeof require !== 'function')
             if(!publicKeyBlock)
                 throw new Error("Public key not found: " + pgp_id_public);
 
+            var openpgp = require('pgp/lib/openpgpjs/openpgp.js');
             var publicKey = openpgp.key.readArmored(publicKeyBlock.content).keys[0];
 
             KeySpaceDB.verifySignedContentWithKey(pgpSignedContent, publicKey, callback);
