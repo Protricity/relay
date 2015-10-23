@@ -45,6 +45,7 @@ function SocketServer() {
 
     };
 
+    var handlerCounter = 0;
     var clientEvents = [];
     var serverEvents = [];
     var commandHandlers = [];
@@ -61,6 +62,7 @@ function SocketServer() {
     }]);
 
     SocketServer.addEventListener = function(type, listener) {
+        handlerCounter++;
         if(server) {
             server.on(type, listener);
             if(type === 'connection')
@@ -73,6 +75,7 @@ function SocketServer() {
 
     SocketServer.addClientEventListener = function(type, listener) {
         clientEvents.push([type, listener]);
+        handlerCounter++;
     };
 
     SocketServer.addCommand = function (commandCallback) {
@@ -81,6 +84,8 @@ function SocketServer() {
         if(commandHandlers.indexOf(commandCallback) >= 0)
             throw new Error("Socket Server Command Callback already added: " + commandCallback);
         commandHandlers.push(commandCallback);
+        handlerCounter++;
+
     };
 
     SocketServer.removeCommand = function (commandCallback) {
@@ -90,21 +95,24 @@ function SocketServer() {
         if(pos === -1)
             throw new Error("Socket Server Command Callback not added: " + commandCallback);
         commandHandlers.splice(pos, 1);
+        handlerCounter++;
     };
 
     require('./socket-server-command-proxies.js')
         .initSocketServerCommandProxies(SocketServer);
 
     SocketServer.execute = function(commandString, client) {
-        var oldLength = commandHandlers.length;
+        var oldCounter = handlerCounter;
         for(var i=0; i<commandHandlers.length; i++)
             if(commandHandlers[i](commandString, client) !== false)
                 return true;
 
-        if(commandHandlers.length > oldLength)
-            for(i=oldLength-1; i<commandHandlers.length; i++)
-                if(commandHandlers[i](commandString, client) !== false)
-                    return true;
+        if(handlerCounter > oldCounter)
+            // Commands were added or removed, so try again
+            return SocketServer.execute(commandString, client);
+            //for(i=oldLength-1; i<commandHandlers.length; i++)
+            //    if(commandHandlers[i](commandString, client) !== false)
+            //        return true;
 
         var err = "Socket Server Command Handlers (" + commandHandlers.length + ">" + oldLength + ") could not handle: " + commandString;
         client.send("ERROR " + err);

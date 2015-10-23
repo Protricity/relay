@@ -14,7 +14,7 @@ module.exports.initClientKSPutFormCommand = function(Client) {
         if (!match)
             return false;
 
-        var content = (match[2] || '').trim();
+        var content = (match[1] || '').trim();
 
         var status_content = '';
 
