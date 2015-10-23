@@ -26,7 +26,8 @@ module.exports.initClientKSPutKeySpaceCommand = function(Client) {
         importScripts('pgp/lib/openpgpjs/openpgp.js');
         var openpgp = self.module.exports;
         var pgpMessage = openpgp.cleartext.readArmored(content);
-        var pgpSignedContent = pgpMessage.armor();
+        var pgpSignedContent = pgpMessage.armor().trim();
+        console.log("W" + pgpSignedContent + "W");
 
         KeySpaceDB.verifyAndAddContentToDB(
             pgpSignedContent,

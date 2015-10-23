@@ -8,7 +8,7 @@ module.exports.initClientKSPutScriptCommand = function(Client) {
     function putScriptCommand(commandString) {
         var match = /^put\.script\s*([\s\S]*)$/im.exec(commandString);
         if (!match)
-            throw new Error("Invalid Command: " + commandString);
+            return false; // throw new Error("Invalid Command: " + commandString);
 
         var scriptURL = match[1];
         match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(scriptURL);
