@@ -212,7 +212,11 @@ if (!module) var module = {exports:{}};
                 new_html_info +=
                     "\n\t<tr>" +
                     "\n\t\t<td class='name'>Created</td>" +
-                    "\n\t\t<td class='value'><span class='created'>" + timeSince(contentEntry.timestamp) + "</span> ago</td>" +
+                    "\n\t\t<td class='value'>" +
+                        "\n\t<span class='created'>" +
+                        timeSince(contentEntry.timestamp) +
+                        "</span> ago (" + contentEntry.timestamp + ")" +
+                    "\n\t\t</td>" +
                     "\n\t</tr>";
 
                 new_html_info +=

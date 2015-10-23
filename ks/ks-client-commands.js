@@ -39,7 +39,6 @@ module.exports.initClientKSCommands = function(Client) {
     function importAUTHCommand(commandString, e) {
         if(!/^auth/i.test(commandString))
             return false;
-        Client.removeCommand(importAUTHCommand);
         Client.removeResponse(importAUTHCommand);
         self.module = {exports: {}};
         importScripts('ks/auth/ks-client-auth-command.js');
