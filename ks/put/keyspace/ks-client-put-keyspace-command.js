@@ -27,11 +27,17 @@ module.exports.initClientKSPutKeySpaceCommand = function(Client) {
         var openpgp = self.module.exports;
         var pgpMessage = openpgp.cleartext.readArmored(content);
         var pgpSignedContent = pgpMessage.armor().trim();
-        console.log("W" + pgpSignedContent + "W");
+        var verifiedContent = pgpSignedContent;
+
+        var path = /data-path=["'](\S+)["']/i.exec(verifiedContent.text)[1];
+        var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(verifiedContent.text)[1]);
+
 
         KeySpaceDB.verifyAndAddContentToDB(
             pgpSignedContent,
             pgp_id_public,
+            timestamp,
+            path,
             function (err, insertData) {
                 if (err)
                     throw new Error(err);

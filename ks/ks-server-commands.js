@@ -10,7 +10,7 @@ module.exports.initSocketServerKSCommands = function(SocketServer) {
         if(!/^(get|http)/i.test(commandString))
             return false;
         SocketServer.removeCommand(importGETCommand);
-        require('ks/get/ks-server-get-commands.js')
+        require('./get/ks-server-get-commands.js')
             .initSocketServerKSGetCommands(SocketServer);
         return false;
     }
@@ -22,7 +22,7 @@ module.exports.initSocketServerKSCommands = function(SocketServer) {
         if(!/^put/i.test(commandString))
             return false;
         SocketServer.removeCommand(importPUTCommand);
-        require('ks/put/ks-server-put-commands.js')
+        require('./put/ks-server-put-commands.js')
             .initSocketServerKSPutCommands(SocketServer);
         return false;
     }
@@ -34,7 +34,7 @@ module.exports.initSocketServerKSCommands = function(SocketServer) {
         if(!/^auth/i.test(commandString))
             return false;
         SocketServer.removeCommand(importAUTHCommand);
-        require('ks/auth/ks-server-auth-commands.js')
+        require('./auth/ks-server-auth-commands.js')
             .initSocketServerAuthCommands(SocketServer);
         return false;
     }
@@ -49,7 +49,7 @@ module.exports.initHTTPServerKSCommands = function(HTTPServer) {
         if(!/^(get|http)/i.test(commandString))
             return false;
         HTTPServer.removeCommand(importGETCommand);
-        require('ks/get/ks-server-get-commands.js')
+        require('./get/ks-server-get-commands.js')
             .initHTTPServerKSGetCommands(HTTPServer);
         return false;
     }

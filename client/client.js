@@ -81,7 +81,7 @@ function Client() {
             return Client.processResponse(responseString, e);
 
         } else {
-            var err = "Client Response Handlers (" + responseHandlers.length + ") could not handle: " + responseString;
+            var err = "Client Response Handlers could not handle: " + responseString;
             console.error(err);
             //Client.postResponseToClient("ERROR " + err);
             return false;

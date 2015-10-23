@@ -178,7 +178,7 @@ if(typeof require !== 'function')
         });
     };
 
-    KeySpaceDB.verifyAndAddContentToDB = function(pgpSignedContent, pgp_id_public, callback) {
+    KeySpaceDB.verifyAndAddContentToDB = function(pgpSignedContent, pgp_id_public, timestamp, path, callback) {
         KeySpaceDB.verifySignedContent(
             pgpSignedContent,
             pgp_id_public,
@@ -186,16 +186,13 @@ if(typeof require !== 'function')
                 if(err)
                     throw new Error(err);
 
-                var path = /data-path=["'](\S+)["']/i.exec(verifiedContent.text)[1];
-                var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(verifiedContent.text)[1]);
-
-                KeySpaceDB.addVerifiedContentToDB(pgpSignedContent, pgp_id_public, path, timestamp, {}, callback);
+                KeySpaceDB.addVerifiedContentToDB(pgpSignedContent, pgp_id_public, timestamp, path, {}, callback);
             }
         );
     };
 
 
-    KeySpaceDB.verifyWithKeyAndAddContentToDB = function(pgpSignedContent, publicKey, callback) {
+    KeySpaceDB.verifyWithKeyAndAddContentToDB = function(pgpSignedContent, publicKey, timestamp, path, callback) {
         KeySpaceDB.verifySignedContentWithKey(
             pgpSignedContent,
             publicKey,
@@ -203,18 +200,15 @@ if(typeof require !== 'function')
                 if(err)
                     throw new Error(err);
 
-                var path = /data-path=["'](\S+)["']/i.exec(verifiedContent.text)[1];
-                var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(verifiedContent.text)[1]);
-
                 var pgp_id_public = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
                 pgp_id_public = pgp_id_public.substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
 
-                KeySpaceDB.addVerifiedContentToDB(pgpSignedContent, pgp_id_public, path, timestamp, {}, callback);
+                KeySpaceDB.addVerifiedContentToDB(pgpSignedContent, pgp_id_public, timestamp, path, {}, callback);
             }
         );
     };
 
-    KeySpaceDB.addVerifiedContentToDB = function(verifiedContent, pgp_id_public, path, timestamp, customFields, callback) {
+    KeySpaceDB.addVerifiedContentToDB = function(verifiedContent, pgp_id_public, timestamp, path, customFields, callback) {
         if(!path)
             throw new Error("Invalid Path");
         if(!timestamp)
@@ -230,11 +224,14 @@ if(typeof require !== 'function')
 
         var insertData = {
             'pgp_id_public': pgp_id_public,
-            'path': path.toLowerCase(),
-            'path_original_case': path,
+            //'path': path.toLowerCase(),
+            //'path_original_case': path,
             'timestamp': timestamp,
             'content': verifiedContent
         };
+        if(path)
+            insertData.path = path;
+
         for(var customField in customFields)
             if(customFields.hasOwnProperty(customField))
                 if(typeof insertData[customField] === 'undefined')

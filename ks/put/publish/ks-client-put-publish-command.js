@@ -26,7 +26,7 @@ module.exports.initClientKSPutPublishCommand = function(Client) {
             if(!entryData)
                 throw new Error("Entry missing: " + pgp_id_public + ' ' + timestamp);
 
-            commandString = "PUT " + entryData.content;
+            commandString = "PUT " + pgp_id_public + " " + entryData.content;
             Client.sendWithSocket(commandString);
         });
 

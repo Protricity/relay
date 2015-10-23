@@ -27,7 +27,7 @@ if (!module.exports) module.exports = {};
             if(typeof importScripts === "function")
                 importScripts('ks/ks-db.js');
             else
-                self.KeySpaceDB = require('./ks-db.js').KeySpaceDB;
+                self.KeySpaceDB = require('../ks-db.js').KeySpaceDB;
         }
 
         var found = false;

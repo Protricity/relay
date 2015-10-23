@@ -77,7 +77,7 @@ function HTTPServer() {
             //    if(commandHandlers[i](request, response) === true)
             //        return true;
 
-        var err = "HTTP Server Command Handlers (" + commandHandlers.length + ") could not handle: " + request.method + ' ' + request.url;
+        var err = "HTTP Server Command Handlers could not handle: " + request.method + ' ' + request.url;
         response.writeHead(400, "Command Failed");
         response.end(err);
         console.error(err);
