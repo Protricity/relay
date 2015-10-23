@@ -252,8 +252,8 @@ function ClientSocketWorker() {
             var maximizedElms = document.getElementsByClassName('maximized');
             while(maximizedElms.length > 0)
                 maximizedElms[0].classList.remove('maximized');
-            // Maximize new window
-            contentElements[0].classList.add('maximized');
+            // TODO: Maximize new window, but only when user requested
+            //contentElements[0].classList.add('maximized');
 
             while(contentElements.length > 0)
                 bodyElm.appendChild(contentElements[0]);

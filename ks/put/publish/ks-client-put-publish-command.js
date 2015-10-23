@@ -12,9 +12,24 @@ module.exports.initClientKSPutPublishCommand = function(Client) {
             return false;
 
         var pgp_id_public = match[1];
-        var content = match[2];
+        var timestamp = match[2];
 
-        Client.sendWithSocket(commandString);
+
+        self.module = {exports: {}};
+        importScripts('ks/ks-db.js');
+        var KeySpaceDB = self.module.exports.KeySpaceDB;
+
+        KeySpaceDB.getContent(pgp_id_public, timestamp, function(err, entryData) {
+            if(err)
+                throw new Error(err);
+
+            if(!entryData)
+                throw new Error("Entry missing: " + pgp_id_public + ' ' + timestamp);
+
+            commandString = "PUT " + entryData.content;
+            Client.sendWithSocket(commandString);
+        });
+
         return true;
     }
 

@@ -263,6 +263,11 @@ if(typeof require !== 'function')
     };
 
     KeySpaceDB.getContent = function(publicKeyID, timestamp, callback) {
+        timestamp = parseInt(timestamp);
+        if(!publicKeyID)
+            throw new Error("Invalid Public Key");
+        if(!timestamp)
+            throw new Error("Invalid timestamp");
         KeySpaceDB(function(err, db) {
             if(err)
                 return callback(err);

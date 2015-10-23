@@ -3,7 +3,7 @@
  */
 if (!module) var module = {};
 if (!module.exports) module.exports = {};
-module.exports.initSocketServerCommands = function(SocketServer) {
+module.exports.initSocketServerChannelCommands = function(SocketServer) {
     //SocketServer.addEventListener('connection', initClient);
     SocketServer.addCommand(messageClient);
     SocketServer.addCommand(joinChannel);

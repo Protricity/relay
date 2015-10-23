@@ -21,7 +21,7 @@ module.exports.initSocketServerCommandProxies = function(SocketServer) {
         //console.log("Loaded server/server-commands.js");
 
         require('../../ks/ks-server-commands.js')
-            .initSocketServerCommands(SocketServer);
+            .initSocketServerKSCommands(SocketServer);
         console.log("Loaded ks/ks-server-commands.js");
 
         return false;
@@ -35,7 +35,7 @@ module.exports.initSocketServerCommandProxies = function(SocketServer) {
         SocketServer.removeCommand(chatCommand);
 
         require('../../channel/channel-server-commands.js')
-            .initSocketServerCommands(SocketServer);
+            .initSocketServerChannelCommands(SocketServer);
         console.log("Loaded channel/channel-server-commands.js");
 
         return false;

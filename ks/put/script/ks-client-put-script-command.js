@@ -60,10 +60,10 @@ module.exports.initClientKSPutScriptCommand = function(Client) {
 
 
         self.module = {exports: {}};
-        importScripts('ks/put/render/script/ks-put-script-form.js');
+        importScripts('ks/put/script/render/ks-put-script-form.js');
         self.module.exports.renderPutScriptForm(commandString, function (html) {
-                Client.render(html);
-            });
+            Client.render(html);
+        });
 
         return true;
     }

@@ -15,27 +15,11 @@ function getStaticHTTPCommand(request, response) {
     if(request.method.toLowerCase() !== 'get')
         return false;
 
-    // Allow KS requests here?
-    //console.log(request.method, request.url);
     handleFileRequest(request.url, function(responseBody, statusCode, statusMessage, headers) {
         response.writeHead(statusCode || 200, statusMessage || 'OK', headers);
         response.end(responseBody);
     });
     return true;
-}
-
-function getStaticSocketCommand(commandString, client) {
-    var match = /^get\s+([\S\s]+)$/im.exec(commandString);
-    if(!match)
-        return false;
-
-    var requestURL = match[1];
-    handleFileRequest(requestURL, function(responseBody, statusCode, statusMessage, headers) {
-        client.send('HTTP/1.1 ' + (statusCode || 200) + (statusMessage || 'OK') +
-            (headers ? "\n" + headers : ''),
-            "\n\n" + responseBody
-        );
-    });
 }
 
 function handleFileRequest(requestURI, responseCallback) {

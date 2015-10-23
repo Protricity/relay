@@ -129,8 +129,6 @@ else
             //            .replace(/{\$html_put_form}/gi, putFormTemplate)
             //    );
             //});
-            //// Free up template resources
-            //delete Templates.ks.put.form;
         };
 
 
