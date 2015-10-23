@@ -141,7 +141,7 @@ if(typeof document === 'object')
             contentDiv.innerHTML = postContent;
             var articleElm = contentDiv.querySelector('article');
             if (!articleElm) {
-                contentDiv.innerHTML = "<article>" + contentDiv.innerHTML + "</article>";
+                contentDiv.innerHTML = "<article>\n\t" + contentDiv.innerHTML + "\n</article>";
                 articleElm = contentDiv.querySelector('article');
             }
             articleElm.setAttribute('data-author', author);
