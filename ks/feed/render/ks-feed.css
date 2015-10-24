@@ -1,3 +1,38 @@
+/** Form **/
+
+form[name=ks-feed-form] textarea,
+form[name=ks-feed-form] select,
+form[name=ks-feed-form] input {
+    padding: 0.7em 0.8em;
+    margin: 0.5em 0;
+    border-radius: 0.6em;
+    border-width: 1px;
+    font-family: monospace;
+}
+
+form[name=ks-feed-form] input[type=submit]:enabled {
+    font-weight: bold;
+    transition: 0.5s;
+    transition-delay: 1s;
+    box-shadow: 0 0 3em #5F5;
+    cursor: pointer;
+}
+
+form[name=ks-feed-form].no-passphrase-required .hide-on-no-passphrase-required {
+    display: none;
+}
+
+form[name=ks-feed-form].passphrase-accepted input[type=password] {
+    font-weight: bold;
+    color: green;
+    background-color: #EFFFEF;
+}
+
+form[name=ks-feed-form].compact .hide-on-compact {
+    display: none;
+}
+
+/** Feed Posts **/
 
 .pgp-verified-content .feed-post {
     display: none;
@@ -18,22 +53,6 @@
     height: 24px;
 }
 
-
-form[name=feed-form] textarea[name=content] {
-    min-height: 5em;
-    font-family: monospace;
-    display: block;
-}
-
-form[name=feed-form] input[name=channel] {
-    width: 42%;
-    font-family: monospace;
-}
-
-form[name=feed-form] input[type=submit] {
-    padding: 0.5em 1em;
-    margin: 0.5em;
-}
 
 /** Feed Entry **/
 

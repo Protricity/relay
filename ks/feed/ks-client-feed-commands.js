@@ -3,10 +3,11 @@
  */
 if (!module) var module = {exports:{}};
 module.exports.initClientKSFeedCommands = function(Client) {
-    var MS_DAY = 24 * 60 * 60 * 1000;
 
     Client.addCommand(feedCommand);
 
+
+    var MS_DAY = 24 * 60 * 60 * 1000;
 
     /**
      *
@@ -22,7 +23,7 @@ module.exports.initClientKSFeedCommands = function(Client) {
 
         self.exports = {};
         self.module = {exports: {}};
-        importScripts('ks/feed/render/feed-templates.js');
+        importScripts('ks/feed/render/ks-feed.js');
         var renderExports = self.module.exports;
 
         renderExports.renderFeedContainer(commandString, function(html) {
