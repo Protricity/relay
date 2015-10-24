@@ -5,14 +5,13 @@
 if (!module) var module = {exports:{}};
 module.exports.initSocketServerKSGetCommands = function(SocketServer) {
     SocketServer.addCommand(getCommandSocket);
-    SocketServer.addCommand(handleHTTPSocketResponse());
+    //SocketServer.addCommand(handleHTTPSocketResponse);
 };
 module.exports.initHTTPServerKSGetCommands = function(SocketServer) {
     SocketServer.addCommand(getCommandHTTP);
 };
 
 var httpBrowserID = 1;
-var pendingGETRequests = {};
 
 function getCommandSocket(commandString, client) {
     var match = /^get\s+/i.exec(commandString);
@@ -39,44 +38,44 @@ function getCommandHTTP(request, response) {
     });
 }
 
-function handleHTTPSocketResponse(responseString, client) {
-    if(responseString.substr(0,4).toLowerCase() !== 'http')
-        return false;
-
-    var referrerURL = getContentHeader(responseString, 'Request-Url');
-    if(!referrerURL)
-        throw new Error("Unknown Request-Url for response: Header is missing");
-
-    addURLsToDB(responseString, referrerURL);
-
-    var status = getResponseStatus(responseString);
-    var responseBody = getResponseBody(responseString);
-    var responseHeaders = getResponseHeaders(responseString);
-    var responseCode = status[0];
-    var responseMessage = status[1];
-    if(responseCode === 200) {
-
-        var requestID = getContentHeader(responseString, 'Request-ID');
-        if(typeof pendingGETRequests[requestID] === 'undefined')
-            throw new Error("Request ID not found: " + responseString);
-
-        var pendingGetRequest = pendingGETRequests[requestID];
-        delete pendingGETRequests[requestID];
-
-        var pendingCommand = pendingGetRequest[0];
-        var pendingClient = pendingGetRequest[1];
-        var pendingCallback = pendingGetRequest[2];
-        if(pendingClient !== client)
-            throw new Error("Invalid request ID: Client mismatch");
-        if(pendingCallback)
-            pendingCallback(responseBody, responseCode, responseMessage, responseHeaders);
-
-    } else {
-        throw new Error("Handle 404: " + responseString);
-        // Handle 404 request
-    }
-    return true;
-}
+//function handleHTTPSocketResponse(responseString, client) {
+//    if(responseString.substr(0,4).toLowerCase() !== 'http')
+//        return false;
+//
+//    var referrerURL = getContentHeader(responseString, 'Request-Url');
+//    if(!referrerURL)
+//        throw new Error("Unknown Request-Url for response: Header is missing");
+//
+//    addURLsToDB(responseString, referrerURL);
+//
+//    var status = getResponseStatus(responseString);
+//    var responseBody = getResponseBody(responseString);
+//    var responseHeaders = getResponseHeaders(responseString);
+//    var responseCode = status[0];
+//    var responseMessage = status[1];
+//    if(responseCode === 200) {
+//
+//        var requestID = getContentHeader(responseString, 'Request-ID');
+//        if(typeof pendingGETRequests[requestID] === 'undefined')
+//            throw new Error("Request ID not found: " + responseString);
+//
+//        var pendingGetRequest = pendingGETRequests[requestID];
+//        delete pendingGETRequests[requestID];
+//
+//        var pendingCommand = pendingGetRequest[0];
+//        var pendingClient = pendingGetRequest[1];
+//        var pendingCallback = pendingGetRequest[2];
+//        if(pendingClient !== client)
+//            throw new Error("Invalid request ID: Client mismatch");
+//        if(pendingCallback)
+//            pendingCallback(responseBody, responseCode, responseMessage, responseHeaders);
+//
+//    } else {
+//        throw new Error("Handle 404: " + responseString);
+//        // Handle 404 request
+//    }
+//    return true;
+//}
 
 function executeServerGetRequest(requestString, callback) {
     var browserID = getContentHeader(requestString, 'Browser-ID');
@@ -93,7 +92,7 @@ function executeServerGetRequest(requestString, callback) {
     var requestURL = getRequestURL(requestString);
     //console.info("GET ", requestURL);
 
-    var KeySpaceDB = require('./ks-db.js').KeySpaceDB;
+    var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
 
     KeySpaceDB.queryOne(requestURL, function (err, contentData) {
         if(err)
@@ -117,13 +116,13 @@ function executeServerGetRequest(requestString, callback) {
 
 // Request/Response methods
 
-function addURLsToDB(responseContent, referrerURL) {
-    var KeySpaceDB = require('./ks-db.js').KeySpaceDB;
-
-    responseContent.replace(/<a[^>]+href=['"]([^'">]+)['"][^>]*>([^<]+)<\/a>/gi, function(match, url, text, offset, theWholeThing) {
-        KeySpaceDB.addURLToDB(url, referrerURL);
-    });
-}
+//function addURLsToDB(responseContent, referrerURL) {
+//    var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
+//
+//    responseContent.replace(/<a[^>]+href=['"]([^'">]+)['"][^>]*>([^<]+)<\/a>/gi, function(match, url, text, offset, theWholeThing) {
+//        KeySpaceDB.addURLToDB(url, referrerURL);
+//    });
+//}
 
 function getResponseBody(responseString) {
     getResponseStatus(responseString);

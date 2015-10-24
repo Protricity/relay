@@ -114,7 +114,7 @@ function SocketServer() {
             //    if(commandHandlers[i](commandString, client) !== false)
             //        return true;
 
-        var err = "Socket Server Command Handlers (" + commandHandlers.length + ">" + oldLength + ") could not handle: " + commandString;
+        var err = "Socket Server Command Handlers could not handle: " + commandString;
         client.send("ERROR " + err);
         console.error(err);
         return false;

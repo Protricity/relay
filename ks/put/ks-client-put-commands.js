@@ -64,7 +64,19 @@ module.exports.initClientKSPutCommands = function(Client) {
         self.module = {exports: {}};
         importScripts('ks/put/script/ks-client-put-script-command.js');
         module.exports.initClientKSPutScriptCommand(Client);
-        console.info("Loaded: ks/put/script/ks-client-put-script-command.js");
+        return false;
+    }
+
+
+    // HTTP PUT.SUCCESS Response
+    Client.addResponse(importPutSuccessResponse);
+    function importPutSuccessResponse(responseString, e) {
+        if(!/^put\.success/i.test(responseString))
+            return false;
+        Client.removeResponse(importPutSuccessResponse);
+        self.module = {exports: {}};
+        importScripts('ks/put/success/ks-client-put-success-response.js');
+        module.exports.initClientKSPutSuccessResponse(Client);
         return false;
     }
 
