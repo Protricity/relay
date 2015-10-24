@@ -31,7 +31,8 @@ module.exports.initClientKSPutKeySpaceCommand = function(Client) {
         console.log(pgpClearSignedMessage);
 
         var path = /data-path=["'](\S+)["']/i.exec(pgpClearSignedMessage.text)[1];
-        var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(pgpClearSignedMessage.text)[1]);
+        var timestamp = pgpClearSignedMessage.packets[0].created.getTime();
+        // parseInt(/data-timestamp=["'](\d+)["']/i.exec(pgpClearSignedMessage.text)[1]);
 
         //if(!pgp_id_public) {
         //    var pgpClearSignedMessage = openpgp.cleartext.readArmored(pgpSignedContent);

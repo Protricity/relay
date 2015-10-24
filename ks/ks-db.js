@@ -383,8 +383,12 @@ function KeySpaceDB(dbReadyCallback) {
         });
     };
 
-    KeySpaceDB.update = function(tableName, updateData, callback) {
-
+    KeySpaceDB.update = function(tableName, updateQuery, updateData, callback) {
+        callback = callback || function(err, updateData) {
+            if(err)
+                throw err;
+            console.log("Update Successful", updateData);
+        };
         KeySpaceDB(function(err, db) {
             if(err)
                 return callback(err);
@@ -394,19 +398,20 @@ function KeySpaceDB(dbReadyCallback) {
                     .transaction([tableName], "readwrite")
                     .objectStore(tableName);
 
-                //var insertRequest = dbStore.add(insertData);
-                //insertRequest.onsuccess = function(e) {
-                //    if(callback)
-                //        callback(null, insertData, insertRequest);
-                //};
-                //insertRequest.onerror = function(e) {
-                //    if(callback)
-                //        callback(e.target.error, null);
-                //};
+                if(updateQuery)
+                    throw new Error("Update query not implemented for indexeddb yet");
+
+                var updateRequest = dbStore.put(updateData);
+                updateRequest.onsuccess = function(e) {
+                    callback(null, updateData, updateRequest);
+                };
+                updateRequest.onerror = function(e) {
+                    callback(e.target.error, null);
+                };
 
             } else if (typeof mongodb !== 'undefined' && db instanceof mongodb.Db) {
                 var dbCollection = db.collection(tableName);
-                //dbCollection.insert(insertData);
+                dbCollection.update(updateQuery, updateData);
                 //callback(null, insertData);
 
             } else {

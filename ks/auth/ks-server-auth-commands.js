@@ -87,8 +87,8 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
     if(pgp_id_public.length < 16)
         throw new Error("Invalid PGP Key ID (16): " + pgp_id_public);
 
-    var requestPath = "/public/id";
-    var requestURL = "http://" + pgp_id_public + ".ks" + requestPath;
+    var requestPath = "public/id";
+    var requestURL = "http://" + pgp_id_public + ".ks/" + requestPath;
     var loaded = false;
 
     var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
