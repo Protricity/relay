@@ -164,6 +164,7 @@ function requireClientPublicKey(pgp_id_public, client, callback) {
             var openpgp = require('openpgp');
             var publicKey = openpgp.key.readArmored(contentData.content).keys[0];
             var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+            publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
             //var privateKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
 
             if(publicKeyID !== pgp_id_public)
