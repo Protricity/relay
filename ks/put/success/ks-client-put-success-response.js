@@ -30,7 +30,21 @@ module.exports.initClientKSPutSuccessResponse = function(Client) {
             if(!entryData)
                 throw new Error("Entry missing: " + pgp_id_public + ' ' + timestamp);
 
-            console.info("TODO: mark publish success", pgp_id_public, timestamp);
+            entryData.published = true;
+            KeySpaceDB.update(KeySpaceDB.DB_TABLE_HTTP_CONTENT, null, entryData,
+                function(err, updateData) {
+                    console.info("Publish Successful:", pgp_id_public, timestamp);
+
+                    var requestURL = "http://" + entryData.pgp_id_public + ".ks/" + entryData.path;
+
+                    self.module = {exports: {}};
+                    importScripts('ks/put/manage/render/ks-put-manage-form.js');
+                    self.module.exports.renderPutManageForm(requestURL, '', function (html) {
+                        Client.render(html);
+                    });
+
+                });
+
         });
 
         return true;
