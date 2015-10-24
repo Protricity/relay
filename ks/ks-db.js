@@ -383,6 +383,38 @@ function KeySpaceDB(dbReadyCallback) {
         });
     };
 
+    KeySpaceDB.update = function(tableName, updateData, callback) {
+
+        KeySpaceDB(function(err, db) {
+            if(err)
+                return callback(err);
+
+            if(typeof IDBDatabase !== 'undefined' && db instanceof IDBDatabase) {
+                var dbStore = db
+                    .transaction([tableName], "readwrite")
+                    .objectStore(tableName);
+
+                //var insertRequest = dbStore.add(insertData);
+                //insertRequest.onsuccess = function(e) {
+                //    if(callback)
+                //        callback(null, insertData, insertRequest);
+                //};
+                //insertRequest.onerror = function(e) {
+                //    if(callback)
+                //        callback(e.target.error, null);
+                //};
+
+            } else if (typeof mongodb !== 'undefined' && db instanceof mongodb.Db) {
+                var dbCollection = db.collection(tableName);
+                //dbCollection.insert(insertData);
+                //callback(null, insertData);
+
+            } else {
+                throw new Error("Invalid Database Driver");
+            }
+        });
+    };
+
 
     //KeySpaceDB.addURLToDB = function(url, referrerURL, callback) {
     //    if(!callback)

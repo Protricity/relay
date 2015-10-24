@@ -103,6 +103,7 @@ else
             var timestamp = parseInt(match[4]);
             var content = (match[5]); // fixPGPMessage
 
+
             var MESSAGE_TEMPLATE =
                 '<div class="channel-log-entry">' +
                     '<span class="username" data-timestamp="{$timestamp}">{$username}</span>' +

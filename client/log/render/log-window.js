@@ -53,9 +53,15 @@ if (!module.exports) module.exports = {};
             "\n\t<span class='message'>{$content}</span>" +
             "\n</div>";
 
+        var logContentEscaped = logContent
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+
         var logEntryHTML = SOCKET_TEMPLATE_LOG_ENTRY
             .replace(/{\$DIR}/g, direction)
-            .replace(/{\$content}/gi, logContent);
+            .replace(/{\$content}/gi, logContentEscaped);
 
         // Callback
         return callback(logEntryHTML, callback)
