@@ -71,8 +71,8 @@ function putCommandSocket(commandString, client) {
         var pgpClearSignedMessage = openpgp.cleartext.readArmored(content);
 
         var path = /data-path=["'](\S+)["']/i.exec(pgpClearSignedMessage.text)[1];
-        var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(pgpClearSignedMessage.text)[1]);
-
+        //var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(pgpClearSignedMessage.text)[1]);
+        var timestamp = pgpClearSignedMessage.packets[0].created.getTime(); // TODO: get signature packet
 
         // Query public key for verification
         requireClientPublicKey(pgp_id_public, client, function(err, publicKey) {

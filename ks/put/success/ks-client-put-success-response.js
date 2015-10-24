@@ -37,9 +37,13 @@ module.exports.initClientKSPutSuccessResponse = function(Client) {
 
                     var requestURL = "http://" + entryData.pgp_id_public + ".ks/" + entryData.path;
 
+                    var status_box = "<strong>Key Space</strong> content <span class='command'>published</span> " +
+                        "<span class='success'>Successfully</span>: " +
+                        "<br/><a href='" + requestURL + "'>" + entryData.path + "</a>";
+
                     self.module = {exports: {}};
                     importScripts('ks/put/manage/render/ks-put-manage-form.js');
-                    self.module.exports.renderPutManageForm(requestURL, '', function (html) {
+                    self.module.exports.renderPutManageForm(requestURL, status_box, function (html) {
                         Client.render(html);
                     });
 
