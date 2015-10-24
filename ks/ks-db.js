@@ -139,6 +139,7 @@ function KeySpaceDB(dbReadyCallback) {
 
         if(path[0] === '/')
             path = path.substr(1);
+        path = path.toLowerCase();
 
         var insertData = {
             'pgp_id_public': pgp_id_public,
@@ -166,7 +167,7 @@ function KeySpaceDB(dbReadyCallback) {
                 if(callback)
                     callback(err, insertData);
 
-                console.info("Added content to database: http://" + pgp_id_public + '.ks/' + path, insertData);
+//                 console.info("Added content to database: http://" + pgp_id_public + '.ks/' + path, insertData);
             }
         );
 

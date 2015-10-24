@@ -56,21 +56,22 @@ module.exports.initClientKSPutKeySpaceCommand = function(Client) {
                         if(!decryptedContent.signatures[i].valid)
                             throw new Error("Invalid Signature: " + decryptedContent.signatures[i].keyid.toHex().toUpperCase());
 
-                    KeySpaceDB.addVerifiedContentToDB(pgpSignedContent, pgp_id_public, timestamp, path, {}, function() {
-                        console.info("Verified Signed Content for: " + pgp_id_public);
+                    KeySpaceDB.addVerifiedContentToDB(pgpSignedContent, pgp_id_public, timestamp, path, {},
+                        function(err, insertData) {
+                            console.info("Verified Signed Content for: " + pgp_id_public);
 
-                        var url = "http://" + pgp_id_public + '.ks/' + path;
+                            var url = "http://" + pgp_id_public + '.ks/' + insertData.path;
 
-                        var status_box = "<strong>Key Space</strong> content stored <span class='success'>Successful</span>: " +
-                            "<br/><a href='" + url + "'>" + insertData.path + "</a>";
+                            var status_box = "<strong>Key Space</strong> content stored <span class='success'>Successfully</span>: " +
+                                "<br/><a href='" + url + "'>" + insertData.path + "</a>";
 
-                        self.module = {exports: {}};
-                        importScripts('ks/put/manage/render/ks-put-manage-form.js');
-                        self.module.exports.renderPutManageForm(url, status_box, function (html) {
-                            Client.render(html);
-                            Client.postResponseToClient("CLOSE ks-put:");
+                            self.module = {exports: {}};
+                            importScripts('ks/put/manage/render/ks-put-manage-form.js');
+                            self.module.exports.renderPutManageForm(url, status_box, function (html) {
+                                Client.render(html);
+                                Client.postResponseToClient("CLOSE ks-put:");
+                            });
                         });
-                    });
 
                 })
                 .catch(function(err) {
