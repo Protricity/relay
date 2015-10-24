@@ -24,7 +24,7 @@ module.exports.initClientPGPImportCommands = function(Client) {
 
         var status_box = "Paste a new PGP PRIVATE KEY BLOCK to import a new PGP Identity manually";
 
-        var privateKeyID, publicKeyID, userIDString, publicKeyBlock;
+        var privateKeyID, publicKeyID, userIDString, publicKeyBlock, publicKeyTimeStamp, privateKeyTimeStamp;
         if(privateKeyBlock) {
             self.exports = {};
             self.module = {exports: {}};
@@ -35,11 +35,14 @@ module.exports.initClientPGPImportCommands = function(Client) {
             var privateKey = openpgp.key.readArmored(privateKeyBlock).keys[0];
             privateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();
             privateKeyID = privateKeyID.substr(privateKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+            var publicKeyCreateDate = privateKey.subKeys[0].subKey.created;
+            publicKeyTimeStamp = publicKeyCreateDate.getTime();
 
             var publicKey = privateKey.toPublic();
             publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
             publicKeyBlock = publicKey.armor();
             publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+            privateKeyTimeStamp = publicKeyTimeStamp + 1; // UID must be different from public key
 
             userIDString = privateKey.getUserIds().join('; ');
 
@@ -62,9 +65,9 @@ module.exports.initClientPGPImportCommands = function(Client) {
             };
 
             var path = '/.private/id';
-            KeySpaceDB.addVerifiedContentToDB(privateKeyBlock, publicKeyID, path, Date.now(), customFields, function(err, insertData) {
+            KeySpaceDB.addVerifiedContentToDB(privateKeyBlock, publicKeyID, privateKeyTimeStamp, path, customFields, function(err, insertData) {
                 if(err)
-                    throw new Error(err);
+                    throw err;
 
                 var customFields = {
                     pgp_id_private: privateKeyID,
@@ -72,9 +75,9 @@ module.exports.initClientPGPImportCommands = function(Client) {
                 };
 
                 var path = '/public/id';
-                KeySpaceDB.addVerifiedContentToDB(publicKeyBlock, publicKeyID, path, Date.now(), customFields, function(err, insertData) {
+                KeySpaceDB.addVerifiedContentToDB(publicKeyBlock, publicKeyID, publicKeyTimeStamp, path, customFields, function(err, insertData) {
                     if(err)
-                        throw new Error(err);
+                        throw err;
 
                     status_box = "\
                         <span class='success'>PGP Key Pair imported successfully</span><br/><br/>\n\

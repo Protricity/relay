@@ -25,38 +25,71 @@ module.exports.initClientKSPutKeySpaceCommand = function(Client) {
         self.module = {exports: {}};
         importScripts('pgp/lib/openpgpjs/openpgp.js');
         var openpgp = self.module.exports;
-        var pgpMessage = openpgp.cleartext.readArmored(content);
-        var pgpSignedContent = pgpMessage.armor().trim();
-        var verifiedContent = pgpSignedContent;
+        var pgpClearSignedMessage = openpgp.cleartext.readArmored(content);
+        var pgpSignedContent = pgpClearSignedMessage.armor().trim();
 
-        var path = /data-path=["'](\S+)["']/i.exec(verifiedContent.text)[1];
-        var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(verifiedContent.text)[1]);
+        console.log(pgpClearSignedMessage);
 
+        var path = /data-path=["'](\S+)["']/i.exec(pgpClearSignedMessage.text)[1];
+        var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(pgpClearSignedMessage.text)[1]);
 
-        KeySpaceDB.verifyAndAddContentToDB(
-            pgpSignedContent,
-            pgp_id_public,
-            timestamp,
-            path,
-            function (err, insertData) {
-                if (err)
-                    throw new Error(err);
+        //if(!pgp_id_public) {
+        //    var pgpClearSignedMessage = openpgp.cleartext.readArmored(pgpSignedContent);
+        //    pgpSignedContent = pgpClearSignedMessage.armor();
+        //    var encIDs = getEncryptionKeyIds(pgpClearSignedMessage.packets);
+        //    pgp_id_public = encIDs[0].toHex().toUpperCase();
+        //}
 
-                var url = "http://" + insertData.pgp_id_public + '.ks/' + insertData.path;
+        // Query public key for verification
+        var requestURL = 'http://' + pgp_id_public + '.ks/public/id';
+        KeySpaceDB.queryOne(requestURL, function(err, publicKeyBlock) {
+            if(err)
+                throw new Error(err);
+            if(!publicKeyBlock)
+                throw new Error("Public key not found: " + pgp_id_public);
 
-                var status_box = "<strong>Key Space</strong> content stored <span class='success'>Successful</span>: " +
-                    "<br/><a href='" + url + "'>" + insertData.path + "</a>";
+            var publicKey = openpgp.key.readArmored(publicKeyBlock.content).keys[0];
 
-                self.module = {exports: {}};
-                importScripts('ks/put/manage/render/ks-put-manage-form.js');
-                self.module.exports.renderPutManageForm(url, status_box, function (html) {
-                    Client.render(html);
-                    Client.postResponseToClient("CLOSE ks-put:");
+            openpgp.verifyClearSignedMessage(publicKey, pgpClearSignedMessage)
+                .then(function(decryptedContent) {
+                    for(var i=0; i<decryptedContent.signatures.length; i++)
+                        if(!decryptedContent.signatures[i].valid)
+                            throw new Error("Invalid Signature: " + decryptedContent.signatures[i].keyid.toHex().toUpperCase());
+
+                    KeySpaceDB.addVerifiedContentToDB(pgpSignedContent, pgp_id_public, timestamp, path, {}, function() {
+                        console.info("Verified Signed Content for: " + pgp_id_public);
+
+                        var url = "http://" + pgp_id_public + '.ks/' + path;
+
+                        var status_box = "<strong>Key Space</strong> content stored <span class='success'>Successful</span>: " +
+                            "<br/><a href='" + url + "'>" + insertData.path + "</a>";
+
+                        self.module = {exports: {}};
+                        importScripts('ks/put/manage/render/ks-put-manage-form.js');
+                        self.module.exports.renderPutManageForm(url, status_box, function (html) {
+                            Client.render(html);
+                            Client.postResponseToClient("CLOSE ks-put:");
+                        });
+                    });
+
+                })
+                .catch(function(err) {
+                    callback(err, null);
                 });
-            }
-        );
+
+        });
+
         return true;
     }
+
+    //function getEncryptionKeyIds(packets) {
+    //    var keyIds = [];
+    //    var pkESKeyPacketlist = packets.filterByTag(openpgp.enums.packet.publicKeyEncryptedSessionKey);
+    //    pkESKeyPacketlist.forEach(function(packet) {
+    //        keyIds.push(packet.publicKeyId);
+    //    });
+    //    return keyIds;
+    //}
 
     //function putResponse(responseString) {
     //    if (responseString.substr(0, 3).toLowerCase() !== 'put')

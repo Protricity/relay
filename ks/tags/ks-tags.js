@@ -33,13 +33,13 @@ if (!module.exports) module.exports = {};
         var found = false;
         tagHTML.replace(/\{ks::index\s+([^}]+)}/i, function(tagHTML, pathString) {
             found = true;
-            KeySpaceDB.listURLIndex(pathString, function(urls) {
-                var pathHTML = "<ul class='path-index'>";
-                for(var i=0; i<urls.length; i++)
-                    pathHTML += "\t<li><a href='" + urls[i][0] + "'>" + urls[i][1] + "</a></li>";
-                pathHTML += "</ul>";
-                callback(pathHTML);
-            });
+            //KeySpaceDB.listURLIndex(pathString, function(urls) {
+            //    var pathHTML = "<ul class='path-index'>";
+            //    for(var i=0; i<urls.length; i++)
+            //        pathHTML += "\t<li><a href='" + urls[i][0] + "'>" + urls[i][1] + "</a></li>";
+            //    pathHTML += "</ul>";
+            //    callback(pathHTML);
+            //});
         });
 
         if(!found) {

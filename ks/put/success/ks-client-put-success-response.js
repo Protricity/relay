@@ -2,17 +2,22 @@
  * Created by ari.
  */
 if (!module) var module = {exports:{}};
-module.exports.initClientKSPutPublishCommand = function(Client) {
-    Client.addCommand(putPublishCommand);
+module.exports.initClientKSPutSuccessResponse = function(Client) {
+    Client.addResponse(putSuccessResponse);
 
-    // TODO: review command
-    function putPublishCommand(commandString) {
-        var match = /^put\.publish\s+([a-f0-9]{8,16})\s+(\d+)$/im.exec(commandString);
+    /**
+     * @param responseString PUT.SUCCESS [PGP ID] [timestamp]
+     * @returns {boolean}
+     */
+    function putSuccessResponse(responseString) {
+        console.log(responseString);
+        var match = /^put\.success\s+([a-f0-9]{8,16})\s+(\d+)$/im.exec(responseString);
         if (!match)
             return false;
 
         var pgp_id_public = match[1];
         var timestamp = match[2];
+
 
         self.module = {exports: {}};
         importScripts('ks/ks-db.js');
@@ -25,11 +30,9 @@ module.exports.initClientKSPutPublishCommand = function(Client) {
             if(!entryData)
                 throw new Error("Entry missing: " + pgp_id_public + ' ' + timestamp);
 
-            commandString = "PUT " + pgp_id_public + "\n" + entryData.content;
-            Client.sendWithSocket(commandString);
+            console.info("TODO: mark publish success", pgp_id_public, timestamp);
         });
 
         return true;
     }
-
 };

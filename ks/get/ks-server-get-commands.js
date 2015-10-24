@@ -116,13 +116,13 @@ function executeServerGetRequest(requestString, callback) {
 
 // Request/Response methods
 
-function addURLsToDB(responseContent, referrerURL) {
-    var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
-
-    responseContent.replace(/<a[^>]+href=['"]([^'">]+)['"][^>]*>([^<]+)<\/a>/gi, function(match, url, text, offset, theWholeThing) {
-        KeySpaceDB.addURLToDB(url, referrerURL);
-    });
-}
+//function addURLsToDB(responseContent, referrerURL) {
+//    var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
+//
+//    responseContent.replace(/<a[^>]+href=['"]([^'">]+)['"][^>]*>([^<]+)<\/a>/gi, function(match, url, text, offset, theWholeThing) {
+//        KeySpaceDB.addURLToDB(url, referrerURL);
+//    });
+//}
 
 function getResponseBody(responseString) {
     getResponseStatus(responseString);

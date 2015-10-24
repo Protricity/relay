@@ -175,7 +175,7 @@ if(typeof document === 'object')
                     var finalPGPSignedContent = pgpClearSignedMessage.armor();
                     //console.log(pgpSignedContent, finalPGPSignedContent);
 
-                    var commandString = "PUT " + pgp_id_public + " " + pgpSignedContent; // finalPGPSignedContent;
+                    var commandString = "PUT " + pgp_id_public + "\n" + pgpSignedContent; // finalPGPSignedContent;
 
                     var socketEvent = new CustomEvent('command', {
                         detail: commandString,

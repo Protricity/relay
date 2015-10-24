@@ -72,20 +72,19 @@ function Client() {
     };
 
     Client.processResponse = function(responseString, e) {
-        var oldLength = responseHandlers.length;
+        var oldCounter = handlerCounter;
         for(var i=0; i<responseHandlers.length; i++)
             if(responseHandlers[i](responseString, e))
                 return true;
 
-        if(responseHandlers.length > oldLength) {
+        if(handlerCounter > oldCounter)
+        // Commands were added or removed, so try again
             return Client.processResponse(responseString, e);
 
-        } else {
-            var err = "Client Response Handlers could not handle: " + responseString;
-            console.error(err);
-            //Client.postResponseToClient("ERROR " + err);
-            return false;
-        }
+        var err = "Client Response Handlers could not handle: " + responseString;
+        console.error(err);
+        //Client.postResponseToClient("ERROR " + err);
+        return false;
     };
 
     Client.render = function(content, callback) {

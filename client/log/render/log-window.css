@@ -1,0 +1,9 @@
+.log-entry {
+    max-width: 50vw;
+    
+}
+
+.log-entry span.message {
+    white-space: pre;
+    word-break: break-all;
+}

@@ -39,7 +39,7 @@ module.exports.initClientKSGetCommands = function(Client) {
         if(responseString.substr(0,4).toLowerCase() !== 'http')
             return false;
 
-        addURLsToDB(responseString);
+        //addURLsToDB(responseString);
 
         var responseCode = getResponseStatus(responseString)[0];
         if(responseCode === 200) {
@@ -72,19 +72,19 @@ module.exports.initClientKSGetCommands = function(Client) {
 
 
 
-    function addURLsToDB(responseContent) {
-        var referrerURL = getContentHeader(responseContent, 'Request-Url');
-        if(!referrerURL)
-            throw new Error("Unknown Request-Url for response: Header is missing");
-
-        self.module = {exports: {}};
-        importScripts('ks/ks-db.js');
-        var KeySpaceDB = self.module.exports.KeySpaceDB;
-
-        responseContent.replace(/<a[^>]+href=['"]([^'">]+)['"][^>]*>([^<]+)<\/a>/gi, function(match, url, text, offset, theWholeThing) {
-            KeySpaceDB.addURLToDB(url, referrerURL);
-        });
-    }
+    //function addURLsToDB(responseContent) {
+    //    var referrerURL = getContentHeader(responseContent, 'Request-Url');
+    //    if(!referrerURL)
+    //        throw new Error("Unknown Request-Url for response: Header is missing");
+    //
+    //    self.module = {exports: {}};
+    //    importScripts('ks/ks-db.js');
+    //    var KeySpaceDB = self.module.exports.KeySpaceDB;
+    //
+    //    responseContent.replace(/<a[^>]+href=['"]([^'">]+)['"][^>]*>([^<]+)<\/a>/gi, function(match, url, text, offset, theWholeThing) {
+    //        KeySpaceDB.addURLToDB(url, referrerURL);
+    //    });
+    //}
 
     var httpBrowserID = 1;
     var requestIDCount = 0;

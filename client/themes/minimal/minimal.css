@@ -155,8 +155,7 @@ li {
 
 
 .theme-minimal span.message {
-    color: black;
-    word-break: break-all;
+/*     color: black; */
 }
 
 .theme-minimal span.command{

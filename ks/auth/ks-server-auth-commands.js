@@ -130,7 +130,7 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
 
                 // TODO: client config cache settings
                 // Cache Public Key
-                KeySpaceDB.addVerifiedContentToDB(publicKey.armor(), pgp_id_public, requestPath, publicKeyCreateDate.getTime(), {},
+                KeySpaceDB.addVerifiedContentToDB(publicKey.armor(), pgp_id_public, publicKeyCreateDate.getTime(), requestPath, {},
                     function(err, insertData) {
                         if(err)
                             throw new Error(err);
