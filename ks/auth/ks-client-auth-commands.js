@@ -2,7 +2,7 @@
  * Created by ari.
  */
 if (!module) var module = {exports:{}};
-module.exports.initClientAuthCommands = function(Client) {
+module.exports.initClientKSAuthCommands = function(Client) {
     Client.addCommand(ksChallengeCommand);
     Client.addResponse(ksChallengeResponse);
 

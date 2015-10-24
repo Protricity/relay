@@ -1,8 +1,8 @@
 /**
  * Created by ari on 7/2/2015.
  */
-(function() {
-
+if (!module) var module = {exports:{}};
+module.exports.initClientKSFeedCommands = function(Client) {
     var MS_DAY = 24 * 60 * 60 * 1000;
 
     Client.addCommand(feedCommand);
@@ -22,7 +22,7 @@
 
         self.exports = {};
         self.module = {exports: {}};
-        importScripts('app/social/feed/render/feed-templates.js');
+        importScripts('ks/feed/render/feed-templates.js');
         var renderExports = self.module.exports;
 
         renderExports.renderFeedContainer(commandString, function(html) {
@@ -48,4 +48,4 @@
     }
 
 
-})();
+};

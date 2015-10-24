@@ -26,8 +26,7 @@ li {
     display: inline-block;
     margin: 0 0 1em 0.5em;
     position: relative;
-    /*transition: opacity 0.4s ease-in-out;*/
-    border: 2px outset;
+    transition: opacity 0.4s ease-in;
     vertical-align: top;
     background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
     border-radius: 2px;

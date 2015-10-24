@@ -146,7 +146,7 @@ if(typeof document === 'object')
             }
             articleElm.setAttribute('data-author', author);
             articleElm.setAttribute('data-path', contentPath);
-            articleElm.setAttribute('data-timestamp', timestamp.toString());
+            //articleElm.setAttribute('data-timestamp', timestamp.toString());
             postContent = articleElm.outerHTML;
             postContent = protectHTMLContent(postContent, formElm);
 
@@ -199,8 +199,6 @@ if(typeof document === 'object')
         if(!pathElm)
             throw new Error("No channel field found");
 
-        var timestamp = Date.now();
-
         var postContent = postContentElm.value.trim();
         //if(!postContent.length)
         //    return false;
@@ -213,7 +211,7 @@ if(typeof document === 'object')
             articleElm = contentDiv.querySelector('article');
         }
         articleElm.setAttribute('data-path', pathElm);
-        articleElm.setAttribute('data-timestamp', timestamp.toString());
+        //articleElm.setAttribute('data-timestamp', timestamp.toString());
 
         postContent = articleElm.outerHTML;
         postContent = protectHTMLContent(postContent, formElm);

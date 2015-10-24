@@ -329,7 +329,7 @@
     includeScript('rest/ks-db.js');
 
     // For Content Events
-    includeScript('app/social/feed/feed-templates.js');
+    includeScript('ks/feed/ks-feed.js');
 
 })();
 //
@@ -370,7 +370,7 @@
 //
 //// For Feed Database access
 //(function() {
-//    var SCRIPT_PATH = 'app/social/feed/feed-db.js';
+//    var SCRIPT_PATH = 'ks/feed/feed-db.js';
 //    var head = document.getElementsByTagName('head')[0];
 //    if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
 //        var newScript = document.createElement('script');
@@ -394,7 +394,7 @@
 //
 //// For PGP Decryption in chat rooms
 //(function() {
-//    var SCRIPT_PATH = 'app/social/feed/feed-templates.js';
+//    var SCRIPT_PATH = 'ks/feed/ks-feed.js';
 //    var head = document.getElementsByTagName('head')[0];
 //    if (head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
 //        var newScript = document.createElement('script');
