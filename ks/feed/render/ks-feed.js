@@ -153,6 +153,7 @@ if(typeof document === 'object')
                             articleHTMLContent = articleDiv.outerHTML;
 
                         } catch (e) {
+                            console.error(e);
                             articleDiv.innerHTML = protectHTMLContent(entryData.content)
                                 .replace(/&/g, "&amp;")
                                 .replace(/</g, "&lt;")
