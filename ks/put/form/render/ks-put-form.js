@@ -136,8 +136,8 @@ if(typeof document === 'object')
                 throw new Error(errMSG);
             }
 
-            var author = privateKey.getUserIds()[0];
-            var timestamp = Date.now();
+            //var author = privateKey.getUserIds()[0];
+            //var timestamp = Date.now();
 
             var contentDiv = document.createElement('div');
             contentDiv.innerHTML = postContent;
@@ -146,9 +146,11 @@ if(typeof document === 'object')
                 contentDiv.innerHTML = "<article>\n\t" + contentDiv.innerHTML + "\n</article>";
                 articleElm = contentDiv.querySelector('article');
             }
-            articleElm.setAttribute('data-author', author);
-            articleElm.setAttribute('data-path', contentPath);
+
+            //articleElm.setAttribute('data-author', author);
             //articleElm.setAttribute('data-timestamp', timestamp.toString());
+            articleElm.setAttribute('data-path', contentPath);
+
             postContent = articleElm.outerHTML;
             postContent = protectHTMLContent(postContent, formElm);
 

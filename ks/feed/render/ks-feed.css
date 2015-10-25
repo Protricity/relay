@@ -5,7 +5,7 @@ article.ks-feed\3A > section {
     padding: 1em 2em 1em 2em;
     border: 3px inset;
     background: #EEE;
-    max-height: 40em;
+    max-height: 80vw;
     overflow-y: auto;
 }
 
@@ -58,6 +58,8 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
     margin: 1em 0 0 0;
     border-radius: 0.5em;
     background-color: white;
+    overflow: auto;
+    max-width: 40vw;
 }
 
 .ks-feed-entries\3A > .ks-feed-entry button.command {
@@ -74,4 +76,20 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
 
 
 .ks-feed-entry.ks-unverified-content {
-overflow: auto;}
+    max-height: 7em;
+    color: grey;
+}
+
+
+
+.user_icon {
+    float:left;
+    width: 48px;
+    height: 48px;
+    vertical-align: top;
+}
+
+.user_icon.tiny {
+    width: 24px;
+    height: 24px;
+}

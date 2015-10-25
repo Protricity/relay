@@ -96,16 +96,16 @@ if(typeof document === 'object')
 
             KeySpaceDB.queryContentFeed(
                 containerElm.feedEndTime,
-                function(err, data) {
+                function(err, entryData) {
                     //console.info("CONTENT: ", arguments);
                     if(err)
                         throw new Error(err);
 
-                    if(data) {
+                    if(entryData) {
                         var articleDiv = document.createElement('article');
                         try {
-                            var pgpClearSignedMessage = openpgp.cleartext.readArmored(data.content);
-                            articleDiv.innerHTML = pgpClearSignedMessage.text;
+                            var pgpClearSignedMessage = openpgp.cleartext.readArmored(entryData.content);
+                            articleDiv.innerHTML = protectHTMLContent(pgpClearSignedMessage.text);
 
                             if(articleDiv.children[0].nodeName.toLowerCase() === 'article')
                                 articleDiv = articleDiv.children[0];
@@ -113,7 +113,7 @@ if(typeof document === 'object')
                             articleDiv.classList.add('ks-verified-content');
 
                         } catch (e) {
-                            articleDiv.innerHTML = data.content
+                            articleDiv.innerHTML = protectHTMLContent(entryData.content)
                                 .replace(/&/g, "&amp;")
                                 .replace(/</g, "&lt;")
                                 .replace(/>/g, "&gt;")
@@ -124,11 +124,28 @@ if(typeof document === 'object')
                             articleDiv.classList.add('ks-unverified-content');
                         }
 
-                        if(data.timestamp < containerElm.feedEndTime)
-                            containerElm.feedEndTime = data.timestamp-1;
+                        if(entryData.timestamp < containerElm.feedEndTime)
+                            containerElm.feedEndTime = entryData.timestamp-1;
 
                         articleDiv.classList.add('ks-feed-entry');
                         containerElm.appendChild(articleDiv);
+
+                        // TODO: author cache
+                        // TODO: data-author= or pgp key id
+
+                        var infoAsideElm = document.createElement('aside');
+                        infoAsideElm.innerHTML = "\
+                            <img class='user_icon tiny' src='ks/feed/img/user_icon_default.png' alt='UI' />\n\
+                            {$author}\n\
+                            <div class='timestamp_formatted'>{$timestamp_formatted}</div>\
+                            <hr/>"
+                                .replace(/{\$pgp_id_public}/gi, entryData.pgp_id_public)
+                                //.replace(/{\$author}/gi, entryData.pgp_id_public)
+                                .replace(/{\$path}/gi, entryData.path)
+                                .replace(/{\$timestamp}/gi, entryData.timestamp)
+                                .replace(/{\$timestamp_formatted}/gi, timeSince(entryData.timestamp) + ' ago')
+
+                        articleDiv.insertBefore(infoAsideElm, articleDiv.firstChild);
 
                     } else {
                         moreFeedRequested = false;

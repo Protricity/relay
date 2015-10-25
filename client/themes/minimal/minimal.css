@@ -32,10 +32,10 @@ li {
     border-radius: 2px;
     transition: 0.5s ease-out;
     transition-delay: 0.2s;
-    max-height: 50em;
-    max-width: 80vw;
-    overflow-y: auto;
-    overflow-x: auto;
+    /* max-height: 50em; */
+    /* max-width: 80vw; */
+    /* overflow-y: auto; */
+    /* overflow-x: auto; */
 }
 
 
