@@ -70,7 +70,7 @@ module.exports.initClientKSPutKeySpaceCommand = function(Client) {
                             importScripts('ks/put/manage/render/ks-put-manage-form.js');
                             self.module.exports.renderPutManageForm(url, status_box, function (html) {
                                 Client.render(html);
-                                Client.postResponseToClient("CLOSE ks-put:");
+                                //Client.postResponseToClient("CLOSE ks-put:");
                             });
                         });
 

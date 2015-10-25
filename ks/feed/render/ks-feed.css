@@ -80,7 +80,7 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
 
 
 .ks-feed-entry-template {
-    /* display: none; */
+    display: none;
 }
 
 .ks-feed-entry > .ks-unverified-content {

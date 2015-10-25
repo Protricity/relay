@@ -312,10 +312,6 @@ else
         module.exports.renderPutForm = function(content, status_box, callback) {
             var classes = [];
 
-            self.module = {exports: {}};
-            importScripts('ks/ks-db.js');
-            var KeySpaceDB = self.module.exports.KeySpaceDB;
-
             var contentEscaped = content
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
@@ -326,6 +322,10 @@ else
                 classes.push('compact');
 
             // Query private key
+            self.module = {exports: {}};
+            importScripts('ks/ks-db.js');
+            var KeySpaceDB = self.module.exports.KeySpaceDB;
+
             var path = '/.private/id';
             var html_pgp_id_public_options = '';
             var default_pgp_id_public = null;

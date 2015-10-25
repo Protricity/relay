@@ -110,7 +110,7 @@ function ClientSocketWorker() {
         var targetClass = args[2];
         var targetElements = document.getElementsByClassName(targetClass);
         if(targetElements.length === 0)
-            throw new Error("Class not found: " + targetClass);
+            throw new Error("Class not found: " + targetClass + " - " + commandString);
 
         var targetElement = targetElements[0];
         var hasClass = targetElement.classList.contains(command + 'd');

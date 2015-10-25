@@ -13,12 +13,49 @@ if (!module) var module = {exports:{}};
         xhr.send();
         if(xhr.status !== 200)
             throw new Error("Error: " + xhr.responseText);
-        callback(xhr.responseText
-                .replace(/{\$channel_path}/gi, '')
-                .replace(/{\$content}/gi, '')
-                .replace(/{\$filter}/gi, '')
-                .replace(/{\$status_box}/gi, '')
-        );
+
+        var classes = [];
+
+        // Query private key
+        self.module = {exports: {}};
+        importScripts('ks/ks-db.js');
+        var KeySpaceDB = self.module.exports.KeySpaceDB;
+
+        // Query private key
+        var path = '/.private/id';
+        var html_pgp_id_public_options = '';
+        var default_pgp_id_public = null;
+        KeySpaceDB.queryAll(path, function(err, contentEntry) {
+            if(err)
+                throw new Error(err);
+
+            if(contentEntry) {
+                if(!default_pgp_id_public)
+                    default_pgp_id_public = contentEntry.pgp_id_public;
+
+                html_pgp_id_public_options +=
+                    "<option value='" + contentEntry.pgp_id_public + ',' + (contentEntry.passphrase_required?1:0) + "'" +
+                    (default_pgp_id_public === contentEntry.pgp_id_public ? ' selected="selected"' : '') +
+                    ">" +
+                    (contentEntry.passphrase_required?'* ':'&nbsp;  ') +
+                    contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) + ' - ' + contentEntry.user_id +
+                    "</option>";
+
+            } else {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", TEMPLATE_URL, false);
+                xhr.send();
+                if(xhr.status !== 200)
+                    throw new Error("Error: " + xhr.responseText);
+                callback(xhr.responseText
+                        .replace(/{\$filter}/gi, '')
+                        .replace(/{\$put_content}/gi, '')
+                        .replace(/{\$status_box}/gi, '')
+                        .replace(/{\$classes}/gi, classes.length > 0 ? classes.join(' ') : '')
+                        .replace(/{\$html_pgp_id_public_options}/gi, html_pgp_id_public_options)
+                );
+            }
+        });
 
         return true;
     };
@@ -152,7 +189,7 @@ if(typeof document === 'object')
                                 .replace(/{\$entry_author_html}/gi, authorAnchorElm.outerHTML)
                                 .replace(/{\$entry_path}/gi, entryData.path)
                                 .replace(/{\$entry_timestamp}/gi, entryData.timestamp)
-                                .replace(/{\$entry_timestamp_formatted}/gi, timeSince(entryData.timestamp) + ' ago')
+                                .replace(/{\$entry_timestamp_formatted}/gi, timeSince(entryData.timestamp))
                                 .replace(/{\$entry_content}/gi, articleHTMLContent)
                             ;
 
@@ -412,26 +449,29 @@ if(typeof document === 'object')
 
             var interval = Math.floor(seconds / 31536000);
 
-            if (interval > 1) {
-                return interval + " years";
-            }
+            if (interval > 1)
+                return interval + " years ago";
+
             interval = Math.floor(seconds / 2592000);
-            if (interval > 1) {
-                return interval + " months";
-            }
+            if (interval > 1)
+                return interval + " months ago";
+
             interval = Math.floor(seconds / 86400);
-            if (interval > 1) {
-                return interval + " days";
-            }
+            if (interval > 1)
+                return interval + " days ago";
+
             interval = Math.floor(seconds / 3600);
-            if (interval > 1) {
-                return interval + " hours";
-            }
+            if (interval > 1)
+                return interval + " hours ago";
+
             interval = Math.floor(seconds / 60);
-            if (interval > 1) {
-                return interval + " minutes";
-            }
-            return Math.floor(seconds) + " seconds";
+            if (interval > 1)
+                return interval + " minutes ago";
+
+            if (seconds === 0)
+                return "just now";
+
+            return Math.floor(seconds) + " second" + (seconds !== 1 ? 's' : '') + ' ago';
         }
 
 
