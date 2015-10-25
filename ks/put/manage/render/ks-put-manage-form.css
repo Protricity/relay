@@ -1,3 +1,12 @@
+/** Article **/
+
+article.ks-put-manage\3A > main,
+article.ks-put-manage\3A > section {
+    padding: 1em 2em 1em 2em;
+    border: 3px inset;
+}
+
+
 /** Table **/
 .ks-put-manage-info > table {
     width: 100%;

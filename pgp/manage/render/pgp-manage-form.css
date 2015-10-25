@@ -1,4 +1,10 @@
 form[name=pgp-manage-form] {
+    padding: 1em 2em 1em 2em;
+    border: 3px inset;
+    background-color: #FAFAFA;
+}
+
+form[name=pgp-manage-form] {
     max-width: 41em;
 }
 form[name=pgp-manage-form] .pgp-id-box {

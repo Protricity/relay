@@ -1,3 +1,8 @@
+form[name=pgp-import-form] {
+    padding: 1em 2em 1em 2em;
+    border: 3px inset;
+    background-color: #FAFAFA;
+}
 
 form[name=pgp-import-form] textarea[name=private_key] {
     font-family: monospace;

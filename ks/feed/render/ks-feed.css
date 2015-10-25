@@ -1,0 +1,103 @@
+/** Article **/
+
+article.ks-feed\3A > main,
+article.ks-feed\3A > section {
+    padding: 1em 2em 1em 2em;
+    border: 3px inset;
+    background: #EEE;
+    max-height: 80vw;
+    overflow-y: auto;
+}
+
+
+
+/** Form **/
+
+form[name=ks-feed-put-form] textarea,
+form[name=ks-feed-put-form] select,
+form[name=ks-feed-put-form] input {
+    padding: 0.7em 0.8em;
+    margin: 0.5em 0;
+    border-radius: 0.6em;
+    border-width: 1px;
+    font-family: monospace;
+}
+
+form[name=ks-feed-put-form] input[type=submit]:enabled {
+    font-weight: bold;
+    transition: 1s;
+    transition-delay: 1s;
+    box-shadow: 0 0 3em #5F5;
+    cursor: pointer;
+}
+
+
+form[name=ks-feed-put-form].no-passphrase-required .hide-on-no-passphrase-required {
+    display: none;
+}
+
+form[name=ks-feed-put-form].passphrase-accepted input[type=password] {
+    font-weight: bold;
+    color: green;
+    background-color: #EFFFEF;
+}
+
+/** Compact Form **/
+
+form[name=ks-feed-put-form].compact .hide-on-compact,
+form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
+    display: none;
+}
+
+
+/** Feed Entry **/
+
+.ks-feed-entries\3A > .ks-feed-entry {
+    border: 1px inset;
+    padding: 2px;
+    margin: 1em 0 0 0;
+    border-radius: 0.5em;
+    background-color: white;
+    overflow: auto;
+    max-width: 40vw;
+}
+
+
+.ks-feed-entries\3A > .ks-feed-entry:empty {
+    display: none;
+}
+
+.ks-feed-entries\3A > .ks-feed-entry button.command {
+    padding: 0.2em 0.5em;
+    margin: 0.1em;
+    transition: 1s;
+    opacity: 1;
+}
+
+.ks-feed-entries\3A > .ks-feed-entry .timestamp_formatted {
+    color: gray;
+}
+
+
+.ks-feed-entry-template {
+    display: none;
+}
+
+.ks-feed-entry > .ks-unverified-content {
+    max-height: 7em;
+    color: grey;
+}
+
+
+
+.user_icon {
+    float:left;
+    width: 48px;
+    height: 48px;
+    vertical-align: top;
+}
+
+.user_icon.tiny {
+    width: 24px;
+    height: 24px;
+}

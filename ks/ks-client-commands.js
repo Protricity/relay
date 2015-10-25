@@ -42,9 +42,20 @@ module.exports.initClientKSCommands = function(Client) {
         Client.removeResponse(importAUTHCommand);
         self.module = {exports: {}};
         importScripts('ks/auth/ks-client-auth-command.js');
-        module.exports.initClientAuthCommands(Client);
+        module.exports.initClientKSAuthCommands(Client);
         //console.info("Loaded: ks/auth/ks-client-auth-command.js");
         return false;
     }
 
+
+    // Feed Commands
+    Client.addCommand(importFeedCommands);
+    function importFeedCommands(commandString, e) {
+        if (!/^feed/i.test(commandString))
+            return false;
+        Client.removeCommand(importFeedCommands);
+        importScripts('ks/feed/ks-client-feed-commands.js');
+        module.exports.initClientKSFeedCommands(Client);
+        return false;
+    }
 };

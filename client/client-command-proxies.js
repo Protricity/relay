@@ -17,7 +17,7 @@ module.exports.initClientCommands = function(Client) {
     Client.addCommand(importHTTPCommands);
     Client.addResponse(importHTTPCommands);
     function importHTTPCommands(commandString, e) {
-        if(!/^(get|put|patch|head|http|auth)/i.test(commandString))
+        if(!/^(get|put|patch|head|http|auth|feed)/i.test(commandString))
             return false;
         Client.removeCommand(importHTTPCommands);
         Client.removeResponse(importHTTPCommands);

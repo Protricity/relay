@@ -13,7 +13,7 @@ if(typeof document === 'object')
     self.addEventListener('input', onFormEvent);
     self.addEventListener('change', onFormEvent);
     self.addEventListener('render', function(e) {
-        var formElm = e.target.querySelector('form[name^=ks-put-form]');
+        var formElm = e.target.querySelector('form[name=ks-put-form]');
         if(formElm)
             onFormEvent(e, formElm);
     });
@@ -47,7 +47,9 @@ if(typeof document === 'object')
             formElm.put.disabled = disableSubmit;
         formElm.classList[!passphrase_required ? 'add' : 'remove']('no-passphrase-required');
 
+        formElm.classList[formElm.content.value.length === 0 ? 'add' : 'remove']('compact');
         formElm.parentNode.parentNode.classList[formElm.content.value.length === 0 ? 'add' : 'remove']('compact');
+
         if(!lastPostContent || lastPostContent != formElm.content.value || e.type === 'change') {
             lastPostContent = formElm.content.value;
 
@@ -134,8 +136,8 @@ if(typeof document === 'object')
                 throw new Error(errMSG);
             }
 
-            var author = privateKey.getUserIds()[0];
-            var timestamp = Date.now();
+            //var author = privateKey.getUserIds()[0];
+            //var timestamp = Date.now();
 
             var contentDiv = document.createElement('div');
             contentDiv.innerHTML = postContent;
@@ -144,9 +146,11 @@ if(typeof document === 'object')
                 contentDiv.innerHTML = "<article>\n\t" + contentDiv.innerHTML + "\n</article>";
                 articleElm = contentDiv.querySelector('article');
             }
-            articleElm.setAttribute('data-author', author);
+
+            //articleElm.setAttribute('data-author', author);
+            //articleElm.setAttribute('data-timestamp', timestamp.toString());
             articleElm.setAttribute('data-path', contentPath);
-            articleElm.setAttribute('data-timestamp', timestamp.toString());
+
             postContent = articleElm.outerHTML;
             postContent = protectHTMLContent(postContent, formElm);
 
@@ -199,8 +203,6 @@ if(typeof document === 'object')
         if(!pathElm)
             throw new Error("No channel field found");
 
-        var timestamp = Date.now();
-
         var postContent = postContentElm.value.trim();
         //if(!postContent.length)
         //    return false;
@@ -213,7 +215,7 @@ if(typeof document === 'object')
             articleElm = contentDiv.querySelector('article');
         }
         articleElm.setAttribute('data-path', pathElm);
-        articleElm.setAttribute('data-timestamp', timestamp.toString());
+        //articleElm.setAttribute('data-timestamp', timestamp.toString());
 
         postContent = articleElm.outerHTML;
         postContent = protectHTMLContent(postContent, formElm);
@@ -230,42 +232,42 @@ if(typeof document === 'object')
 
         return htmlContent;
     }
-
-    function setStatus(formElm, statusText, prependTimeout, unique) {
-        var statusElms = formElm.getElementsByClassName('status-box');
-        for(var i=0; i<statusElms.length; i++) (function(statusElm) {
-            var textDiv = document.createElement('div');
-            textDiv.innerHTML = statusText;
-
-            if(unique && statusElm.innerHTML.indexOf(textDiv.innerHTML) !== -1)
-                return;
-
-            if(prependTimeout) {
-                statusElm.firstChild
-                    ? statusElm.insertBefore(textDiv, statusElm.firstChild)
-                    : statusElm.appendChild(textDiv);
-                if(typeof prependTimeout === 'number')
-                    setTimeout(function () {
-                        if(textDiv && textDiv.parentNode)
-                            textDiv.parentNode.removeChild(textDiv);
-                    }, prependTimeout * 1000);
-            } else {
-                statusElm.innerHTML = statusText;
-            }
-        })(statusElms[i]);
-    }
-
-
-    function fixHomePath(channelPath, publicKeyID) {
-        publicKeyID = publicKeyID.substr(publicKeyID.length - 8);
-        if(channelPath[0] === '~') {
-            channelPath = channelPath.substr(1);
-            if(!channelPath || channelPath[0] !== '/')
-                channelPath = '/' + channelPath;
-            channelPath = '/home/' + publicKeyID + channelPath;
-        }
-        return channelPath;
-    }
+    //
+    //function setStatus(formElm, statusText, prependTimeout, unique) {
+    //    var statusElms = formElm.getElementsByClassName('status-box');
+    //    for(var i=0; i<statusElms.length; i++) (function(statusElm) {
+    //        var textDiv = document.createElement('div');
+    //        textDiv.innerHTML = statusText;
+    //
+    //        if(unique && statusElm.innerHTML.indexOf(textDiv.innerHTML) !== -1)
+    //            return;
+    //
+    //        if(prependTimeout) {
+    //            statusElm.firstChild
+    //                ? statusElm.insertBefore(textDiv, statusElm.firstChild)
+    //                : statusElm.appendChild(textDiv);
+    //            if(typeof prependTimeout === 'number')
+    //                setTimeout(function () {
+    //                    if(textDiv && textDiv.parentNode)
+    //                        textDiv.parentNode.removeChild(textDiv);
+    //                }, prependTimeout * 1000);
+    //        } else {
+    //            statusElm.innerHTML = statusText;
+    //        }
+    //    })(statusElms[i]);
+    //}
+    //
+    //
+    //function fixHomePath(channelPath, publicKeyID) {
+    //    publicKeyID = publicKeyID.substr(publicKeyID.length - 8);
+    //    if(channelPath[0] === '~') {
+    //        channelPath = channelPath.substr(1);
+    //        if(!channelPath || channelPath[0] !== '/')
+    //            channelPath = '/' + channelPath;
+    //        channelPath = '/home/' + publicKeyID + channelPath;
+    //    }
+    //    return channelPath;
+    //}
 
 
     // Includes
@@ -308,9 +310,7 @@ else
         var TEMPLATE_URL = 'ks/put/form/render/ks-put-form.html';
 
         module.exports.renderPutForm = function(content, status_box, callback) {
-            self.module = {exports: {}};
-            importScripts('ks/ks-db.js');
-            var KeySpaceDB = self.module.exports.KeySpaceDB;
+            var classes = [];
 
             var contentEscaped = content
                 .replace(/&/g, '&amp;')
@@ -318,7 +318,14 @@ else
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;');
 
+            if(!content)
+                classes.push('compact');
+
             // Query private key
+            self.module = {exports: {}};
+            importScripts('ks/ks-db.js');
+            var KeySpaceDB = self.module.exports.KeySpaceDB;
+
             var path = '/.private/id';
             var html_pgp_id_public_options = '';
             var default_pgp_id_public = null;
@@ -347,6 +354,7 @@ else
                         callback(xhr.responseText
                             .replace(/{\$status_box}/gi, status_box)
                             .replace(/{\$content}/gi, content)
+                            .replace(/{\$classes}/gi, classes.length > 0 ? classes.join(' ') : '')
                             .replace(/{\$content_escaped}/gi, contentEscaped)
                             .replace(/{\$html_pgp_id_public_options}/gi, html_pgp_id_public_options)
                         );

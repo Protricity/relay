@@ -216,7 +216,7 @@ if (!module) var module = {exports:{}};
                     "\n\t\t<td class='value'>" +
                         "\n\t<span class='created'>" +
                         timeSince(contentEntry.timestamp) +
-                        "</span> ago (" + contentEntry.timestamp + ")" +
+                        "</span> (" + contentEntry.timestamp + ")" +
                     "\n\t\t</td>" +
                     "\n\t</tr>";
 
@@ -310,32 +310,37 @@ if (!module) var module = {exports:{}};
     };
 
 
+
     function timeSince(date) {
         var seconds = Math.floor((new Date() - date) / 1000);
 
         var interval = Math.floor(seconds / 31536000);
 
-        if (interval > 1) {
-            return interval + " years";
-        }
+        if (interval > 1)
+            return interval + " years ago";
+
         interval = Math.floor(seconds / 2592000);
-        if (interval > 1) {
-            return interval + " months";
-        }
+        if (interval > 1)
+            return interval + " months ago";
+
         interval = Math.floor(seconds / 86400);
-        if (interval > 1) {
-            return interval + " days";
-        }
+        if (interval > 1)
+            return interval + " days ago";
+
         interval = Math.floor(seconds / 3600);
-        if (interval > 1) {
-            return interval + " hours";
-        }
+        if (interval > 1)
+            return interval + " hours ago";
+
         interval = Math.floor(seconds / 60);
-        if (interval > 1) {
-            return interval + " minutes";
-        }
-        return Math.floor(seconds) + " seconds";
+        if (interval > 1)
+            return interval + " minutes ago";
+
+        if (seconds === 0)
+            return "just now";
+
+        return Math.floor(seconds) + " second" + (seconds !== 1 ? 's' : '') + ' ago';
     }
+
 
 
 })();

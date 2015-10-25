@@ -1,5 +1,10 @@
+/** Form **/
 
-/** Script **/
+form[name=ks-put-script-select-form] {
+    padding: 1em 2em 1em 2em;
+    border: 3px inset;
+    background-color: #FAFAFA;
+}
 
 form[name=ks-put-script-select-form] select,
 form[name=ks-put-script-select-form] input {
