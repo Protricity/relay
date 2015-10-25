@@ -61,17 +61,15 @@
 
         <article class='ks-feed-entry ks-put-preview:' ></article>
 
-        <template class='ks-feed-entry-template'>
-            <article class='ks-feed-entry'>
-                <header>
-                    <img class='user_icon tiny' src='ks/feed/img/user_icon_default.png' alt='UI' />
-                    <a rel="author" data-id="{$entry_pgp_id_public}">{$entry_author}</a>
-                    <div class='timestamp_formatted'>{$entry_timestamp_formatted}</div>
-                    <hr/>
-                </header>
-                {$entry_content}
-            </article>
-        </template>
+        <article class='ks-feed-entry ks-feed-entry-template'>
+            <header>
+                <img class='user_icon tiny' src='ks/feed/img/user_icon_default.png' alt='UI' />
+                {$entry_author_html}
+                <div class='timestamp_formatted'>{$entry_timestamp_formatted}</div>
+                <hr/>
+            </header>
+            {$entry_content}
+        </article>
 
     </main>
     <footer>&nbsp;</footer>

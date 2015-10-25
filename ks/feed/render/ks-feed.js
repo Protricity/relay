@@ -61,6 +61,8 @@ if(typeof document === 'object')
             }
         }
 
+
+
         // Feed handlers
 
         function refreshFeedContainer(e, feedElm) {
@@ -103,7 +105,6 @@ if(typeof document === 'object')
 
                     if(entryData) {
                         var articleDiv = document.createElement('article');
-                        var articleHTMLContent = null;
                         try {
                             var pgpClearSignedMessage = openpgp.cleartext.readArmored(entryData.content);
                             articleDiv.innerHTML = protectHTMLContent(pgpClearSignedMessage.text);
@@ -124,24 +125,31 @@ if(typeof document === 'object')
                                 .replace(/\n/g, "<br />");
 
                             articleDiv.classList.add('ks-unverified-content');
-                            articleHTMLContent = articleDiv.outerHTML;
                         }
+
+                        var authorAnchorElm = articleDiv.querySelector('a[rel=author]');
+
+                        var articleHTMLContent = null;
+                        articleHTMLContent = articleDiv.outerHTML;
 
                         if(entryData.timestamp < containerElm.feedEndTime)
                             containerElm.feedEndTime = entryData.timestamp-1;
 
                         var templateElm = containerElm.getElementsByClassName('ks-feed-entry-template')[0];
-                        var templateHTML = templateElm.content.children[0].outerHTML;
+                        var templateHTML = templateElm.outerHTML;
 
                         queryAuthorByKey(entryData.pgp_id_public, function(author) {
-                            var authorMatch = /data-author=["'](\S+)["']/i.exec(articleHTMLContent);
-                            if(authorMatch)
-                                author = authorMatch[1];
+                            if(!authorAnchorElm) {
+                                authorAnchorElm = document.createElement('a');
+                                authorAnchorElm.setAttribute('rel', 'author');
+                                authorAnchorElm.setAttribute('data-id', entryData.pgp_id_public);
+                                authorAnchorElm.innerHTML = author;
+                            }
 
                             var newFeedContainer = document.createElement('div');
                             templateHTML = templateHTML
                                 .replace(/{\$entry_pgp_id_public}/gi, entryData.pgp_id_public)
-                                .replace(/{\$entry_author}/gi, author)
+                                .replace(/{\$entry_author_html}/gi, authorAnchorElm.outerHTML)
                                 .replace(/{\$entry_path}/gi, entryData.path)
                                 .replace(/{\$entry_timestamp}/gi, entryData.timestamp)
                                 .replace(/{\$entry_timestamp_formatted}/gi, timeSince(entryData.timestamp) + ' ago')
@@ -149,9 +157,10 @@ if(typeof document === 'object')
                             ;
 
                             newFeedContainer.innerHTML = templateHTML;
-                            console.log(templateElm.content.children[0]);
+                            var newFeedEntry = newFeedContainer.children[0];
+                            newFeedEntry.classList.remove('ks-feed-entry-template');
                             //articleDiv.classList.add('ks-feed-entry');
-                            containerElm.appendChild(newFeedContainer.children[0]);
+                            containerElm.appendChild(newFeedEntry);
                         });
 
                     } else {
@@ -168,7 +177,7 @@ if(typeof document === 'object')
             if(authorCache[pgp_id_public])
                 return callback(authorCache[pgp_id_public]);
             authorCallbacks.push(callback);
-            
+
             if(authorCache[pgp_id_public] === null)
                 return null;
             authorCache[pgp_id_public] = null;
@@ -176,7 +185,7 @@ if(typeof document === 'object')
             var requestPath = "public/id";
             var requestURL = "http://" + pgp_id_public + ".ks/" + requestPath;
 
-            console.log("Requesting author for " + pgp_id_public + "...")
+            console.log("Requesting author for " + pgp_id_public + "...");
             KeySpaceDB.queryOne(requestURL, function (err, contentData) {
                 if (err)
                     return callback(err);
