@@ -119,25 +119,15 @@ if(typeof document === 'object')
     }
 
 
-
-    var SCRIPT_PATH = 'pgp/lib/openpgpjs/openpgp.js';
-    var head = document.getElementsByTagName('head')[0];
-    if(head.querySelectorAll('script[src=' + SCRIPT_PATH.replace(/[/.]/g, '\\$&') + ']').length === 0) {
-        var newScript = document.createElement('script');
-        newScript.setAttribute('src', SCRIPT_PATH);
-        head.appendChild(newScript);
-
-        var timeout = setInterval(function() {
-            var src = SCRIPT_PATH.replace('/openpgp.', '/openpgp.worker.');
-            if(!window.openpgp || window.openpgp._worker_init)
-                return;
-            window.openpgp.initWorker(src);
+    // Open PGP Worker
+    setTimeout(function() {
+        if(typeof window.openpgp._worker_init === 'undefined') {
+            var OPENPGP_WORKER_URL = 'pgp/lib/openpgpjs/openpgp.worker.js';
             window.openpgp._worker_init = true;
-            clearInterval(timeout);
-//             console.info("OpenPGP Worker Loaded: " + src);
-        }, 500);
-    }
-
+            window.openpgp.initWorker(OPENPGP_WORKER_URL);
+            console.info("OpenPGP Worker Loaded: " + OPENPGP_WORKER_URL);
+        }
+    }, 100);
 
 })();
 
