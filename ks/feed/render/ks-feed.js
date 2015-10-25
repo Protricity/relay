@@ -4,96 +4,293 @@
 // Client Script
 if(typeof document === 'object')
     (function() {
+        var REFRESH_TIMEOUT = 20;
 
-        //var verifiedContentElms = document.getElementsByClassName('pgp-verified-content1');
+        // Events
 
-        document.addEventListener('render', sortFeedEntry);
-        document.addEventListener('submit', onSubmitEvent);
-
-        var unsortedElms = document.getElementsByClassName('feed-unsorted');
-        function sortFeedEntry(e) {
-            if(unsortedElms.length === 0)
+        self.addEventListener('submit', onFormEvent);
+        self.addEventListener('input', onFormEvent);
+        self.addEventListener('change', onFormEvent);
+        self.addEventListener('scroll', refreshFeedContainer, false);
+        self.addEventListener('render', function(e) {
+            if(!e.target.classList.contains('ks-feed:'))
                 return;
+            refreshFeedContainer(e, e.target);
+        });
 
-            var feedEntry = unsortedElms[0];
-            feedEntry.classList.remove('feed-unsorted');
-            feedEntry.classList.add('feed-sorting');
-
-            sortFeedEntry(e);
-
-            var children = feedEntry.parentNode.children;
-            var newTimeStamp = parseInt(feedEntry.querySelector('article[data-timestamp]').getAttribute('data-timestamp'));
-
-            for(var i=0; i<children.length; i++) {
-                var child = children[i];
-                if(!child.classList.contains('feed-sorted'))
-                    continue;
-                var existingTimeStamp = parseInt(child.querySelector('article[data-timestamp]').getAttribute('data-timestamp'));
-
-                if(existingTimeStamp < newTimeStamp) {
-                    feedEntry.parentNode.insertBefore(feedEntry, child);
-                    feedEntry.classList.remove('feed-sorting');
-                    feedEntry.classList.add('feed-sorted');
-                    return;
-                }
-            }
-
-            // Insert last
-            feedEntry.parentNode.appendChild(feedEntry);
-            feedEntry.classList.remove('feed-sorting');
-            feedEntry.classList.add('feed-sorted');
-        }
-
-        function onSubmitEvent(e, formElm) {
+        function onFormEvent(e, formElm) {
             if(!formElm) formElm = e.target.form ? e.target.form : e.target;
             if(formElm.nodeName.toLowerCase() !== 'form')
                 return false;
 
             switch(formElm.getAttribute('name')) {
-                case 'feed-like-form':
-                    e.preventDefault();
-                    findParentNode(e.target, 'article').classList.toggle('like');
-                    return true;
-
-                case 'feed-comments-form':
-                    e.preventDefault();
-                    findParentNode(e.target, 'article').classList.toggle('show-comments');
-                    refreshComments(e);
-                    return true;
-
-                case 'feed-share-form':
-                    e.preventDefault();
-                    return true;
-
-                case 'feed-source-form':
-                    e.preventDefault();
-                    findParentNode(e.target, 'article').classList.toggle('show-source');
+                case 'ks-feed-put-form':
+                    refreshHTTPPutForm(e, formElm);
+                    if(e.type === 'submit')
+                        e.preventDefault() ||
+                        submitHTTPPutForm(e, formElm);
                     return true;
 
                 default:
                     return false;
             }
-
         }
 
-        function refreshComments(e) {
-            var article = findParentNode(e.target, 'article');
-            if(!article.classList.contains('show-comments'))
-                return false;
-            var uid = article.getAttribute('data-uid');
+        function refreshFeedContainer(e, feedElm) {
+            feedElm = feedElm ||
+                (e.target.classList && e.target.classList.contains('ks-feed:') ? e.target : null) ||
+                document.getElementsByClassName('ks-feed:')[0];
 
-            var commentsSection = article.getElementsByClassName('feed-comments-section')[0];
-            console.log("Refresh comments: ", uid, commentsSection);
+            var feedEntriesElm = feedElm.getElementsByClassName('ks-feed-entries:')[0];
+
+            if(!feedEntriesElm.onscroll)
+                feedEntriesElm.onscroll = refreshFeedContainer;
+
+            var scrollPos = feedEntriesElm.scrollTop;
+            var scrollMax = feedEntriesElm.scrollHeight - feedEntriesElm.clientHeight;
+
+            console.log(scrollPos, scrollMax);
+
+            if(scrollPos >= scrollMax - 20)
+                requestMoreFeed();
         }
 
-        function findParentNode(target, parentNodeName) {
-            parentNodeName = parentNodeName.toLowerCase();
-            while(target = target.parentNode)
-                if(target.nodeName.toLowerCase() === parentNodeName)
-                    return target;
+        var moreFeedRequested = false;
+        function requestMoreFeed() {
+            if(moreFeedRequested)
+                return console.error("More feed already requested silly!");
+            moreFeedRequested = true;
 
-            throw new Error("Could not find parent: " + parentNodeName);
+            console.log("Request more feed");
         }
+
+        var lastPostContent = null;
+        function refreshHTTPPutForm(e, formElm) {
+            var pgp_id_public = formElm.pgp_id_public.value.split(',')[0];
+            var passphrase_required = formElm.pgp_id_public.value.split(',')[1] === '1';
+            var passphrase = formElm.passphrase.value;
+
+            var disableSubmit = (passphrase_required || !pgp_id_public) || formElm.content.value.length === 0;
+            if(formElm.put.disabled !== disableSubmit)
+                formElm.put.disabled = disableSubmit;
+            formElm.classList[!passphrase_required ? 'add' : 'remove']('no-passphrase-required');
+
+            formElm.classList[formElm.content.value.length === 0 ? 'add' : 'remove']('compact');
+            formElm.parentNode.parentNode.classList[formElm.content.value.length === 0 ? 'add' : 'remove']('compact');
+
+            if(!lastPostContent || lastPostContent != formElm.content.value || e.type === 'change') {
+                lastPostContent = formElm.content.value;
+
+                if(refreshHTTPPutForm.previewTimeout)
+                    clearTimeout(refreshHTTPPutForm.previewTimeout);
+                refreshHTTPPutForm.previewTimeout = setTimeout(function() {
+                    updatePutPreview(e, formElm);
+                }, REFRESH_TIMEOUT)
+            }
+
+            if(pgp_id_public && passphrase_required) {
+                var path = 'http://' + pgp_id_public + '.ks/.private/id';
+                KeySpaceDB.queryOne(path, function (err, privateKeyBlock) {
+                    if (err)
+                        throw new Error(err);
+                    if (!privateKeyBlock)
+                        throw new Error("Private key not found: " + pgp_id_public);
+
+                    var privateKey = openpgp.key.readArmored(privateKeyBlock.content).keys[0];
+                    if (!privateKey.primaryKey.isDecrypted)
+                        if (passphrase)
+                            privateKey.primaryKey.decrypt(passphrase);
+
+                    if (privateKey.primaryKey.isDecrypted) {
+                        if(formElm.put.disabled === true)
+                            formElm.put.disabled = false;
+                        if(!formElm.classList.contains('passphrase-accepted'))
+                            formElm.classList.add('passphrase-accepted');
+
+                    } else {
+                        if(formElm.classList.contains('passphrase-accepted'))
+                            formElm.classList.remove('passphrase-accepted');
+                    }
+                });
+            }
+        }
+
+
+        function submitHTTPPutForm(e, formElm) {
+            e.preventDefault();
+            var pgp_id_public = formElm.pgp_id_public.value.split(',')[0];
+            var passphrase_required = formElm.pgp_id_public.value.split(',')[1] === '1';
+            var passphrase = formElm.passphrase.value;
+            var contentPath = formElm.path.value;
+            var postContent = formElm.content.value;
+            var statusBoxElm = formElm.getElementsByClassName('status-box')[0];
+
+            if(!pgp_id_public)
+                throw new Error("No PGP Key selected");
+            if(!contentPath)
+                throw new Error("No Path provided");
+
+            if(contentPath[0] === '~') {
+                contentPath = contentPath.substr(1);
+                if(!contentPath || contentPath[0] !== '/')
+                    contentPath = '/' + contentPath;
+                contentPath = '/home/' + pgp_id_public.substr(pgp_id_public.length-16) + contentPath;
+            }
+
+            if (contentPath[0] !== '/')
+                contentPath = '/' + contentPath;
+
+            // Query private key
+            var path = 'http://' + pgp_id_public + '.ks/.private/id';
+            KeySpaceDB.queryOne(path, function (err, privateKeyBlock) {
+                if (err)
+                    throw new Error(err);
+                if (!privateKeyBlock)
+                    throw new Error("Private key not found: " + selectedPrivateKeyID);
+
+                var privateKey = openpgp.key.readArmored(privateKeyBlock.content).keys[0];
+                var publicKey = privateKey.toPublic();
+
+                if (!privateKey.primaryKey.isDecrypted)
+                    if (passphrase)
+                        privateKey.primaryKey.decrypt(passphrase);
+
+                if (!privateKey.primaryKey.isDecrypted) {
+                    var errMSG = passphrase === ''
+                        ? 'PGP key pair requires a passphrase'
+                        : 'Invalid PGP passphrase';
+                    statusBoxElm.innerHTML = "<span class='error'>" + errMSG + "</span>";
+                    formElm.passphrase.focus();
+                    throw new Error(errMSG);
+                }
+
+                var author = privateKey.getUserIds()[0];
+                var timestamp = Date.now();
+
+                var contentDiv = document.createElement('div');
+                contentDiv.innerHTML = postContent;
+                var articleElm = contentDiv.querySelector('article');
+                if (!articleElm) {
+                    contentDiv.innerHTML = "<article>\n\t" + contentDiv.innerHTML + "\n</article>";
+                    articleElm = contentDiv.querySelector('article');
+                }
+                articleElm.setAttribute('data-author', author);
+                articleElm.setAttribute('data-path', contentPath);
+                //articleElm.setAttribute('data-timestamp', timestamp.toString());
+                postContent = articleElm.outerHTML;
+                postContent = protectHTMLContent(postContent, formElm);
+
+                statusBoxElm.innerHTML = "<span class='command'>Encrypt</span>ing content...";
+
+                openpgp.signClearMessage(privateKey, postContent)
+                    .then(function (pgpSignedContent) {
+                        var pgpClearSignedMessage = openpgp.cleartext.readArmored(pgpSignedContent);
+
+                        //Add PublicKeyEncryptedSessionKey
+                        var symAlgo = openpgp.key.getPreferredSymAlgo(privateKey);
+                        var encryptionKeyPacket = privateKey.getEncryptionKeyPacket();
+                        if (encryptionKeyPacket) {
+                            var pkESKeyPacket = new openpgp.packet.PublicKeyEncryptedSessionKey();
+                            pkESKeyPacket.publicKeyId = encryptionKeyPacket.getKeyId();
+                            pkESKeyPacket.publicKeyAlgorithm = encryptionKeyPacket.algorithm;
+                            pkESKeyPacket.sessionKey = publicKey;
+                            pkESKeyPacket.sessionKeyAlgorithm = openpgp.enums.read(openpgp.enums.symmetric, symAlgo);
+                            pkESKeyPacket.encrypt(encryptionKeyPacket);
+                            pgpClearSignedMessage.packets.push(pkESKeyPacket);
+
+                        } else {
+                            throw new Error('Could not find valid key packet for encryption in key ' + key.primaryKey.getKeyId().toHex());
+                        }
+
+                        var finalPGPSignedContent = pgpClearSignedMessage.armor();
+                        //console.log(pgpSignedContent, finalPGPSignedContent);
+
+                        var commandString = "PUT " + pgp_id_public + "\n" + pgpSignedContent; // finalPGPSignedContent;
+
+                        var socketEvent = new CustomEvent('command', {
+                            detail: commandString,
+                            cancelable: true,
+                            bubbles: true
+                        });
+                        formElm.dispatchEvent(socketEvent);
+
+                        if (!socketEvent.defaultPrevented)
+                            throw new Error("Socket event for new post was not handled");
+
+                        statusBoxElm.innerHTML = "<span class='command'>Put</span> <span class='success'>Successful</span>";
+                        formElm.content.value = '';
+                    });
+            });
+        }
+
+        function updatePutPreview(e, formElm) {
+            var postContentElm = formElm.querySelector('textarea[name=content]');
+            var pathElm = formElm.querySelector('*[name=path]');
+            if(!pathElm)
+                throw new Error("No channel field found");
+
+            var postContent = postContentElm.value.trim();
+            //if(!postContent.length)
+            //    return false;
+
+            var contentDiv = document.createElement('div');
+            contentDiv.innerHTML = postContent;
+            var articleElm = contentDiv.querySelector('article');
+            if(!articleElm) {
+                contentDiv.innerHTML = "<article>" + contentDiv.innerHTML + "</article>";
+                articleElm = contentDiv.querySelector('article');
+            }
+            articleElm.setAttribute('data-path', pathElm);
+            //articleElm.setAttribute('data-timestamp', timestamp.toString());
+
+            postContent = articleElm.outerHTML;
+            postContent = protectHTMLContent(postContent, formElm);
+
+            var previewElm = document.getElementsByClassName('ks-put-preview:')[0];
+            previewElm.innerHTML = postContent;
+        }
+
+
+        function protectHTMLContent(htmlContent) {
+            var match = /(lt;|<)[^>]+(on\w+)=/ig.exec(htmlContent);
+            if(match)
+                throw new Error("Dangerous HTML: " + match[2]);
+
+            return htmlContent;
+        }
+
+
+        // Includes
+
+        function includeScript(scriptPath, onInsert) {
+            var head = document.getElementsByTagName('head')[0];
+            if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+                var newScript = document.createElement('script');
+                newScript.setAttribute('src', scriptPath);
+                head.appendChild(newScript);
+                if(onInsert)
+                    onInsert();
+            }
+        }
+
+        // For HTTP Content Database access
+        includeScript('ks/ks-db.js');
+
+        // For PGP Decryption in chat rooms
+        var openPGPScriptPath = 'pgp/lib/openpgpjs/openpgp.js';
+        includeScript(openPGPScriptPath, function() {
+
+            var timeout = setInterval(function() {
+                var src = openPGPScriptPath.replace('/openpgp.', '/openpgp.worker.');
+                if(!window.openpgp || window.openpgp._worker_init)
+                    return;
+                window.openpgp.initWorker(src);
+                window.openpgp._worker_init = true;
+                clearInterval(timeout);
+                console.info("OpenPGP Worker Loaded: " + src);
+            }, 500);
+        });
+
 
     })();
 

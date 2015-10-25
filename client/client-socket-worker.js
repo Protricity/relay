@@ -274,13 +274,23 @@ function ClientSocketWorker() {
         }
 
         // Include scripts after insert:
-        for(var ii=0; ii<includeScripts.length; ii++)
-            ClientSocketWorker.includeScript(includeScripts[ii]);
+        if(includeScripts.length > 0) {
+            for(var ii=0; ii<includeScripts.length; ii++)
+                ClientSocketWorker.includeScript(includeScripts[ii],
+                    ii === includeScripts.length - 1 ? dispatchEvent : null);
 
-        var contentEvent = new CustomEvent('render', {
-            bubbles: true
-        });
-        targetElement.dispatchEvent(contentEvent);
+        } else {
+            dispatchEvent();
+        }
+
+
+        function dispatchEvent() {
+            var contentEvent = new CustomEvent('render', {
+                bubbles: true
+            });
+            targetElement.dispatchEvent(contentEvent);
+//             console.log("Render", targetElement);
+        }
     }
 
     function parseScripts(content, includeScripts) {
@@ -302,7 +312,7 @@ function ClientSocketWorker() {
 })();
 
 
-ClientSocketWorker.includeScript = function(scriptURL) {
+ClientSocketWorker.includeScript = function(scriptURL, callback) {
     var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(scriptURL);
     if(!match)
         throw new Error("Invalid URL: " + scriptURL);
@@ -315,7 +325,10 @@ ClientSocketWorker.includeScript = function(scriptURL) {
     if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
         var newScript = document.createElement('script');
         newScript.setAttribute('src', scriptPath);
+        newScript.onreadystatechange = callback;
+        newScript.onload = callback;
         head.appendChild(newScript);
+
         return true;
     }
     return false;

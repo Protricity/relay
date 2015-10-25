@@ -26,7 +26,7 @@ li {
     display: inline-block;
     margin: 0 0 1em 0.5em;
     position: relative;
-    transition: opacity 0.4s ease-in;
+    /*transition: opacity 0.4s ease-in;*/
     vertical-align: top;
     background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
     border-radius: 2px;
@@ -63,7 +63,7 @@ li {
     min-width: 16em;
     max-height: 20px;
     overflow: hidden;
-    transition: 1s ease-in;8:0s;
+    transition: 1s ease-in;
     opacity: 0.6;
 }
 
@@ -123,25 +123,12 @@ li {
 
 /** Sections **/
 
-.theme-minimal > article > main,
-.theme-minimal > article > form > section,
-.theme-minimal > article > section {
-    padding: 0.5em 1em 0.5em 1em;
-    border: 2px inset;
-    background-color: #F5F5FA;
-}
 .theme-minimal > article > main {
     background-color: white;
 }
 
-.theme-minimal > article.maximized > main,
-.theme-minimal > article.maximized > form > section,
-.theme-minimal > article.maximized > section {
-    padding: 1em 2em 1em 2em;
-}
-
-.theme-minimal > article.maximized > main {
-    border: 3px inset;
+.theme-minimal > article > section {
+    background-color: #F5F5FA;
 }
 
 

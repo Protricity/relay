@@ -1,8 +1,20 @@
+/** Article **/
+
+article.ks-feed\3A > main,
+article.ks-feed\3A > section {
+    padding: 1em 2em 1em 2em;
+    border: 3px inset;
+    background: #EEE;
+    max-height: 40em;
+    overflow-y: auto;
+}
+
+
 /** Form **/
 
-form[name=ks-feed-form] textarea,
-form[name=ks-feed-form] select,
-form[name=ks-feed-form] input {
+form[name=ks-feed-put-form] textarea,
+form[name=ks-feed-put-form] select,
+form[name=ks-feed-put-form] input {
     padding: 0.7em 0.8em;
     margin: 0.5em 0;
     border-radius: 0.6em;
@@ -10,103 +22,51 @@ form[name=ks-feed-form] input {
     font-family: monospace;
 }
 
-form[name=ks-feed-form] input[type=submit]:enabled {
+form[name=ks-feed-put-form] input[type=submit]:enabled {
     font-weight: bold;
-    transition: 0.5s;
+    transition: 1s;
     transition-delay: 1s;
     box-shadow: 0 0 3em #5F5;
     cursor: pointer;
 }
 
-form[name=ks-feed-form].no-passphrase-required .hide-on-no-passphrase-required {
+
+form[name=ks-feed-put-form].no-passphrase-required .hide-on-no-passphrase-required {
     display: none;
 }
 
-form[name=ks-feed-form].passphrase-accepted input[type=password] {
+form[name=ks-feed-put-form].passphrase-accepted input[type=password] {
     font-weight: bold;
     color: green;
     background-color: #EFFFEF;
 }
 
-form[name=ks-feed-form].compact .hide-on-compact {
+/** Compact Form **/
+
+form[name=ks-feed-put-form].compact .hide-on-compact,
+form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
     display: none;
-}
-
-/** Feed Posts **/
-
-.pgp-verified-content .feed-post {
-    display: none;
-}
-
-.feed-author .user_icon {
-    float:left;
-}
-
-.user_icon {
-    width: 48px;
-    height: 48px;
-    vertical-align: top;
-}
-
-.user_icon.tiny {
-    width: 24px;
-    height: 24px;
 }
 
 
 /** Feed Entry **/
 
-.channel.feed-entry {
-    display: block;
+.ks-feed-entries\3A > .ks-feed-entry {
+    /* display: block; */
+    border: 1px inset;
+    padding: 2px;
+    margin: 1em 0 0 0;
+    border-radius: 0.5em;
+    background-color: white;
 }
 
-.feed-entry .feed-content-source,
-.feed-entry .feed-content {
-    max-width: 36em;
-    max-height: 12em;
-    overflow-y:auto;
-}
-
-
-.feed-entry button.command {
+.ks-feed-entries\3A > .ks-feed-entry button.command {
     padding: 0.2em 0.5em;
     margin: 0.1em;
-    animation: fade-in 2s;
+    transition: 1s;
+    opacity: 1;
 }
 
-.feed-entry .timestamp_formatted {
+.ks-feed-entries\3A > .ks-feed-entry .timestamp_formatted {
     color: gray;
-}
-
-.feed-entry .feed-content-source {
-    white-space: pre-line;
-}
-
-.feed-entry.show-source .feed-content,
-.feed-entry:not(.show-source) .feed-content-source,
-
-.feed-entry:not(.show-comments) .feed-comments-section,
-.feed-entry:not(.share) .feed-share-section,
-.feed-entry:not(.show-info) .feed-info-section {
-    display: none;
-}
-
-form[name=feed-like-form],
-form[name=feed-comments-form],
-form[name=feed-share-form],
-form[name=feed-source-form] {
-    display: inline;
-}
-
-.feed-entry.like form[name=feed-like-form] button,
-.feed-entry.show-comments form[name=feed-comments-form] button,
-.feed-entry.show-source form[name=feed-source-form] button {
-    border: 1pt inset;
-}
-
-/** Animation **/
-
-@keyframes fade-in {
-    from { opacity:0; }
-    to { opacity:1; }
 }

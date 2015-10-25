@@ -1,5 +1,24 @@
 
+/** Article **/
+
+article.ks-put\3A > main,
+article.ks-put\3A > section {
+    padding: 1em 2em 1em 2em;
+    border: 3px inset;
+}
+
+/** Compact **/
+
+article.ks-put\3A.compact .hide-on-compact {
+    animation: ks-put-form-max-height 1s ease-out 0s forwards;
+}
+
+article.ks-put\3A:not(.compact) .show-on-compact {
+    animation: ks-put-form-max-height 1s ease-out 0.7s forwards;
+}
+
 /** Form **/
+
 
 form[name=ks-put-form] textarea,
 form[name=ks-put-form] select,
@@ -30,17 +49,7 @@ form[name=ks-put-form].passphrase-accepted input[type=password] {
     background-color: #EFFFEF;
 }
 
-/** Compact **/
-
-/*article.ks-put\3A:not(.compact) .hide-on-compact {}*/
-article.ks-put\3A.compact .hide-on-compact {
-    animation: ks-put-form-max-height 1s ease-out 0s forwards;
-}
-
-/*article.ks-put\3A .show-on-compact {}*/
-article.ks-put\3A:not(.compact) .show-on-compact {
-    animation: ks-put-form-max-height 1s ease-out 0.7s forwards;
-}
+/** Animation **/
 
 @keyframes ks-put-form-max-height {
     100% {

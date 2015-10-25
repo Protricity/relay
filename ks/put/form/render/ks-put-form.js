@@ -47,7 +47,9 @@ if(typeof document === 'object')
             formElm.put.disabled = disableSubmit;
         formElm.classList[!passphrase_required ? 'add' : 'remove']('no-passphrase-required');
 
+        formElm.classList[formElm.content.value.length === 0 ? 'add' : 'remove']('compact');
         formElm.parentNode.parentNode.classList[formElm.content.value.length === 0 ? 'add' : 'remove']('compact');
+
         if(!lastPostContent || lastPostContent != formElm.content.value || e.type === 'change') {
             lastPostContent = formElm.content.value;
 
@@ -228,42 +230,42 @@ if(typeof document === 'object')
 
         return htmlContent;
     }
-
-    function setStatus(formElm, statusText, prependTimeout, unique) {
-        var statusElms = formElm.getElementsByClassName('status-box');
-        for(var i=0; i<statusElms.length; i++) (function(statusElm) {
-            var textDiv = document.createElement('div');
-            textDiv.innerHTML = statusText;
-
-            if(unique && statusElm.innerHTML.indexOf(textDiv.innerHTML) !== -1)
-                return;
-
-            if(prependTimeout) {
-                statusElm.firstChild
-                    ? statusElm.insertBefore(textDiv, statusElm.firstChild)
-                    : statusElm.appendChild(textDiv);
-                if(typeof prependTimeout === 'number')
-                    setTimeout(function () {
-                        if(textDiv && textDiv.parentNode)
-                            textDiv.parentNode.removeChild(textDiv);
-                    }, prependTimeout * 1000);
-            } else {
-                statusElm.innerHTML = statusText;
-            }
-        })(statusElms[i]);
-    }
-
-
-    function fixHomePath(channelPath, publicKeyID) {
-        publicKeyID = publicKeyID.substr(publicKeyID.length - 8);
-        if(channelPath[0] === '~') {
-            channelPath = channelPath.substr(1);
-            if(!channelPath || channelPath[0] !== '/')
-                channelPath = '/' + channelPath;
-            channelPath = '/home/' + publicKeyID + channelPath;
-        }
-        return channelPath;
-    }
+    //
+    //function setStatus(formElm, statusText, prependTimeout, unique) {
+    //    var statusElms = formElm.getElementsByClassName('status-box');
+    //    for(var i=0; i<statusElms.length; i++) (function(statusElm) {
+    //        var textDiv = document.createElement('div');
+    //        textDiv.innerHTML = statusText;
+    //
+    //        if(unique && statusElm.innerHTML.indexOf(textDiv.innerHTML) !== -1)
+    //            return;
+    //
+    //        if(prependTimeout) {
+    //            statusElm.firstChild
+    //                ? statusElm.insertBefore(textDiv, statusElm.firstChild)
+    //                : statusElm.appendChild(textDiv);
+    //            if(typeof prependTimeout === 'number')
+    //                setTimeout(function () {
+    //                    if(textDiv && textDiv.parentNode)
+    //                        textDiv.parentNode.removeChild(textDiv);
+    //                }, prependTimeout * 1000);
+    //        } else {
+    //            statusElm.innerHTML = statusText;
+    //        }
+    //    })(statusElms[i]);
+    //}
+    //
+    //
+    //function fixHomePath(channelPath, publicKeyID) {
+    //    publicKeyID = publicKeyID.substr(publicKeyID.length - 8);
+    //    if(channelPath[0] === '~') {
+    //        channelPath = channelPath.substr(1);
+    //        if(!channelPath || channelPath[0] !== '/')
+    //            channelPath = '/' + channelPath;
+    //        channelPath = '/home/' + publicKeyID + channelPath;
+    //    }
+    //    return channelPath;
+    //}
 
 
     // Includes
