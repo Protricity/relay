@@ -476,14 +476,15 @@ if(typeof document === 'object')
 
 
         // Open PGP Worker
-        setTimeout(function() {
+        var workerInterval = setInterval(function() {
             if(typeof window.openpgp._worker_init === 'undefined') {
                 var OPENPGP_WORKER_URL = 'pgp/lib/openpgpjs/openpgp.worker.js';
                 window.openpgp._worker_init = true;
                 window.openpgp.initWorker(OPENPGP_WORKER_URL);
                 console.info("OpenPGP Worker Loaded: " + OPENPGP_WORKER_URL);
             }
-        }, 100);
+            clearInterval(workerInterval);
+        }, 200);
 
     })();
 
