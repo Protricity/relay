@@ -7,7 +7,7 @@
 if (!module) var module = {exports:{}};
 (function() {
     module.exports.renderFeedContainer = function(tagHTML, callback, Client) {
-        var TEMPLATE_URL = 'ks/feed/render/ks-feed-container.html';
+        var TEMPLATE_URL = 'ks/feed/render/ks-feed.html';
         var xhr = new XMLHttpRequest();
         xhr.open("GET", TEMPLATE_URL, false);
         xhr.send();
@@ -103,6 +103,7 @@ if(typeof document === 'object')
 
                     if(entryData) {
                         var articleDiv = document.createElement('article');
+                        var articleHTMLContent = null;
                         try {
                             var pgpClearSignedMessage = openpgp.cleartext.readArmored(entryData.content);
                             articleDiv.innerHTML = protectHTMLContent(pgpClearSignedMessage.text);
@@ -111,6 +112,7 @@ if(typeof document === 'object')
                                 articleDiv = articleDiv.children[0];
 
                             articleDiv.classList.add('ks-verified-content');
+                            articleHTMLContent = articleDiv.outerHTML;
 
                         } catch (e) {
                             articleDiv.innerHTML = protectHTMLContent(entryData.content)
@@ -122,30 +124,35 @@ if(typeof document === 'object')
                                 .replace(/\n/g, "<br />");
 
                             articleDiv.classList.add('ks-unverified-content');
+                            articleHTMLContent = articleDiv.outerHTML;
                         }
 
                         if(entryData.timestamp < containerElm.feedEndTime)
                             containerElm.feedEndTime = entryData.timestamp-1;
 
-                        articleDiv.classList.add('ks-feed-entry');
-                        containerElm.appendChild(articleDiv);
+                        var templateElm = containerElm.getElementsByClassName('ks-feed-entry-template')[0];
+                        var templateHTML = templateElm.content.children[0].outerHTML;
 
-                        // TODO: author cache
-                        // TODO: data-author= or pgp key id
+                        queryAuthorByKey(entryData.pgp_id_public, function(author) {
+                            var authorMatch = /data-author=["'](\S+)["']/i.exec(articleHTMLContent);
+                            if(authorMatch)
+                                author = authorMatch[1];
 
-                        var infoAsideElm = document.createElement('aside');
-                        infoAsideElm.innerHTML = "\
-                            <img class='user_icon tiny' src='ks/feed/img/user_icon_default.png' alt='UI' />\n\
-                            {$author}\n\
-                            <div class='timestamp_formatted'>{$timestamp_formatted}</div>\
-                            <hr/>"
-                                .replace(/{\$pgp_id_public}/gi, entryData.pgp_id_public)
-                                //.replace(/{\$author}/gi, entryData.pgp_id_public)
-                                .replace(/{\$path}/gi, entryData.path)
-                                .replace(/{\$timestamp}/gi, entryData.timestamp)
-                                .replace(/{\$timestamp_formatted}/gi, timeSince(entryData.timestamp) + ' ago')
+                            var newFeedContainer = document.createElement('div');
+                            templateHTML = templateHTML
+                                .replace(/{\$entry_pgp_id_public}/gi, entryData.pgp_id_public)
+                                .replace(/{\$entry_author}/gi, author)
+                                .replace(/{\$entry_path}/gi, entryData.path)
+                                .replace(/{\$entry_timestamp}/gi, entryData.timestamp)
+                                .replace(/{\$entry_timestamp_formatted}/gi, timeSince(entryData.timestamp) + ' ago')
+                                .replace(/{\$entry_content}/gi, articleHTMLContent)
+                            ;
 
-                        articleDiv.insertBefore(infoAsideElm, articleDiv.firstChild);
+                            newFeedContainer.innerHTML = templateHTML;
+                            console.log(templateElm.content.children[0]);
+                            //articleDiv.classList.add('ks-feed-entry');
+                            containerElm.appendChild(newFeedContainer.children[0]);
+                        });
 
                     } else {
                         moreFeedRequested = false;
@@ -154,6 +161,35 @@ if(typeof document === 'object')
 
         }
 
+        var authorCache = {};
+        var authorCallbacks = [];
+        function queryAuthorByKey(pgp_id_public, callback) {
+            pgp_id_public = pgp_id_public.substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH).toUpperCase();
+            if(authorCache[pgp_id_public])
+                return callback(authorCache[pgp_id_public]);
+            authorCallbacks.push(callback);
+            
+            if(authorCache[pgp_id_public] === null)
+                return null;
+            authorCache[pgp_id_public] = null;
+
+            var requestPath = "public/id";
+            var requestURL = "http://" + pgp_id_public + ".ks/" + requestPath;
+
+            console.log("Requesting author for " + pgp_id_public + "...")
+            KeySpaceDB.queryOne(requestURL, function (err, contentData) {
+                if (err)
+                    return callback(err);
+
+                authorCache[pgp_id_public] = pgp_id_public;
+
+                if(contentData)
+                    authorCache[pgp_id_public] = contentData.user_id;
+
+                for(var i=0; i<authorCallbacks.length; i++)
+                    authorCallbacks[i](authorCache[pgp_id_public]);
+            });
+        }
 
         // Put handlers
 
