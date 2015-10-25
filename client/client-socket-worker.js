@@ -211,6 +211,7 @@ function ClientSocketWorker() {
         }
 
         // Include scripts after insert:
+        console.log(includeScripts);
         for(var ii=0; ii<includeScripts.length; ii++)
             ClientSocketWorker.includeScript(includeScripts[ii]);
 
@@ -274,6 +275,7 @@ function ClientSocketWorker() {
         }
 
         // Include scripts after insert:
+        console.log("TODO: Load syncrhonously: ", includeScripts);
         if(includeScripts.length > 0) {
             for(var ii=0; ii<includeScripts.length; ii++)
                 ClientSocketWorker.includeScript(includeScripts[ii],
