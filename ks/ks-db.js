@@ -80,7 +80,7 @@ function KeySpaceDB(dbReadyCallback) {
                     var postStore = upgradeDB.createObjectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT, { keyPath: ["pgp_id_public", "timestamp"] });
                     postStore.createIndex(KeySpaceDB.DB_INDEX_PATH, ["path", "timestamp"], { unique: false });
                     postStore.createIndex(KeySpaceDB.DB_INDEX_ID_PATH, ["pgp_id_public", "path", "timestamp"], { unique: false });
-                    postStore.createIndex(KeySpaceDB.DB_INDEX_TIMESTAMP, ["timestamp"], { unique: false });
+                    postStore.createIndex(KeySpaceDB.DB_INDEX_TIMESTAMP, "timestamp", { unique: false });
 
                     console.log('Upgraded Table: ' + KeySpaceDB.DB_NAME + '.' + postStore.name);
                 }
@@ -315,9 +315,10 @@ function KeySpaceDB(dbReadyCallback) {
         });
     };
 
-    KeySpaceDB.queryContentFeed = function(timespan, callback) {
-        if(typeof timespan.length === 'undefined')
-            timespan = [timespan, Date.now()];
+    KeySpaceDB.queryContentFeed = function(feedEndTime, callback) {
+        feedEndTime = parseInt(feedEndTime);
+        if(!feedEndTime)
+            throw new Error("Invalid Feed End Time");
 
         KeySpaceDB(function(err, db) {
             if(err)
@@ -329,21 +330,26 @@ function KeySpaceDB(dbReadyCallback) {
                     .objectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
 
                 var timestampIndex = dbStore.index(KeySpaceDB.DB_INDEX_TIMESTAMP);
-                var boundKeyRange = IDBKeyRange.bound(timespan[0], timespan[1], true, true);
+                var boundKeyRange = IDBKeyRange.upperBound(feedEndTime, true);
+//                 console.log("Searching ", boundKeyRange);
 
-                timestampIndex.openCursor(boundKeyRange, 'prev')
-                    .onsuccess = function (e) {
+                var cursorRequest = timestampIndex.openCursor(boundKeyRange, 'prev');
+                cursorRequest.onsuccess = function (e) {
+
                     var cursor = e.target.result;
                     if (cursor) {
-                        callback(null, cursor.value);
-                        cursor.continue();
+                        if(callback(null, cursor.value, cursorRequest) !== true)
+                            cursor.continue();
+
+                    } else {
+                        callback(null, null, cursorRequest);
                     }
                 };
 
             } else if (typeof mongodb !== 'undefined' && db instanceof mongodb.Db) {
                 var dbCollection = db.collection(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
                 dbCollection.find({
-                    timestamp: { $gt: timespan[0], $lt: timespan[1] }
+                    timestamp: { $lt: feedEndTime }
                 }).each(callback);
 
             } else {

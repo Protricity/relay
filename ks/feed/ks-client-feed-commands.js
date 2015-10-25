@@ -6,9 +6,6 @@ module.exports.initClientKSFeedCommands = function(Client) {
 
     Client.addCommand(feedCommand);
 
-
-    var MS_DAY = 24 * 60 * 60 * 1000;
-
     /**
      *
      * @param commandString FEED --id [public key id] --path [path prefix]
@@ -19,7 +16,6 @@ module.exports.initClientKSFeedCommands = function(Client) {
             return false;
 
         var feedEndTime = Date.now();
-        var feedStartTime = feedEndTime - MS_DAY;
 
         self.exports = {};
         self.module = {exports: {}};
@@ -30,23 +26,6 @@ module.exports.initClientKSFeedCommands = function(Client) {
             Client.render(html);
         });
 
-        self.module = {exports: {}};
-        importScripts('ks/ks-db.js');
-        var KeySpaceDB = self.module.exports.KeySpaceDB;
-
-        KeySpaceDB.queryContentFeed(
-            [feedStartTime, feedEndTime],
-            function(err, data) {
-                console.info("CONTENT: ", err, data);
-                if(err)
-                    throw new Error(err);
-                if(data)
-                    renderExports.renderFeedEntry(data, function(html) {
-                        Client.appendChild("feed-entries:", html);
-                    });
-            });
         return true;
     }
-
-
 };

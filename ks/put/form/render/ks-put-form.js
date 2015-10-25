@@ -13,7 +13,7 @@ if(typeof document === 'object')
     self.addEventListener('input', onFormEvent);
     self.addEventListener('change', onFormEvent);
     self.addEventListener('render', function(e) {
-        var formElm = e.target.querySelector('form[name^=ks-put-form]');
+        var formElm = e.target.querySelector('form[name=ks-put-form]');
         if(formElm)
             onFormEvent(e, formElm);
     });
@@ -308,6 +308,8 @@ else
         var TEMPLATE_URL = 'ks/put/form/render/ks-put-form.html';
 
         module.exports.renderPutForm = function(content, status_box, callback) {
+            var classes = [];
+
             self.module = {exports: {}};
             importScripts('ks/ks-db.js');
             var KeySpaceDB = self.module.exports.KeySpaceDB;
@@ -317,6 +319,9 @@ else
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;');
+
+            if(!content)
+                classes.push('compact');
 
             // Query private key
             var path = '/.private/id';
@@ -347,6 +352,7 @@ else
                         callback(xhr.responseText
                             .replace(/{\$status_box}/gi, status_box)
                             .replace(/{\$content}/gi, content)
+                            .replace(/{\$classes}/gi, classes.length > 0 ? classes.join(' ') : '')
                             .replace(/{\$content_escaped}/gi, contentEscaped)
                             .replace(/{\$html_pgp_id_public_options}/gi, html_pgp_id_public_options)
                         );

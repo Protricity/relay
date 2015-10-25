@@ -1,10 +1,35 @@
 /**
  * Created by ari on 7/2/2015.
  */
+
+
+// Worker Script
+if (!module) var module = {exports:{}};
+(function() {
+    module.exports.renderFeedContainer = function(tagHTML, callback, Client) {
+        var TEMPLATE_URL = 'ks/feed/render/ks-feed-container.html';
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", TEMPLATE_URL, false);
+        xhr.send();
+        if(xhr.status !== 200)
+            throw new Error("Error: " + xhr.responseText);
+        callback(xhr.responseText
+                .replace(/{\$channel_path}/gi, '')
+                .replace(/{\$content}/gi, '')
+                .replace(/{\$filter}/gi, '')
+                .replace(/{\$status_box}/gi, '')
+        );
+
+        return true;
+    };
+})();
+
+
 // Client Script
 if(typeof document === 'object')
     (function() {
         var REFRESH_TIMEOUT = 20;
+        var MS_DAY = 24 * 60 * 60 * 1000;
 
         // Events
 
@@ -36,6 +61,8 @@ if(typeof document === 'object')
             }
         }
 
+        // Feed handlers
+
         function refreshFeedContainer(e, feedElm) {
             feedElm = feedElm ||
                 (e.target.classList && e.target.classList.contains('ks-feed:') ? e.target : null) ||
@@ -52,17 +79,66 @@ if(typeof document === 'object')
             console.log(scrollPos, scrollMax);
 
             if(scrollPos >= scrollMax - 20)
-                requestMoreFeed();
+                setTimeout(function() {
+                    requestMoreFeed(feedEntriesElm);
+                }, 200);
         }
 
         var moreFeedRequested = false;
-        function requestMoreFeed() {
+        function requestMoreFeed(containerElm) {
             if(moreFeedRequested)
                 return console.error("More feed already requested silly!");
             moreFeedRequested = true;
 
-            console.log("Request more feed");
+            console.log("Requesting more feed...");
+
+            containerElm.feedEndTime = containerElm.feedEndTime || Date.now();
+
+            KeySpaceDB.queryContentFeed(
+                containerElm.feedEndTime,
+                function(err, data) {
+                    //console.info("CONTENT: ", arguments);
+                    if(err)
+                        throw new Error(err);
+
+                    if(data) {
+                        var articleDiv = document.createElement('article');
+                        try {
+                            var pgpClearSignedMessage = openpgp.cleartext.readArmored(data.content);
+                            articleDiv.innerHTML = pgpClearSignedMessage.text;
+
+                            if(articleDiv.children[0].nodeName.toLowerCase() === 'article')
+                                articleDiv = articleDiv.children[0];
+
+                            articleDiv.classList.add('ks-verified-content');
+
+                        } catch (e) {
+                            articleDiv.innerHTML = data.content
+                                .replace(/&/g, "&amp;")
+                                .replace(/</g, "&lt;")
+                                .replace(/>/g, "&gt;")
+                                .replace(/"/g, "&quot;")
+                                .replace(/'/g, "&#039;")
+                                .replace(/\n/g, "<br />");
+
+                            articleDiv.classList.add('ks-unverified-content');
+                        }
+
+                        if(data.timestamp < containerElm.feedEndTime)
+                            containerElm.feedEndTime = data.timestamp-1;
+
+                        articleDiv.classList.add('ks-feed-entry');
+                        containerElm.appendChild(articleDiv);
+
+                    } else {
+                        moreFeedRequested = false;
+                    }
+                });
+
         }
+
+
+        // Put handlers
 
         var lastPostContent = null;
         function refreshHTTPPutForm(e, formElm) {
@@ -259,117 +335,56 @@ if(typeof document === 'object')
             return htmlContent;
         }
 
+        //function escapeHTML(html) {
+        //    return html
+        //        .trim()
+        //        .replace(/&/g, "&amp;")
+        //        .replace(/</g, "&lt;")
+        //        .replace(/>/g, "&gt;")
+        //        .replace(/"/g, "&quot;")
+        //        .replace(/'/g, "&#039;");
+        //}
 
-        // Includes
+        function timeSince(date) {
+            var seconds = Math.floor((new Date() - date) / 1000);
 
-        function includeScript(scriptPath, onInsert) {
-            var head = document.getElementsByTagName('head')[0];
-            if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
-                var newScript = document.createElement('script');
-                newScript.setAttribute('src', scriptPath);
-                head.appendChild(newScript);
-                if(onInsert)
-                    onInsert();
+            var interval = Math.floor(seconds / 31536000);
+
+            if (interval > 1) {
+                return interval + " years";
             }
+            interval = Math.floor(seconds / 2592000);
+            if (interval > 1) {
+                return interval + " months";
+            }
+            interval = Math.floor(seconds / 86400);
+            if (interval > 1) {
+                return interval + " days";
+            }
+            interval = Math.floor(seconds / 3600);
+            if (interval > 1) {
+                return interval + " hours";
+            }
+            interval = Math.floor(seconds / 60);
+            if (interval > 1) {
+                return interval + " minutes";
+            }
+            return Math.floor(seconds) + " seconds";
         }
 
-        // For HTTP Content Database access
-        includeScript('ks/ks-db.js');
 
-        // For PGP Decryption in chat rooms
-        var openPGPScriptPath = 'pgp/lib/openpgpjs/openpgp.js';
-        includeScript(openPGPScriptPath, function() {
-
-            var timeout = setInterval(function() {
-                var src = openPGPScriptPath.replace('/openpgp.', '/openpgp.worker.');
-                if(!window.openpgp || window.openpgp._worker_init)
-                    return;
-                window.openpgp.initWorker(src);
+        // Open PGP Worker
+        setTimeout(function() {
+            if(typeof window.openpgp._worker_init === 'undefined') {
+                var OPENPGP_WORKER_URL = 'pgp/lib/openpgpjs/openpgp.worker.js';
                 window.openpgp._worker_init = true;
-                clearInterval(timeout);
-                console.info("OpenPGP Worker Loaded: " + src);
-            }, 500);
-        });
-
+                window.openpgp.initWorker(OPENPGP_WORKER_URL);
+                console.info("OpenPGP Worker Loaded: " + OPENPGP_WORKER_URL);
+            }
+        }, 100);
 
     })();
 
-
-// Worker Script
-if (!module) var module = {exports:{}};
-(function() {
-    module.exports.renderFeedContainer = function(tagHTML, callback, Client) {
-        var TEMPLATE_URL = 'ks/feed/render/ks-feed-container.html';
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", TEMPLATE_URL, false);
-        xhr.send();
-        if(xhr.status !== 200)
-            throw new Error("Error: " + xhr.responseText);
-        callback(xhr.responseText
-            .replace(/{\$channel_path}/gi, '')
-            .replace(/{\$content}/gi, '')
-            .replace(/{\$filter}/gi, '')
-            .replace(/{\$status_box}/gi, '')
-            //.replace(/{\$html_put_form}/gi, putFormTemplate)
-        );
-
-        return true;
-
-        //<fieldset class='feed-form-container'>\n\
-        //FEED_POST_FORM_TEMPLATE\n\
-        //</fieldset>\n\
-
-        //var content = '';
-        //importScripts('ks/templates/ks-put-template.js');
-        //Templates.ks.put.form(content, function(putFormTemplate) {
-        //    // Callback
-        //
-        //    callback(FEED_TEMPLATE
-        //            .replace(/{\$channel_path}/gi, '')
-        //            .replace(/{\$html_put_form}/gi, putFormTemplate)
-        //    );
-        //});
-    };
-
-    function escapeHTML(html) {
-        return html
-            .trim()
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
-    function timeSince(date) {
-        var seconds = Math.floor((new Date() - date) / 1000);
-
-        var interval = Math.floor(seconds / 31536000);
-
-        if (interval > 1) {
-            return interval + " years";
-        }
-        interval = Math.floor(seconds / 2592000);
-        if (interval > 1) {
-            return interval + " months";
-        }
-        interval = Math.floor(seconds / 86400);
-        if (interval > 1) {
-            return interval + " days";
-        }
-        interval = Math.floor(seconds / 3600);
-        if (interval > 1) {
-            return interval + " hours";
-        }
-        interval = Math.floor(seconds / 60);
-        if (interval > 1) {
-            return interval + " minutes";
-        }
-        return Math.floor(seconds) + " seconds";
-    }
-
-
-})();
     //
     //
     //module.exports.renderFeedEntry = function(entryData, callback) {

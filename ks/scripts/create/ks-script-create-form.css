@@ -1,5 +1,8 @@
 form[name=ks-create-script-form] {
     min-width: 30em;
+    padding: 1em 2em 1em 2em;
+    border: 3px inset;
+    background-color: #FAFAFA;
 }
 .put-preview-source-output {
     /* tab-size: 2px; */

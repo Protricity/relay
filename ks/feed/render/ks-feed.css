@@ -70,3 +70,8 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
 .ks-feed-entries\3A > .ks-feed-entry .timestamp_formatted {
     color: gray;
 }
+
+
+
+.ks-feed-entry.ks-unverified-content {
+overflow: auto;}
