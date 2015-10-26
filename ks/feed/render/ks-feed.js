@@ -70,15 +70,15 @@ if(typeof document === 'object')
 
         // Events
 
-        self.addEventListener('submit', onFormEvent);
-        self.addEventListener('input', onFormEvent);
-        self.addEventListener('change', onFormEvent);
+        self.addEventListener('submit', onFormEvent, false);
+        self.addEventListener('input', onFormEvent, false);
+        self.addEventListener('change', onFormEvent, false);
         self.addEventListener('scroll', refreshFeedContainer, false);
         self.addEventListener('render', function(e) {
             if(!e.target.classList.contains('ks-feed:'))
                 return;
             refreshFeedContainer(e, e.target);
-        });
+        }, false);
 
         function onFormEvent(e, formElm) {
             if(!formElm) formElm = e.target.form ? e.target.form : e.target;

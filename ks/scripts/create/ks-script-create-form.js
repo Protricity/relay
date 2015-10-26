@@ -7,9 +7,9 @@
 if(typeof document === 'object')
 (function() {
 
-    document.addEventListener('submit', onFormEvent);
-    document.addEventListener('keyup', onFormEvent);
-    document.addEventListener('input', onFormEvent);
+    document.addEventListener('submit', onFormEvent, false);
+    document.addEventListener('keyup', onFormEvent, false);
+    document.addEventListener('input', onFormEvent, false);
 
     function onFormEvent(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;

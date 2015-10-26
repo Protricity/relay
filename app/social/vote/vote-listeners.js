@@ -5,7 +5,7 @@
 
     // Events
 
-    self.addEventListener('render', onRenderEvent);
+    self.addEventListener('render', onRenderEvent, false);
 
     function onRenderEvent(e) {
         var voteElements = document.getElementsByClassName('app.vote');
