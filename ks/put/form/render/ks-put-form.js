@@ -9,14 +9,14 @@ if(typeof document === 'object')
 
     // Events
 
-    self.addEventListener('submit', onFormEvent);
-    self.addEventListener('input', onFormEvent);
-    self.addEventListener('change', onFormEvent);
+    self.addEventListener('submit', onFormEvent, false);
+    self.addEventListener('input', onFormEvent, false);
+    self.addEventListener('change', onFormEvent, false);
     self.addEventListener('render', function(e) {
         var formElm = e.target.querySelector('form[name=ks-put-form]');
         if(formElm)
             onFormEvent(e, formElm);
-    });
+    }, false);
 
     function onFormEvent(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;

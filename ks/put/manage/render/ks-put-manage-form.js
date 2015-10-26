@@ -6,10 +6,10 @@ if(typeof document === 'object')
 (function() {
     // Events
 
-    self.addEventListener('submit', onFormEvent);
-    //self.addEventListener('click', onClickEvent);
-    //self.addEventListener('input', onFormEvent);
-    //self.addEventListener('change', onFormEvent);
+    self.addEventListener('submit', onFormEvent, false);
+    //self.addEventListener('click', onClickEvent, false);
+    //self.addEventListener('input', onFormEvent, false);
+    //self.addEventListener('change', onFormEvent, false);
 
     function onFormEvent(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;

@@ -10,9 +10,9 @@ function ClientSocketWorker() {
     var NO_CLASS = '_you_got_no-class';
 
     var socketWorker = null;
-    document.addEventListener('click', onClickEvent);
-    document.addEventListener('command', onCommandEvent);
-    window.addEventListener('hashchange', onHashChange);
+    document.addEventListener('click', onClickEvent, false);
+    document.addEventListener('command', onCommandEvent, false);
+    window.addEventListener('hashchange', onHashChange, false);
     //window.onbeforeunload = onBeforeUnload;
 
     ClientSocketWorker.get = function() {
