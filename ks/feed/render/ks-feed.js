@@ -23,7 +23,7 @@ if (!module) var module = {exports:{}};
 
         // Query private key
         var path = '/.private/id';
-        var html_pgp_id_public_options = '';
+        var html_pgp_id_public_options = "<option value=''>Select a PGP Identity</option>";
         var default_pgp_id_public = null;
         var idCount = 0;
         var status_box = '';
@@ -305,6 +305,46 @@ if(typeof document === 'object')
                     }
                 });
             }
+
+            // Refresh pgp identities
+
+            var queryPath = '/.private/id';
+            var html_pgp_id_public_options = "<option value=''>Select a PGP Identity</option>";
+            var default_pgp_id_public = null;
+            var idCount = 0;
+            KeySpaceDB.queryAll(queryPath, function(err, contentEntry) {
+                if(err)
+                    throw new Error(err);
+
+                if(contentEntry) {
+                    if(!default_pgp_id_public)
+                        default_pgp_id_public = contentEntry.pgp_id_public;
+
+                    var optionValue = contentEntry.pgp_id_public +
+                        ',' + contentEntry.user_id +
+                        ',' + (contentEntry.passphrase_required?1:0);
+
+                    html_pgp_id_public_options +=
+                        "<option value='" + optionValue + "'" +
+                        (default_pgp_id_public === contentEntry.pgp_id_public ? ' selected="selected"' : '') +
+                        ">" +
+                        (contentEntry.passphrase_required?'* ':'&nbsp;  ') +
+                        contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) +
+                        ' - ' + contentEntry.user_id +
+                        "</option>";
+
+                    idCount++;
+                } else {
+
+                    formElm.getElementsByClassName('status-box')[0].innerHTML =
+                        idCount > 0 ? '' :
+                        "<span class='error'>No PGP Identities were found on this client.</span>" +
+                        "<br/>" +
+                        "<a href='#PGP.KEYGEN'>Generate</a> a new <strong>PGP Identity</strong> in order to post on the <span class='command'>feed</span>";
+
+                    formElm.pgp_id_public.innerHTML = html_pgp_id_public_options
+                }
+            });
         }
 
 
@@ -462,7 +502,7 @@ if(typeof document === 'object')
 
             templateHTML = templateHTML
                 .replace(/{\$entry_pgp_id_public}/gi, pgp_id_public)
-                .replace(/{\$entry_author_html}/gi, user_id)
+                .replace(/{\$entry_author_html}/gi, user_id || "Nobody ...yet")
                 .replace(/{\$entry_path}/gi, pathElm.value)
                 .replace(/{\$entry_timestamp}/gi, Date.now())
                 .replace(/{\$entry_timestamp_formatted}/gi, "Post Preview... coming soon to a feed near you")
