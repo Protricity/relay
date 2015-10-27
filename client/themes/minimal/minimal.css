@@ -68,19 +68,19 @@ li {
 }
 
 .theme-minimal > article.maximized {
-
-    position: fixed;
-    /* max-width: 80%; */
-    /* left: 20vw; */
-    /* bottom: 10vw; */
-    margin-top: 5%;
+    position: absolute;
     z-index: 2;
+
+
+    top: 10%;
+    right: 50%;
+
+    margin-top: 5%;
     box-shadow: 0 0 4em #558;
-    font-size: large;
     transition: 500ms;
-    bottom: 50%;
-    right: 50%;/* bring your own prefixes */
-    transform: translate(50%, 50%);
+    transform: translate(50%, 0%);
+
+    font-size: large;
 }
 
 .theme-minimal > article:not(.maximized) {

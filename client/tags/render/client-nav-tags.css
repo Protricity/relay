@@ -56,6 +56,11 @@
 .navigation-commands header button {
     border: 1px inset;
     padding: 0.3em 0.8em;
+    width: 33px;
+    height: 26px;
+    padding: 0;
+    margin: 0;
+    background-color: #DDD;
 }
 .navigation-commands.closed header button {
     border-style: outset;
