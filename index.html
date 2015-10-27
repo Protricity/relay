@@ -29,6 +29,14 @@
 //            navigator.registerProtocolHandler("web+relay",
 //                    "?uri=%s",
 //                    "Socket handler");
+
+
+            window.onbeforeunload = onBeforeUnload;
+
+            function onBeforeUnload(e) {
+                return "Relay client will disconnect";
+            }
+
         </script>
         <link rel="stylesheet" href="client/themes/minimal/minimal.css" type="text/css" />
     </head>

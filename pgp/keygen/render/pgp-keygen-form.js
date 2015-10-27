@@ -17,9 +17,10 @@ if(typeof document === 'object')
 
         switch(formElm.getAttribute('name')) {
             case 'pgp-keygen-form':
-                refreshPGPKeyGenForm(e, formElm);
                 if(e.type === 'submit')
+                    e.preventDefault() ||
                     submitPGPKeyGenForm(e, formElm);
+                refreshPGPKeyGenForm(e, formElm);
                 return true;
 
             default:
@@ -33,14 +34,13 @@ if(typeof document === 'object')
     // Event Handlers
 
     function refreshPGPKeyGenForm(e, formElm) {
-        var userID = formElm.querySelector('input[name=user_id]').value;
+        //var userID = formElm.querySelector('input[name=user_id]').value;
         var passphraseElm = formElm.querySelector('input[name=passphrase]');
         passphraseElm.removeAttribute('disabled');
         //passphraseElm[userID.length === 0 ? 'setAttribute' : 'removeAttribute']('disabled', 'disabled');
     }
 
     function submitPGPKeyGenForm(e, formElm) {
-        e.preventDefault();
         var bits = formElm.querySelector('select[name=bits]').value;
         var userID = formElm.querySelector('input[name=user_id]').value;
         var passphrase = formElm.querySelector('input[name=passphrase]').value;

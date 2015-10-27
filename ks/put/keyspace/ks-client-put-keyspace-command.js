@@ -9,13 +9,14 @@ module.exports.initClientKSPutKeySpaceCommand = function(Client) {
 
     // TODO: review command
     function putCommand(commandString) {
-        var match = /^put\s+(\w+)\s+([\s\S]+)$/im.exec(commandString);
+        var match = /^put\s+(-p|--publish\s+)?(\w+)\s+([\s\S]+)$/im.exec(commandString);
         if (!match)
             return false;
 
-        var pgp_id_public = match[1] || null;
+        var publish = match[1] && match[1].length > 0;
+        var pgp_id_public = match[2] || null;
 
-        var content = (match[2] || '').trim();
+        var content = (match[3] || '').trim();
 
         self.module = {exports: {}};
         importScripts('ks/ks-db.js');
@@ -28,7 +29,7 @@ module.exports.initClientKSPutKeySpaceCommand = function(Client) {
         var pgpClearSignedMessage = openpgp.cleartext.readArmored(content);
         var pgpSignedContent = pgpClearSignedMessage.armor().trim();
 
-        console.log(pgpClearSignedMessage);
+        //console.log(pgpClearSignedMessage);
 
         var path = /data-path=["'](\S+)["']/i.exec(pgpClearSignedMessage.text)[1];
         var timestamp = pgpClearSignedMessage.packets[0].created.getTime();
@@ -57,21 +58,31 @@ module.exports.initClientKSPutKeySpaceCommand = function(Client) {
                         if(!decryptedContent.signatures[i].valid)
                             throw new Error("Invalid Signature: " + decryptedContent.signatures[i].keyid.toHex().toUpperCase());
 
+                    console.info("Verified Signed Content for: " + pgp_id_public);
                     KeySpaceDB.addVerifiedContentToDB(pgpSignedContent, pgp_id_public, timestamp, path, {},
                         function(err, insertData) {
-                            console.info("Verified Signed Content for: " + pgp_id_public);
 
                             var url = "http://" + pgp_id_public + '.ks/' + insertData.path;
 
-                            var status_box = "<strong>Key Space</strong> content stored <span class='success'>Successfully</span>: " +
-                                "<br/><a href='" + url + "'>" + insertData.path + "</a>";
+                            // Publish only if requested
+                            if(publish) {
+                                console.info("Publishing: " + url);
+                                Client.sendWithSocket("PUT " + pgp_id_public + "\n" + content);
 
-                            self.module = {exports: {}};
-                            importScripts('ks/put/manage/render/ks-put-manage-form.js');
-                            self.module.exports.renderPutManageForm(url, status_box, function (html) {
-                                Client.render(html);
-                                //Client.postResponseToClient("CLOSE ks-put:");
-                            });
+                            } else {
+                                console.info("Added Unpublished Keyspace Content: " + url);
+                            }
+
+                            //
+                            //var status_box = "<strong>Key Space</strong> content stored <span class='success'>Successfully</span>: " +
+                            //    "<br/><a href='" + url + "'>" + insertData.path + "</a>";
+                            //
+                            //self.module = {exports: {}};
+                            //importScripts('ks/put/manage/render/ks-put-manage-form.js');
+                            //self.module.exports.renderPutManageForm(url, status_box, function (html) {
+                            //    Client.render(html);
+                            //    //Client.postResponseToClient("CLOSE ks-put:");
+                            //});
                         });
 
                 })

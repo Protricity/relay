@@ -26,6 +26,7 @@ if (!module) var module = {exports:{}};
         var html_pgp_id_public_options = '';
         var default_pgp_id_public = null;
         var idCount = 0;
+        var status_box = '';
         KeySpaceDB.queryAll(path, function(err, contentEntry) {
             if(err)
                 throw new Error(err);
@@ -51,7 +52,9 @@ if (!module) var module = {exports:{}};
             } else {
 
                 if(idCount === 0)
-                    console.log("TODO: NO IDS");
+                    status_box = "<span class='error'>No PGP Identities were found on this client.</span>" +
+                        "<br/>" +
+                        "<a href='#PGP.KEYGEN'>Generate</a> a new <strong>PGP Identity</strong> in order to post on the <span class='command'>feed</span>";
 
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", TEMPLATE_URL, false);
@@ -61,7 +64,7 @@ if (!module) var module = {exports:{}};
                 callback(xhr.responseText
                         .replace(/{\$filter}/gi, '')
                         .replace(/{\$put_content}/gi, '')
-                        .replace(/{\$status_box}/gi, '')
+                        .replace(/{\$status_box}/gi, status_box)
                         .replace(/{\$classes}/gi, classes.length > 0 ? classes.join(' ') : '')
                         .replace(/{\$html_pgp_id_public_options}/gi, html_pgp_id_public_options)
                 );
@@ -391,10 +394,10 @@ if(typeof document === 'object')
                             throw new Error('Could not find valid key packet for encryption in key ' + key.primaryKey.getKeyId().toHex());
                         }
 
-                        var finalPGPSignedContent = pgpClearSignedMessage.armor();
+                        //var finalPGPSignedContent = pgpClearSignedMessage.armor();
                         //console.log(pgpSignedContent, finalPGPSignedContent);
 
-                        var commandString = "PUT " + pgp_id_public + "\n" + pgpSignedContent; // finalPGPSignedContent;
+                        var commandString = "PUT --publish " + pgp_id_public + "\n" + pgpSignedContent; // finalPGPSignedContent;
 
                         var socketEvent = new CustomEvent('command', {
                             detail: commandString,
@@ -406,7 +409,17 @@ if(typeof document === 'object')
                         if (!socketEvent.defaultPrevented)
                             throw new Error("Socket event for new post was not handled");
 
-                        statusBoxElm.innerHTML = "<span class='command'>Put</span> <span class='success'>Successful</span>";
+                        if (!socketEvent.defaultPrevented)
+                            throw new Error("Socket event for new post was not handled");
+
+
+                        statusBoxElm.innerHTML = "Your feed post was created <span class='success'>Successful</span>";
+
+                        // TODO: ugly parent node stack
+                        var previewElms = formElm.parentNode.parentNode.getElementsByClassName('ks-put-preview:');
+                        for(var i=0; i<previewElms.length; i++)
+                            previewElms[i].innerHTML = '';
+
                         formElm.content.value = '';
                     });
             });
@@ -452,7 +465,7 @@ if(typeof document === 'object')
                 .replace(/{\$entry_author_html}/gi, user_id)
                 .replace(/{\$entry_path}/gi, pathElm.value)
                 .replace(/{\$entry_timestamp}/gi, Date.now())
-                .replace(/{\$entry_timestamp_formatted}/gi, "Soon...")
+                .replace(/{\$entry_timestamp_formatted}/gi, "Post Preview... coming soon to a feed near you")
                 .replace(/{\$entry_content}/gi, postContent)
             ;
 
@@ -461,6 +474,7 @@ if(typeof document === 'object')
             newFeedEntry.classList.remove('ks-feed-entry-template');
             //containerElm.appendChild(newFeedEntry);
 
+            // TODO: ugly parent node stack
             var previewElms = document.getElementsByClassName('ks-put-preview:');
             for(var i=0; i<previewElms.length; i++)
                 previewElms[i].innerHTML = newFeedEntry.outerHTML;

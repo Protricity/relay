@@ -60,8 +60,8 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
 
 .ks-feed-entries\3A > .ks-feed-entry {
     border: 1px inset;
-    padding: 2px;
-    margin: 1em 0 0 0;
+    padding: 0.5em;
+    margin: 2em 0 0.5em 0;
     border-radius: 0.5em;
     background-color: white;
     overflow: auto;
@@ -94,7 +94,16 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
     color: grey;
 }
 
+/** Feed Entry Preview **/
 
+
+.ks-feed-entries\3A > .ks-feed-entry.ks-put-preview\3A {
+/*     border-width: 2px 1px; */
+    background: linear-gradient(to bottom right, #FFF, #E5FEE5);
+
+}
+
+/** Icon **/
 
 .user_icon {
     float:left;

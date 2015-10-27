@@ -158,7 +158,7 @@ if (!module) var module = {exports:{}};
 
                 } else {
                     entry_uid = contentEntry.pgp_id_public + ' ' + contentEntry.timestamp;
-                    if(contentEntry.published === true)
+                    if(contentEntry.published === 1)
                         classes.push('published');
 
                     // TODO: check for private/hidden files
@@ -224,7 +224,7 @@ if (!module) var module = {exports:{}};
                     "\n\t<tr>" +
                     "\n\t\t<td class='name'>Published</td>" +
                     "\n\t\t<td class='value'>" +
-                        (contentEntry.published === true ? "<span class='yes'>Yes</span>" : "<span class='no'>No</span>")
+                        (contentEntry.published === 1 ? "<span class='yes'>Yes</span>" : "<span class='no'>No</span>")
                     + "</td>" +
                     "\n\t</tr>";
 

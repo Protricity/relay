@@ -194,6 +194,19 @@ if(typeof document === 'object')
 
                     statusBoxElm.innerHTML = "<span class='command'>Put</span> <span class='success'>Successful</span>";
                     formElm.content.value = '';
+
+                    commandString = 'MANAGE http://' + pgp_id_public + '.ks/' + contentPath;
+
+
+                    socketEvent = new CustomEvent('command', {
+                        detail: commandString,
+                        cancelable: true,
+                        bubbles: true
+                    });
+                    formElm.dispatchEvent(socketEvent);
+
+                    if (!socketEvent.defaultPrevented)
+                        throw new Error("Socket event for new post was not handled");
                 });
         });
     }

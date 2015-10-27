@@ -10,7 +10,7 @@ module.exports.initClientKSPutSuccessResponse = function(Client) {
      * @returns {boolean}
      */
     function putSuccessResponse(responseString) {
-        console.log(responseString);
+//         console.log(responseString);
         var match = /^put\.success\s+([a-f0-9]{8,16})\s+(\d+)$/im.exec(responseString);
         if (!match)
             return false;
@@ -30,7 +30,7 @@ module.exports.initClientKSPutSuccessResponse = function(Client) {
             if(!entryData)
                 throw new Error("Entry missing: " + pgp_id_public + ' ' + timestamp);
 
-            entryData.published = true;
+            entryData.published = 1;
             KeySpaceDB.update(KeySpaceDB.DB_TABLE_HTTP_CONTENT, null, entryData,
                 function(err, updateData) {
                     console.info("Publish Successful:", pgp_id_public, timestamp);

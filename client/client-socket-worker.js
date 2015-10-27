@@ -13,7 +13,6 @@ function ClientSocketWorker() {
     document.addEventListener('click', onClickEvent, false);
     document.addEventListener('command', onCommandEvent, false);
     window.addEventListener('hashchange', onHashChange, false);
-    //window.onbeforeunload = onBeforeUnload;
 
     ClientSocketWorker.get = function() {
         if(!socketWorker) {
@@ -82,9 +81,6 @@ function ClientSocketWorker() {
         e.preventDefault();
         var commandString = e.detail || e.data;
         ClientSocketWorker.sendCommand(commandString);
-    }
-    function onBeforeUnload(e) {
-        return "Relay client will disconnect";
     }
 
     function onHashChange(e, hash) {
@@ -326,12 +322,18 @@ ClientSocketWorker.includeScript = function(scriptURL, callback) {
     if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
         var newScript = document.createElement('script');
         newScript.setAttribute('src', scriptPath);
-        newScript.onreadystatechange = callback;
-        newScript.onload = callback;
+        if(callback) {
+            newScript.onreadystatechange = callback;
+            newScript.onload = callback;
+        }
         head.appendChild(newScript);
 //         console.log("Including Script: ", newScript);
 
         return true;
+    } else {
+
+        if(callback)
+            callback();
     }
     return false;
 };

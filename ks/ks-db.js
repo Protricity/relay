@@ -14,6 +14,7 @@ KeySpaceDB.DB_TABLE_HTTP_CONTENT    = 'content';
 KeySpaceDB.DB_INDEX_PATH            = 'path';
 KeySpaceDB.DB_INDEX_ID_PATH         = 'id_path';
 KeySpaceDB.DB_INDEX_TIMESTAMP       = 'timestamp';
+KeySpaceDB.DB_INDEX_PUBLISHED       = 'published';
 
 KeySpaceDB.DB_PGP_KEY_LENGTH        = 8;
 
@@ -81,6 +82,7 @@ function KeySpaceDB(dbReadyCallback) {
                     postStore.createIndex(KeySpaceDB.DB_INDEX_PATH, ["path", "timestamp"], { unique: false });
                     postStore.createIndex(KeySpaceDB.DB_INDEX_ID_PATH, ["pgp_id_public", "path", "timestamp"], { unique: false });
                     postStore.createIndex(KeySpaceDB.DB_INDEX_TIMESTAMP, "timestamp", { unique: false });
+                    postStore.createIndex(KeySpaceDB.DB_INDEX_PUBLISHED, ["published", "timestamp"], { unique: false });
 
                     console.log('Upgraded Table: ' + KeySpaceDB.DB_NAME + '.' + postStore.name);
                 }
@@ -329,11 +331,11 @@ function KeySpaceDB(dbReadyCallback) {
                     .transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readwrite")
                     .objectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
 
-                var timestampIndex = dbStore.index(KeySpaceDB.DB_INDEX_TIMESTAMP);
-                var boundKeyRange = IDBKeyRange.upperBound(feedEndTime, true);
+                var publishedIndex = dbStore.index(KeySpaceDB.DB_INDEX_PUBLISHED);
+                var boundKeyRange = IDBKeyRange.upperBound([1, feedEndTime], true);
 //                 console.log("Searching ", boundKeyRange);
 
-                var cursorRequest = timestampIndex.openCursor(boundKeyRange, 'prev');
+                var cursorRequest = publishedIndex.openCursor(boundKeyRange, 'prev');
                 cursorRequest.onsuccess = function (e) {
 
                     var cursor = e.target.result;
@@ -349,6 +351,7 @@ function KeySpaceDB(dbReadyCallback) {
             } else if (typeof mongodb !== 'undefined' && db instanceof mongodb.Db) {
                 var dbCollection = db.collection(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
                 dbCollection.find({
+                    published: 1,
                     timestamp: { $lt: feedEndTime }
                 }).each(callback);
 
