@@ -115,7 +115,7 @@ if(typeof document === 'object')
             var scrollPos = feedEntriesElm.scrollTop;
             var scrollMax = feedEntriesElm.scrollHeight - feedEntriesElm.clientHeight;
 
-            console.log(scrollPos, scrollMax);
+//             console.log(scrollPos, scrollMax);
 
             if(scrollPos >= scrollMax - 20)
                 setTimeout(function() {
@@ -141,6 +141,7 @@ if(typeof document === 'object')
                         throw new Error(err);
 
                     if(entryData) {
+                        // TODO: if PGP KEY BLOCK
                         var articleDiv = document.createElement('article');
                         try {
                             var pgpClearSignedMessage = openpgp.cleartext.readArmored(entryData.content);
