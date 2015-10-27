@@ -25,6 +25,7 @@ if (!module) var module = {exports:{}};
         var path = '/.private/id';
         var html_pgp_id_public_options = '';
         var default_pgp_id_public = null;
+        var idCount = 0;
         KeySpaceDB.queryAll(path, function(err, contentEntry) {
             if(err)
                 throw new Error(err);
@@ -46,7 +47,12 @@ if (!module) var module = {exports:{}};
                         ' - ' + contentEntry.user_id +
                     "</option>";
 
+                idCount++;
             } else {
+
+                if(idCount === 0)
+                    console.log("TODO: NO IDS");
+
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", TEMPLATE_URL, false);
                 xhr.send();
