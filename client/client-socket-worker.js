@@ -211,14 +211,12 @@ function ClientSocketWorker() {
         }
 
         // Include scripts after insert:
-        console.log(includeScripts);
-        for(var ii=0; ii<includeScripts.length; ii++)
-            ClientSocketWorker.includeScript(includeScripts[ii]);
-
-        var contentEvent = new CustomEvent(command, {
-            bubbles: true
+        includeScriptsAsync(targetElement, includeScripts, function() {
+            var contentEvent = new CustomEvent('render', {
+                bubbles: true
+            });
+            targetElement.dispatchEvent(contentEvent);
         });
-        targetElement.dispatchEvent(contentEvent);
     }
 
     function render(commandString) {
@@ -275,23 +273,24 @@ function ClientSocketWorker() {
         }
 
         // Include scripts after insert:
-        console.log("TODO: Load synchronously: ", includeScripts);
-        if(includeScripts.length > 0) {
-            for(var ii=0; ii<includeScripts.length; ii++)
-                ClientSocketWorker.includeScript(includeScripts[ii],
-                    ii === includeScripts.length - 1 ? dispatchEvent : null);
-
-        } else {
-            dispatchEvent();
-        }
-
-
-        function dispatchEvent() {
+        includeScriptsAsync(targetElement, includeScripts, function() {
             var contentEvent = new CustomEvent('render', {
                 bubbles: true
             });
             targetElement.dispatchEvent(contentEvent);
-//             console.log("Render", targetElement);
+        });
+    }
+
+    function includeScriptsAsync(targetElement, scripts, callback) {
+        if(scripts.length > 0) {
+            var script = scripts.shift();
+            ClientSocketWorker.includeScript(script, function() {
+                includeScriptsAsync(targetElement, scripts, callback);
+            });
+
+        } else {
+            if(callback)
+                callback();
         }
     }
 

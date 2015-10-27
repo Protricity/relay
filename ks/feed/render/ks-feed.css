@@ -59,7 +59,7 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
     border-radius: 0.5em;
     background-color: white;
     overflow: auto;
-    max-width: 40vw;
+    max-width: 33em;
 }
 
 
