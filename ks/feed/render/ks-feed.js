@@ -143,18 +143,18 @@ if(typeof document === 'object')
                     if(entryData) {
                         // TODO: if PGP KEY BLOCK
                         var articleDiv = document.createElement('article');
-                        try {
+                        if(entryData.content.indexOf('-----BEGIN PGP SIGNED MESSAGE-----') === 0) {
+
                             var pgpClearSignedMessage = openpgp.cleartext.readArmored(entryData.content);
                             articleDiv.innerHTML = protectHTMLContent(pgpClearSignedMessage.text);
 
-                            if(articleDiv.children[0].nodeName.toLowerCase() === 'article')
+                            if (articleDiv.children[0].nodeName.toLowerCase() === 'article')
                                 articleDiv = articleDiv.children[0];
 
                             articleDiv.classList.add('ks-verified-content');
                             articleHTMLContent = articleDiv.outerHTML;
 
-                        } catch (e) {
-                            console.error(e);
+                        } else {
                             articleDiv.innerHTML = protectHTMLContent(entryData.content)
                                 .replace(/&/g, "&amp;")
                                 .replace(/</g, "&lt;")
@@ -164,6 +164,7 @@ if(typeof document === 'object')
                                 .replace(/\n/g, "<br />");
 
                             articleDiv.classList.add('ks-unverified-content');
+
                         }
 
                         var authorAnchorElm = articleDiv.querySelector('a[rel=author]');
