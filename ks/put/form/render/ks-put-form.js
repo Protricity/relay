@@ -39,7 +39,8 @@ if(typeof document === 'object')
     var lastPostContent = null;
     function refreshHTTPPutForm(e, formElm) {
         var pgp_id_public = formElm.pgp_id_public.value.split(',')[0];
-        var passphrase_required = formElm.pgp_id_public.value.split(',')[1] === '1';
+        var user_id = formElm.pgp_id_public.value.split(',')[1];
+        var passphrase_required = formElm.pgp_id_public.value.split(',')[2] === '1';
         var passphrase = formElm.passphrase.value;
 
         var disableSubmit = (passphrase_required || !pgp_id_public) || formElm.content.value.length === 0;
@@ -337,12 +338,18 @@ else
                     if(!default_pgp_id_public)
                         default_pgp_id_public = contentEntry.pgp_id_public;
 
+
+                    var optionValue = contentEntry.pgp_id_public +
+                        ',' + contentEntry.user_id +
+                        ',' + (contentEntry.passphrase_required?1:0);
+
                     html_pgp_id_public_options +=
-                        "<option value='" + contentEntry.pgp_id_public + ',' + (contentEntry.passphrase_required?1:0) + "'" +
-                            (default_pgp_id_public === contentEntry.pgp_id_public ? ' selected="selected"' : '') +
-                            ">" +
+                        "<option value='" + optionValue + "'" +
+                        (default_pgp_id_public === contentEntry.pgp_id_public ? ' selected="selected"' : '') +
+                        ">" +
                         (contentEntry.passphrase_required?'* ':'&nbsp;  ') +
-                        contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) + ' - ' + contentEntry.user_id +
+                        contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) +
+                        ' - ' + contentEntry.user_id +
                         "</option>";
 
                 } else {

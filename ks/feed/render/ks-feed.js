@@ -33,12 +33,17 @@ if (!module) var module = {exports:{}};
                 if(!default_pgp_id_public)
                     default_pgp_id_public = contentEntry.pgp_id_public;
 
+                var optionValue = contentEntry.pgp_id_public +
+                    ',' + contentEntry.user_id +
+                    ',' + (contentEntry.passphrase_required?1:0);
+
                 html_pgp_id_public_options +=
-                    "<option value='" + contentEntry.pgp_id_public + ',' + (contentEntry.passphrase_required?1:0) + "'" +
-                    (default_pgp_id_public === contentEntry.pgp_id_public ? ' selected="selected"' : '') +
+                    "<option value='" + optionValue + "'" +
+                        (default_pgp_id_public === contentEntry.pgp_id_public ? ' selected="selected"' : '') +
                     ">" +
-                    (contentEntry.passphrase_required?'* ':'&nbsp;  ') +
-                    contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) + ' - ' + contentEntry.user_id +
+                        (contentEntry.passphrase_required?'* ':'&nbsp;  ') +
+                        contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) +
+                        ' - ' + contentEntry.user_id +
                     "</option>";
 
             } else {
@@ -402,6 +407,10 @@ if(typeof document === 'object')
         }
 
         function updatePutPreview(e, formElm) {
+            var pgp_id_public = formElm.pgp_id_public.value.split(',')[0];
+            var user_id = formElm.pgp_id_public.value.split(',')[1];
+            var passphrase_required = formElm.pgp_id_public.value.split(',')[2] === '1';
+
             var postContentElm = formElm.querySelector('textarea[name=content]');
             var pathElm = formElm.querySelector('*[name=path]');
             if(!pathElm)
@@ -433,11 +442,11 @@ if(typeof document === 'object')
             var templateHTML = templateElm.outerHTML;
 
             templateHTML = templateHTML
-                //.replace(/{\$entry_pgp_id_public}/gi, entryData.pgp_id_public)
-                //.replace(/{\$entry_author_html}/gi, authorAnchorElm.outerHTML)
+                .replace(/{\$entry_pgp_id_public}/gi, pgp_id_public)
+                .replace(/{\$entry_author_html}/gi, user_id)
                 .replace(/{\$entry_path}/gi, pathElm.value)
                 .replace(/{\$entry_timestamp}/gi, Date.now())
-                .replace(/{\$entry_timestamp_formatted}/gi, timeSince(Date.now()))
+                .replace(/{\$entry_timestamp_formatted}/gi, "Soon...")
                 .replace(/{\$entry_content}/gi, postContent)
             ;
 
