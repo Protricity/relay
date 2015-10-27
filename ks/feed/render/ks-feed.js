@@ -129,7 +129,7 @@ if(typeof document === 'object')
                 return console.error("More feed already requested silly!");
             moreFeedRequested = true;
 
-            console.log("Requesting more feed...");
+//             console.log("Requesting more feed...");
 
             containerElm.feedEndTime = containerElm.feedEndTime || Date.now();
 
@@ -225,7 +225,7 @@ if(typeof document === 'object')
             var requestPath = "public/id";
             var requestURL = "http://" + pgp_id_public + ".ks/" + requestPath;
 
-            console.log("Requesting author for " + pgp_id_public + "...");
+//             console.log("Requesting author for " + pgp_id_public + "...");
             KeySpaceDB.queryOne(requestURL, function (err, contentData) {
                 if (err)
                     return callback(err);
@@ -418,14 +418,37 @@ if(typeof document === 'object')
                 contentDiv.innerHTML = "<article>" + contentDiv.innerHTML + "</article>";
                 articleElm = contentDiv.querySelector('article');
             }
-            articleElm.setAttribute('data-path', pathElm);
+            articleElm.setAttribute('data-path', pathElm.value);
             //articleElm.setAttribute('data-timestamp', timestamp.toString());
 
+            articleElm.classList.add('ks-feed-entry');
             postContent = articleElm.outerHTML;
             postContent = protectHTMLContent(postContent, formElm);
 
-            var previewElm = document.getElementsByClassName('ks-put-preview:')[0];
-            previewElm.innerHTML = postContent;
+
+
+            var newFeedContainer = document.createElement('div');
+
+            var templateElm = formElm.parentNode.parentNode.getElementsByClassName('ks-feed-entry-template')[0];
+            var templateHTML = templateElm.outerHTML;
+
+            templateHTML = templateHTML
+                //.replace(/{\$entry_pgp_id_public}/gi, entryData.pgp_id_public)
+                //.replace(/{\$entry_author_html}/gi, authorAnchorElm.outerHTML)
+                .replace(/{\$entry_path}/gi, pathElm.value)
+                .replace(/{\$entry_timestamp}/gi, Date.now())
+                .replace(/{\$entry_timestamp_formatted}/gi, timeSince(Date.now()))
+                .replace(/{\$entry_content}/gi, postContent)
+            ;
+
+            newFeedContainer.innerHTML = templateHTML;
+            var newFeedEntry = newFeedContainer.children[0];
+            newFeedEntry.classList.remove('ks-feed-entry-template');
+            //containerElm.appendChild(newFeedEntry);
+
+            var previewElms = document.getElementsByClassName('ks-put-preview:');
+            for(var i=0; i<previewElms.length; i++)
+                previewElms[i].innerHTML = newFeedEntry.outerHTML;
         }
 
 
@@ -484,7 +507,7 @@ if(typeof document === 'object')
                 var OPENPGP_WORKER_URL = 'pgp/lib/openpgpjs/openpgp.worker.js';
                 window.openpgp._worker_init = true;
                 window.openpgp.initWorker(OPENPGP_WORKER_URL);
-                console.info("OpenPGP Worker Loaded: " + OPENPGP_WORKER_URL);
+//                 console.info("OpenPGP Worker Loaded: " + OPENPGP_WORKER_URL);
             }
             clearInterval(workerInterval);
         }, 200);

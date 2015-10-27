@@ -13,6 +13,12 @@ article.ks-feed\3A > section {
 
 /** Form **/
 
+form[name=ks-feed-put-form] textarea[name=content] {
+    width: 33em;
+    /* padding: 0; */
+    /* margin: 0; */
+}
+
 form[name=ks-feed-put-form] textarea,
 form[name=ks-feed-put-form] select,
 form[name=ks-feed-put-form] input {
@@ -59,7 +65,7 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
     border-radius: 0.5em;
     background-color: white;
     overflow: auto;
-    max-width: 33em;
+    width: 36em;
 }
 
 

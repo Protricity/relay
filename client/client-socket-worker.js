@@ -329,7 +329,7 @@ ClientSocketWorker.includeScript = function(scriptURL, callback) {
         newScript.onreadystatechange = callback;
         newScript.onload = callback;
         head.appendChild(newScript);
-        console.log("Including Script: ", newScript);
+//         console.log("Including Script: ", newScript);
 
         return true;
     }
