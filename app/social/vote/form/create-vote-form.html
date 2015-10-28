@@ -1,23 +1,24 @@
-<article class='ks-put: maximized hide-preview'>
-    <script src='ks/scripts/create/ks-script-create-form.js'></script>
-    <link href='ks/scripts/create/ks-script-create-form.css' type='text/css' rel='stylesheet' property='stylesheet'>
+<article class='create-vote: maximized hide-preview'>
+    <script src='app/social/vote/form/create-vote-form.js'></script>
+    <link href='app/social/vote/form/create-vote-form.css' type='text/css' rel='stylesheet' property='stylesheet'>
     <style>
-        form[name=ks-create-script-form] .section-step { display: none; }
-        form[name=ks-create-script-form] input[name=radio-step]:checked + .button-step + .section-step { display: inherit; }
+        form[name=create-vote-form] .section-step { display: none; }
+        form[name=create-vote-form] input[name=radio-step]:checked + .button-step + .section-step { display: inherit; }
     </style>
     <header class='header-bar show-on-minimized'>
-        <a href='#MAXIMIZE ks-put:'>Simple Article Wizard</a>
+        <a href='#MAXIMIZE create-vote:'>Simple Article Wizard</a>
     </header>
     <div class='header-bar-buttons show-on-minimized'>
-        <a href='#MINIMIZE ks-put:'>[-]</a><!--
-     --><a href='#MAXIMIZE ks-put:'>[+]</a><!--
-     --><a href='#CLOSE ks-put:'>[x]</a>
+        <a href='#MINIMIZE create-vote:'>[-]</a><!--
+     --><a href='#MAXIMIZE create-vote:'>[+]</a><!--
+     --><a href='#CLOSE create-vote:'>[x]</a>
     </div>
 
-    <form name='ks-create-script-form' id='ks-create-script-form' action='#' onsubmit='return false;'>
+    <form name='create-vote-form' id='create-vote-form' action='#'>
 
 <template class='put-preview-source'>
-<article class='[$theme]'>
+<article class='app-vote: [$theme]'>
+    &lt;script src='app/social/vote/vote.js'>&lt;/script>
     <header>[$title]</header>
     <time>[$date]</time>
     <main>
@@ -32,55 +33,43 @@
         <input type='radio' id='radio-step-1' name='radio-step' checked>
         <label for='radio-step-1' class='button-step'>Title</label>
         <section class='section-step'>
-            <strong>Add an <i>optional</i> title for this article:</strong>
-            <br>
-            <br>
-            <input type='text' name='title' size='36' placeholder='Your Article Title'>
-            <input type='submit' value='Add Content...' />
+            <strong>Add a title for this vote:</strong>
+            <br/>
+            <input type='text' name='title' size='36' placeholder='Your Vote Title'>
+            <br/>
+            <strong>Add a description for this vote:</strong>
+            <br/>
+            <textarea name='content' placeholder='Vote Description' cols='48' rows='6'></textarea>
+            <br/>
+            <input type='submit' value='Add Vote Options' />
         </section>
 
         <input type='radio' id='radio-step-2' name='radio-step'>
-        <label for='radio-step-2' class='button-step'>Content</label>
+        <label for='radio-step-2' class='button-step'>Option</label>
         <section class='section-step'>
-            <strong>Add content for this article:</strong>
-            <br>
-            <br>
-            <textarea name='content' placeholder='Article Content' cols='48' rows='6'></textarea>
+            <strong>Add a <i>vote option</i>:</strong>
             <br/>
-            <input type='submit' value='Add Date/Time...' />
+            <input type='text' name='title' size='36' placeholder='New Vote Option Title'>
+            <br/>
+            <strong>Add a description for this <i>vote option</i>:</strong>
+            <br/>
+            <textarea name='content' placeholder='Vote Option Description' cols='48' rows='6'></textarea>
+            <br/>
+            <input type='submit' value='Add Another Vote Options' />
+            <input type='submit' value='Choose a theme' />
         </section>
 
         <input type='radio' id='radio-step-3' name='radio-step'>
-        <label for='radio-step-3' class='button-step'>Time Stamp</label>
-        <section class='section-step'>
-            <strong>Add an <i>optional</i> <span class='timestamp'>Time Stamp</span> for this article:</strong>
-            <br>
-            <br>
-            <input type='date' name='date' id='date' />
-            <input type='submit' value='Add Signature...' />
-        </section>
-
-        <input type='radio' id='radio-step-4' name='radio-step'>
-        <label for='radio-step-4' class='button-step'>Footer</label>
-        <section class='section-step'>
-            <strong>Add an <i>optional</i> signature to this article:</strong>
-            <br>
-            <br>
-            <textarea name='footer' placeholder='Article Signature/Footer' cols='48' rows='3'></textarea>
-            <br/>
-            <input type='submit' value='Select Theme...' />
-        </section>
-
-        <input type='radio' id='radio-step-5' name='radio-step'>
-        <label for='radio-step-5' class='button-step'>Theme</label>
+        <label for='radio-step-3' class='button-step'>Theme</label>
         <section class='section-step'>
             <strong>Select <i>optional</i> CSS stylesheet theme:</strong>
-            <br>
-            <br>
-            <select name="theme" form="ks-create-script-form">
+            <br/>
+            <br/>
+            <select name="theme">
                 <option value="">No Theme</option>
                 <option value="default-article-theme" selected="selected">Default Article Theme</option>
             </select>
+            <input type='submit' value='Add Another Vote Options' />
             <input type='submit' value='Finish'/>
         </section>
     </form>
@@ -90,12 +79,6 @@
         <br />
         <strong>Code</strong>:
         <pre class='put-preview-source-output'></pre>
-        <!--<strong>Theme</strong>:-->
-        <!--<label style="display: block;">-->
-        <!--<select name="theme" form="ks-create-script-form">-->
-        <!--</select>-->
-        <!--</label>-->
-        <!--<br />-->
     </section>
     <footer class='footer-bar'>&nbsp;</footer>
 </article>

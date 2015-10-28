@@ -8,7 +8,7 @@ if (!module.exports) module.exports = {};
 module.exports.getContentScripts = function() {
     return [
         ['ks/scripts/create/ks-script-create-form.js', 'Simple Content Wizard'],
-        ['app/social/vote/scripts/create-vote-script.js', 'Create a new Public Vote']
+        ['app/social/vote/form/create-vote-form.js', 'Create a new Public Vote']
 
     ];
 };

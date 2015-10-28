@@ -50,5 +50,5 @@ if(typeof document === 'object')
     }
 
     // For Public/Private Key Database access
-    includeScript('pgp/pgp-db.js');
+    includeScript('ks/ks-db.js');
 })();
