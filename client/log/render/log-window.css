@@ -1,3 +1,11 @@
+.log-content\3A {
+    padding: 1em 2em 1em 2em;
+    border: 3px inset;
+    background: #EEE;
+    max-height: 57vw;
+    overflow-y: auto;
+}
+
 .log-entry {
     max-width: 50vw;
     

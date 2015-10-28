@@ -18,11 +18,12 @@ function getCommandSocket(commandString, client) {
     if(!match)
         return false;
 
-    executeServerGetRequest(commandString, function(responseBody, statusCode, statusMessage, headers) {
-        client.send('HTTP/1.1 ' + (statusCode || 200) + (statusMessage || 'OK') +
-            (headers ? "\n" + headers : ''),
-            "\n\n" + responseBody
-        );
+    executeServerGetRequest(commandString, function(responseBody) {
+        client.send(responseBody);
+        //client.send('HTTP/1.1 ' + (statusCode || 200) + (statusMessage || 'OK') +
+        //    (headers ? "\n" + headers : '') +
+        //    "\n\n" + responseBody
+        //);
     });
 }
 
@@ -100,7 +101,7 @@ function executeServerGetRequest(requestString, callback) {
 
         if(contentData) {
             // TODO: respond with content before querying keyspace hosts?
-            require('ks/templates/ks-response-template.js')
+            require('./response/render/ks-response.js')
                 .renderResponse(
                     contentData.content,
                     requestURL,

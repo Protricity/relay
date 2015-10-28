@@ -119,7 +119,7 @@ module.exports.initClientKSGetCommands = function(Client) {
                 var signedBody = protectHTMLContent(contentData.content);
 
                 self.module = {exports: {}};
-                importScripts('ks/get/browser/render/ks-browser.js');
+                importScripts('ks/get/response/render/ks-response.js');
                 self.module.exports.renderResponse(
                     signedBody,
                     requestURL,
@@ -132,7 +132,7 @@ module.exports.initClientKSGetCommands = function(Client) {
             } else {
                 // If nothing found, show something, sheesh
                 self.module = {exports: {}};
-                importScripts('ks/get/browser/render/ks-browser.js');
+                importScripts('ks/get/response/render/ks-response.js');
                 self.module.exports.renderResponse(
                         "<p>Request sent...</p>",
                         requestURL,
@@ -169,7 +169,7 @@ module.exports.initClientKSGetCommands = function(Client) {
                 // TODO: verify and decrypt content on the fly? Maybe don't verify things being sent out
 
                 self.module = {exports: {}};
-                importScripts('ks/get/browser/render/ks-browser.js');
+                importScripts('ks/get/response/render/ks-response.js');
                 self.module.exports.renderResponse(
                         contentData.content,
                         requestURL,
@@ -181,12 +181,12 @@ module.exports.initClientKSGetCommands = function(Client) {
 
             } else {
 
-                importScripts('ks/get/browser/render/pages/404.js');
+                importScripts('ks/get/response/pages/404.js');
                 get404IndexTemplate(requestString, function(defaultResponseBody, responseCode, responseText, responseHeaders) {
                     responseHeaders += passedResponseHeaders;
 
                     self.module = {exports: {}};
-                    importScripts('ks/get/browser/render/ks-browser.js');
+                    importScripts('ks/get/response/render/ks-response.js');
                     self.module.exports.renderResponse(
                             defaultResponseBody,
                             requestURL,
@@ -222,7 +222,7 @@ module.exports.initClientKSGetCommands = function(Client) {
                 responseHeaders += "\nBrowser-ID: " + browserID;
 
                 self.module = {exports: {}};
-                importScripts('ks/get/browser/render/ks-browser.js');
+                importScripts('ks/get/response/render/ks-response.js');
                 self.module.exports.renderResponse(
                     defaultResponseBody,
                     requestURL,
@@ -238,8 +238,8 @@ module.exports.initClientKSGetCommands = function(Client) {
 
     // TODO default content public config
     var defaultContentResponses = [
-        [/^\/?home\/?$/i, function(commandString, callback) { importScripts('ks/pages/home/user-index.js'); getUserIndexTemplate(commandString, callback); }],
-        [/^\/?$/, function(commandString, callback) { importScripts('ks/pages/index.js'); getRootIndexTemplate(commandString, callback); }]
+        [/^\/?home\/?$/i, function(commandString, callback) { importScripts('ks/get/response/pages/home/user-index.js'); getUserIndexTemplate(commandString, callback); }],
+        [/^\/?$/, function(commandString, callback) { importScripts('ks/get/response/pages/index.js'); getRootIndexTemplate(commandString, callback); }]
     ];
     var getDefaultContentResponse = function(requestString, callback) {
         var requestURL = getRequestURL(requestString);
@@ -269,7 +269,7 @@ module.exports.initClientKSGetCommands = function(Client) {
             }
         }
 
-        importScripts('ks/pages/404.js');
+        importScripts('ks/get/response/pages/404.js');
         get404IndexTemplate(requestString, fixedCallback);
     };
 
