@@ -1,9 +1,11 @@
-form[name=ks-create-script-form] {
+.ks-script-create-window main,
+.ks-script-create-window section {
     min-width: 30em;
     padding: 1em 2em 1em 2em;
     border: 3px inset;
     background-color: #FAFAFA;
 }
+
 .put-preview-source-output {
     /* tab-size: 2px; */
     white-space: pre-wrap;
