@@ -1,7 +1,7 @@
 /**
  * Created by ari.
  */
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initClientKSPutManageCommand = function (Client) {
         Client.addCommand(putManageCommand);
 
@@ -22,4 +22,4 @@ if(typeof module === 'object') {
         }
 
     };
-}
+})();

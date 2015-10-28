@@ -56,7 +56,7 @@ if(typeof document === 'object')
     })();
 
 // Worker Script
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.renderPGPImportForm = function (private_key_block, status_box, callback) {
         var TEMPLATE_URL = "pgp/import/render/pgp-import-form.html";
 
@@ -94,4 +94,4 @@ if(typeof module === 'object') {
         );
         return true;
     };
-}
+})();

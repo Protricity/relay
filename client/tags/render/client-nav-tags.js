@@ -49,7 +49,7 @@ if(typeof document === 'object')
 
 
 // Worker Scripts
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.renderNavTag = function (tagHTML, callback, Client) {
         var TEMPLATE_URL = 'client/tags/render/client-nav-tags.html';
 
@@ -62,4 +62,4 @@ if(typeof module === 'object') {
         callback(xhr.responseText);
         return true;
     };
-}
+})();

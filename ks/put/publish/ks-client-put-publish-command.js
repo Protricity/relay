@@ -1,7 +1,7 @@
 /**
  * Created by ari.
  */
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initClientKSPutPublishCommand = function (Client) {
         Client.addCommand(putPublishCommand);
 
@@ -33,4 +33,4 @@ if(typeof module === 'object') {
         }
 
     };
-}
+})();

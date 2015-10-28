@@ -2,7 +2,7 @@
  * Created by ari.
  */
 
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initClientKSGetCommands = function (Client) {
         Client.addCommand(getCommand);
         Client.addResponse(getResponse);
@@ -362,4 +362,4 @@ if(typeof module === 'object') {
 
 
     };
-}
+})();

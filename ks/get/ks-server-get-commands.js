@@ -2,7 +2,7 @@
  * Created by ari.
  */
 
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initSocketServerKSGetCommands = function (SocketServer) {
         SocketServer.addCommand(getCommandSocket);
         //SocketServer.addCommand(handleHTTPSocketResponse);
@@ -10,7 +10,7 @@ if(typeof module === 'object') {
     module.exports.initHTTPServerKSGetCommands = function (SocketServer) {
         SocketServer.addCommand(getCommandHTTP);
     };
-}
+})();
 
 var httpBrowserID = 1;
 

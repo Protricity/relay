@@ -3,8 +3,7 @@
  */
 
 // Client Script
-if(typeof document === 'object')
-(function() {
+if(typeof document === 'object') (function() {
 
     // Events
 
@@ -72,11 +71,10 @@ if(typeof document === 'object')
 
         return false;
     }
-
 })();
 
 // Worker Script
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     var TEMPLATE_URL = 'channel/render/channel-window.html';
 
     module.exports.renderChatWindow = function(channelPath, callback) {
@@ -85,6 +83,7 @@ if(typeof module === 'object') {
         xhr.send();
         if(xhr.status !== 200)
             throw new Error("Error: " + xhr.responseText);
+
         callback(xhr.responseText
             .replace(/{\$channel}/gi, channelPath)
             .replace(/{\$channel_lowercase}/gi, channelPath.toLowerCase())
@@ -172,5 +171,4 @@ if(typeof module === 'object') {
         optionHTML += "\n</optgroup>";
         callback(optionHTML);
     };
-
-}
+})();

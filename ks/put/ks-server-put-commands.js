@@ -1,7 +1,7 @@
 /**
  * Created by ari.
  */
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initSocketServerKSPutCommands = function (SocketServer) {
         require('./keyspace/ks-server-put-keyspace-commands.js')
             .initSocketServerKSPutKeySpaceCommands(SocketServer);
@@ -10,4 +10,4 @@ if(typeof module === 'object') {
         require('./keyspace/ks-server-put-keyspace-commands.js')
             .initHTTPServerKSPutKeySpaceCommands(SocketServer);
     };
-}
+})();

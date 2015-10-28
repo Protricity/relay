@@ -87,7 +87,7 @@ if(typeof document === 'object')
     }
 })();
 
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     var TEMPLATE_URL = 'ks/put/manage/render/ks-put-manage-form.html';
 
     module.exports.renderPutManageForm = function(url, status_box, callback) {
@@ -339,6 +339,4 @@ if(typeof module === 'object') {
         return Math.floor(seconds) + " second" + (seconds !== 1 ? 's' : '') + ' ago';
     }
 
-
-
-}
+})();

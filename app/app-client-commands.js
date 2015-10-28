@@ -2,7 +2,7 @@
  * Created by ari on 10/5/2015.
  */
 
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initClientAppCommands = function (Client) {
         //
         //// Feed Commands
@@ -18,4 +18,4 @@ if(typeof module === 'object') {
         //}
 
     };
-}
+})();

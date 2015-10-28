@@ -1,11 +1,9 @@
 /**
  * Created by ari on 7/2/2015.
  */
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initClientChannelCommands = function (Client) {
 
-        self.exports = {};
-        self.module = {exports: {}};
         importScripts('channel/render/channel-window.js');
         var chatExports = self.module.exports;
 
@@ -230,4 +228,4 @@ if(typeof module === 'object') {
         }
 
     };
-}
+})();

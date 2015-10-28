@@ -1,7 +1,7 @@
 /**
  * Created by ari.
  */
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initClientKSPutCommands = function (Client) {
 
         // HTTP PUT Command
@@ -81,4 +81,4 @@ if(typeof module === 'object') {
         }
 
     };
-}
+})();

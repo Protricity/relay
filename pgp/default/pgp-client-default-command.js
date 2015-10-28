@@ -1,7 +1,7 @@
 /**
  * Ari 7/2/2015.
  */
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initClientPGPDefaultCommands = function (Client) {
         Client.addCommand(defaultCommand);
 
@@ -18,4 +18,4 @@ if(typeof module === 'object') {
             console.log("TODO: default", publicKeyID);
         }
     };
-}
+})();

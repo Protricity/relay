@@ -1,7 +1,7 @@
 /**
  * Created by ari.
  */
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initClientKSAuthCommands = function (Client) {
         Client.addCommand(ksChallengeCommand);
         Client.addResponse(ksChallengeResponse);
@@ -56,4 +56,4 @@ if(typeof module === 'object') {
         }
 
     };
-}
+})();

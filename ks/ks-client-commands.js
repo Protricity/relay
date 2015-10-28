@@ -1,7 +1,7 @@
 /**
  * Created by ari.
  */
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initClientKSCommands = function (Client) {
 
         // HTTP GET Command
@@ -59,4 +59,4 @@ if(typeof module === 'object') {
             return false;
         }
     };
-}
+})();

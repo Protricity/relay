@@ -1,7 +1,7 @@
 /**
  * Created by ari.
  */
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initSocketServerKSPutKeySpaceCommands = function (SocketServer) {
         SocketServer.addCommand(putCommandSocket);
         SocketServer.addCommand(handleHTTPSocketResponse);

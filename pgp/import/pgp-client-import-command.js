@@ -1,7 +1,7 @@
 /**
  * Ari 7/2/2015.
  */
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initClientPGPImportCommands = function (Client) {
         Client.addCommand(importCommand);
         Client.addCommand(deleteCommand);
@@ -145,4 +145,4 @@ if(typeof module === 'object') {
             return true;
         }
     };
-}
+})();

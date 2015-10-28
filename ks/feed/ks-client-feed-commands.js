@@ -2,7 +2,7 @@
  * Created by ari on 7/2/2015.
  */
 
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initClientKSFeedCommands = function (Client) {
 
         Client.addCommand(feedCommand);
@@ -30,4 +30,4 @@ if(typeof module === 'object') {
             return true;
         }
     };
-}
+})();

@@ -242,6 +242,7 @@ function ClientSocketWorker() {
             contentElement.classList.add('__no-class');
         var targetClass = contentElement.classList.item(0);
 
+//         console.log("RENDER: ", content);
 
         var targetElements = document.getElementsByClassName(targetClass);
         var targetElement;

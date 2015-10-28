@@ -109,7 +109,7 @@ if(typeof document === 'object')
 })();
 
 // Worker Script
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     var TEMPLATE_URL = "ks/scripts/create/ks-script-create-form.html";
 
     module.exports.runScript = function (commandString, callback) {
@@ -122,4 +122,4 @@ if(typeof module === 'object') {
 
         return true;
     };
-}
+})();

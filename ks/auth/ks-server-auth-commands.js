@@ -1,12 +1,12 @@
 /**
  * Created by ari.
  */
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initSocketServerAuthCommands = function (SocketServer) {
         SocketServer.addCommand(ksAuthCommandSocket);
         SocketServer.addCommand(ksValidateCommandSocket);
     };
-}
+})();
 
 var keySpaceClients = {};
 var keySpaceChallenges = {};

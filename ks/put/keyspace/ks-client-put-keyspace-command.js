@@ -1,7 +1,7 @@
 /**
  * Created by ari.
  */
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initClientKSPutKeySpaceCommand = function (Client) {
         Client.addCommand(putCommand);
         console.info("Loaded: " + self.location);
@@ -113,4 +113,4 @@ if(typeof module === 'object') {
         //}
 
     };
-}
+})();

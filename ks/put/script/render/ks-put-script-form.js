@@ -55,7 +55,7 @@ if(typeof document === 'object')
 })();
 
 // Worker Scripts
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     var TEMPLATE_URL = 'ks/put/script/render/ks-put-script-form.html';
 
     module.exports.renderPutScriptForm = function(commandString, callback) {
@@ -92,4 +92,4 @@ if(typeof module === 'object') {
         );
         return true;
     };
-}
+})();

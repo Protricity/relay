@@ -1,7 +1,7 @@
 /**
  * Created by ari.
  */
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initClientKSPutSuccessResponse = function (Client) {
         Client.addResponse(putSuccessResponse);
 
@@ -54,4 +54,4 @@ if(typeof module === 'object') {
             return true;
         }
     };
-}
+})();

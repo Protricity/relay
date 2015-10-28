@@ -14,7 +14,7 @@ if(typeof document === 'object')
 
 
 // Worker Script
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.renderResponse = function (body, url, code, text, headers, callback) {
         var RESPONSE_BODY_TEMPLATE =
             "HTTP/1.1 {$response_code} {$response_text}\n" +
@@ -41,4 +41,4 @@ if(typeof module === 'object') {
             headers
         );
     };
-}
+})();

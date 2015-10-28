@@ -1,7 +1,7 @@
 /**
  * Ari 7/2/2015.
  */
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initClientPGPKeyGenCommand = function (Client) {
         Client.addCommand(keygenCommand);
 
@@ -90,4 +90,4 @@ if(typeof module === 'object') {
         }
 
     };
-}
+})();

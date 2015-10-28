@@ -156,7 +156,7 @@ if(typeof document === 'object')
     })();
 
 // Worker Script
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.renderPGPManageForm = renderPGPManageForm;
     function renderPGPManageForm (status_box, callback) {
 
@@ -240,5 +240,4 @@ if(typeof module === 'object') {
             //.replace(/{\$default}/gi, privateKeyData.default)
         );
     }
-
-}
+})();

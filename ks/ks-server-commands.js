@@ -1,7 +1,7 @@
 /**
  * Created by ari on 9/22/2015.
  */
-if(typeof module === 'object') {
+if(typeof module === 'object') (function() {
     module.exports.initSocketServerKSCommands = function (SocketServer) {
 
         // HTTP GET Command
@@ -67,5 +67,4 @@ if(typeof module === 'object') {
         //}
 
     };
-
-}
+})();
