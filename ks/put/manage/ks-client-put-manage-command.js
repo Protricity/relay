@@ -1,24 +1,25 @@
 /**
  * Created by ari.
  */
-if (!module) var module = {exports:{}};
-module.exports.initClientKSPutManageCommand = function(Client) {
-    Client.addCommand(putManageCommand);
+if(typeof module === 'object') {
+    module.exports.initClientKSPutManageCommand = function (Client) {
+        Client.addCommand(putManageCommand);
 
-    function putManageCommand(commandString) {
-        var match = /^put.manage\s*(\S+)?$/im.exec(commandString);
-        if (!match)
-            return false;
+        function putManageCommand(commandString) {
+            var match = /^put.manage\s*(\S+)?$/im.exec(commandString);
+            if (!match)
+                return false;
 
-        var contentURL = match[1] || '/';
+            var contentURL = match[1] || '/';
 
-        self.module = {exports: {}};
-        importScripts('ks/put/manage/render/ks-put-manage-form.js');
-        self.module.exports.renderPutManageForm(contentURL, '', function (html) {
-            Client.render(html);
-        });
+            self.module = {exports: {}};
+            importScripts('ks/put/manage/render/ks-put-manage-form.js');
+            self.module.exports.renderPutManageForm(contentURL, '', function (html) {
+                Client.render(html);
+            });
 
-        return true;
-    }
+            return true;
+        }
 
-};
+    };
+}

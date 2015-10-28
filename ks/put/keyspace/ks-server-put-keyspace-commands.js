@@ -1,14 +1,15 @@
 /**
  * Created by ari.
  */
-if (!module) var module = {exports:{}};
-module.exports.initSocketServerKSPutKeySpaceCommands = function(SocketServer) {
-    SocketServer.addCommand(putCommandSocket);
-    SocketServer.addCommand(handleHTTPSocketResponse);
-};
-module.exports.initHTTPServerKSPutKeySpaceCommands = function(SocketServer) {
-    SocketServer.addCommand(putCommandHTTP);
-};
+if(typeof module === 'object') {
+    module.exports.initSocketServerKSPutKeySpaceCommands = function (SocketServer) {
+        SocketServer.addCommand(putCommandSocket);
+        SocketServer.addCommand(handleHTTPSocketResponse);
+    };
+    module.exports.initHTTPServerKSPutKeySpaceCommands = function (SocketServer) {
+        SocketServer.addCommand(putCommandHTTP);
+    };
+}
 
 var pendingGETRequests = [];
 

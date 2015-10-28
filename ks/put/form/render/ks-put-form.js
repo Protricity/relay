@@ -319,70 +319,68 @@ if(typeof document === 'object')
 })();
 
 // Worker Script
-else
-    (function() {
-        var TEMPLATE_URL = 'ks/put/form/render/ks-put-form.html';
+if(typeof module === 'object')
+(function() {
+    var TEMPLATE_URL = 'ks/put/form/render/ks-put-form.html';
 
-        module.exports.renderPutForm = function(content, status_box, callback) {
-            var classes = [];
+    module.exports.renderPutForm = function(content, status_box, callback) {
+        var classes = [];
 
-            var contentEscaped = content
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;');
+        var contentEscaped = content
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
 
-            if(!content)
-                classes.push('compact');
+        if(!content)
+            classes.push('compact');
 
-            // Query private key
-            self.module = {exports: {}};
-            importScripts('ks/ks-db.js');
-            var KeySpaceDB = self.module.exports.KeySpaceDB;
+        // Query private key
+        self.module = {exports: {}};
+        importScripts('ks/ks-db.js');
+        var KeySpaceDB = self.module.exports.KeySpaceDB;
 
-            var path = '/.private/id';
-            var html_pgp_id_public_options = '';
-            var default_pgp_id_public = null;
-            KeySpaceDB.queryAll(path, function(err, contentEntry) {
-                if(err)
-                    throw new Error(err);
+        var path = '/.private/id';
+        var html_pgp_id_public_options = '';
+        var default_pgp_id_public = null;
+        KeySpaceDB.queryAll(path, function(err, contentEntry) {
+            if(err)
+                throw new Error(err);
 
-                if(contentEntry) {
-                    if(!default_pgp_id_public)
-                        default_pgp_id_public = contentEntry.pgp_id_public;
+            if(contentEntry) {
+                if(!default_pgp_id_public)
+                    default_pgp_id_public = contentEntry.pgp_id_public;
 
 
-                    var optionValue = contentEntry.pgp_id_public +
-                        ',' + contentEntry.user_id +
-                        ',' + (contentEntry.passphrase_required?1:0);
+                var optionValue = contentEntry.pgp_id_public +
+                    ',' + contentEntry.user_id +
+                    ',' + (contentEntry.passphrase_required?1:0);
 
-                    html_pgp_id_public_options +=
-                        "<option value='" + optionValue + "'" +
-                        (default_pgp_id_public === contentEntry.pgp_id_public ? ' selected="selected"' : '') +
-                        ">" +
-                        (contentEntry.passphrase_required?'* ':'&nbsp;  ') +
-                        contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) +
-                        ' - ' + contentEntry.user_id +
-                        "</option>";
+                html_pgp_id_public_options +=
+                    "<option value='" + optionValue + "'" +
+                    (default_pgp_id_public === contentEntry.pgp_id_public ? ' selected="selected"' : '') +
+                    ">" +
+                    (contentEntry.passphrase_required?'* ':'&nbsp;  ') +
+                    contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) +
+                    ' - ' + contentEntry.user_id +
+                    "</option>";
 
-                } else {
-                    var xhr = new XMLHttpRequest();
-                    xhr.open("GET", TEMPLATE_URL, false);
-                    xhr.send();
-                    if(xhr.status !== 200)
-                        throw new Error("Error: " + xhr.responseText);
-                        callback(xhr.responseText
-                            .replace(/{\$status_box}/gi, status_box)
-                            .replace(/{\$content}/gi, content)
-                            .replace(/{\$classes}/gi, classes.length > 0 ? classes.join(' ') : '')
-                            .replace(/{\$content_escaped}/gi, contentEscaped)
-                            .replace(/{\$html_pgp_id_public_options}/gi, html_pgp_id_public_options)
-                        );
-                }
-            });
+            } else {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", TEMPLATE_URL, false);
+                xhr.send();
+                if(xhr.status !== 200)
+                    throw new Error("Error: " + xhr.responseText);
+                    callback(xhr.responseText
+                        .replace(/{\$status_box}/gi, status_box)
+                        .replace(/{\$content}/gi, content)
+                        .replace(/{\$classes}/gi, classes.length > 0 ? classes.join(' ') : '')
+                        .replace(/{\$content_escaped}/gi, contentEscaped)
+                        .replace(/{\$html_pgp_id_public_options}/gi, html_pgp_id_public_options)
+                    );
+            }
+        });
 
-            return true;
-        };
-    })();
-if (!module) var module = {};
-if (!module.exports) module.exports = {};
+        return true;
+    };
+})();

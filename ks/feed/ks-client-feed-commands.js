@@ -1,31 +1,33 @@
 /**
  * Created by ari on 7/2/2015.
  */
-if (!module) var module = {exports:{}};
-module.exports.initClientKSFeedCommands = function(Client) {
 
-    Client.addCommand(feedCommand);
+if(typeof module === 'object') {
+    module.exports.initClientKSFeedCommands = function (Client) {
 
-    /**
-     *
-     * @param commandString FEED --id [public key id] --path [path prefix]
-     */
-    function feedCommand(commandString) {
-        var match = /^feed/im.exec(commandString);
-        if(!match)
-            return false;
+        Client.addCommand(feedCommand);
 
-        var feedEndTime = Date.now();
+        /**
+         *
+         * @param commandString FEED --id [public key id] --path [path prefix]
+         */
+        function feedCommand(commandString) {
+            var match = /^feed/im.exec(commandString);
+            if (!match)
+                return false;
 
-        self.exports = {};
-        self.module = {exports: {}};
-        importScripts('ks/feed/render/ks-feed.js');
-        var renderExports = self.module.exports;
+            var feedEndTime = Date.now();
 
-        renderExports.renderFeedContainer(commandString, function(html) {
-            Client.render(html);
-        });
+            self.exports = {};
+            self.module = {exports: {}};
+            importScripts('ks/feed/render/ks-feed.js');
+            var renderExports = self.module.exports;
 
-        return true;
-    }
-};
+            renderExports.renderFeedContainer(commandString, function (html) {
+                Client.render(html);
+            });
+
+            return true;
+        }
+    };
+}

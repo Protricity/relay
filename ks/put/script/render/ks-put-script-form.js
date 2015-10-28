@@ -55,7 +55,7 @@ if(typeof document === 'object')
 })();
 
 // Worker Scripts
-if (!module) var module = {exports:{}};
+if(typeof module === 'object')
 (function() {
     var TEMPLATE_URL = 'ks/put/script/render/ks-put-script-form.html';
 

@@ -1,7 +1,7 @@
 /**
  * Created by ari.
  */
-if (!module) var module = {exports:{}};
+if(typeof module === 'object')
 module.exports.initClientKSPutCommands = function(Client) {
 
     // HTTP PUT Command

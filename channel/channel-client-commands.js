@@ -1,7 +1,7 @@
 /**
  * Created by ari on 7/2/2015.
  */
-if (!module) var module = {exports:{}};
+if(typeof module === 'object')
 module.exports.initClientChannelCommands = function(Client) {
 
     self.exports = {};

@@ -1,11 +1,12 @@
 /**
  * Created by ari on 7/2/2015.
  */
+if(typeof document === 'object')
 (function() {
 
     // Events
 
-    self.addEventListener('render', onRenderEvent, false);
+    document.addEventListener('render', onRenderEvent, false);
 
     function onRenderEvent(e) {
         var voteElements = document.getElementsByClassName('app.vote');
@@ -48,9 +49,6 @@
         }
     }
 
-    // For PGP Decryption in chat rooms
-    //includeScript('pgp/pgp-listeners.js');
-
     // For Public/Private Key Database access
-    //includeScript('pgp/pgp-db.js');
+    includeScript('pgp/pgp-db.js');
 })();

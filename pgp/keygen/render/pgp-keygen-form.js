@@ -133,7 +133,7 @@ if(typeof document === 'object')
 })();
 
 // Worker Script
-else
+if(typeof module === 'object')
 (function() {
 
     module.exports.renderPGPKeyGenForm = function(user_id, callback) {
@@ -151,5 +151,3 @@ else
     };
 
 })();
-if (!module) var module = {};
-if (!module.exports) module.exports = {};

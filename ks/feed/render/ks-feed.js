@@ -4,7 +4,7 @@
 
 
 // Worker Script
-if (!module) var module = {exports:{}};
+if(typeof module === 'object')
 (function() {
     module.exports.renderFeedContainer = function(tagHTML, callback, Client) {
         var TEMPLATE_URL = 'ks/feed/render/ks-feed.html';

@@ -15,8 +15,7 @@ if(typeof document === 'object')
 
 
 // Worker Scripts
-if (!module) var module = {};
-if (!module.exports) module.exports = {};
+if(typeof module === 'object')
 (function() {
     var TEMPLATE_URL = 'client/log/render/log-window.html';
     var CONTAINER_ID = 'log-window';

@@ -2,14 +2,15 @@
  * Created by ari.
  */
 
-if (!module) var module = {exports:{}};
-module.exports.initSocketServerKSGetCommands = function(SocketServer) {
-    SocketServer.addCommand(getCommandSocket);
-    //SocketServer.addCommand(handleHTTPSocketResponse);
-};
-module.exports.initHTTPServerKSGetCommands = function(SocketServer) {
-    SocketServer.addCommand(getCommandHTTP);
-};
+if(typeof module === 'object') {
+    module.exports.initSocketServerKSGetCommands = function (SocketServer) {
+        SocketServer.addCommand(getCommandSocket);
+        //SocketServer.addCommand(handleHTTPSocketResponse);
+    };
+    module.exports.initHTTPServerKSGetCommands = function (SocketServer) {
+        SocketServer.addCommand(getCommandHTTP);
+    };
+}
 
 var httpBrowserID = 1;
 
