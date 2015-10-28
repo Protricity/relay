@@ -1,4 +1,12 @@
-form[name=create-vote-form] {
+.ks-create-vote-window main,
+.ks-create-vote-window section {
+    min-width: 30em;
+    padding: 1em 2em 1em 2em;
+    border: 3px inset;
+    background-color: #FAFAFA;
+}
+
+form[name=ks-create-vote-form] {
     min-width: 30em;
     padding: 1em 2em 1em 2em;
     border: 3px inset;
@@ -11,24 +19,24 @@ form[name=create-vote-form] {
     /* font-style: italic; */
 }
 
-form[name=create-vote-form] .section-step {
+form[name=ks-create-vote-form] .section-step {
     clear: left;
 }
 
 
 /** Form Buttons **/
-form[name=create-vote-form] input,
-form[name=create-vote-form] select {
+form[name=ks-create-vote-form] input,
+form[name=ks-create-vote-form] select {
     padding: 0.5em 1em;
 }
 
 /** Hide Radio Buttons **/
-form[name=create-vote-form] input[name=radio-step] {
+form[name=ks-create-vote-form] input[name=radio-step] {
     display: none;
 }
 
 /** Tab Buttons **/
-form[name=create-vote-form] .button-step {
+form[name=ks-create-vote-form] .button-step {
     /* font-weight: bold; */
     border: 2px outset;
     padding: 0.5em 1em;
@@ -38,12 +46,12 @@ form[name=create-vote-form] .button-step {
 }
 
 /** Hide Future Tab Button **/
-form[name=create-vote-form] input[name=radio-step]:checked ~ .button-step {
+form[name=ks-create-vote-form] input[name=radio-step]:checked ~ .button-step {
     display: none;
 }
 
 /** Activated Tab Button **/
-form[name=create-vote-form] input[name=radio-step]:checked + .button-step {
+form[name=ks-create-vote-form] input[name=radio-step]:checked + .button-step {
     border-style: inset;
     display: inline-block;
     font-weight: bold;

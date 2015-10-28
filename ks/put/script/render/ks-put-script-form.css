@@ -1,6 +1,7 @@
 /** Form **/
 
-form[name=ks-put-script-select-form] {
+.ks-put-script-select-window main,
+.ks-put-script-select-window section {
     padding: 1em 2em 1em 2em;
     border: 3px inset;
     background-color: #FAFAFA;

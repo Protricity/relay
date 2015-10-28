@@ -16,7 +16,7 @@ if(typeof document === 'object') (function() {
             return false;
 
         switch(formElm.getAttribute('name')) {
-            case 'create-vote-form':
+            case 'ks-create-vote-form':
                 return handleCreateScriptForm(e, formElm);
 
             default:
@@ -110,7 +110,7 @@ if(typeof document === 'object') (function() {
 
 // Worker Script
 if(typeof module === 'object') (function() {
-    var TEMPLATE_URL = "app/social/vote/form/create-vote-form.html";
+    var TEMPLATE_URL = "app/social/vote/form/ks-create-vote-form.html";
 
     module.exports.runScript = function (commandString, callback) {
         var xhr = new XMLHttpRequest();
