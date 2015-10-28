@@ -166,12 +166,15 @@ function ClientSocketWorker() {
                 targetElement = replaceElements[0];
                 //targetElement.innerHTML = '';
 
-                while(contentElements.length > 0)
-                    targetElement.parentNode.insertBefore(contentElements[0], targetElement);
+                //while(contentElements.length > 0)
+                targetElement.parentNode.insertBefore(contentElement, targetElement);
 
                 // Remove all existing elements
-                while(replaceElements.length > 0)
-                    replaceElements[0].parentNode.removeChild(replaceElements[0]);
+                //while(replaceElements.length > 0)
+                //    replaceElements[0].parentNode.removeChild(replaceElements[0]);
+
+                // Remove existing element
+                targetElement.parentNode.removeChild(targetElement);
                 targetElement = contentElement;
                 break;
 

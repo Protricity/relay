@@ -49,7 +49,7 @@ if (!module.exports) module.exports = {};
         // Template
         var SOCKET_TEMPLATE_LOG_ENTRY =
             "\n<div class='log-entry'>" +
-            "\n\t<span class='direction'>{$DIR}</span>:" +
+            "\n\t<span class='direction'>{$DIR}:</span>" +
             "\n\t<span class='message'>{$content}</span>" +
             "\n</div>";
 

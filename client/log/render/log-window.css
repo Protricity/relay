@@ -14,4 +14,10 @@
 .log-entry span.message {
     white-space: pre;
     word-break: break-all;
+    word-wrap: break-word;
+    display: inline-block;
+}
+
+.log-entry span.direction {
+    vertical-align: top;
 }
