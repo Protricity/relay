@@ -119,107 +119,119 @@ if(typeof document === 'object')
                 (e.target.classList && e.target.classList.contains('ks-feed:') ? e.target : null) ||
                 document.getElementsByClassName('ks-feed:')[0];
 
-            var feedEntriesElm = feedElm.getElementsByClassName('ks-feed-entries:')[0];
+            var feedEntryContainer = feedElm.getElementsByClassName('ks-feed-entries:')[0];
 
-            if(!feedEntriesElm.onscroll)
-                feedEntriesElm.onscroll = refreshFeedContainer;
+            if(!feedEntryContainer.onscroll)
+                feedEntryContainer.onscroll = refreshFeedContainer;
 
-            var scrollPos = feedEntriesElm.scrollTop;
-            var scrollMax = feedEntriesElm.scrollHeight - feedEntriesElm.clientHeight;
+            var scrollPos = feedEntryContainer.scrollTop;
+            var scrollMax = feedEntryContainer.scrollHeight - feedEntryContainer.clientHeight;
 
 //             console.log(scrollPos, scrollMax);
 
             if(scrollPos >= scrollMax - 20)
                 setTimeout(function() {
-                    requestMoreFeed(feedEntriesElm);
+                    requestMoreFeed(feedEntryContainer);
                 }, 200);
         }
 
+
         var moreFeedRequested = false;
-        function requestMoreFeed(containerElm) {
+        function requestMoreFeed(feedEntryContainer) {
             if(moreFeedRequested)
                 return console.error("More feed already requested silly!");
             moreFeedRequested = true;
-
 //             console.log("Requesting more feed...");
 
-            containerElm.feedEndTime = containerElm.feedEndTime || Date.now();
+            feedEntryContainer.feedEndTime = feedEntryContainer.feedEndTime || Date.now();
 
             KeySpaceDB.queryContentFeed(
-                containerElm.feedEndTime,
+                feedEntryContainer.feedEndTime,
                 function(err, entryData) {
                     //console.info("CONTENT: ", arguments);
                     if(err)
                         throw new Error(err);
 
                     if(entryData) {
-                        // TODO: if PGP KEY BLOCK
-                        var articleDiv = document.createElement('article');
-                        if(entryData.content.indexOf('-----BEGIN PGP SIGNED MESSAGE-----') === 0) {
-
-                            var pgpClearSignedMessage = openpgp.cleartext.readArmored(entryData.content);
-                            articleDiv.innerHTML = protectHTMLContent(pgpClearSignedMessage.text);
-
-                            if (articleDiv.children[0].nodeName.toLowerCase() === 'article')
-                                articleDiv = articleDiv.children[0];
-
-                            articleDiv.classList.add('ks-verified-content');
-                            articleHTMLContent = articleDiv.outerHTML;
-
-                        } else {
-                            articleDiv.innerHTML = protectHTMLContent(entryData.content)
-                                .replace(/&/g, "&amp;")
-                                .replace(/</g, "&lt;")
-                                .replace(/>/g, "&gt;")
-                                .replace(/"/g, "&quot;")
-                                .replace(/'/g, "&#039;")
-                                .replace(/\n/g, "<br />");
-
-                            articleDiv.classList.add('ks-unverified-content');
-
-                        }
-
-                        var authorAnchorElm = articleDiv.querySelector('a[rel=author]');
-
-                        var articleHTMLContent = null;
-                        articleHTMLContent = articleDiv.outerHTML;
-
-                        if(entryData.timestamp < containerElm.feedEndTime)
-                            containerElm.feedEndTime = entryData.timestamp-1;
-
-                        var templateElm = containerElm.getElementsByClassName('ks-feed-entry-template')[0];
-                        var templateHTML = templateElm.outerHTML;
-
-                        queryAuthorByKey(entryData.pgp_id_public, function(author) {
-                            if(!authorAnchorElm) {
-                                authorAnchorElm = document.createElement('a');
-                                authorAnchorElm.setAttribute('rel', 'author');
-                                authorAnchorElm.setAttribute('data-id', entryData.pgp_id_public);
-                                authorAnchorElm.innerHTML = author;
-                            }
-
-                            var newFeedContainer = document.createElement('div');
-                            templateHTML = templateHTML
-                                .replace(/{\$entry_pgp_id_public}/gi, entryData.pgp_id_public)
-                                .replace(/{\$entry_author_html}/gi, authorAnchorElm.outerHTML)
-                                .replace(/{\$entry_path}/gi, entryData.path)
-                                .replace(/{\$entry_timestamp}/gi, entryData.timestamp)
-                                .replace(/{\$entry_timestamp_formatted}/gi, timeSince(entryData.timestamp))
-                                .replace(/{\$entry_content}/gi, articleHTMLContent)
-                            ;
-
-                            newFeedContainer.innerHTML = templateHTML;
-                            var newFeedEntry = newFeedContainer.children[0];
-                            newFeedEntry.classList.remove('ks-feed-entry-template');
-                            //articleDiv.classList.add('ks-feed-entry');
-                            containerElm.appendChild(newFeedEntry);
-                        });
+                        addFeedEntry(entryData, feedEntryContainer);
 
                     } else {
                         moreFeedRequested = false;
                     }
                 });
 
+        }
+
+
+        function addFeedEntry(entryData, containerElm, prepend) {
+
+            var articleDiv = document.createElement('article');
+            var articleHTMLContent = null;
+            if(entryData.content.indexOf('-----BEGIN PGP SIGNED MESSAGE-----') === 0) {
+
+                var pgpClearSignedMessage = openpgp.cleartext.readArmored(entryData.content);
+                articleDiv.innerHTML = protectHTMLContent(pgpClearSignedMessage.text);
+
+                if (articleDiv.children[0].nodeName.toLowerCase() === 'article')
+                    articleDiv = articleDiv.children[0];
+
+                articleDiv.classList.add('ks-verified-content');
+                articleHTMLContent = articleDiv.outerHTML;
+
+            } else {            // TODO: if PGP KEY BLOCK
+                articleDiv.innerHTML = protectHTMLContent(entryData.content)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;")
+                    .replace(/\n/g, "<br />");
+
+                articleDiv.classList.add('ks-unverified-content');
+            }
+
+            var authorAnchorElm = articleDiv.querySelector('a[rel=author]');
+            articleHTMLContent = articleDiv.outerHTML;
+
+            if(entryData.timestamp < containerElm.feedEndTime)
+                containerElm.feedEndTime = entryData.timestamp-1;
+
+            var templateElm = containerElm.getElementsByClassName('ks-feed-entry-template')[0];
+            var templateHTML = templateElm.outerHTML;
+
+            queryAuthorByKey(entryData.pgp_id_public, function(author) {
+                if(!authorAnchorElm) {
+                    authorAnchorElm = document.createElement('a');
+                    authorAnchorElm.setAttribute('rel', 'author');
+                    authorAnchorElm.setAttribute('data-id', entryData.pgp_id_public);
+                    authorAnchorElm.innerHTML = author;
+                }
+
+                var newFeedContainer = document.createElement('div');
+                templateHTML = templateHTML
+                    .replace(/{\$entry_pgp_id_public}/gi, entryData.pgp_id_public)
+                    .replace(/{\$entry_author_html}/gi, authorAnchorElm.outerHTML)
+                    .replace(/{\$entry_path}/gi, entryData.path)
+                    .replace(/{\$entry_timestamp}/gi, entryData.timestamp)
+                    .replace(/{\$entry_timestamp_formatted}/gi, timeSince(entryData.timestamp))
+                    .replace(/{\$entry_content}/gi, articleHTMLContent)
+                ;
+
+                newFeedContainer.innerHTML = templateHTML;
+                var newFeedEntry = newFeedContainer.children[0];
+                newFeedEntry.classList.remove('ks-feed-entry-template');
+                //articleDiv.classList.add('ks-feed-entry');
+                var templateElm = containerElm.getElementsByClassName('ks-feed-entry-template')[0];
+                if(prepend && templateElm && templateElm.nextSibling) {
+                    containerElm.insertBefore(newFeedEntry, templateElm.nextSibling);
+
+                } else {
+                    containerElm.appendChild(newFeedEntry);
+
+                }
+
+                console.log("ADDING", entryData, containerElm, newFeedEntry);
+            });
         }
 
         var authorCache = {};
@@ -459,6 +471,16 @@ if(typeof document === 'object')
                             previewElms[i].innerHTML = '';
 
                         formElm.content.value = '';
+
+
+                        var feedEntryContainer = formElm.parentNode.parentNode.getElementsByClassName('ks-feed-entries:')[0];
+                        addFeedEntry({
+                            path: contentPath,
+                            pgp_id_public: pgp_id_public,
+                            content: pgpSignedContent.trim(),
+                            timestamp: Date.now(),
+                            published: 1
+                        }, feedEntryContainer, true);
                     });
             });
         }
