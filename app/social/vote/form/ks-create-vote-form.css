@@ -1,17 +1,12 @@
-.ks-create-vote-window main,
-.ks-create-vote-window section {
+.ks-create-vote-window > main,
+.ks-create-vote-window > form > section,
+.ks-create-vote-window > section {
     min-width: 30em;
     padding: 1em 2em 1em 2em;
     border: 3px inset;
     background-color: #FAFAFA;
 }
 
-form[name=ks-create-vote-form] {
-    min-width: 30em;
-    padding: 1em 2em 1em 2em;
-    border: 3px inset;
-    background-color: #FAFAFA;
-}
 .put-preview-source-output {
     /* tab-size: 2px; */
     white-space: pre-wrap;

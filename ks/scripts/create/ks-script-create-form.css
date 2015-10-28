@@ -1,5 +1,6 @@
-.ks-script-create-window main,
-.ks-script-create-window section {
+.ks-script-create-window > main,
+.ks-script-create-window > form > section,
+.ks-script-create-window > section {
     min-width: 30em;
     padding: 1em 2em 1em 2em;
     border: 3px inset;

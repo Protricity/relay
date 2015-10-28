@@ -74,7 +74,6 @@ if(typeof document === 'object') (function() {
 
     function updatePreview(e, formElm) {
         var template_html = parseTemplateHTML(e, formElm);
-        console.log(template_html);
 
         formElm.parentNode.getElementsByClassName('put-preview-output')[0].innerHTML = template_html
             .replace(/\[\$[^}]+\]/g, '');                        // Remove empty variables
