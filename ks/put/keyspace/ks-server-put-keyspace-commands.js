@@ -9,7 +9,7 @@ if(typeof module === 'object') (function() {
     module.exports.initHTTPServerKSPutKeySpaceCommands = function (SocketServer) {
         SocketServer.addCommand(putCommandHTTP);
     };
-}
+})();
 
 var pendingGETRequests = [];
 
