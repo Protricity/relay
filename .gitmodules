@@ -1,3 +1,0 @@
-[submodule "server/nodejs/nodejs-websocket"]
-	path = server/nodejs/nodejs-websocket
-	url = https://github.com/sitegui/nodejs-websocket.git

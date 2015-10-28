@@ -25,7 +25,7 @@ function getStaticHTTPCommand(request, response) {
 function handleFileRequest(requestURI, responseCallback) {
     var fs = require('fs');
 
-    var filePath = '.' + requestURI;
+    var filePath = '.' + requestURI.split('?')[0];
     if (filePath == './')
         filePath = './index.html';
 
@@ -73,6 +73,9 @@ function getContentType(filePath) {
             return 'image/jpg';
         case 'wav':
             return 'audio/wav';
+        case 'ico':
+            return 'image/x-icon';
+
         default:
             console.error("Unknown file type: " + filePath);
             return 'application/octet-stream';

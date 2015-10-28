@@ -15,9 +15,7 @@ if(typeof document === 'object')
 
 
 // Worker Scripts
-if (!module) var module = {};
-if (!module.exports) module.exports = {};
-(function() {
+if(typeof module === 'object') (function() {
     var TEMPLATE_URL = 'client/log/render/log-window.html';
     var CONTAINER_ID = 'log-window';
 
@@ -49,7 +47,7 @@ if (!module.exports) module.exports = {};
         // Template
         var SOCKET_TEMPLATE_LOG_ENTRY =
             "\n<div class='log-entry'>" +
-            "\n\t<span class='direction'>{$DIR}</span>:" +
+            "\n\t<span class='direction'>{$DIR}:</span>" +
             "\n\t<span class='message'>{$content}</span>" +
             "\n</div>";
 

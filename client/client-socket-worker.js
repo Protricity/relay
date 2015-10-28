@@ -13,7 +13,6 @@ function ClientSocketWorker() {
     document.addEventListener('click', onClickEvent, false);
     document.addEventListener('command', onCommandEvent, false);
     window.addEventListener('hashchange', onHashChange, false);
-    //window.onbeforeunload = onBeforeUnload;
 
     ClientSocketWorker.get = function() {
         if(!socketWorker) {
@@ -82,9 +81,6 @@ function ClientSocketWorker() {
         e.preventDefault();
         var commandString = e.detail || e.data;
         ClientSocketWorker.sendCommand(commandString);
-    }
-    function onBeforeUnload(e) {
-        return "Relay client will disconnect";
     }
 
     function onHashChange(e, hash) {
@@ -170,12 +166,15 @@ function ClientSocketWorker() {
                 targetElement = replaceElements[0];
                 //targetElement.innerHTML = '';
 
-                while(contentElements.length > 0)
-                    targetElement.parentNode.insertBefore(contentElements[0], targetElement);
+                //while(contentElements.length > 0)
+                targetElement.parentNode.insertBefore(contentElement, targetElement);
 
                 // Remove all existing elements
-                while(replaceElements.length > 0)
-                    replaceElements[0].parentNode.removeChild(replaceElements[0]);
+                //while(replaceElements.length > 0)
+                //    replaceElements[0].parentNode.removeChild(replaceElements[0]);
+
+                // Remove existing element
+                targetElement.parentNode.removeChild(targetElement);
                 targetElement = contentElement;
                 break;
 
@@ -211,14 +210,12 @@ function ClientSocketWorker() {
         }
 
         // Include scripts after insert:
-        console.log(includeScripts);
-        for(var ii=0; ii<includeScripts.length; ii++)
-            ClientSocketWorker.includeScript(includeScripts[ii]);
-
-        var contentEvent = new CustomEvent(command, {
-            bubbles: true
+        includeScriptsAsync(targetElement, includeScripts, function() {
+            var contentEvent = new CustomEvent('render', {
+                bubbles: true
+            });
+            targetElement.dispatchEvent(contentEvent);
         });
-        targetElement.dispatchEvent(contentEvent);
     }
 
     function render(commandString) {
@@ -245,6 +242,7 @@ function ClientSocketWorker() {
             contentElement.classList.add('__no-class');
         var targetClass = contentElement.classList.item(0);
 
+//         console.log("RENDER: ", content);
 
         var targetElements = document.getElementsByClassName(targetClass);
         var targetElement;
@@ -275,23 +273,24 @@ function ClientSocketWorker() {
         }
 
         // Include scripts after insert:
-        console.log("TODO: Load syncrhonously: ", includeScripts);
-        if(includeScripts.length > 0) {
-            for(var ii=0; ii<includeScripts.length; ii++)
-                ClientSocketWorker.includeScript(includeScripts[ii],
-                    ii === includeScripts.length - 1 ? dispatchEvent : null);
-
-        } else {
-            dispatchEvent();
-        }
-
-
-        function dispatchEvent() {
+        includeScriptsAsync(targetElement, includeScripts, function() {
             var contentEvent = new CustomEvent('render', {
                 bubbles: true
             });
             targetElement.dispatchEvent(contentEvent);
-//             console.log("Render", targetElement);
+        });
+    }
+
+    function includeScriptsAsync(targetElement, scripts, callback) {
+        if(scripts.length > 0) {
+            var script = scripts.shift();
+            ClientSocketWorker.includeScript(script, function() {
+                includeScriptsAsync(targetElement, scripts, callback);
+            });
+
+        } else {
+            if(callback)
+                callback();
         }
     }
 
@@ -327,12 +326,18 @@ ClientSocketWorker.includeScript = function(scriptURL, callback) {
     if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
         var newScript = document.createElement('script');
         newScript.setAttribute('src', scriptPath);
-        newScript.onreadystatechange = callback;
-        newScript.onload = callback;
+        if(callback) {
+            newScript.onreadystatechange = callback;
+            newScript.onload = callback;
+        }
         head.appendChild(newScript);
-        console.log("Including Script: ", newScript);
+//         console.log("Including Script: ", newScript);
 
         return true;
+    } else {
+
+        if(callback)
+            callback();
     }
     return false;
 };

@@ -87,9 +87,7 @@ if(typeof document === 'object')
     }
 })();
 
-if (!module) var module = {exports:{}};
-// Worker Scripts
-(function() {
+if(typeof module === 'object') (function() {
     var TEMPLATE_URL = 'ks/put/manage/render/ks-put-manage-form.html';
 
     module.exports.renderPutManageForm = function(url, status_box, callback) {
@@ -158,7 +156,7 @@ if (!module) var module = {exports:{}};
 
                 } else {
                     entry_uid = contentEntry.pgp_id_public + ' ' + contentEntry.timestamp;
-                    if(contentEntry.published === true)
+                    if(contentEntry.published === 1)
                         classes.push('published');
 
                     // TODO: check for private/hidden files
@@ -224,7 +222,7 @@ if (!module) var module = {exports:{}};
                     "\n\t<tr>" +
                     "\n\t\t<td class='name'>Published</td>" +
                     "\n\t\t<td class='value'>" +
-                        (contentEntry.published === true ? "<span class='yes'>Yes</span>" : "<span class='no'>No</span>")
+                        (contentEntry.published === 1 ? "<span class='yes'>Yes</span>" : "<span class='no'>No</span>")
                     + "</td>" +
                     "\n\t</tr>";
 
@@ -340,7 +338,5 @@ if (!module) var module = {exports:{}};
 
         return Math.floor(seconds) + " second" + (seconds !== 1 ? 's' : '') + ' ago';
     }
-
-
 
 })();

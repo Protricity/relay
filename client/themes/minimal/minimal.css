@@ -26,16 +26,11 @@ li {
     display: inline-block;
     margin: 0 0 1em 0.5em;
     position: relative;
-    /*transition: opacity 0.4s ease-in;*/
     vertical-align: top;
     background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
     border-radius: 2px;
     transition: 0.5s ease-out;
     transition-delay: 0.2s;
-    /* max-height: 50em; */
-    /* max-width: 80vw; */
-    /* overflow-y: auto; */
-    /* overflow-x: auto; */
 }
 
 
@@ -45,14 +40,11 @@ li {
 }
 
 .theme-minimal > article:last-child {
-    /* margin: 4px 1px 0 1px; */
 }
 
 
 /** Channel Windows **/
 
-/*.theme-minimal > article.minimized > :not(.show-on-minimized),*/
-/*.theme-minimal > article.minimized .hide-on-minimized{*/
 .theme-minimal > article.closed {
     display: none;
 }
@@ -68,19 +60,14 @@ li {
 }
 
 .theme-minimal > article.maximized {
-
-    position: fixed;
-    /* max-width: 80%; */
-    /* left: 20vw; */
-    /* bottom: 10vw; */
-    margin-top: 5%;
+    position: absolute;
     z-index: 2;
+    top: 10%;
+    right: 50%;
     box-shadow: 0 0 4em #558;
-    font-size: large;
     transition: 500ms;
-    bottom: 50%;
-    right: 50%;/* bring your own prefixes */
-    transform: translate(50%, 50%);
+    transform: translate(50%, 0%);
+    font-size: large;
 }
 
 .theme-minimal > article:not(.maximized) {
@@ -90,7 +77,6 @@ li {
 
 .theme-minimal > article > footer,
 .theme-minimal > article > header {
-    /* width: 100%; */
     background: linear-gradient(to bottom right, #E5DDD5, #F5FFF5);
     text-indent: 0.3em;
     padding: 0 0 0.3em 0;
@@ -98,7 +84,6 @@ li {
 }
 
 .theme-minimal > article > footer:last-of-type {
-    /* margin: 1em 0 0 0; */
     padding: 0 0 0.1em 0;
     /* border-top: 2px double threedface; */
 }

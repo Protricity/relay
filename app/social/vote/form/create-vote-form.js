@@ -4,8 +4,7 @@
 
 
 // Client Script
-if(typeof document === 'object')
-(function() {
+if(typeof document === 'object') (function() {
 
     document.addEventListener('submit', onFormEvent, false);
     document.addEventListener('keyup', onFormEvent, false);
@@ -17,7 +16,7 @@ if(typeof document === 'object')
             return false;
 
         switch(formElm.getAttribute('name')) {
-            case 'ks-create-script-form':
+            case 'create-vote-form':
                 return handleCreateScriptForm(e, formElm);
 
             default:
@@ -75,12 +74,13 @@ if(typeof document === 'object')
 
     function updatePreview(e, formElm) {
         var template_html = parseTemplateHTML(e, formElm);
+        console.log(template_html);
 
         formElm.parentNode.getElementsByClassName('put-preview-output')[0].innerHTML = template_html
             .replace(/\[\$[^}]+\]/g, '');                        // Remove empty variables
 
         formElm.parentNode.getElementsByClassName('put-preview-source-output')[0].innerHTML = template_html
-            .replace(/<[^\/>][^>]*>\s*<\/[^>]+>/gm, '')     // Remove empty html tags
+            //.replace(/<[^\/>][^>]*>\s*<\/[^>]+>/gm, '')     // Remove empty html tags
             .replace(/</g, '&lt;');
 
         //.replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '');     // Remove empty html tags
@@ -110,13 +110,13 @@ if(typeof document === 'object')
 
 // Worker Script
 if(typeof module === 'object') (function() {
-    var TEMPLATE_URL = "ks/scripts/create/ks-script-create-form.html";
+    var TEMPLATE_URL = "app/social/vote/form/create-vote-form.html";
 
-    module.exports.runScript = function(commandString, callback) {
+    module.exports.runScript = function (commandString, callback) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", TEMPLATE_URL, false);
         xhr.send();
-        if(xhr.status !== 200)
+        if (xhr.status !== 200)
             throw new Error("Error: " + xhr.responseText);
         callback(xhr.responseText);
 

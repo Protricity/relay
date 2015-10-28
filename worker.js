@@ -6,7 +6,7 @@ importScripts('client/client.js');
 
 self.addEventListener('message', function (e) {
     Client.execute(e.data, e);
-});
+}, false);
 
 if(typeof Crypto === 'undefined') {
     importScripts('pgp/lib/support/nfcrypto.js');

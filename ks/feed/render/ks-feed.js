@@ -4,8 +4,7 @@
 
 
 // Worker Script
-if (!module) var module = {exports:{}};
-(function() {
+if(typeof module === 'object') (function() {
     module.exports.renderFeedContainer = function(tagHTML, callback, Client) {
         var TEMPLATE_URL = 'ks/feed/render/ks-feed.html';
         var xhr = new XMLHttpRequest();
@@ -23,8 +22,10 @@ if (!module) var module = {exports:{}};
 
         // Query private key
         var path = '/.private/id';
-        var html_pgp_id_public_options = '';
+        var html_pgp_id_public_options = "<option value=''>Select a PGP Identity</option>";
         var default_pgp_id_public = null;
+        var idCount = 0;
+        var status_box = '';
         KeySpaceDB.queryAll(path, function(err, contentEntry) {
             if(err)
                 throw new Error(err);
@@ -33,15 +34,27 @@ if (!module) var module = {exports:{}};
                 if(!default_pgp_id_public)
                     default_pgp_id_public = contentEntry.pgp_id_public;
 
+                var optionValue = contentEntry.pgp_id_public +
+                    ',' + contentEntry.user_id +
+                    ',' + (contentEntry.passphrase_required?1:0);
+
                 html_pgp_id_public_options +=
-                    "<option value='" + contentEntry.pgp_id_public + ',' + (contentEntry.passphrase_required?1:0) + "'" +
-                    (default_pgp_id_public === contentEntry.pgp_id_public ? ' selected="selected"' : '') +
+                    "<option value='" + optionValue + "'" +
+                        (default_pgp_id_public === contentEntry.pgp_id_public ? ' selected="selected"' : '') +
                     ">" +
-                    (contentEntry.passphrase_required?'* ':'&nbsp;  ') +
-                    contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) + ' - ' + contentEntry.user_id +
+                        (contentEntry.passphrase_required?'* ':'&nbsp;  ') +
+                        contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) +
+                        ' - ' + contentEntry.user_id +
                     "</option>";
 
+                idCount++;
             } else {
+
+                if(idCount === 0)
+                    status_box = "<span class='error'>No PGP Identities were found on this client.</span>" +
+                        "<br/>" +
+                        "<a href='#PGP.KEYGEN'>Generate</a> a new <strong>PGP Identity</strong> in order to post on the <span class='command'>feed</span>";
+
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", TEMPLATE_URL, false);
                 xhr.send();
@@ -50,7 +63,7 @@ if (!module) var module = {exports:{}};
                 callback(xhr.responseText
                         .replace(/{\$filter}/gi, '')
                         .replace(/{\$put_content}/gi, '')
-                        .replace(/{\$status_box}/gi, '')
+                        .replace(/{\$status_box}/gi, status_box)
                         .replace(/{\$classes}/gi, classes.length > 0 ? classes.join(' ') : '')
                         .replace(/{\$html_pgp_id_public_options}/gi, html_pgp_id_public_options)
                 );
@@ -60,7 +73,6 @@ if (!module) var module = {exports:{}};
         return true;
     };
 })();
-
 
 // Client Script
 if(typeof document === 'object')
@@ -115,7 +127,7 @@ if(typeof document === 'object')
             var scrollPos = feedEntriesElm.scrollTop;
             var scrollMax = feedEntriesElm.scrollHeight - feedEntriesElm.clientHeight;
 
-            console.log(scrollPos, scrollMax);
+//             console.log(scrollPos, scrollMax);
 
             if(scrollPos >= scrollMax - 20)
                 setTimeout(function() {
@@ -129,7 +141,7 @@ if(typeof document === 'object')
                 return console.error("More feed already requested silly!");
             moreFeedRequested = true;
 
-            console.log("Requesting more feed...");
+//             console.log("Requesting more feed...");
 
             containerElm.feedEndTime = containerElm.feedEndTime || Date.now();
 
@@ -141,19 +153,20 @@ if(typeof document === 'object')
                         throw new Error(err);
 
                     if(entryData) {
+                        // TODO: if PGP KEY BLOCK
                         var articleDiv = document.createElement('article');
-                        try {
+                        if(entryData.content.indexOf('-----BEGIN PGP SIGNED MESSAGE-----') === 0) {
+
                             var pgpClearSignedMessage = openpgp.cleartext.readArmored(entryData.content);
                             articleDiv.innerHTML = protectHTMLContent(pgpClearSignedMessage.text);
 
-                            if(articleDiv.children[0].nodeName.toLowerCase() === 'article')
+                            if (articleDiv.children[0].nodeName.toLowerCase() === 'article')
                                 articleDiv = articleDiv.children[0];
 
                             articleDiv.classList.add('ks-verified-content');
                             articleHTMLContent = articleDiv.outerHTML;
 
-                        } catch (e) {
-                            console.error(e);
+                        } else {
                             articleDiv.innerHTML = protectHTMLContent(entryData.content)
                                 .replace(/&/g, "&amp;")
                                 .replace(/</g, "&lt;")
@@ -163,6 +176,7 @@ if(typeof document === 'object')
                                 .replace(/\n/g, "<br />");
 
                             articleDiv.classList.add('ks-unverified-content');
+
                         }
 
                         var authorAnchorElm = articleDiv.querySelector('a[rel=author]');
@@ -223,7 +237,7 @@ if(typeof document === 'object')
             var requestPath = "public/id";
             var requestURL = "http://" + pgp_id_public + ".ks/" + requestPath;
 
-            console.log("Requesting author for " + pgp_id_public + "...");
+//             console.log("Requesting author for " + pgp_id_public + "...");
             KeySpaceDB.queryOne(requestURL, function (err, contentData) {
                 if (err)
                     return callback(err);
@@ -289,6 +303,46 @@ if(typeof document === 'object')
                     }
                 });
             }
+
+            // Refresh pgp identities
+
+            var queryPath = '/.private/id';
+            var html_pgp_id_public_options = "<option value=''>Select a PGP Identity</option>";
+            var default_pgp_id_public = null;
+            var idCount = 0;
+            KeySpaceDB.queryAll(queryPath, function(err, contentEntry) {
+                if(err)
+                    throw new Error(err);
+
+                if(contentEntry) {
+                    if(!default_pgp_id_public)
+                        default_pgp_id_public = contentEntry.pgp_id_public;
+
+                    var optionValue = contentEntry.pgp_id_public +
+                        ',' + contentEntry.user_id +
+                        ',' + (contentEntry.passphrase_required?1:0);
+
+                    html_pgp_id_public_options +=
+                        "<option value='" + optionValue + "'" +
+                        (default_pgp_id_public === contentEntry.pgp_id_public ? ' selected="selected"' : '') +
+                        ">" +
+                        (contentEntry.passphrase_required?'* ':'&nbsp;  ') +
+                        contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) +
+                        ' - ' + contentEntry.user_id +
+                        "</option>";
+
+                    idCount++;
+                } else {
+
+                    formElm.getElementsByClassName('status-box')[0].innerHTML =
+                        idCount > 0 ? '' :
+                        "<span class='error'>No PGP Identities were found on this client.</span>" +
+                        "<br/>" +
+                        "<a href='#PGP.KEYGEN'>Generate</a> a new <strong>PGP Identity</strong> in order to post on the <span class='command'>feed</span>";
+
+                    formElm.pgp_id_public.innerHTML = html_pgp_id_public_options
+                }
+            });
         }
 
 
@@ -378,10 +432,10 @@ if(typeof document === 'object')
                             throw new Error('Could not find valid key packet for encryption in key ' + key.primaryKey.getKeyId().toHex());
                         }
 
-                        var finalPGPSignedContent = pgpClearSignedMessage.armor();
+                        //var finalPGPSignedContent = pgpClearSignedMessage.armor();
                         //console.log(pgpSignedContent, finalPGPSignedContent);
 
-                        var commandString = "PUT " + pgp_id_public + "\n" + pgpSignedContent; // finalPGPSignedContent;
+                        var commandString = "PUT --publish " + pgp_id_public + "\n" + pgpSignedContent; // finalPGPSignedContent;
 
                         var socketEvent = new CustomEvent('command', {
                             detail: commandString,
@@ -393,13 +447,27 @@ if(typeof document === 'object')
                         if (!socketEvent.defaultPrevented)
                             throw new Error("Socket event for new post was not handled");
 
-                        statusBoxElm.innerHTML = "<span class='command'>Put</span> <span class='success'>Successful</span>";
+                        if (!socketEvent.defaultPrevented)
+                            throw new Error("Socket event for new post was not handled");
+
+
+                        statusBoxElm.innerHTML = "Your feed post was created <span class='success'>Successful</span>";
+
+                        // TODO: ugly parent node stack
+                        var previewElms = formElm.parentNode.parentNode.getElementsByClassName('ks-put-preview:');
+                        for(var i=0; i<previewElms.length; i++)
+                            previewElms[i].innerHTML = '';
+
                         formElm.content.value = '';
                     });
             });
         }
 
         function updatePutPreview(e, formElm) {
+            var pgp_id_public = formElm.pgp_id_public.value.split(',')[0];
+            var user_id = formElm.pgp_id_public.value.split(',')[1];
+            var passphrase_required = formElm.pgp_id_public.value.split(',')[2] === '1';
+
             var postContentElm = formElm.querySelector('textarea[name=content]');
             var pathElm = formElm.querySelector('*[name=path]');
             if(!pathElm)
@@ -416,14 +484,38 @@ if(typeof document === 'object')
                 contentDiv.innerHTML = "<article>" + contentDiv.innerHTML + "</article>";
                 articleElm = contentDiv.querySelector('article');
             }
-            articleElm.setAttribute('data-path', pathElm);
+            articleElm.setAttribute('data-path', pathElm.value);
             //articleElm.setAttribute('data-timestamp', timestamp.toString());
 
+            articleElm.classList.add('ks-feed-entry');
             postContent = articleElm.outerHTML;
             postContent = protectHTMLContent(postContent, formElm);
 
-            var previewElm = document.getElementsByClassName('ks-put-preview:')[0];
-            previewElm.innerHTML = postContent;
+
+
+            var newFeedContainer = document.createElement('div');
+
+            var templateElm = formElm.parentNode.parentNode.getElementsByClassName('ks-feed-entry-template')[0];
+            var templateHTML = templateElm.outerHTML;
+
+            templateHTML = templateHTML
+                .replace(/{\$entry_pgp_id_public}/gi, pgp_id_public)
+                .replace(/{\$entry_author_html}/gi, user_id || "Nobody ...yet")
+                .replace(/{\$entry_path}/gi, pathElm.value)
+                .replace(/{\$entry_timestamp}/gi, Date.now())
+                .replace(/{\$entry_timestamp_formatted}/gi, "Post Preview... coming soon to a feed near you")
+                .replace(/{\$entry_content}/gi, postContent)
+            ;
+
+            newFeedContainer.innerHTML = templateHTML;
+            var newFeedEntry = newFeedContainer.children[0];
+            newFeedEntry.classList.remove('ks-feed-entry-template');
+            //containerElm.appendChild(newFeedEntry);
+
+            // TODO: ugly parent node stack
+            var previewElms = document.getElementsByClassName('ks-put-preview:');
+            for(var i=0; i<previewElms.length; i++)
+                previewElms[i].innerHTML = newFeedEntry.outerHTML;
         }
 
 
@@ -482,7 +574,7 @@ if(typeof document === 'object')
                 var OPENPGP_WORKER_URL = 'pgp/lib/openpgpjs/openpgp.worker.js';
                 window.openpgp._worker_init = true;
                 window.openpgp.initWorker(OPENPGP_WORKER_URL);
-                console.info("OpenPGP Worker Loaded: " + OPENPGP_WORKER_URL);
+//                 console.info("OpenPGP Worker Loaded: " + OPENPGP_WORKER_URL);
             }
             clearInterval(workerInterval);
         }, 200);
