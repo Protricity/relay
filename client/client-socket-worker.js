@@ -90,7 +90,7 @@ function ClientSocketWorker() {
         if(!hashCommand)
             return false;
         e.preventDefault();
-        console.log("Hash Command: ", hashCommand);
+        console.info("Hash Command: ", hashCommand);
         ClientSocketWorker.sendCommand(hashCommand);
     }
 
