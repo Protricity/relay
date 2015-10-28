@@ -15,8 +15,7 @@ if(typeof document === 'object')
 
 
 // Worker Scripts
-if(typeof module === 'object')
-(function() {
+if(typeof module === 'object') {
     var TEMPLATE_URL = 'client/log/render/log-window.html';
     var CONTAINER_ID = 'log-window';
 
@@ -80,4 +79,4 @@ if(typeof module === 'object')
         // Callback
         return callback(logEntryHTML, callback)
     }
-})();
+}

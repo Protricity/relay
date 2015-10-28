@@ -87,8 +87,7 @@ if(typeof document === 'object')
     }
 })();
 
-if(typeof module === 'object')
-(function() {
+if(typeof module === 'object') {
     var TEMPLATE_URL = 'ks/put/manage/render/ks-put-manage-form.html';
 
     module.exports.renderPutManageForm = function(url, status_box, callback) {
@@ -342,4 +341,4 @@ if(typeof module === 'object')
 
 
 
-})();
+}

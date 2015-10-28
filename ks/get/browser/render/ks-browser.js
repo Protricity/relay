@@ -84,8 +84,7 @@ if(typeof document === 'object')
 
 
 // Worker Script
-if(typeof module === 'object')
-(function() {
+if(typeof module === 'object') {
     var TEMPLATE_URL = 'ks/get/browser/render/ks-browser.html';
 
     module.exports.renderBrowser = function(responseText, callback) {
@@ -147,4 +146,4 @@ if(typeof module === 'object')
         //        .replace(/{\$request_url}/gi, requestURL)
         //);
     };
-})();
+}

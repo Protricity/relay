@@ -156,8 +156,7 @@ if(typeof document === 'object')
     })();
 
 // Worker Script
-if(typeof module === 'object')
-(function() {
+if(typeof module === 'object') {
     module.exports.renderPGPManageForm = renderPGPManageForm;
     function renderPGPManageForm (status_box, callback) {
 
@@ -242,4 +241,4 @@ if(typeof module === 'object')
         );
     }
 
-})();
+}

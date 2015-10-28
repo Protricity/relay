@@ -17,7 +17,7 @@ if(typeof document === 'object')
             return false;
 
         switch(formElm.getAttribute('name')) {
-            case 'ks-create-script-form':
+            case 'create-vote-form':
                 return handleCreateScriptForm(e, formElm);
 
             default:
@@ -109,18 +109,17 @@ if(typeof document === 'object')
 })();
 
 // Worker Script
-if(typeof module === 'object')
-(function() {
+if(typeof module === 'object') {
     var TEMPLATE_URL = "ks/scripts/create/ks-script-create-form.html";
 
-    module.exports.runScript = function(commandString, callback) {
+    module.exports.runScript = function (commandString, callback) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", TEMPLATE_URL, false);
         xhr.send();
-        if(xhr.status !== 200)
+        if (xhr.status !== 200)
             throw new Error("Error: " + xhr.responseText);
         callback(xhr.responseText);
 
         return true;
     };
-})();
+}

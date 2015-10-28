@@ -76,8 +76,7 @@ if(typeof document === 'object')
 })();
 
 // Worker Script
-if(typeof module === 'object')
-(function() {
+if(typeof module === 'object') {
     var TEMPLATE_URL = 'channel/render/channel-window.html';
 
     module.exports.renderChatWindow = function(channelPath, callback) {
@@ -174,4 +173,4 @@ if(typeof module === 'object')
         callback(optionHTML);
     };
 
-})();
+}

@@ -49,16 +49,17 @@ if(typeof document === 'object')
 
 
 // Worker Scripts
-if(typeof module === 'object')
-module.exports.renderNavTag = function(tagHTML, callback, Client) {
-    var TEMPLATE_URL = 'client/tags/render/client-nav-tags.html';
+if(typeof module === 'object') {
+    module.exports.renderNavTag = function (tagHTML, callback, Client) {
+        var TEMPLATE_URL = 'client/tags/render/client-nav-tags.html';
 
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", TEMPLATE_URL, false);
-    xhr.send();
-    if(xhr.status !== 200)
-        throw new Error("Error: " + xhr.responseText);
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", TEMPLATE_URL, false);
+        xhr.send();
+        if (xhr.status !== 200)
+            throw new Error("Error: " + xhr.responseText);
 
-    callback(xhr.responseText);
-    return true;
-};
+        callback(xhr.responseText);
+        return true;
+    };
+}

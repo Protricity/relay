@@ -4,8 +4,7 @@
 
 
 // Worker Script
-if(typeof module === 'object')
-(function() {
+if(typeof module === 'object') {
     module.exports.renderFeedContainer = function(tagHTML, callback, Client) {
         var TEMPLATE_URL = 'ks/feed/render/ks-feed.html';
         var xhr = new XMLHttpRequest();
@@ -73,7 +72,7 @@ if(typeof module === 'object')
 
         return true;
     };
-})();
+}
 
 
 // Client Script

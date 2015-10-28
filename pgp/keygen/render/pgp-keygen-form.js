@@ -133,9 +133,7 @@ if(typeof document === 'object')
 })();
 
 // Worker Script
-if(typeof module === 'object')
-(function() {
-
+if(typeof module === 'object') {
     module.exports.renderPGPKeyGenForm = function(user_id, callback) {
         var TEMPLATE_URL = "pgp/keygen/render/pgp-keygen-form.html";
 
@@ -150,4 +148,4 @@ if(typeof module === 'object')
         return true;
     };
 
-})();
+}
