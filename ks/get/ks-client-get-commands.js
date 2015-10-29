@@ -102,6 +102,8 @@ if(typeof module === 'object') (function() {
 
             // Check local cache to see what can be displayed while waiting
             var requestURL = getRequestURL(requestString);
+            if(!requestURL)
+                throw new Error("Invalid Request:\n" + requestString);
             var passedResponseHeaders = "\nBrowser-ID: " + browserID;
             passedResponseHeaders += "\nRequest-ID: " + requestID;
 

@@ -20,7 +20,7 @@ function Client() {
 
     Client.sendWithSocket = function(commandString, e, withSocket) {
         if(typeof ClientSockets === 'undefined')
-            importScripts('client/client-sockets.js');
+            importScripts('client/sockets/client-sockets.js');
         return ClientSockets.send(commandString, e, withSocket);
     };
 
@@ -126,7 +126,7 @@ function Client() {
 
         var tagString = match[0];
 
-        var tags = Client.require('client/client-tag-list.js').tags;
+        var tags = Client.require('client/tags/client-tag-list.js').tags;
         for (var i = 0; i < tags.length; i++) {
             if (tags[i][0].test(tagString)) {
                 tags[i][1](tagString, function (tagReplacedContent) {

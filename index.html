@@ -3,7 +3,7 @@
     <head>
         <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
         <link rel="shortcut icon" href="favicon.ico?v=6" />
-        <script src="client/client-socket-worker.js"></script>
+        <script src="client/sockets/client-socket-worker.js"></script>
         <script>
             // Render Navigation Menu
             ClientSocketWorker.sendCommand("render {nav}");
@@ -32,7 +32,9 @@
 //                    "Socket handler");
 
 
-            window.onbeforeunload = onBeforeUnload;
+            if(document.location.host !== 'localhost') {
+                window.onbeforeunload = onBeforeUnload;
+            }
 
             function onBeforeUnload(e) {
                 return "Relay client will disconnect";
