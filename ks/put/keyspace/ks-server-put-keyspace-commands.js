@@ -68,17 +68,21 @@ function putCommandSocket(commandString, client) {
     var openpgp = require('openpgp');
 
     // TODO: check for encrypted rather than cleartext
-    try {
+    if(content.indexOf('-----BEGIN PGP SIGNED MESSAGE-----') === 0) {
         var pgpClearSignedMessage = openpgp.cleartext.readArmored(content);
 
         var path = /data-path=["'](\S+)["']/i.exec(pgpClearSignedMessage.text)[1];
         //var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(pgpClearSignedMessage.text)[1]);
         var timestamp = pgpClearSignedMessage.packets[0].created.getTime(); // TODO: get signature packet
 
+        client.send("INFO Processing signed content for: " + pgp_id_public);
         // Query public key for verification
         requireClientPublicKey(pgp_id_public, client, function(err, publicKey) {
-            if (err)
-                throw new Error(err);
+            if (err) {
+                console.error(err);
+                client.send("ERROR " + err);
+                return;
+            }
 
             openpgp.verifyClearSignedMessage(publicKey, pgpClearSignedMessage)
                 .then(function (decryptedContent) {
@@ -86,17 +90,21 @@ function putCommandSocket(commandString, client) {
                         if (!decryptedContent.signatures[i].valid)
                             throw new Error("Invalid Signature: " + decryptedContent.signatures[i].keyid.toHex().toUpperCase());
 
+                    console.info("Verified Signed Content for: " + pgp_id_public);
+
                     var keyspaceContent = pgpClearSignedMessage.armor().trim();
 
                     var KeySpaceDB = require('../../ks-db.js').KeySpaceDB;
                     KeySpaceDB.addVerifiedContentToDB(keyspaceContent, pgp_id_public, timestamp, path, {},
                         function(err, insertData) {
-                            console.info("Verified Signed Content for: " + pgp_id_public);
-
-                            if (err)
+                            if (err) {
+                                console.error(err);
                                 client.send("ERROR " + err);
-                            else
-                                client.send("PUT.SUCCESS " + insertData.pgp_id_public + ' ' + insertData.timestamp);
+                                return;
+                            }
+
+                            console.info("Cached Signed Content: " + pgp_id_public);
+                            client.send("PUT.SUCCESS " + insertData.pgp_id_public + ' ' + insertData.timestamp);
                         });
 
                 }).catch(function(err) {
@@ -105,36 +113,36 @@ function putCommandSocket(commandString, client) {
                 });
         });
 
-    } catch (e) {
-        try {
-            var publicKey = openpgp.key.readArmored(content).keys[0];
-            var publicKeyCreateDate = publicKey.subKeys[0].subKey.created;
-            var pkPath = 'public/id';
-            var pkTimestamp = publicKeyCreateDate.getTime();
-            var keyspaceContent = publicKey.armor();
+    } else if(content.indexOf('-----BEGIN PUBLIC KEY BLOCK-----') === 0) {
+                var publicKey = openpgp.key.readArmored(content).keys[0];
+                var publicKeyCreateDate = publicKey.subKeys[0].subKey.created;
+                var pkPath = 'public/id';
+                var pkTimestamp = publicKeyCreateDate.getTime();
+                var keyspaceContent = publicKey.armor();
 
-            // Add public key to cache.
-            var KeySpaceDB = require('../../ks-db.js').KeySpaceDB;
-            KeySpaceDB.addVerifiedContentToDB(keyspaceContent, pgp_id_public, pkTimestamp, pkPath, {},
-                function(err, insertData) {
-                    console.info("Verified Signed Content for: " + pgp_id_public);
+                // Add public key to cache.
+                client.send("INFO Processing public key for: " + pgp_id_public);
+                var KeySpaceDB = require('../../ks-db.js').KeySpaceDB;
+                KeySpaceDB.addVerifiedContentToDB(keyspaceContent, pgp_id_public, pkTimestamp, pkPath, {},
+                    function(err, insertData) {
+                        if (err) {
+                            console.error(err);
+                            client.send("ERROR " + err);
+                            return;
+                        }
 
-                    if (err)
-                        client.send("ERROR " + err);
-                    else
+                        console.info("Cached Public Key for: " + pgp_id_public);
                         client.send("PUT.SUCCESS " + insertData.pgp_id_public + ' ' + insertData.timestamp);
-                });
+                    });
 
-        } catch (e) {
-
-            throw new Error("No PGP Signed Message or Public Key found");
-        }
+    } else {
+        throw new Error("No PGP Signed Message or Public Key found");
     }
 
-    client.send("INFO Processing PUT request");
 
     return true;
 }
+
 
 function putCommandHTTP(request, response) {
     var commandString = request.method + ' ' + request.url;
