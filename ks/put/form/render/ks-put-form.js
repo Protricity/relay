@@ -373,7 +373,7 @@ if(typeof module === 'object') (function() {
                     callback(xhr.responseText
                         .replace(/{\$status_box}/gi, status_box)
                         .replace(/{\$content}/gi, content)
-                        .replace(/{\$classes}/gi, classes.length > 0 ? classes.join(' ') : '')
+                        .replace(/{\$classes}/gi, classes.length > 0 ? ' ' + classes.join(' ') : '')
                         .replace(/{\$content_escaped}/gi, contentEscaped)
                         .replace(/{\$html_pgp_id_public_options}/gi, html_pgp_id_public_options)
                     );
