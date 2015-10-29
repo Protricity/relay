@@ -90,6 +90,10 @@ li {
 
 /** Headers and Footers **/
 
+.theme-minimal > article > header > a:first-child {
+    display: block;
+}
+
 .theme-minimal > article > footer,
 .theme-minimal > article > header {
     background: linear-gradient(to bottom right, #E5DDD5, #F5FFF5);
