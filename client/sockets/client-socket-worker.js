@@ -268,10 +268,10 @@ function ClientSocketWorker() {
 
             // Existing window with same name
             targetElement = targetElements[0];
-            replaceHTMLContent(targetElement, contentElement);
+            //replaceHTMLContent(targetElement, contentElement);
 
-            //targetElement.parentNode.insertBefore(contentElement, targetElement);
-            //targetElement.parentNode.removeChild(targetElement);
+            targetElement.parentNode.insertBefore(contentElement, targetElement);
+            targetElement.parentNode.removeChild(targetElement);
             targetElement = contentElement;
         }
 
@@ -305,7 +305,7 @@ function ClientSocketWorker() {
                             replaceHTMLContent(oldElement.childNodes[i], newElement.childNodes[i]);
                         }
                     }
-                    
+
                 } else {
                     if(oldElement.innerHTML !== newElement.innerHTML)
                         return replace();
@@ -317,7 +317,7 @@ function ClientSocketWorker() {
                     return replace();
                 break;
         }
-        
+
 
 //         console.log("Match: ", newElement, oldElement);
 
