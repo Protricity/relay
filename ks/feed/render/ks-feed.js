@@ -483,7 +483,9 @@ if(typeof document === 'object')
                             published: 1
                         }, feedEntryContainer, true);
 
-                        refreshHTTPPutForm(formElm, e);
+                        setTimeout(function() {
+                            refreshHTTPPutForm(e, formElm);
+                        }, 100);
                     });
             });
         }
