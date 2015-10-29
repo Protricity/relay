@@ -2,13 +2,12 @@
     padding: 1em 2em 1em 2em;
     border: 3px inset;
     background: #EEE;
-    max-height: 57vw;
+    max-height: 15em;
     overflow-y: auto;
 }
 
 .log-entry {
-    max-width: 50vw;
-    
+    max-width: 40em;
 }
 
 .log-entry span.message {
