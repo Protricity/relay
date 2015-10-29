@@ -75,10 +75,14 @@ function putCommandSocket(commandString, client) {
         //var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(pgpClearSignedMessage.text)[1]);
         var timestamp = pgpClearSignedMessage.packets[0].created.getTime(); // TODO: get signature packet
 
+        client.send("INFO Processing signed content for: " + pgp_id_public);
         // Query public key for verification
         requireClientPublicKey(pgp_id_public, client, function(err, publicKey) {
-            if (err)
-                return client.send("ERROR " + err);
+            if (err) {
+                console.error(err);
+                client.send("ERROR " + err);
+                return;
+            }
 
             openpgp.verifyClearSignedMessage(publicKey, pgpClearSignedMessage)
                 .then(function (decryptedContent) {
@@ -93,8 +97,11 @@ function putCommandSocket(commandString, client) {
                     var KeySpaceDB = require('../../ks-db.js').KeySpaceDB;
                     KeySpaceDB.addVerifiedContentToDB(keyspaceContent, pgp_id_public, timestamp, path, {},
                         function(err, insertData) {
-                            if (err)
-                                return client.send("ERROR " + err);
+                            if (err) {
+                                console.error(err);
+                                client.send("ERROR " + err);
+                                return;
+                            }
 
                             console.info("Cached Signed Content: " + pgp_id_public);
                             client.send("PUT.SUCCESS " + insertData.pgp_id_public + ' ' + insertData.timestamp);
@@ -114,11 +121,15 @@ function putCommandSocket(commandString, client) {
                 var keyspaceContent = publicKey.armor();
 
                 // Add public key to cache.
+                client.send("INFO Processing public key for: " + pgp_id_public);
                 var KeySpaceDB = require('../../ks-db.js').KeySpaceDB;
                 KeySpaceDB.addVerifiedContentToDB(keyspaceContent, pgp_id_public, pkTimestamp, pkPath, {},
                     function(err, insertData) {
-                        if (err)
-                            return client.send("ERROR " + err);
+                        if (err) {
+                            console.error(err);
+                            client.send("ERROR " + err);
+                            return;
+                        }
 
                         console.info("Cached Public Key for: " + pgp_id_public);
                         client.send("PUT.SUCCESS " + insertData.pgp_id_public + ' ' + insertData.timestamp);
@@ -128,7 +139,6 @@ function putCommandSocket(commandString, client) {
         throw new Error("No PGP Signed Message or Public Key found");
     }
 
-    client.send("INFO Processing PUT request");
 
     return true;
 }

@@ -77,10 +77,10 @@ function KeySpaceDB(dbReadyCallback) {
                 var upgradeDB = e.target.result;
                 var transaction = e.target.transaction;
 
-                //if(upgradeDB.objectStoreNames.contains(KeySpaceDB.DB_TABLE_HTTP_CONTENT)) {
-                //    upgradeDB.deleteObjectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
-                //    console.log('Deleted Table: ' + KeySpaceDB.DB_NAME + '.' + KeySpaceDB.DB_TABLE_HTTP_CONTENT);
-                //}
+                if(upgradeDB.objectStoreNames.contains(KeySpaceDB.DB_TABLE_HTTP_CONTENT)) {
+                    upgradeDB.deleteObjectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
+                    console.log('Deleted Table: ' + KeySpaceDB.DB_NAME + '.' + KeySpaceDB.DB_TABLE_HTTP_CONTENT);
+                }
 
                 if(!upgradeDB.objectStoreNames.contains(KeySpaceDB.DB_TABLE_HTTP_CONTENT)) {
                     var postStore = upgradeDB.createObjectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT, { keyPath: ["pgp_id_public", "timestamp"] });
