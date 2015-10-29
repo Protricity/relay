@@ -6,7 +6,7 @@ if (!module) var module = {exports: {}};
 module.exports.KeySpaceDB = KeySpaceDB;
 
 
-KeySpaceDB.DB_VERSION               = 2;
+KeySpaceDB.DB_VERSION               = 3;
 KeySpaceDB.DB_NAME                  = 'keyspace';
 KeySpaceDB.DB_TABLE_HTTP_CONTENT    = 'content';
 //KeySpaceDB.DB_TABLE_HTTP_URL        = 'url';
@@ -77,10 +77,10 @@ function KeySpaceDB(dbReadyCallback) {
                 var upgradeDB = e.target.result;
                 var transaction = e.target.transaction;
 
-                //if(upgradeDB.objectStoreNames.contains(KeySpaceDB.DB_TABLE_HTTP_CONTENT)) {
-                //    upgradeDB.deleteObjectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
-                //    console.log('Deleted Table: ' + KeySpaceDB.DB_NAME + '.' + KeySpaceDB.DB_TABLE_HTTP_CONTENT);
-                //}
+                if(upgradeDB.objectStoreNames.contains(KeySpaceDB.DB_TABLE_HTTP_CONTENT)) {
+                    upgradeDB.deleteObjectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
+                    console.log('Deleted Table: ' + KeySpaceDB.DB_NAME + '.' + KeySpaceDB.DB_TABLE_HTTP_CONTENT);
+                }
 
                 if(!upgradeDB.objectStoreNames.contains(KeySpaceDB.DB_TABLE_HTTP_CONTENT)) {
                     var postStore = upgradeDB.createObjectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT, { keyPath: ["pgp_id_public", "timestamp"] });
