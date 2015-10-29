@@ -269,8 +269,8 @@ if(typeof document === 'object')
         var lastPostContent = null;
         function refreshHTTPPutForm(e, formElm) {
             var pgp_id_public = formElm.pgp_id_public.value.split(',')[0];
-            var passphrase_required = formElm.pgp_id_public.value.split(',')[1] === '1';
-            var passphrase_required = formElm.pgp_id_public.value.split(',')[1] === '1';
+            //var user_id = formElm.pgp_id_public.value.split(',')[1];
+            var passphrase_required = formElm.pgp_id_public.value.split(',')[2] === '1';
             var passphrase = formElm.passphrase.value;
 
             var disableSubmit = (passphrase_required || !pgp_id_public) || formElm.content.value.length === 0;
@@ -474,7 +474,6 @@ if(typeof document === 'object')
 
                         formElm.content.value = '';
 
-
                         var feedEntryContainer = formElm.parentNode.parentNode.getElementsByClassName('ks-feed-entries:')[0];
                         addFeedEntry({
                             path: contentPath,
@@ -483,6 +482,8 @@ if(typeof document === 'object')
                             timestamp: Date.now(),
                             published: 1
                         }, feedEntryContainer, true);
+
+                        refreshHTTPPutForm(formElm, e);
                     });
             });
         }
