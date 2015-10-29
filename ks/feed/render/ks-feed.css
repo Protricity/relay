@@ -14,7 +14,7 @@ article.ks-feed\3A > section {
 /** Form **/
 
 form[name=ks-feed-put-form] textarea[name=content] {
-    width: 33em;
+    width: 34em;
     /* padding: 0; */
     /* margin: 0; */
 }
@@ -66,6 +66,8 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
     background-color: white;
     overflow: auto;
     width: 36em;
+
+    animation: ks-feed-entry-fade-in .5s linear forwards;
 }
 
 
@@ -92,6 +94,16 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
 .ks-feed-entry > .ks-unverified-content {
     max-height: 7em;
     color: grey;
+}
+
+@keyframes ks-feed-entry-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 /** Feed Entry Preview **/
