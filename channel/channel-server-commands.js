@@ -119,7 +119,7 @@ function chatChannel(commandString, client) {
     var clientInfo = getClientInfo(client);
 
     if(typeof channelUsers[channelLowerCase] === 'undefined')
-        throw new Error("Channel does not exist: " + channel);
+        throw new Error("Channel does not exist: " + channelLowerCase);
         //joinChannel("JOIN " + channel, client);
 
     var clients = channelUsers[channelLowerCase];
