@@ -31,7 +31,6 @@ li {
     border-radius: 2px;
     transition: 0.5s ease-out;
     transition-delay: 0.2s;
-
     animation: theme-minimal-article-fade-in .5s ease-out forwards;
 }
 
@@ -76,10 +75,10 @@ li {
     position: absolute;
     z-index: 2;
     top: 10%;
-    right: 50%;
+    left: 10%;
     box-shadow: 0 0 4em #558;
     transition: 500ms;
-    transform: translate(50%, 0%);
+    /* transform: translate(50%, 0%); */
     font-size: large;
 }
 
