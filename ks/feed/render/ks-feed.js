@@ -141,7 +141,7 @@ if(typeof document === 'object')
             if(moreFeedRequested)
                 return console.error("More feed already requested silly!");
             moreFeedRequested = true;
-//             console.log("Requesting more feed...");
+            console.log("Requesting more feed...");
 
             feedEntryContainer.feedEndTime = feedEntryContainer.feedEndTime || Date.now();
 
@@ -229,8 +229,8 @@ if(typeof document === 'object')
                     containerElm.appendChild(newFeedEntry);
 
                 }
+                // TODO: appear animation?
 
-                console.log("ADDING", entryData, containerElm, newFeedEntry);
             });
         }
 

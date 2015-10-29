@@ -1,0 +1,21 @@
+.sockets-window\3A > main {
+    padding: 0.5em 1em;
+    border: 1px inset;
+    background: #EEE;
+}
+
+.sockets-window-list .open {
+    color: green;
+}
+
+.sockets-window-list .connecting {
+    color: blue;
+}
+
+.sockets-window-list .closing {
+    color: red;
+}
+
+.sockets-window-list .closed {
+    color: darkred;
+}
