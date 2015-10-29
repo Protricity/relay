@@ -75,7 +75,7 @@ function putCommandSocket(commandString, client) {
         //var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(pgpClearSignedMessage.text)[1]);
         var timestamp = pgpClearSignedMessage.packets[0].created.getTime(); // TODO: get signature packet
 
-        client.send("INFO Processing signed content for: " + pgp_id_public);
+        //client.send("INFO Processing signed content for: " + pgp_id_public);
         // Query public key for verification
         requireClientPublicKey(pgp_id_public, client, function(err, publicKey) {
             if (err) {
