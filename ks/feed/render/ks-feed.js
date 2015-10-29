@@ -281,7 +281,8 @@ if(typeof document === 'object')
             formElm.classList[formElm.content.value.length === 0 ? 'add' : 'remove']('compact');
             formElm.parentNode.parentNode.classList[formElm.content.value.length === 0 ? 'add' : 'remove']('compact');
 
-            if(!lastPostContent || lastPostContent != formElm.content.value || e.type === 'change') {
+            if(formElm.content.value &&
+                (!lastPostContent || lastPostContent != formElm.content.value || e.type === 'change')) {
                 lastPostContent = formElm.content.value;
 
                 if(refreshHTTPPutForm.previewTimeout)
