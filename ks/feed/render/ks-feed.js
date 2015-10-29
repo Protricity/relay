@@ -270,6 +270,7 @@ if(typeof document === 'object')
         function refreshHTTPPutForm(e, formElm) {
             var pgp_id_public = formElm.pgp_id_public.value.split(',')[0];
             var passphrase_required = formElm.pgp_id_public.value.split(',')[1] === '1';
+            var passphrase_required = formElm.pgp_id_public.value.split(',')[1] === '1';
             var passphrase = formElm.passphrase.value;
 
             var disableSubmit = (passphrase_required || !pgp_id_public) || formElm.content.value.length === 0;
@@ -361,7 +362,8 @@ if(typeof document === 'object')
         function submitHTTPPutForm(e, formElm) {
             e.preventDefault();
             var pgp_id_public = formElm.pgp_id_public.value.split(',')[0];
-            var passphrase_required = formElm.pgp_id_public.value.split(',')[1] === '1';
+            var user_id = formElm.pgp_id_public.value.split(',')[1];
+            var passphrase_required = formElm.pgp_id_public.value.split(',')[2] === '1';
             var passphrase = formElm.passphrase.value;
             var contentPath = formElm.path.value;
             var postContent = formElm.content.value;
