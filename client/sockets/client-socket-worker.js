@@ -238,7 +238,7 @@ function ClientSocketWorker() {
                 throw new Error("First child missing", console.log(content, htmlContainer));
         }
 
-        var contentElement = htmlContainer.children[0];     // First Child
+        var contentElement = contentElements[0];     // First Child
         if(contentElement.classList.length === 0)
             contentElement.classList.add('__no-class');
         var targetClass = contentElement.classList.item(0);
@@ -257,19 +257,21 @@ function ClientSocketWorker() {
             // TODO: Maximize new window, but only when user requested
             //contentElements[0].classList.add('maximized');
 
-            while(contentElements.length > 0)
-                bodyElm.appendChild(contentElements[0]);
+            //while(contentElements.length > 0)
+            bodyElm.appendChild(contentElement);
 
             if(targetElements.length === 0)
                 throw new Error("Shouldn't Happen. Missing class='" + targetClass + "'\n" + content);
             targetElement = targetElements[0];
 
         } else {
-            targetElement = targetElements[0];
 
-            while(contentElements.length > 0)
-                targetElement.parentNode.insertBefore(contentElements[contentElements.length - 1], targetElement);
-            targetElement.parentNode.removeChild(targetElement);
+            // Existing window with same name
+            targetElement = targetElements[0];
+            replaceHTMLContent(targetElement, contentElement);
+
+            //targetElement.parentNode.insertBefore(contentElement, targetElement);
+            //targetElement.parentNode.removeChild(targetElement);
             targetElement = contentElement;
         }
 
@@ -280,6 +282,50 @@ function ClientSocketWorker() {
             });
             targetElement.dispatchEvent(contentEvent);
         });
+    }
+
+    function replaceHTMLContent(oldElement, newElement) {
+        if(oldElement.nodeType !== newElement.nodeType)
+            return replace();
+
+        if(oldElement.nodeName !== newElement.nodeName)
+            return replace();
+
+        switch(newElement.nodeType) {
+            case Node.ELEMENT_NODE:
+                for(var i=0; i<newElement.attributes.length; i++)
+                    if(oldElement.attributes[i].toString() !== newElement.attributes[i].toString())
+                        return replace();
+
+                if(newElement.children.length > 0) {
+                    for(i=0; i<newElement.childNodes.length; i++) {
+                        if(i>=oldElement.childNodes.length) {
+                            oldElement.appendChild(newElement.childNodes[i]);
+                        } else {
+                            replaceHTMLContent(oldElement.childNodes[i], newElement.childNodes[i]);
+                        }
+                    }
+                    
+                } else {
+                    if(oldElement.innerHTML !== newElement.innerHTML)
+                        return replace();
+                }
+                break;
+
+            case Node.TEXT_NODE:
+                if(oldElement.innerHTML !== newElement.innerHTML)
+                    return replace();
+                break;
+        }
+        
+
+//         console.log("Match: ", newElement, oldElement);
+
+        function replace() {
+//             console.log("Mismatch: ", newElement, oldElement);
+            oldElement.parentNode.insertBefore(newElement, oldElement);
+            oldElement.parentNode.removeChild(oldElement);
+        }
     }
 
     function includeScriptsAsync(targetElement, scripts, callback) {
