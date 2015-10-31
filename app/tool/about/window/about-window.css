@@ -1,0 +1,15 @@
+.about\3A {
+    position: absolute !important;
+    bottom: 13px;
+    right: 13px;
+}
+
+.about\3A > main {
+    /* width: 63em; */
+    height: 20em;
+    overflow: auto;
+    padding: 1em;
+    border: 3px inset;
+    background: #EEE;
+    font-size: smaller;
+}

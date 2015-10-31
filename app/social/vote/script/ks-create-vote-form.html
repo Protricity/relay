@@ -1,4 +1,4 @@
-<article class='ks-put: ks-create-vote-window maximized hide-preview'>
+<article class='ks-put: ks-create-vote-window hide-preview'>
     <script src='app/social/vote/form/ks-create-vote-form.js'></script>
     <link href='app/social/vote/form/ks-create-vote-form.css' type='text/css' rel='stylesheet' property='stylesheet'>
     <style>
@@ -6,7 +6,7 @@
         form[name=ks-create-vote-form] input[name=radio-step]:checked + .button-step + .section-step { display: inherit; }
     </style>
     <header class='header-bar show-on-minimized'>
-        <a href='#MAXIMIZE create-vote:'>Simple Article Wizard</a>
+        <a href='#MAXIMIZE create-vote:'>Create a new public vote (WIP)</a>
     </header>
     <div class='header-bar-buttons show-on-minimized'>
         <a href='#MINIMIZE create-vote:'>[-]</a><!--
@@ -24,6 +24,9 @@
     <main>
         [$content]
     </main>
+    <section class='app-vote-option:'>
+
+    </section>
     <footer>
         [$footer]
     </footer>
@@ -36,6 +39,7 @@
             <strong>Add a title for this vote:</strong>
             <br/>
             <input type='text' name='title' size='36' placeholder='Your Vote Title'>
+            <br/>
             <br/>
             <strong>Add a description for this vote:</strong>
             <br/>
@@ -50,6 +54,7 @@
             <strong>Add a <i>vote option</i>:</strong>
             <br/>
             <input type='text' name='title' size='36' placeholder='New Vote Option Title'>
+            <br/>
             <br/>
             <strong>Add a description for this <i>vote option</i>:</strong>
             <br/>
@@ -73,8 +78,11 @@
             <input type='submit' value='Finish'/>
         </section>
     </form>
+    <header>Vote Options</header>
+    <section class="ks-create-vote-options:" style="display: none;">
+    </section>
+    <header>Preview</header>
     <section class="put-preview-section" style="display: none;">
-        <strong>Preview</strong>:
         <div class='put-preview-output'></div>
         <br />
         <strong>Code</strong>:

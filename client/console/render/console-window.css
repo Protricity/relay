@@ -1,0 +1,26 @@
+.console-content\3A {
+    padding: 1em 2em 1em 2em;
+    border: 3px inset;
+    background: #EEE;
+    max-height: 15em;
+    overflow-y: auto;
+}
+
+.console\3A {
+    float: right;
+}
+
+.console-entry {
+    max-width: 40em;
+}
+
+.console-entry span.message {
+    white-space: pre;
+    word-break: break-all;
+    word-wrap: break-word;
+    display: inline-block;
+}
+
+.console-entry span.direction {
+    vertical-align: top;
+}

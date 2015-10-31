@@ -2,7 +2,9 @@
     <script src='channel/render/channel-window.js'></script>
     <link rel='stylesheet' href='channel/render/channel-window.css' type='text/css'>
     <header class='header-bar show-on-minimized'>
-        <a href='#MAXIMIZE chat:{$channel_lowercase}'><span class='command'>Join</span> {$channel}</a>
+        <a href='#MAXIMIZE chat:{$channel_lowercase}'>
+            <span class='command'>Join</span> {$channel}
+        </a>
     </header>
     <div class='header-bar-buttons show-on-minimized'>
         <a href='#MINIMIZE chat:{$channel_lowercase}'>[-]</a><!--
@@ -25,7 +27,8 @@
                 </tr>
                 <tr class='show-on-minimized'>
                     <td colspan='2'>
-                        <input name='message' type='text' class='reset focus' placeholder='Send a message to {$channel}. [hit enter]' style='width: 100%;'/>
+                        <input name='message' type='text' class='reset focus'
+                               placeholder='Commands: /join [channel], /nick [username], /message [username]' style='width: 100%;'/>
                     </td>
                     <td style='width:1px'>
                         <input type='submit' value='Send' name='submit-send-chat' />

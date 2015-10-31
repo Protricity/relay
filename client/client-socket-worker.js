@@ -11,6 +11,7 @@ function ClientSocketWorker() {
 
     var socketWorker = null;
     document.addEventListener('click', onClickEvent, false);
+    document.addEventListener('dblclick', onDblClick, false);
     document.addEventListener('command', onCommandEvent, false);
     window.addEventListener('hashchange', onHashChange, false);
 
@@ -76,6 +77,21 @@ function ClientSocketWorker() {
 
         var commandString = "GET " + e.target.href;
         ClientSocketWorker.sendCommand(commandString);
+    }
+
+    function onDblClick(e) {
+        var target = e.target;
+        while(target = target.parentNode) {
+            var aMaxAnchor = target.querySelector('a[href*=MAXIMIZE]');
+            if(aMaxAnchor){
+                console.log(aMaxAnchor);
+                var commandString = aMaxAnchor
+                    .getAttribute('href')
+                    .replace(/^#/,'');
+                ClientSocketWorker.sendCommand(commandString);
+                return;
+            }
+        }
     }
 
     function onCommandEvent(e) {

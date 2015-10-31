@@ -33,6 +33,7 @@ if(typeof document === 'object') (function() {
 
             case 'input':
             case 'keyup':
+                updateVoteOptions(e, formElm);
                 updatePreview(e, formElm);
                 if(e.keyCode == 13 && event.shiftKey)
                     handleSubmitEvent(e, formElm);
@@ -72,6 +73,11 @@ if(typeof document === 'object') (function() {
         );
     }
 
+    function updateVoteOptions(e, formElm) {
+        // Parse vote options from content, show buttons for each vote
+    }
+
+
     function updatePreview(e, formElm) {
         var template_html = parseTemplateHTML(e, formElm);
 
@@ -105,20 +111,4 @@ if(typeof document === 'object') (function() {
         return template_html;
     }
 
-})();
-
-// Worker Script
-if(typeof module === 'object') (function() {
-    var TEMPLATE_URL = "app/social/vote/form/ks-create-vote-form.html";
-
-    module.exports.runScript = function (commandString, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", TEMPLATE_URL, false);
-        xhr.send();
-        if (xhr.status !== 200)
-            throw new Error("Error: " + xhr.responseText);
-        callback(xhr.responseText);
-
-        return true;
-    };
 })();
