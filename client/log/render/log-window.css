@@ -6,6 +6,10 @@
     overflow-y: auto;
 }
 
+.log\3A {
+    float: right;
+}
+
 .log-entry {
     max-width: 40em;
 }
