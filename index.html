@@ -6,14 +6,12 @@
         <link rel="shortcut icon" href="favicon.ico?v=6" />
         <script src="client/client-socket-worker.js"></script>
         <script>
-            // Render Navigation Menu
+            // Render Navigation Menu and about box
             ClientSocketWorker.sendCommand("render {nav}");
+            ClientSocketWorker.sendCommand("about");
 
             // Render PUT
-             ClientSocketWorker.sendCommand("put");
-
-            // Render ABOUT
-            ClientSocketWorker.sendCommand("about");
+             ClientSocketWorker.sendCommand("put.script");
 
             // Render FEED
 //            ClientSocketWorker.sendCommand("feed");

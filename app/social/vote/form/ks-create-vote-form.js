@@ -33,6 +33,7 @@ if(typeof document === 'object') (function() {
 
             case 'input':
             case 'keyup':
+                updateVoteOptions(e, formElm);
                 updatePreview(e, formElm);
                 if(e.keyCode == 13 && event.shiftKey)
                     handleSubmitEvent(e, formElm);
@@ -71,6 +72,11 @@ if(typeof document === 'object') (function() {
             .replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '')     // Remove empty html tags
         );
     }
+
+    function updateVoteOptions(e, formElm) {
+        // Parse vote options from content, show buttons for each vote
+    }
+
 
     function updatePreview(e, formElm) {
         var template_html = parseTemplateHTML(e, formElm);
