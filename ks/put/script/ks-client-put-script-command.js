@@ -33,22 +33,22 @@ if(typeof module === 'object') (function() {
                 }
             }
 
-            var fieldValues = {};
-            var queryStringPairs = queryString.split(/^\?|&/g);
-            for (i = 0; i < queryStringPairs.length; i++) {
-                var splitPair = queryStringPairs[i].split('=', 2);
-                if (splitPair[0])
-                    fieldValues[decodeURIComponent(splitPair[0])] = decodeURIComponent(splitPair[1]) || true;
-            }
+            //var fieldValues = {};
+            //var queryStringPairs = queryString.split(/^\?|&/g);
+            //for (i = 0; i < queryStringPairs.length; i++) {
+            //    var splitPair = queryStringPairs[i].split('=', 2);
+            //    if (splitPair[0])
+            //        fieldValues[decodeURIComponent(splitPair[0])] = decodeURIComponent(splitPair[1]) || true;
+            //}
 
 
             if (scriptFound) {
                 try {
                     self.module = {exports: {}};
                     importScripts(scriptFound[0]);
-                    self.module.exports.runScript(fieldValues, function (html) {
+                    self.module.exports.renderContentScript(commandString, function (html) {
                         Client.render(html
-                                .replace(/{\$command_string}/ig, commandString)
+                            .replace(/{\$command_string}/ig, commandString)
                         );
                     });
                     return true;

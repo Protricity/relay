@@ -112,19 +112,3 @@ if(typeof document === 'object') (function() {
     }
 
 })();
-
-// Worker Script
-if(typeof module === 'object') (function() {
-    var TEMPLATE_URL = "app/social/vote/form/ks-create-vote-form.html";
-
-    module.exports.runScript = function (commandString, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", TEMPLATE_URL, false);
-        xhr.send();
-        if (xhr.status !== 200)
-            throw new Error("Error: " + xhr.responseText);
-        callback(xhr.responseText);
-
-        return true;
-    };
-})();

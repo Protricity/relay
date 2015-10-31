@@ -1,0 +1,30 @@
+<article class='console: minimized' data-sort='z'>
+    <script src='client/console/render/console-window.js'></script>
+    <link rel='stylesheet' href='client/console/render/console-window.css' type='text/css' property="stylesheet">
+    <header class='header-bar show-on-minimized'>
+        <a href='#MAXIMIZE console:'>
+            Client <span class='command'>console</span>
+        </a>
+    </header>
+    <div class='header-bar-buttons show-on-minimized'>
+        <a href='#MINIMIZE console:'>[-]</a><!--
+     --><a href='#MAXIMIZE console:'>[+]</a><!--
+     --><a href='#CLOSE console:'>[x]</a>
+    </div>
+    <main class='console-content:'></main>
+    <form name='console-form' class='show-on-minimized'>
+        <table style='width:100%'>
+            <tbody>
+            <tr class='show-on-minimized'>
+                <td>
+                    $<input name='message' type='text' class='reset focus'
+                           placeholder='Commands: join [channel], nick [username], message [username]' style='width: 97%;'/>
+                </td>
+                <td style='width:1px'>
+                    <input type='submit' value='Send' name='submit-send-console' />
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</article>

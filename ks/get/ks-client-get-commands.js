@@ -316,17 +316,17 @@ if(typeof module === 'object') (function() {
                 throw new Error("Invalid Host: " + requestURL);
 
             self.module = {exports: {}};
-            importScripts('client/log/render/log-window.js');
+            importScripts('client/console/render/console-window.js');
             var logExport = self.module.exports;
 
             // Render log window
-            logExport.renderLogWindow(function (html) {
+            logExport.renderConsoleWindow(function (html) {
                 Client.render(html);
             });
 
             var requestURLAnchorHTML = "<a href='" + requestURL + "'>" + requestURL + "</a>";
-            logExport.renderLogEntry(requestURLAnchorHTML, dir, function (html) {
-                Client.appendChild("log-content:", html);
+            logExport.renderConsoleEntry(requestURLAnchorHTML, dir, function (html) {
+                Client.appendChild("console-content:", html);
             });
         };
 
