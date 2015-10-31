@@ -112,7 +112,7 @@ if(typeof document === 'object')
 if(typeof module === 'object') (function() {
     var TEMPLATE_URL = "ks/scripts/create/ks-script-create-form.html";
 
-    module.exports.runScript = function(commandString, callback) {
+    module.exports.renderContentScript = function(commandString, callback) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", TEMPLATE_URL, false);
         xhr.send();

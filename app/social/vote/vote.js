@@ -52,3 +52,45 @@ if(typeof document === 'object')
     // For Public/Private Key Database access
     includeScript('ks/ks-db.js');
 })();
+
+
+
+if(typeof module === 'object') (function() {
+    module.exports.initClientAppSocialVoteCommands = function (Client) {
+
+        Client.addCommand(voteCommand);
+
+        /**
+         *
+         * @param commandString VOTE
+         */
+        function voteCommand(commandString) {
+            var match = /^vote/im.exec(commandString);
+            if (!match)
+                return false;
+
+            self.module = {exports: {}};
+            importScripts('app/social/vote/render/vote-window.js');
+            var renderExports = self.module.exports;
+
+            renderExports.renderVote(commandString, function (html) {
+                Client.render(html);
+            });
+
+            return true;
+        }
+    };
+
+    var TEMPLATE_URL = "app/social/vote/form/ks-create-vote-form.html";
+
+    module.exports.renderContentScript = function (commandString, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", TEMPLATE_URL, false);
+        xhr.send();
+        if (xhr.status !== 200)
+            throw new Error("Error: " + xhr.responseText);
+        callback(xhr.responseText);
+
+        return true;
+    };
+})();

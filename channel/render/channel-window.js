@@ -7,7 +7,7 @@ if(typeof document === 'object') (function() {
 
     // Events
 
-    self.addEventListener('submit', onFormEvent, false);
+    document.addEventListener('submit', onFormEvent, false);
 //     self.addEventListener('input', onFormEvent, false);
 
     function onFormEvent(e, formElm) {
@@ -26,7 +26,6 @@ if(typeof document === 'object') (function() {
                 return false;
         }
     }
-
 
     function submitChatForm(e) {
         e.preventDefault();
@@ -47,18 +46,8 @@ if(typeof document === 'object') (function() {
         // if hasn't identified yet, ask to identify now
 
         var commandString = "CHAT " + channelElm.value + " " + messageElm.value;
-        if(messageElm.value[0] === '/') {
+        if(messageElm.value[0] === '/')
             commandString = messageElm.value.substr(1);
-            var commandEvent = new CustomEvent('command', {
-                detail: commandString,
-                cancelable:true,
-                bubbles:true
-            });
-            formElm.dispatchEvent(commandEvent);
-            if(commandEvent.defaultPrevented)
-                messageElm.value = '';
-            return false;
-        }
 
         var socketEvent = new CustomEvent('command', {
             detail: commandString,

@@ -23,11 +23,11 @@ function ClientSockets(socketURL) {
     importScripts('client/sockets/client-sockets-defaults.js');
 
     self.module = {exports: {}};
-    importScripts('client/log/render/log-window.js');
+    importScripts('client/console/render/console-window.js');
     var logExports = self.module.exports;
 
     // Render log window
-    logExports.renderLogWindow(function(html) {
+    logExports.renderConsoleWindow(function(html) {
         Client.render(html);
     });
 
@@ -53,8 +53,8 @@ function ClientSockets(socketURL) {
                 if(eventListeners[i][0] === 'open')
                     eventListeners[i][1](newSocket);
 
-            logExports.renderLogActionEntry("SOCKET OPEN: " + newSocket.url, function(html) {
-                Client.appendChild('log-content:', html);
+            logExports.renderConsoleActionEntry("SOCKET OPEN: " + newSocket.url, function(html) {
+                Client.appendChild('console-content:', html);
             });
 
             setTimeout(function () {
@@ -90,8 +90,8 @@ function ClientSockets(socketURL) {
                 ClientSockets.get(socketURL);
             }, ClientSockets.SOCKET_RECONNECT_INTERVAL);
 
-            logExports.renderLogActionEntry("SOCKET CLOSED: " + newSocket.url, function(html) {
-                Client.appendChild('log-content:', html);
+            logExports.renderConsoleActionEntry("SOCKET CLOSED: " + newSocket.url, function(html) {
+                Client.appendChild('console-content:', html);
             });
 
             renderClientSocketsWindow();
@@ -102,8 +102,8 @@ function ClientSockets(socketURL) {
             Client.processResponse(e.data, e);
             var socket = e.target;
             if(socket instanceof WebSocket) {
-                logExports.renderLogEntry(e.data, 'I', function(html) {
-                    Client.appendChild('log-content:', html);
+                logExports.renderConsoleEntry(e.data, 'I', function(html) {
+                    Client.appendChild('console-content:', html);
                 });
             }
         }
@@ -197,8 +197,8 @@ function ClientSockets(socketURL) {
 
     ClientSockets.send = function(commandString, e, withSocket) {
         function send(socket){
-            logExports.renderLogEntry(commandString, 'O', function(html) {
-                Client.appendChild('log-content:', html);
+            logExports.renderConsoleEntry(commandString, 'O', function(html) {
+                Client.appendChild('console-content:', html);
             });
             socket.send(commandString);
         }
