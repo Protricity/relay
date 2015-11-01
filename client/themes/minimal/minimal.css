@@ -33,7 +33,7 @@ li {
     transition-delay: 0.2s;
     animation: theme-minimal-article-fade-in .5s ease-out forwards;
     max-height: 80em;
-    max-width: 80em;
+    max-width: 64em;
 }
 
 @keyframes theme-minimal-article-fade-in {
