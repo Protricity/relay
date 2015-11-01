@@ -10,7 +10,7 @@ if(typeof module === 'object') (function() {
          * @param commandString PUT[.FORM] [path] [content]
          */
         function putFormCommand(commandString) {
-            var match = /^put$|^put\.form(?:\s+([\s\S]+))?$/im.exec(commandString);
+            var match = /^put\s*$|^put\.form(?:\s+([\s\S]+))?$/im.exec(commandString);
             if (!match)
                 return false;
 

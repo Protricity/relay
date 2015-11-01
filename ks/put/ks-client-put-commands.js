@@ -32,7 +32,7 @@ if(typeof module === 'object') (function() {
         // HTTP PUT.FORM Command
         Client.addCommand(importPutFormCommand);
         function importPutFormCommand(commandString, e) {
-            if (!/^put$|^put\.form/i.test(commandString))
+            if (!/^put\s*$|^put\.form/i.test(commandString))
                 return false;
             Client.removeCommand(importPutFormCommand);
             self.module = {exports: {}};

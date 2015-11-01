@@ -80,6 +80,7 @@ li {
     position: absolute;
     z-index: 2;
     top: 10%;
+    bottom: inherit;
     left: 10%;
     box-shadow: 0 0 4em #558;
     transition: 500ms;
