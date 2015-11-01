@@ -2,6 +2,7 @@
 
 body.theme-minimal {
     font-family: monospace;
+/*     vertical-align: top; */
 }
 
 
@@ -24,16 +25,17 @@ li {
 
 .theme-minimal > article {
     display: inline-block;
-    margin: 0 0 1em 0.5em;
-    position: relative;
+    margin: 0.5em;
+    /* position: relative; */
     vertical-align: top;
     background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
     border-radius: 2px;
     transition: 0.5s ease-out;
     transition-delay: 0.2s;
     animation: theme-minimal-article-fade-in .5s ease-out forwards;
-    max-height: 80em;
-    max-width: 64em;
+    /* max-height: 80em; */
+    /* max-width: 64em; */
+    float: left;
 }
 
 @keyframes theme-minimal-article-fade-in {

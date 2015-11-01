@@ -22,15 +22,6 @@ function ClientSockets(socketURL) {
 
     importScripts('client/sockets/client-sockets-defaults.js');
 
-    self.module = {exports: {}};
-    importScripts('client/console/render/console-window.js');
-    var logExports = self.module.exports;
-
-    // Render log window
-    logExports.renderConsoleWindow(function(html) {
-        Client.render(html);
-    });
-
     ClientSockets.getAll = function() { return activeSockets; };
 
     ClientSockets.get = function(socketURL) {
@@ -53,9 +44,11 @@ function ClientSockets(socketURL) {
                 if(eventListeners[i][0] === 'open')
                     eventListeners[i][1](newSocket);
 
-            logExports.renderConsoleActionEntry("SOCKET OPEN: " + newSocket.url, function(html) {
-                Client.appendChild('console-content:', html);
-            });
+            Client.log(
+                "<span class='direction'>S</span> " +
+                "<span class='action'>SOCKET OPEN</span>: " +
+                newSocket.url
+            );
 
             setTimeout(function () {
                 newSocket.send("NICK relay" + Date.now().toString().substr(6));
@@ -90,9 +83,11 @@ function ClientSockets(socketURL) {
                 ClientSockets.get(socketURL);
             }, ClientSockets.SOCKET_RECONNECT_INTERVAL);
 
-            logExports.renderConsoleActionEntry("SOCKET CLOSED: " + newSocket.url, function(html) {
-                Client.appendChild('console-content:', html);
-            });
+            Client.log(
+                "<span class='direction'>S</span> " +
+                "<span class='action'>SOCKET CLOSED</span>: " +
+                newSocket.url
+            );
 
             renderClientSocketsWindow();
         }
@@ -102,9 +97,10 @@ function ClientSockets(socketURL) {
             Client.processResponse(e.data, e);
             var socket = e.target;
             if(socket instanceof WebSocket) {
-                logExports.renderConsoleEntry(e.data, 'I', function(html) {
-                    Client.appendChild('console-content:', html);
-                });
+                Client.log(
+                    "<span class='direction'>I</span> " +
+                    "<span class='command'>" + e.data + "</span>"
+                );
             }
         }
 
@@ -197,10 +193,11 @@ function ClientSockets(socketURL) {
 
     ClientSockets.send = function(commandString, e, withSocket) {
         function send(socket){
-            logExports.renderConsoleEntry(commandString, 'O', function(html) {
-                Client.appendChild('console-content:', html);
-            });
             socket.send(commandString);
+            Client.log(
+                "<span class='direction'>O</span> " +
+                "<span class='command'>" + commandString + "</span>"
+            );
         }
         if(withSocket) {
             send(withSocket);

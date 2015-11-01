@@ -315,19 +315,10 @@ if(typeof module === 'object') (function() {
             if (!host)
                 throw new Error("Invalid Host: " + requestURL);
 
-            self.module = {exports: {}};
-            importScripts('client/console/render/console-window.js');
-            var logExport = self.module.exports;
-
-            // Render log window
-            logExport.renderConsoleWindow(function (html) {
-                Client.render(html);
-            });
-
-            var requestURLAnchorHTML = "<a href='" + requestURL + "'>" + requestURL + "</a>";
-            logExport.renderConsoleEntry(requestURLAnchorHTML, dir, function (html) {
-                Client.appendChild("console-content:", html);
-            });
+            Client.log(
+                "<span class='direction'>O</span>: " +
+                "<span class='request'><a href='" + requestURL + "'>" + requestURL + "</a></span>: "
+            );
         };
 
         // Request/Response methods

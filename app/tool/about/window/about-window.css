@@ -1,7 +1,7 @@
-.about\3A {
+article.about\3A {
     position: absolute !important;
     bottom: 13px;
-    right: 13px;
+    float: right;
 }
 
 .about\3A > main {

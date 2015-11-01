@@ -6,12 +6,8 @@
     overflow-y: auto;
 }
 
-.console\3A {
+article.console\3A {
     float: right;
-    /* bottom: 0; */
-    /* left: 0; */
-    /* position: absolute !important; */
-    /* z-index: 1; */
 }
 
 .console-entry {

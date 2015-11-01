@@ -59,14 +59,22 @@ function Client() {
         var oldCounter = handlerCounter;
         for(var i=0; i<commandHandlers.length; i++)
             if(commandHandlers[i](commandString, e))
-                return true;
+                return (function() {
+                    Client.log(
+                        '<span class="direction">$</span> ' +
+                        '<span class="command">' + commandString + '</span>'
+                    );
+                    return true;
+                })();
 
         if(handlerCounter > oldCounter)
             // Commands were added or removed, so try again
             return Client.execute(commandString, e);
 
         var err = "Client Command Handlers (" + commandHandlers.length + ") could not handle: " + commandString;
+        Client.log('<span class="error">' + err + '</span>');
         console.error(err, commandHandlers);
+
         //Client.postResponseToClient("ERROR " + err);
         return false;
     };
@@ -75,14 +83,22 @@ function Client() {
         var oldCounter = handlerCounter;
         for(var i=0; i<responseHandlers.length; i++)
             if(responseHandlers[i](responseString, e))
-                return true;
+                return (function() {
+                    Client.log(
+                        '<span class="direction">R</span> ' +
+                        '<span class="response">' + responseString + '</span>'
+                    );
+                    return true;
+                })();
 
         if(handlerCounter > oldCounter)
-        // Commands were added or removed, so try again
+            // Commands were added or removed, so try again
             return Client.processResponse(responseString, e);
 
         var err = "Client Response Handlers could not handle: " + responseString;
-        console.error(err);
+        Client.log('<span class="error">' + err + '</span>');
+        console.error(err, commandHandlers);
+
         //Client.postResponseToClient("ERROR " + err);
         return false;
     };
@@ -95,25 +111,43 @@ function Client() {
     };
 
     Client.appendChild = function(targetClass, childContent) {
-        parseClientTags(childContent, function(parsedContent) {
-            Client.postResponseToClient("APPEND " + targetClass + " " + parsedContent);
-        });
+        //parseClientTags(childContent, function(parsedContent) {
+            Client.postResponseToClient("APPEND " + targetClass + " " + childContent);
+        //});
     };
 
     Client.prependChild = function(targetClass, childContent) {
-        parseClientTags(childContent, function(parsedContent) {
-            Client.postResponseToClient("PREPEND " + targetClass + " " + parsedContent);
-        });
+        //parseClientTags(childContent, function(parsedContent) {
+            Client.postResponseToClient("PREPEND " + targetClass + " " + childContent);
+        //});
     };
 
     Client.replace = function(targetClass, replaceContent) {
-        parseClientTags(replaceContent, function(parsedContent) {
-            Client.postResponseToClient("REPLACE " + targetClass + " " + parsedContent);
-        });
+        //parseClientTags(replaceContent, function(parsedContent) {
+            Client.postResponseToClient("REPLACE " + targetClass + " " + replaceContent);
+        //});
     };
 
     Client.postResponseToClient = function(responseString) {
         self.postMessage(responseString);
+    };
+
+    var consoleExports = false;
+    Client.log = function(message) {
+        if(!consoleExports) {
+            self.module = {exports: {}};
+            importScripts('client/console/render/console-window.js');
+            consoleExports = self.module.exports;
+
+            // Render log window
+            consoleExports.renderConsoleWindow(function(html) {
+                Client.render(html);
+            });
+        }
+        consoleExports.renderConsoleEntry(message, function(html) {
+            Client.appendChild("console-content:", html);
+        });
+        console.log(message);
     };
 
 

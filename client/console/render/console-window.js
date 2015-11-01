@@ -24,7 +24,7 @@
     if(typeof module === 'object') {
         module.exports.renderConsoleWindow = renderConsoleWindow;
         module.exports.renderConsoleEntry = renderConsoleEntry;
-        module.exports.renderConsoleActionEntry = renderConsoleActionEntry;
+        //module.exports.renderConsoleActionEntry = renderConsoleActionEntry;
     }
 
     var TEMPLATE_URL = 'client/console/render/console-window.html';
@@ -46,38 +46,38 @@
         );
     }
 
-    function renderConsoleEntry(consoleContent, direction, callback) {
-        // Template
-        var SOCKET_TEMPLATE_CONSOLE_ENTRY =
-            "\n<div class='console-entry'>" +
-            "\n\t<span class='direction'>{$DIR}:</span>" +
-            "\n\t<span class='message'>{$content}</span>" +
-            "\n</div>";
+    //function renderConsoleEntry(consoleContent, direction, callback) {
+    //    // Template
+    //    var SOCKET_TEMPLATE_CONSOLE_ENTRY =
+    //        "\n<div class='console-entry'>" +
+    //        "\n\t<span class='direction'>{$DIR}:</span>" +
+    //        "\n\t<span class='message'>{$content}</span>" +
+    //        "\n</div>";
+    //
+    //    var consoleContentEscaped = consoleContent
+    //        .replace(/&/g, '&amp;')
+    //        .replace(/</g, '&lt;')
+    //        .replace(/>/g, '&gt;')
+    //        .replace(/"/g, '&quot;');
+    //
+    //    var consoleEntryHTML = SOCKET_TEMPLATE_CONSOLE_ENTRY
+    //        .replace(/{\$DIR}/g, direction)
+    //        .replace(/{\$content}/gi, consoleContentEscaped);
+    //
+    //    // Callback
+    //    return callback(consoleEntryHTML, callback)
+    //}
 
-        var consoleContentEscaped = consoleContent
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
 
-        var consoleEntryHTML = SOCKET_TEMPLATE_CONSOLE_ENTRY
-            .replace(/{\$DIR}/g, direction)
-            .replace(/{\$content}/gi, consoleContentEscaped);
-
-        // Callback
-        return callback(consoleEntryHTML, callback)
-    }
-
-
-    function renderConsoleActionEntry(action, callback) {
+    function renderConsoleEntry(content, callback) {
         // Template
         var SOCKET_TEMPLATE_ACTION_ENTRY =
             "\n<div class='console-entry'>" +
-            "\n\t<span class='action'>{$action}</span>" +
+            "\n\t{$content}" +
             "\n</div>";
 
         var consoleEntryHTML = SOCKET_TEMPLATE_ACTION_ENTRY
-            .replace(/{\$action}/g, action);
+            .replace(/{\$content}/g, content);
 
         // Callback
         return callback(consoleEntryHTML, callback)
