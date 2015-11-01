@@ -65,8 +65,10 @@ function ClientSocketWorker() {
     function onClickEvent(e) {
         if(e.defaultPrevented
             || e.target.nodeName.toLowerCase() !== 'a'
-            || !e.target.href)
+            || !e.target.href
+            || e.target.host != document.location.host)
             return;
+
         e.preventDefault();
 
         if(e.target.hash

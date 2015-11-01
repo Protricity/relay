@@ -147,7 +147,7 @@ function Client() {
         consoleExports.renderConsoleEntry(message, function(html) {
             Client.appendChild("console-content:", html);
         });
-        console.log(message);
+//         console.log(message);
     };
 
 
