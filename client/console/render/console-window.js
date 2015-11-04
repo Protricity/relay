@@ -8,7 +8,7 @@
     // Client Script
     if(typeof document === 'object')  {
         // Events
-        document.addEventListener('command', onCommandEvent, false);
+        //document.addEventListener('command', onCommandEvent, false);
         document.addEventListener('submit', onFormEvent, false);
         //if(console.log !== consoleLogCallback) {
         //    var oldLog = console.log;
@@ -103,7 +103,9 @@
     function onCommandEvent(e) {
         e.preventDefault();
         var commandString = e.detail || e.data;
-        renderConsoleEntry(commandString, '$', function(html) {
+        renderConsoleEntry(
+            "<span class='prompt'>$</span>" + commandString + "<span class='command'>",
+            function(html) {
             var consoleLogs = document.getElementsByClassName('console-content:');
             for(var i=0; i<consoleLogs.length; i++) {
                 var elm = document.createElement('div');
