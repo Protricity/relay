@@ -11,6 +11,7 @@ function ClientSocketWorker() {
 
     var socketWorker = null;
     document.addEventListener('click', onClickEvent, false);
+    document.addEventListener('dblclick', onDblClick, false);
     document.addEventListener('command', onCommandEvent, false);
     window.addEventListener('hashchange', onHashChange, false);
 
@@ -64,8 +65,10 @@ function ClientSocketWorker() {
     function onClickEvent(e) {
         if(e.defaultPrevented
             || e.target.nodeName.toLowerCase() !== 'a'
-            || !e.target.href)
+            || !e.target.href
+            || e.target.host != document.location.host)
             return;
+
         e.preventDefault();
 
         if(e.target.hash
@@ -76,6 +79,21 @@ function ClientSocketWorker() {
 
         var commandString = "GET " + e.target.href;
         ClientSocketWorker.sendCommand(commandString);
+    }
+
+    function onDblClick(e) {
+        var target = e.target;
+        while(target = target.parentNode) {
+            var aMaxAnchor = target.querySelector('a[href*=MAXIMIZE]');
+            if(aMaxAnchor){
+                console.log(aMaxAnchor);
+                var commandString = aMaxAnchor
+                    .getAttribute('href')
+                    .replace(/^#/,'');
+                ClientSocketWorker.sendCommand(commandString);
+                return;
+            }
+        }
     }
 
     function onCommandEvent(e) {
@@ -167,16 +185,12 @@ function ClientSocketWorker() {
                 targetElement = replaceElements[0];
                 //targetElement.innerHTML = '';
 
-                //while(contentElements.length > 0)
                 targetElement.parentNode.insertBefore(contentElement, targetElement);
-
-                // Remove all existing elements
-                //while(replaceElements.length > 0)
-                //    replaceElements[0].parentNode.removeChild(replaceElements[0]);
 
                 // Remove existing element
                 targetElement.parentNode.removeChild(targetElement);
                 targetElement = contentElement;
+
                 break;
 
             case 'prepend': // Prepends inner content to target element
@@ -242,8 +256,6 @@ function ClientSocketWorker() {
         if(contentElement.classList.length === 0)
             contentElement.classList.add('__no-class');
         var targetClass = contentElement.classList.item(0);
-
-//         console.log("RENDER: ", content);
 
         // Hide other maximized windows
         if(contentElement.classList.contains('maximized')) {
@@ -352,44 +364,81 @@ function ClientSocketWorker() {
             content = content.replace(scriptContent, '');
             var match2 = /\s*src=['"]([^'"]*)['"]/gi.exec(match[1]);
             if(match2) {
-                var hrefValue = match2[1];
-                includeScripts.push(hrefValue);
+                var srcValue = match2[1];
+                includeScripts.push(srcValue);
 
             } else {
                 throw new Error("Invalid Script: " + scriptContent);
             }
         }
+
+        while(match = /<link([^>]*)\/?>(<\/link>)?/gi.exec(content)) {
+            var linkContent = match[0];
+            content = content.replace(linkContent, '');
+            var match3 = /\s*href=['"]([^'"]*)['"]/gi.exec(match[1]);
+            if(match3) {
+                var hrefValue = match3[1];
+                includeScripts.push(hrefValue);
+
+            } else {
+                throw new Error("Invalid Script: " + linkContent);
+            }
+        }
+
         return content;
     }
 })();
 
 
-ClientSocketWorker.includeScript = function(scriptURL, callback) {
-    var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(scriptURL);
+ClientSocketWorker.includeScript = function(styleSheetURL, callback) {
+    var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(styleSheetURL);
     if(!match)
-        throw new Error("Invalid URL: " + scriptURL);
+        throw new Error("Invalid URL: " + styleSheetURL);
+
     var host = match[4],
         scriptPath = match[5].toLowerCase() || '';
     if(host)
         throw new Error("Only local scripts may be included: " + scriptPath);
 
-    var head = document.getElementsByTagName('head')[0];
-    if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
-        var newScript = document.createElement('script');
-        newScript.setAttribute('src', scriptPath);
-        if(callback) {
-            newScript.onreadystatechange = callback;
-            newScript.onload = callback;
-        }
-        head.appendChild(newScript);
-//         console.log("Including Script: ", newScript);
+    var headElm = document.getElementsByTagName('head')[0];
 
-        return true;
-    } else {
+    var ext = scriptPath.split('.').pop();
+    switch(ext.toLowerCase()) {
+        case 'js':
+            var scriptQuery = headElm.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']');
+            if (scriptQuery.length === 0) {
+                var newScript = document.createElement('script');
+                newScript.setAttribute('src', scriptPath);
+                newScript.onload = callback;
+                headElm.appendChild(newScript);
+                // console.log("Including Script: ", newScript);
 
-        if(callback)
-            callback();
+                return true;
+            }
+            break;
+
+        case 'css':
+            var linkQuery = headElm.querySelectorAll('link[href=' + scriptPath.replace(/[/.]/g, '\\$&') + ']');
+            if (linkQuery.length === 0) {
+                var newLink = document.createElement('link');
+                newLink.setAttribute('href', scriptPath);
+                newLink.setAttribute('rel', 'stylesheet');
+                newLink.setAttribute('type', 'text/css');
+                newLink.onload = callback;
+                headElm.appendChild(newLink);
+                // console.log("Including StyleSheet: ", newScript);
+
+                return true;
+            }
+            break;
+
+        default:
+            throw new Error("Invalid extension: " + ext);
     }
+
+    if(callback)
+        callback();
+
     return false;
 };
 //

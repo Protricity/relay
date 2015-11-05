@@ -1,22 +1,28 @@
-.log-content\3A {
+.console-content\3A {
     padding: 1em 2em 1em 2em;
     border: 3px inset;
     background: #EEE;
-    max-height: 15em;
+    max-height: 36em;
     overflow-y: auto;
 }
 
-.log-entry {
+article.console\3A {
+    left: 1em;
+    bottom: 1em;
+    position: absolute;
+}
+
+.console-entry {
     max-width: 40em;
 }
 
-.log-entry span.message {
+.console-entry span.message {
     white-space: pre;
     word-break: break-all;
     word-wrap: break-word;
     display: inline-block;
 }
 
-.log-entry span.direction {
+.console-entry span.direction {
     vertical-align: top;
 }

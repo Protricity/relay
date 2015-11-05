@@ -1,86 +1,126 @@
-<article class='ks-put: ks-create-vote-window maximized hide-preview'>
+<article class='ks-create-vote-window:'>
     <script src='app/social/vote/form/ks-create-vote-form.js'></script>
     <link href='app/social/vote/form/ks-create-vote-form.css' type='text/css' rel='stylesheet' property='stylesheet'>
     <style>
-        form[name=ks-create-vote-form] .section-step { display: none; }
-        form[name=ks-create-vote-form] input[name=radio-step]:checked + .button-step + .section-step { display: inherit; }
+        form[name=ks-create-vote-form]:not(.show-step-1) .section-step-1 { display: none; }
+        form[name=ks-create-vote-form]:not(.show-step-2) .section-step-2 { display: none; }
+        form[name=ks-create-vote-form]:not(.show-step-3) .section-step-3 { display: none; }
+
+        form[name=ks-create-vote-form].show-step-1 .button-step-1 { border-style: inset; }
+        form[name=ks-create-vote-form].show-step-2 .button-step-2 { border-style: inset; }
+        form[name=ks-create-vote-form].show-step-3 .button-step-3 { border-style: inset; }
+
+        /*form[name=ks-create-vote-form] input[name=radio-step]:checked + .button-step + .section-step { display: inherit; }*/
+        /*form[name=ks-create-vote-form] input[name=radio-step] { display: none; }*/
     </style>
     <header class='header-bar show-on-minimized'>
-        <a href='#MAXIMIZE create-vote:'>Simple Article Wizard</a>
+        <a href='#MAXIMIZE ks-create-vote-window:'>Create a new public vote (WIP)</a>
     </header>
     <div class='header-bar-buttons show-on-minimized'>
-        <a href='#MINIMIZE create-vote:'>[-]</a><!--
-     --><a href='#MAXIMIZE create-vote:'>[+]</a><!--
-     --><a href='#CLOSE create-vote:'>[x]</a>
+        <a href='#MINIMIZE ks-create-vote-window:'>[-]</a><!--
+     --><a href='#MAXIMIZE ks-create-vote-window:'>[+]</a><!--
+     --><a href='#CLOSE ks-create-vote-window:'>[x]</a>
     </div>
 
-    <form name='ks-create-vote-form' id='ks-create-vote-form' action='#'>
+    <form name='ks-create-vote-choice-form' id='ks-create-vote-choice-form' action='#'>
+<template class='vote-choice-template:'>
+    <section class='app-vote-choice:'>
+        <header>[$choice_title]</header>
+        [$choice_content]
+    </section>
+</template>
+    </form>
 
-<template class='put-preview-source'>
+    <form name='ks-create-vote-form' id='ks-create-vote-form' action='#' class='show-step-1'>
+
+<template class='vote-template:'>
 <article class='app-vote: [$theme]'>
-    &lt;script src='app/social/vote/vote.js'>&lt;/script>
+    [$assets]
     <header>[$title]</header>
-    <time>[$date]</time>
     <main>
         [$content]
     </main>
-    <footer>
-        [$footer]
-    </footer>
+    [$choices]
 </article>
 </template>
+<textarea name='assets' style='display:none'>
+    &lt;script src='app/social/vote/vote.js'>&lt;/script>
+    &lt;link href='app/social/vote/vote.css' type='text/css' rel='stylesheet' property='stylesheet'>
+</textarea>
 
-        <input type='radio' id='radio-step-1' name='radio-step' checked>
-        <label for='radio-step-1' class='button-step'>Title</label>
-        <section class='section-step'>
+        <header class='button-steps'>
+            <input type="button" value="Describe the Vote" class='button-step-1' onclick="this.form.className = 'show-step-1';" /><!--
+         --><input type="button" value="Add Vote Choices" class='button-step-2' onclick="this.form.className = 'show-step-2';" /><!--
+         --><input type="button" value="Select a Theme" class='button-step-3' onclick="this.form.className = 'show-step-3';" />
+        </header>
+
+        <section class='section-step-1'>
             <strong>Add a title for this vote:</strong>
             <br/>
-            <input type='text' name='title' size='36' placeholder='Your Vote Title'>
+            <input type='text' name='title' size='36' required="required" placeholder='Your Vote Title'>
+            <br/>
             <br/>
             <strong>Add a description for this vote:</strong>
             <br/>
-            <textarea name='content' placeholder='Vote Description' cols='48' rows='6'></textarea>
+            <textarea name='content' placeholder='
+    Vote Description.
+        HTML Tags <i>allowed<i>
+            so make it look good!' cols='48' rows='6'></textarea>
             <br/>
-            <input type='submit' value='Add Vote Options' />
+            <input type='button' value='Done. Add Choices' onclick="this.form.className = 'show-step-2';" />
         </section>
 
-        <input type='radio' id='radio-step-2' name='radio-step'>
-        <label for='radio-step-2' class='button-step'>Option</label>
-        <section class='section-step'>
-            <strong>Add a <i>vote option</i>:</strong>
+        <section class='section-step-2'>
+            <strong>Add a <i>vote choice</i>:</strong>
             <br/>
-            <input type='text' name='title' size='36' placeholder='New Vote Option Title'>
+            <input type='text' name='choice_title' size='36' placeholder='Vote Choice Title'
+                   required="required"
+                   form='ks-create-vote-choice-form'>
             <br/>
-            <strong>Add a description for this <i>vote option</i>:</strong>
             <br/>
-            <textarea name='content' placeholder='Vote Option Description' cols='48' rows='6'></textarea>
+            <strong>Add a description for this <i>vote choice</i>:</strong>
             <br/>
-            <input type='submit' value='Add Another Vote Options' />
-            <input type='submit' value='Choose a theme' />
+            <textarea name='choice_content' placeholder='
+    Vote Choice Description.
+        HTML Tags <i>allowed<i>
+            so make it look good!' form='ks-create-vote-choice-form'
+                  cols='48' rows='6'></textarea>
+            <br/>
+            <input type='submit' value='Add This Choice' name='choice_submit' form='ks-create-vote-choice-form' />
+            <input class='button-step-3' type='button' value='Done adding choices' onclick="this.form.className = 'show-step-3';" />
+
+            <textarea name='choices' style='display:none'></textarea>
         </section>
 
-        <input type='radio' id='radio-step-3' name='radio-step'>
-        <label for='radio-step-3' class='button-step'>Theme</label>
-        <section class='section-step'>
+        <section class='section-step-3'>
             <strong>Select <i>optional</i> CSS stylesheet theme:</strong>
             <br/>
             <br/>
             <select name="theme">
                 <option value="">No Theme</option>
-                <option value="default-article-theme" selected="selected">Default Article Theme</option>
+                <option value="vote-default-theme" selected="selected">Default Vote Theme</option>
             </select>
-            <input type='submit' value='Add Another Vote Options' />
             <input type='submit' value='Finish'/>
+            <br/>
+            <br/>
+            or <input type='button' value='Add More Vote Choices' onclick="this.form.className = 'show-step-2';" />
         </section>
     </form>
-    <section class="put-preview-section" style="display: none;">
-        <strong>Preview</strong>:
-        <div class='put-preview-output'></div>
-        <br />
-        <strong>Code</strong>:
-        <pre class='put-preview-source-output'></pre>
+
+    <header>Preview</header>
+    <section class="ks-put-preview-output:"></section>
+
+    <header>Source Code</header>
+    <section class="ks-put-preview-source-output:"></section>
+
+    <header>Vote Choices</header>
+    <section class="ks-create-vote-choices:">
+        <div class='info'>No vote choices added yet.
+            <input type='button' value='Add A Choice' onclick="this.form.setAttribute('class', 'show-step-2');" />
+        </div>
     </section>
+
     <footer class='footer-bar'>
-        <a href='#PUT.SCRIPT'>use a different content script</a>...
+        <a href='#PUT.SCRIPT'>or use a different content script</a>...
     </footer>
 </article>

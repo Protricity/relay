@@ -156,6 +156,7 @@ function joinChannel(commandString, client) {
     var pos = clients.indexOf(client);
     if(pos >= 0)
         throw new Error("Client already in channel: " + channelLowerCase);
+
     clients.push(client);
     clientInfo.channels.push(channel);
 
