@@ -159,7 +159,15 @@ li {
 }
 
 .theme-minimal span.action {
-    color: green;
+    color: red;
+    font-size: smaller;
+    font-style: italic;
+}
+
+.theme-minimal span.response {
+    color: blue;
+    text-transform: uppercase;
+    font-size: smaller;
     font-style: italic;
 }
 

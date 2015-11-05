@@ -1,17 +1,30 @@
-.ks-create-vote-window > main,
-.ks-create-vote-window > form > section,
-.ks-create-vote-window > section {
-    min-width: 30em;
+.ks-create-vote-window\3A > main,
+.ks-create-vote-window\3A > form > section,
+.ks-create-vote-window\3A > section {
+    /* min-width: 30em; */
+    max-width: 37em;
+    /* max-height: 18em; */
+    /* overflow: auto; */
     padding: 1em 2em 1em 2em;
     border: 3px inset;
     background-color: #FAFAFA;
 }
 
-.put-preview-source-output {
-    /* tab-size: 2px; */
-    white-space: pre-wrap;
+.ks-create-vote-window\3A > section:empty {
+    display: none;
+}
+
+.ks-put-preview-output\3A,
+.ks-put-preview-source-output\3A {
     margin: 0;
-    /* font-style: italic; */
+    overflow: auto;
+    max-height: 11em;
+    max-width: 6em;
+}
+
+.ks-put-preview-source-output\3A {
+    white-space: pre-wrap;
+    word-break: break-all;
 }
 
 form[name=ks-create-vote-form] .section-step {
@@ -27,27 +40,15 @@ form[name=ks-create-vote-form] select {
 
 /** Hide Radio Buttons **/
 form[name=ks-create-vote-form] input[name=radio-step] {
-    display: none;
+    /* display: none; */
 }
 
 /** Tab Buttons **/
-form[name=ks-create-vote-form] .button-step {
-    /* font-weight: bold; */
-    border: 2px outset;
-    padding: 0.5em 1em;
-    display: inline-block;
-    /* font-style: italic; */
-    float: left;
-}
-
-/** Hide Future Tab Button **/
-form[name=ks-create-vote-form] input[name=radio-step]:checked ~ .button-step {
-    display: none;
-}
-
-/** Activated Tab Button **/
-form[name=ks-create-vote-form] input[name=radio-step]:checked + .button-step {
-    border-style: inset;
-    display: inline-block;
+form[name=ks-create-vote-form] .button-steps input,
+form[name=ks-create-vote-form] .button-steps button {
     font-weight: bold;
+    border: 2px outset;
+    padding: 1em 2em;
+    margin: 0;
+    width: 33.3%;
 }

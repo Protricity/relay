@@ -85,7 +85,7 @@ function Client() {
             if(responseHandlers[i](responseString, e))
                 return (function() {
                     Client.log(
-                        '<span class="direction">R</span> ' +
+                        '<span class="direction">I</span> ' +
                         '<span class="response">' + responseString + '</span>'
                     );
                     return true;

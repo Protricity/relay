@@ -1,13 +1,18 @@
-.ks-script-create-window > main,
-.ks-script-create-window > form > section,
-.ks-script-create-window > section {
+.ks-script-create-window\3A > main,
+.ks-script-create-window\3A > form > section,
+.ks-script-create-window\3A > section {
     min-width: 30em;
     padding: 1em 2em 1em 2em;
     border: 3px inset;
     background-color: #FAFAFA;
 }
 
-.put-preview-source-output {
+.ks-script-create-window\3A .ks-put-preview-output:empty,
+.ks-script-create-window\3A .ks-put-preview-source-output:empty {
+    display: none;
+}
+
+.ks-put-preview-source-output {
     /* tab-size: 2px; */
     white-space: pre-wrap;
     margin: 0;

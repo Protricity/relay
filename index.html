@@ -11,14 +11,9 @@
                 ClientSocketWorker.sendCommand("render {nav}");
             }, 100);
 
-            // Render ABOUT
-            setTimeout(function() {
-                ClientSocketWorker.sendCommand("about");
-            }, 3000);
-
             setTimeout(function() {
                 // Render PUT
-                ClientSocketWorker.sendCommand("put.script");
+                ClientSocketWorker.sendCommand("PUT.SCRIPT APP/SOCIAL/VOTE/VOTE.JS");
             }, 1000);
 
             //Render FEED
@@ -36,6 +31,11 @@
                 window.onbeforeunload = function(e) {
                     return "Relay client will disconnect";
                 };
+
+                // Render ABOUT
+                setTimeout(function() {
+                    ClientSocketWorker.sendCommand("about");
+                }, 3000);
             }
 
         </script>

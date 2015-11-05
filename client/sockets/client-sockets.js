@@ -45,7 +45,7 @@ function ClientSockets(socketURL) {
                     eventListeners[i][1](newSocket);
 
             Client.log(
-                "<span class='direction'>S</span> " +
+                "<span class='direction'>I</span> " +
                 "<span class='action'>SOCKET OPEN</span>: " +
                 newSocket.url
             );
@@ -84,7 +84,7 @@ function ClientSockets(socketURL) {
             }, ClientSockets.SOCKET_RECONNECT_INTERVAL);
 
             Client.log(
-                "<span class='direction'>S</span> " +
+                "<span class='direction'>I</span> " +
                 "<span class='action'>SOCKET CLOSED</span>: " +
                 newSocket.url
             );
@@ -96,12 +96,12 @@ function ClientSockets(socketURL) {
 //             console.info("I " + e.data);
             Client.processResponse(e.data, e);
             var socket = e.target;
-            if(socket instanceof WebSocket) {
-                Client.log(
-                    "<span class='direction'>I</span> " +
-                    "<span class='command'>" + e.data + "</span>"
-                );
-            }
+            //if(socket instanceof WebSocket) {
+            //    Client.log(
+            //        "<span class='direction'>I</span> " +
+            //        "<span class='command'>" + e.data + "</span>"
+            //    );
+            //}
         }
 
         newSocket.addEventListener('message', onSocketMessage);
