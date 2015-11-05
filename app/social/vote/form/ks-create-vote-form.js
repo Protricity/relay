@@ -69,6 +69,13 @@ if(typeof document === 'object') (function() {
     }
 
     function updateVoteChoices(e, formElm) {
+        var template_html = parseTemplateHTML(e, formElm);
+
+        var templateElm = document.createElement('div');
+        templateElm.innerHTML = template_html;
+
+        var choiceElms = templateElm.getElementsByClassName('app-vote-choice:');
+        console.log("TODO: ", choiceElms, templateElm);
 
     }
 
