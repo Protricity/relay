@@ -76,9 +76,15 @@ if(typeof document === 'object') (function() {
     function updatePreview(e, formElm) {
         var template_html = parseTemplateHTML(e, formElm);
 
-        formElm.parentNode.getElementsByClassName('ks-put-preview-output:')[0].innerHTML = template_html
-            .replace(/<script([^>]*)><\/script>/gi, '')         // Remove script tags
-        ;
+        ClientSocketWorker.handleResponse("REPLACE ks-put-preview-output: " +
+            "<section class='ks-put-preview-output:'>" +
+                template_html +
+            "</section>"
+        );
+
+        //formElm.parentNode.getElementsByClassName('ks-put-preview-output:')[0].innerHTML = template_html
+        //    .replace(/<script([^>]*)><\/script>/gi, '')         // Remove script tags
+        //;
 
         formElm.parentNode.getElementsByClassName('ks-put-preview-source-output:')[0].innerHTML = template_html
             .replace(/</g, '&lt;')
