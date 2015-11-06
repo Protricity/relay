@@ -75,21 +75,22 @@ if(typeof document === 'object') (function() {
         templateElm.innerHTML = template_html;
 
         var choiceElms = templateElm.getElementsByClassName('app-vote-choice:');
-        console.log("TODO: ", choiceElms, templateElm);
+        //console.log("TODO: ", choiceElms, templateElm);
 
-        var choice_html = '<ul>';
+        var choice_html = '';
         for(var i=0; i<choiceElms.length; i++) {
             choice_html +=
                 "<li>" +
+                    "<button class='button-remove-choice'>Remove</button>" +
+                    "<button class='button-edit-choice'>Edit</button>" +
                     choiceElms[i].innerHTML +
                 "</li>";
         }
-        choice_html += '</ul>';
 
         ClientSocketWorker.handleResponse("REPLACE ks-create-vote-choices: " +
-            "<section class='ks-create-vote-choices:'>" +
+            "<ul class='ks-create-vote-choices:'>" +
                 choice_html +
-            "</section>"
+            "</ul>"
         );
     }
 

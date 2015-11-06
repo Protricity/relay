@@ -115,18 +115,21 @@
         </section>
     </form>
 
+    <header>Vote Choices</header>
+    <section>
+        <ul class="ks-create-vote-choices:">
+            <li class='info'>No vote choices added yet.
+                <input type='button' value='Add A Choice' onclick="this.form.setAttribute('class', 'show-step-2');" />
+            </li>
+        </ul>
+    </section>
+
     <header>Preview</header>
     <section class="ks-put-preview-output:"></section>
 
     <header>Source Code</header>
     <section class="ks-put-preview-source-output:"></section>
 
-    <header>Vote Choices</header>
-    <section class="ks-create-vote-choices:">
-        <div class='info'>No vote choices added yet.
-            <input type='button' value='Add A Choice' onclick="this.form.setAttribute('class', 'show-step-2');" />
-        </div>
-    </section>
 
     <footer class='footer-bar'>
         <a href='#PUT.SCRIPT'>or use a different content script</a>...

@@ -27,6 +27,29 @@
     word-break: break-all;
 }
 
+ul.ks-create-vote-choices\3A {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+ul.ks-create-vote-choices\3A > li {
+/*     border: 1px inset; */
+/*     min-height: 3em; */
+    margin: 0.5em 0;
+}
+
+ul.ks-create-vote-choices\3A > li .button-edit-choice,
+ul.ks-create-vote-choices\3A > li .button-remove-choice {
+    padding: 0.5em 1em;
+    float: right;
+}
+
+
+
+
+/** Form **/
+
 form[name=ks-create-vote-form] .section-step {
     clear: left;
 }
