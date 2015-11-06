@@ -17,7 +17,6 @@ if(typeof document === 'object') (function() {
 
         switch(formElm.getAttribute('name')) {
             case 'ks-create-vote-choice-form':
-                console.log('wut');
                 if(e.type === 'submit'
                     || (e.keyCode == 13 && event.shiftKey))
                     e.preventDefault() ||
@@ -33,9 +32,46 @@ if(typeof document === 'object') (function() {
                 updatePreview(e, formElm);
                 return true;
 
+            case 'ks-create-vote-remove-choice-form':
+                if(e.type === 'submit')
+                    e.preventDefault() ||
+                    submitRemoveChoiceForm(e, formElm);
+                return true;
+
+            case 'ks-create-vote-edit-choice-form':
+                if(e.type === 'submit')
+                    e.preventDefault() ||
+                    submitEditChoiceForm(e, formElm);
+                return true;
+
             default:
                 return false;
         }
+    }
+
+    function submitRemoveChoiceForm(e, formElm) {
+        var choiceID = parseInt(formElm.i.value);
+
+        // TODO: select local to article
+        var createFormElm = document.querySelector('form[name=ks-create-vote-form]');
+
+        var templateElm = document.createElement('div');
+        templateElm.innerHTML = createFormElm.choices.value;
+
+        var choiceElms = templateElm.getElementsByClassName('app-vote-choice:');
+        if(choiceID > choiceElms.length - 1)
+            throw new Error("Invalid Choice ID");
+
+        choiceElms[choiceID].parentNode.removeChild(choiceElms[choiceID]);
+        createFormElm.choices.value = templateElm.innerHTML;
+
+        updateVoteChoices(e, createFormElm);
+        updatePreview(e, createFormElm);
+
+    }
+
+    function submitEditChoiceForm(e, formElm) {
+        console.log("TODO: Edit ", formElm.i.value);
     }
 
 
@@ -65,7 +101,8 @@ if(typeof document === 'object') (function() {
         );
 
         // Close Form
-        document.getElementsByClassName('ks-create-vote-window:')[0].classList.add('closed');
+        var windowElm = document.getElementsByClassName('ks-create-vote-window:')[0];
+        windowElm.classList.add('closed');
     }
 
     function updateVoteChoices(e, formElm) {
@@ -81,8 +118,14 @@ if(typeof document === 'object') (function() {
         for(var i=0; i<choiceElms.length; i++) {
             choice_html +=
                 "<li>" +
-                    "<button class='button-remove-choice'>Remove</button>" +
-                    "<button class='button-edit-choice'>Edit</button>" +
+                    "<form name='ks-create-vote-remove-choice-form'>" +
+                        "<button class='button-remove-choice'>Remove</button>" +
+                        "<input type='hidden' name='i' value='" + i + "'/>" +
+                    "</form>" +
+                    "<form name='ks-create-vote-edit-choice-form'>" +
+                        "<button class='button-edit-choice'>Edit</button>" +
+                        "<input type='hidden' name='i' value='" + i + "'/>" +
+                    "</form>" +
                     choiceElms[i].innerHTML +
                 "</li>";
         }

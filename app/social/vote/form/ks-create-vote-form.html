@@ -5,6 +5,7 @@
         form[name=ks-create-vote-form]:not(.show-step-1) .section-step-1 { display: none; }
         form[name=ks-create-vote-form]:not(.show-step-2) .section-step-2 { display: none; }
         form[name=ks-create-vote-form]:not(.show-step-3) .section-step-3 { display: none; }
+        form[name=ks-create-vote-form]:not(.show-step-edit) .section-step-edit { display: none; }
 
         /** Tab Buttons **/
         form[name=ks-create-vote-form] .button-steps input,
@@ -26,6 +27,12 @@
      --><a href='#MAXIMIZE ks-create-vote-window:'>[+]</a><!--
      --><a href='#CLOSE ks-create-vote-window:'>[x]</a>
     </div>
+
+
+    <form name='ks-create-vote-edit-choice-form' id='ks-create-vote-edit-choice-form' action='#'>
+        <input type='hidden' name='i' />
+    </form>
+
 
     <form name='ks-create-vote-choice-form' id='ks-create-vote-choice-form' action='#'>
 <template class='vote-choice-template:'>
@@ -92,12 +99,34 @@
     Vote Choice Description.
         HTML Tags <i>allowed<i>
             so make it look good!' form='ks-create-vote-choice-form'
-                  rows='6'></textarea>
+                      rows='6'></textarea>
             <br/>
-            <input type='submit' value='Add This Choice' name='choice_submit' form='ks-create-vote-choice-form' />
-            <input class='button-step-3' type='button' value='Done adding choices' onclick="this.form.className = 'show-step-3';" />
+            <br/>
+            <input type='submit' value='Add this Choice' name='choice_submit' form='ks-create-vote-choice-form' />
+            or <input class='button-step-3' type='button' value='Done adding choices' onclick="this.form.className = 'show-step-3';" />
 
             <textarea name='choices' style='display:none'></textarea>
+        </section>
+
+        <section class='section-step-edit'>
+            <strong>Edit a <i>vote choice</i>:</strong>
+            <br/>
+            <input type='text' name='edit_choice_title' size='36' placeholder='Vote Choice Title'
+                   required="required"
+                   form='ks-create-vote-edit-choice-form'>
+            <br/>
+            <br/>
+            <strong>Add a description for this <i>vote choice</i>:</strong>
+            <br/>
+            <textarea name='edit_choice_content' placeholder='
+    Vote Choice Description.
+        HTML Tags <i>allowed<i>
+            so make it look good!' form='ks-create-vote-edit-choice-form'
+                      rows='6'></textarea>
+            <br/>
+            <br/>
+            <input type='submit' value='Update this Choice' name='edit_choice_submit' form='ks-create-vote-edit-choice-form' />
+            or <input class='button-step-3' type='button' value='Ignore Changes' onclick="this.form.className = 'show-step-3';" />
         </section>
 
         <section class='section-step-3'>

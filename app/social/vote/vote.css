@@ -1,3 +1,4 @@
-.vote-default-theme {
-    font-style: italic;
+.vote-default-theme header {
+    font-weight: bold;
+    font-style: italic;
 }
