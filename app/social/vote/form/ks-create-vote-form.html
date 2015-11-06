@@ -35,12 +35,6 @@
 
 
     <form name='ks-create-vote-choice-form' id='ks-create-vote-choice-form' action='#'>
-<template class='vote-choice-template:'>
-    <section class='app-vote-choice:'>
-        <header>[$choice_title]</header>
-        [$choice_content]
-    </section>
-</template>
     </form>
 
     <form name='ks-create-vote-form' id='ks-create-vote-form' action='#' class='show-step-1'>
@@ -59,6 +53,13 @@
     &lt;script src='app/social/vote/vote.js'>&lt;/script>
     &lt;link href='app/social/vote/vote.css' type='text/css' rel='stylesheet' property='stylesheet'>
 </textarea>
+
+<template class='vote-choice-template:'>
+    <section class='app-vote-choice:'>
+        <header>[$choice_title]</header>
+        [$choice_content]
+    </section>
+</template>
 
         <header class='button-steps'>
             <input type="button" value="Describe the Vote" class='button-step-1' onclick="this.form.className = 'show-step-1';" /><!--
@@ -111,21 +112,21 @@
         <section class='section-step-edit'>
             <strong>Edit a <i>vote choice</i>:</strong>
             <br/>
-            <input type='text' name='edit_choice_title' size='36' placeholder='Vote Choice Title'
+            <input type='text' name='choice_title' size='36' placeholder='Vote Choice Title'
                    required="required"
                    form='ks-create-vote-edit-choice-form'>
             <br/>
             <br/>
             <strong>Add a description for this <i>vote choice</i>:</strong>
             <br/>
-            <textarea name='edit_choice_content' placeholder='
+            <textarea name='choice_content' placeholder='
     Vote Choice Description.
         HTML Tags <i>allowed<i>
             so make it look good!' form='ks-create-vote-edit-choice-form'
                       rows='6'></textarea>
             <br/>
             <br/>
-            <input type='submit' value='Update this Choice' name='edit_choice_submit' form='ks-create-vote-edit-choice-form' />
+            <input type='submit' value='Update this Choice' name='choice_submit' form='ks-create-vote-edit-choice-form' />
             or <input class='button-step-3' type='button' value='Ignore Changes' onclick="this.form.className = 'show-step-3';" />
         </section>
 

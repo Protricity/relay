@@ -79,6 +79,30 @@ if(typeof document === 'object') (function() {
     function submitEditChoiceForm(e, editChoiceFormElm) {
         var choiceID = parseInt(editChoiceFormElm.i.value);
         console.log("TODO EDIT: ", choiceID);
+
+        var title = editChoiceFormElm.choice_title.value;
+        if(!title)
+            throw new Error("Missing new choice Title");
+
+        var createFormElm = document.querySelector('form[name=ks-create-vote-form]');
+
+        var templateElm = document.createElement('div');
+        templateElm.innerHTML = createFormElm.choices.value;
+
+        var choiceElms = templateElm.getElementsByClassName('app-vote-choice:');
+        if(choiceID > choiceElms.length - 1)
+            throw new Error("Invalid Choice ID");
+
+        var choice_html_template = createFormElm.getElementsByClassName('vote-choice-template:')[0].content.children[0].outerHTML;
+        var html = parseTemplateHTML(choice_html_template, editChoiceFormElm);
+        //editChoiceFormElm.choice_title.value = '';
+        //editChoiceFormElm.choice_content.value = '';
+
+        choiceElms[choiceID].outerHTML = html;
+        createFormElm.choices.value = templateElm.innerHTML;
+
+        updateVoteChoices(e, createFormElm);
+        updatePreview(e, createFormElm);
     }
 
 
@@ -88,7 +112,7 @@ if(typeof document === 'object') (function() {
 
         // TODO: select local to article
         var createFormElm = document.querySelector('form[name=ks-create-vote-form]');
-        var editFormElm = document.querySelector('form[name=ks-create-vote-edit-choice-form]');
+        var editFormElm = createFormElm.parentNode.querySelector('form[name=ks-create-vote-edit-choice-form]');
         createFormElm.className = 'show-step-edit';
 
         var templateElm = document.createElement('div');
@@ -104,26 +128,27 @@ if(typeof document === 'object') (function() {
         editFormElm.i.value = editSelectChoiceFormElm.i.value;
 
         if(header && header.parentNode === choiceElm) {
-            editFormElm.edit_choice_title.value = header.innerHTML.trim();
+            editFormElm.choice_title.value = header.innerHTML.trim();
             choiceElm.removeChild(header);
-            editFormElm.edit_choice_content.value = choiceElm.innerHTML.trim();
+            editFormElm.choice_content.value = choiceElm.innerHTML.trim();
 
         } else {
-            editFormElm.edit_choice_content.value = choiceElm.innerHTML.trim();
+            editFormElm.choice_content.value = choiceElm.innerHTML.trim();
         }
     }
 
 
-    function submitCreateChoiceForm(e, formElm) {
-        var title = formElm.choice_title.value;
+    function submitCreateChoiceForm(e, createChoiceFormElm) {
+        var title = createChoiceFormElm.choice_title.value;
         if(!title)
             throw new Error("Missing Choice Title");
 
-        var html = parseChoiceTemplateHTML(e, formElm);
-        formElm.choice_title.value = '';
-        formElm.choice_content.value = '';
+        var createFormElm = createChoiceFormElm.parentNode.querySelector('form[name=ks-create-vote-form]');
 
-        var createFormElm = formElm.parentNode.querySelector('form[name=ks-create-vote-form]');
+        var html_template = createFormElm.getElementsByClassName('vote-choice-template:')[0].content.children[0].outerHTML;
+        var html = parseTemplateHTML(html_template, createChoiceFormElm);
+        createChoiceFormElm.choice_title.value = '';
+        createChoiceFormElm.choice_content.value = '';
 
         createFormElm.choices.value += "\n    " + html;
 
@@ -131,9 +156,10 @@ if(typeof document === 'object') (function() {
         updatePreview(e, createFormElm);
     }
 
-    function submitCreateForm(e, formElm) {
+    function submitCreateForm(e, createFormElm) {
         e.preventDefault();
-        var template_html = parseTemplateHTML(e, formElm);
+        var html_template = createFormElm.getElementsByClassName('vote-template:')[0].content.children[0].outerHTML;
+        var template_html = parseTemplateHTML(html_template, createFormElm);
         ClientSocketWorker.sendCommand('PUT.FORM ' + template_html
                 .replace(/</g, '&lt;')
                 .replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '')     // Remove empty html tags
@@ -144,14 +170,15 @@ if(typeof document === 'object') (function() {
         windowElm.classList.add('closed');
     }
 
-    function updateVoteChoices(e, formElm) {
-        var template_html = parseTemplateHTML(e, formElm);
+    function updateVoteChoices(e, createChoiceFormElm) {
+        var createFormElm = createChoiceFormElm.parentNode.querySelector('form[name=ks-create-vote-form]');
+        //var html_choice_template = createFormElm.getElementsByClassName('vote-choice-template:')[0].content.children[0].outerHTML;
+        //var template_html = parseTemplateHTML(html_choice_template, createChoiceFormElm);
 
         var templateElm = document.createElement('div');
-        templateElm.innerHTML = template_html;
+        templateElm.innerHTML = createFormElm.choices.value;
 
         var choiceElms = templateElm.getElementsByClassName('app-vote-choice:');
-        //console.log("TODO: ", choiceElms, templateElm);
 
         var choice_html = '';
         for(var i=0; i<choiceElms.length; i++) {
@@ -177,8 +204,9 @@ if(typeof document === 'object') (function() {
     }
 
 
-    function updatePreview(e, formElm) {
-        var template_html = parseTemplateHTML(e, formElm);
+    function updatePreview(e, createFormElm) {
+        var html_template = createFormElm.getElementsByClassName('vote-template:')[0].content.children[0].outerHTML;
+        var template_html = parseTemplateHTML(html_template, createFormElm);
 
         ClientSocketWorker.handleResponse("REPLACE ks-put-preview-output: " +
             "<section class='ks-put-preview-output:'>" +
@@ -190,39 +218,24 @@ if(typeof document === 'object') (function() {
         //    .replace(/<script([^>]*)><\/script>/gi, '')         // Remove script tags
         //;
 
-        formElm.parentNode.getElementsByClassName('ks-put-preview-source-output:')[0].innerHTML = template_html
+        createFormElm.parentNode.getElementsByClassName('ks-put-preview-source-output:')[0].innerHTML = template_html
             .replace(/</g, '&lt;')
         ;
     }
 
 
-    function parseTemplateHTML(e, formElm) {
-        var templateElm = formElm.getElementsByClassName('vote-template:')[0];
-        var template_html = templateElm.content.children[0].outerHTML;
+    function parseTemplateHTML(template_html, formElm) {
+        //var templateElm = formElm.getElementsByClassName('vote-template:')[0];
+        //var template_html = templateElm.content.children[0].outerHTML;
 
-        var inputElements = document.querySelectorAll('input[type=text], input[type=date], select, textarea');
-        for(var i=0; i<inputElements.length; i++) {
-            var name = inputElements[i].getAttribute('name');
+        var i=0;
+        while(formElm[i]) {
+            var name = formElm[i].getAttribute('name');
             if(name) {
-                var value = inputElements[i].value.trim();
+                var value = formElm[i].value.trim();
                 template_html = template_html.replace('[$' + name + ']', value);
             }
-        }
-        return template_html;
-    }
-
-
-    function parseChoiceTemplateHTML(e, formElm) {
-        var templateElm = formElm.getElementsByClassName('vote-choice-template:')[0];
-        var template_html = templateElm.content.children[0].outerHTML;
-
-        var inputElements = document.querySelectorAll('input[type=text], input[type=date], select, textarea');
-        for(var i=0; i<inputElements.length; i++) {
-            var name = inputElements[i].getAttribute('name');
-            if(name) {
-                var value = inputElements[i].value.trim();
-                template_html = template_html.replace('[$' + name + ']', value);
-            }
+            i++;
         }
         return template_html;
     }

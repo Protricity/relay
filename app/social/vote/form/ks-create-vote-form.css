@@ -20,6 +20,7 @@
     overflow: auto;
     max-height: 11em;
     max-width: 6em;
+    /* display: none; */
 }
 
 .ks-put-preview-source-output\3A {
