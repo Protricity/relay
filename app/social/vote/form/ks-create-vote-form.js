@@ -77,6 +77,20 @@ if(typeof document === 'object') (function() {
         var choiceElms = templateElm.getElementsByClassName('app-vote-choice:');
         console.log("TODO: ", choiceElms, templateElm);
 
+        var choice_html = '<ul>';
+        for(var i=0; i<choiceElms.length; i++) {
+            choice_html +=
+                "<li>" +
+                    choiceElms[i].innerHTML +
+                "</li>";
+        }
+        choice_html += '</ul>';
+
+        ClientSocketWorker.handleResponse("REPLACE ks-create-vote-choices: " +
+            "<section class='ks-create-vote-choices:'>" +
+                choice_html +
+            "</section>"
+        );
     }
 
 

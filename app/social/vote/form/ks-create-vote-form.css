@@ -32,23 +32,18 @@ form[name=ks-create-vote-form] .section-step {
 }
 
 
-/** Form Buttons **/
+/** Form Inputs **/
 form[name=ks-create-vote-form] input,
+form[name=ks-create-vote-form] button,
+form[name=ks-create-vote-form] textarea,
 form[name=ks-create-vote-form] select {
     padding: 0.5em 1em;
 }
 
-/** Hide Radio Buttons **/
-form[name=ks-create-vote-form] input[name=radio-step] {
-    /* display: none; */
-}
-
-/** Tab Buttons **/
-form[name=ks-create-vote-form] .button-steps input,
-form[name=ks-create-vote-form] .button-steps button {
-    font-weight: bold;
-    border: 2px outset;
-    padding: 1em 2em;
-    margin: 0;
-    width: 33.3%;
+/** Form Buttons **/
+form[name=ks-create-vote-form] input[type=text],
+form[name=ks-create-vote-form] textarea,
+form[name=ks-create-vote-form] select
+{
+    width: 30em;
 }

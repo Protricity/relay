@@ -6,12 +6,17 @@
         form[name=ks-create-vote-form]:not(.show-step-2) .section-step-2 { display: none; }
         form[name=ks-create-vote-form]:not(.show-step-3) .section-step-3 { display: none; }
 
+        /** Tab Buttons **/
+        form[name=ks-create-vote-form] .button-steps input,
+        form[name=ks-create-vote-form] .button-steps button {
+            border-style: outset;
+            font-weight: bold;
+            width: 33.3%;
+        }
+
         form[name=ks-create-vote-form].show-step-1 .button-step-1 { border-style: inset; }
         form[name=ks-create-vote-form].show-step-2 .button-step-2 { border-style: inset; }
         form[name=ks-create-vote-form].show-step-3 .button-step-3 { border-style: inset; }
-
-        /*form[name=ks-create-vote-form] input[name=radio-step]:checked + .button-step + .section-step { display: inherit; }*/
-        /*form[name=ks-create-vote-form] input[name=radio-step] { display: none; }*/
     </style>
     <header class='header-bar show-on-minimized'>
         <a href='#MAXIMIZE ks-create-vote-window:'>Create a new public vote (WIP)</a>
@@ -57,7 +62,7 @@
         <section class='section-step-1'>
             <strong>Add a title for this vote:</strong>
             <br/>
-            <input type='text' name='title' size='36' required="required" placeholder='Your Vote Title'>
+            <input type='text' name='title' required="required" placeholder='Your Vote Title'>
             <br/>
             <br/>
             <strong>Add a description for this vote:</strong>
@@ -65,9 +70,12 @@
             <textarea name='content' placeholder='
     Vote Description.
         HTML Tags <i>allowed<i>
-            so make it look good!' cols='48' rows='6'></textarea>
+            so make it look good!' rows='6'></textarea>
             <br/>
-            <input type='button' value='Done. Add Choices' onclick="this.form.className = 'show-step-2';" />
+            <br/>
+            <strong>Add Vote Choices:</strong>
+            <br/>
+            <input type='button' value='Add Choices' onclick="this.form.className = 'show-step-2';" />
         </section>
 
         <section class='section-step-2'>
@@ -84,7 +92,7 @@
     Vote Choice Description.
         HTML Tags <i>allowed<i>
             so make it look good!' form='ks-create-vote-choice-form'
-                  cols='48' rows='6'></textarea>
+                  rows='6'></textarea>
             <br/>
             <input type='submit' value='Add This Choice' name='choice_submit' form='ks-create-vote-choice-form' />
             <input class='button-step-3' type='button' value='Done adding choices' onclick="this.form.className = 'show-step-3';" />
