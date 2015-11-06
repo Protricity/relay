@@ -44,6 +44,12 @@ if(typeof document === 'object') (function() {
                     submitEditChoiceForm(e, formElm);
                 return true;
 
+            case 'ks-create-vote-edit-select-choice-form':
+                if(e.type === 'submit')
+                    e.preventDefault() ||
+                    submitEditSelectChoiceForm(e, formElm);
+                return true;
+
             default:
                 return false;
         }
@@ -70,8 +76,41 @@ if(typeof document === 'object') (function() {
 
     }
 
-    function submitEditChoiceForm(e, formElm) {
-        console.log("TODO: Edit ", formElm.i.value);
+    function submitEditChoiceForm(e, editChoiceFormElm) {
+        var choiceID = parseInt(editChoiceFormElm.i.value);
+        console.log("TODO EDIT: ", choiceID);
+    }
+
+
+
+    function submitEditSelectChoiceForm(e, editSelectChoiceFormElm) {
+        var choiceID = parseInt(editSelectChoiceFormElm.i.value);
+
+        // TODO: select local to article
+        var createFormElm = document.querySelector('form[name=ks-create-vote-form]');
+        var editFormElm = document.querySelector('form[name=ks-create-vote-edit-choice-form]');
+        createFormElm.className = 'show-step-edit';
+
+        var templateElm = document.createElement('div');
+        templateElm.innerHTML = createFormElm.choices.value;
+
+        var choiceElms = templateElm.getElementsByClassName('app-vote-choice:');
+        if(choiceID > choiceElms.length - 1)
+            throw new Error("Invalid Choice ID");
+
+        var choiceElm = choiceElms[choiceID];
+        var header = choiceElm.querySelector('header');
+
+        editFormElm.i.value = editSelectChoiceFormElm.i.value;
+
+        if(header && header.parentNode === choiceElm) {
+            editFormElm.edit_choice_title.value = header.innerHTML.trim();
+            choiceElm.removeChild(header);
+            editFormElm.edit_choice_content.value = choiceElm.innerHTML.trim();
+
+        } else {
+            editFormElm.edit_choice_content.value = choiceElm.innerHTML.trim();
+        }
     }
 
 
@@ -122,7 +161,7 @@ if(typeof document === 'object') (function() {
                         "<button class='button-remove-choice'>Remove</button>" +
                         "<input type='hidden' name='i' value='" + i + "'/>" +
                     "</form>" +
-                    "<form name='ks-create-vote-edit-choice-form'>" +
+                    "<form name='ks-create-vote-edit-select-choice-form'>" +
                         "<button class='button-edit-choice'>Edit</button>" +
                         "<input type='hidden' name='i' value='" + i + "'/>" +
                     "</form>" +
