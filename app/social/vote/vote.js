@@ -87,7 +87,7 @@ if(typeof document === 'object')
             });
         }
 
-        voteContainerElm.parentNode.innerHTML += FORM_VOTE_TEMPLATE
+        voteContainerElm.innerHTML += FORM_VOTE_TEMPLATE
             .replace(/{\$pgp_id_public}/gi, pgp_id_public)
             .replace(/{\$timestamp}/gi, timestamp)
             .replace(/{\$html_options}/gi, html_options.join("\n"));

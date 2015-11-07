@@ -60,16 +60,17 @@
 
         <article class='ks-feed-entry ks-put-preview:' ></article>
 
-        <article class='ks-feed-entry ks-feed-entry-template'>
+        <article
+                class='ks-feed-entry ks-feed-entry-template'
+                data-pgp-id-public="{$entry_pgp_id_public}"
+                data-timestamp="{$entry_timestamp}">
             <header>
                 <img class='user_icon tiny' src='ks/feed/img/user_icon_default.png' alt='UI' />
                 {$entry_author_html}
                 <div class='timestamp_formatted'>{$entry_timestamp_formatted}</div>
                 <hr/>
             </header>
-            <main data-pgp-id-public="{$entry_pgp_id_public}" data-timestamp="{$entry_timestamp}">
-                {$entry_content}
-            </main>
+            {$entry_content}
         </article>
 
     </main>
