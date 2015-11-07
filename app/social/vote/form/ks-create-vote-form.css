@@ -10,6 +10,12 @@
     background-color: #FAFAFA;
 }
 
+.ks-create-vote-window\3A  .section-status {
+    background: linear-gradient(to top left, #E5FDD5, #F5FFF5);
+    text-indent: 1em;
+}
+
+.ks-create-vote-window\3A  .section-status:empty,
 .ks-create-vote-window\3A > section:empty {
     display: none;
 }
@@ -50,6 +56,7 @@ ul.ks-create-vote-choices\3A > li .button-remove-choice {
 
 
 /** Form **/
+
 
 form[name=ks-create-vote-form] .section-step {
     clear: left;

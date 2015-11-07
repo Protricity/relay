@@ -74,6 +74,8 @@ if(typeof document === 'object') (function() {
         updateVoteChoices(e, createFormElm);
         updatePreview(e, createFormElm);
 
+        createFormElm.getElementsByClassName('section-status')[0].innerHTML =
+            "<span class='success'>Choice entry removed successfully</span>";
     }
 
     function submitEditChoiceForm(e, editChoiceFormElm) {
@@ -100,9 +102,13 @@ if(typeof document === 'object') (function() {
 
         choiceElms[choiceID].outerHTML = html;
         createFormElm.choices.value = templateElm.innerHTML;
+        createFormElm.className = 'show-step-2';
 
         updateVoteChoices(e, createFormElm);
         updatePreview(e, createFormElm);
+
+        createFormElm.getElementsByClassName('section-status')[0].innerHTML =
+            "<span class='success'>Choice entry updated successfully</span>";
     }
 
 
@@ -130,6 +136,8 @@ if(typeof document === 'object') (function() {
         if(header && header.parentNode === choiceElm) {
             editFormElm.choice_title.value = header.innerHTML.trim();
             choiceElm.removeChild(header);
+            if(choiceElm.children[0].nodeName.toLowerCase() === 'main')
+                choiceElm = choiceElm.children[0];
             editFormElm.choice_content.value = choiceElm.innerHTML.trim();
 
         } else {
@@ -154,6 +162,14 @@ if(typeof document === 'object') (function() {
 
         updateVoteChoices(e, createFormElm);
         updatePreview(e, createFormElm);
+
+        var templateElm = document.createElement('div');
+        templateElm.innerHTML = createFormElm.choices.value;
+
+        var choiceElms = templateElm.getElementsByClassName('app-vote-choice:');
+
+        createFormElm.getElementsByClassName('section-status')[0].innerHTML =
+            "<span class='success'>Choice entry added successfully (Total: " + choiceElms.length + ")</span>";
     }
 
     function submitCreateForm(e, createFormElm) {
@@ -168,6 +184,9 @@ if(typeof document === 'object') (function() {
         // Close Form
         var windowElm = document.getElementsByClassName('ks-create-vote-window:')[0];
         windowElm.classList.add('closed');
+
+        createFormElm.getElementsByClassName('section-status')[0].innerHTML =
+            "<span class='success'>Wizard has completed successfully</span>";
     }
 
     function updateVoteChoices(e, createChoiceFormElm) {

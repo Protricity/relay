@@ -336,11 +336,14 @@ function KeySpaceDB(dbReadyCallback) {
                     .transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readwrite")
                     .objectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
 
-                var publishedIndex = dbStore.index(KeySpaceDB.DB_INDEX_PUBLISHED);
-                var boundKeyRange = IDBKeyRange.upperBound([1, feedEndTime], true);
-//                 console.log("Searching ", boundKeyRange);
+                //var publishedIndex = dbStore.index(KeySpaceDB.DB_INDEX_PUBLISHED);
+                //var boundKeyRange = IDBKeyRange.upperBound([1, feedEndTime], true);
 
-                var cursorRequest = publishedIndex.openCursor(boundKeyRange, 'prev');
+                var timestampIndex = dbStore.index(KeySpaceDB.DB_INDEX_TIMESTAMP);
+                var boundKeyRange = IDBKeyRange.upperBound(feedEndTime, true);
+
+
+                var cursorRequest = timestampIndex.openCursor(boundKeyRange, 'prev');
                 cursorRequest.onsuccess = function (e) {
 
                     var cursor = e.target.result;

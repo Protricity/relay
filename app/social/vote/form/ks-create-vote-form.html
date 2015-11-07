@@ -2,10 +2,12 @@
     <script src='app/social/vote/form/ks-create-vote-form.js'></script>
     <link href='app/social/vote/form/ks-create-vote-form.css' type='text/css' rel='stylesheet' property='stylesheet'>
     <style>
-        form[name=ks-create-vote-form]:not(.show-step-1) .section-step-1 { display: none; }
-        form[name=ks-create-vote-form]:not(.show-step-2) .section-step-2 { display: none; }
-        form[name=ks-create-vote-form]:not(.show-step-3) .section-step-3 { display: none; }
-        form[name=ks-create-vote-form]:not(.show-step-edit) .section-step-edit { display: none; }
+        form[name=ks-create-vote-form]:not(.show-step-1) .section-step-1,
+        form[name=ks-create-vote-form]:not(.show-step-2) .section-step-2,
+        form[name=ks-create-vote-form]:not(.show-step-3) .section-step-3,
+        form[name=ks-create-vote-form]:not(.show-step-edit) .section-step-edit {
+            display: none;
+        }
 
         /** Tab Buttons **/
         form[name=ks-create-vote-form] .button-steps input,
@@ -15,9 +17,12 @@
             width: 33.3%;
         }
 
-        form[name=ks-create-vote-form].show-step-1 .button-step-1 { border-style: inset; }
-        form[name=ks-create-vote-form].show-step-2 .button-step-2 { border-style: inset; }
-        form[name=ks-create-vote-form].show-step-3 .button-step-3 { border-style: inset; }
+        form[name=ks-create-vote-form].show-step-1 .button-step-1,
+        form[name=ks-create-vote-form].show-step-2 .button-step-2,
+        form[name=ks-create-vote-form].show-step-3 .button-step-3 {
+            font-weight: bold;
+            border-style: inset;
+        }
     </style>
     <header class='header-bar show-on-minimized'>
         <a href='#MAXIMIZE ks-create-vote-window:'>Create a new public vote (WIP)</a>
@@ -57,7 +62,7 @@
 <template class='vote-choice-template:'>
     <section class='app-vote-choice:'>
         <header>[$choice_title]</header>
-        [$choice_content]
+        <main>[$choice_content]</main>
     </section>
 </template>
 
@@ -66,6 +71,10 @@
          --><input type="button" value="Add Vote Choices" class='button-step-2' onclick="this.form.className = 'show-step-2';" /><!--
          --><input type="button" value="Select a Theme" class='button-step-3' onclick="this.form.className = 'show-step-3';" />
         </header>
+
+        <section class="section-status">
+            Use this <strong>form wizard</strong> to create a new <i>public vote</i> or <i>call to action</i> for your <strong>Key Space</strong>
+        </section>
 
         <section class='section-step-1'>
             <strong>Add a title for this vote:</strong>
@@ -81,9 +90,9 @@
             so make it look good!' rows='6'></textarea>
             <br/>
             <br/>
-            <strong>Add Vote Choices:</strong>
-            <br/>
-            <input type='button' value='Add Choices' onclick="this.form.className = 'show-step-2';" />
+            <button type='button' onclick="this.form.className = 'show-step-2';" >
+                Next: Add some voter <i>choices</i>...
+            </button>
         </section>
 
         <section class='section-step-2'>
@@ -138,18 +147,21 @@
                 <option value="">No Theme</option>
                 <option value="vote-default-theme" selected="selected">Default Vote Theme</option>
             </select>
+            <br/>
+            <br/>
             <input type='submit' value='Finish'/>
-            <br/>
-            <br/>
-            or <input type='button' value='Add More Vote Choices' onclick="this.form.className = 'show-step-2';" />
+            or
+            <input type='button' value='Add More Vote Choices' onclick="this.form.className = 'show-step-2';" />
         </section>
     </form>
 
     <header>Vote Choices</header>
     <section>
         <ul class="ks-create-vote-choices:">
-            <li class='info'>No vote choices added yet.
-                <input type='button' value='Add A Choice' onclick="this.form.setAttribute('class', 'show-step-2');" />
+            <li class='info'>No votee choices added yet.
+                or <button form="ks-create-vote-form" onclick="this.form.className = 'show-step-2';" style="padding: 0.5em;">
+                    Add More Voter Choices...
+                </button>
             </li>
         </ul>
     </section>

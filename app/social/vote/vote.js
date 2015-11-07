@@ -8,32 +8,23 @@ if(typeof document === 'object')
 
     document.addEventListener('render', onRenderEvent, false);
 
+    var voteArticles = document.getElementsByClassName('app-vote:');
+    var voteArticlesProcessed = document.getElementsByClassName('app-vote: processed');
     function onRenderEvent(e) {
-        var voteElements = document.getElementsByClassName('app.vote');
+        if(voteArticles.length <= voteArticlesProcessed.length)
+            return;
 
-        for(var i=0; i<voteElements.length; i++) (function(voteElement) {
-            var titleElements = voteElement.getElementsByClassName('app.vote.title');
-            if(titleElements.length === 0)
-                throw new Error('Missing Title: class="app.vote.title"');
-            var title = titleElements[0].innerHTML;
-            if(!title)
-                throw new Error('Empty Title Element: class="app.vote.title"');
+        for(var i=0; i<voteArticles.length; i++) (function(voteElement) {
+            if(voteElement.classList.contains('processed'))
+                return;
 
-            var optionElements = voteElement.getElementsByClassName('app.vote.option');
-            if(optionElements.length === 0)
-                throw new Error('Missing Option Elements: class="app.vote.option"');
+            var choiceElms = voteElement.getElementsByClassName('app-vote-choice:');
+            console.log("Found vote with " + choiceElms.length + " choices");
 
-            var options = {};
-            for(var i=0; i<optionElements.length; i++) (function(optionElement) {
-                var optionID = optionElement.getAttribute('data-option-id');
-                if(!optionID)
-                    throw new Error('Missing Option ID: data-option-id="[option id]"');
+            
 
-                options[optionID] = optionElement;
-            })(optionElements[i]);
-
-            console.log("Found vote: ", title, options);
-        })(voteElements[i]);
+            voteElement.classList.add('processed');
+        })(voteArticles[i]);
     }
     setTimeout(onRenderEvent, 200);
 

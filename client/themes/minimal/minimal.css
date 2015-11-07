@@ -202,16 +202,21 @@ li {
 /** Status Box **/
 
 .theme-minimal .status-box {
+    background-color: lightgrey;
+}
+
+.theme-minimal code.status-box,
+.theme-minimal div.status-box {
     display: block;
-    /* margin: 0.5em; */
-    padding: 0.5em;
-    margin-bottom: 1em;
+    padding: 0.5em 1em;
+    margin: 0 0 1em 0;
     background-color: lightgrey;
     max-width: 34em;
     animation: fadein 0.5s;
     overflow: auto;
     white-space: normal;
 }
+
 
 .theme-minimal .status-box:empty {
     display: none;

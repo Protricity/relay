@@ -167,10 +167,15 @@ if(typeof document === 'object')
 
             var articleDiv = document.createElement('article');
             var articleHTMLContent = null;
+            var includeScripts = [];
             if(entryData.content.indexOf('-----BEGIN PGP SIGNED MESSAGE-----') === 0) {
 
                 var pgpClearSignedMessage = openpgp.cleartext.readArmored(entryData.content);
-                articleDiv.innerHTML = protectHTMLContent(pgpClearSignedMessage.text);
+                var htmlContent = protectHTMLContent(pgpClearSignedMessage.text);
+
+                htmlContent = ClientSocketWorker.parseScripts(htmlContent, includeScripts);
+                htmlContent = ClientSocketWorker.parseStyleSheets(htmlContent, includeScripts);
+                articleDiv.innerHTML = htmlContent;
 
                 if (articleDiv.children[0].nodeName.toLowerCase() === 'article')
                     articleDiv = articleDiv.children[0];
@@ -230,6 +235,9 @@ if(typeof document === 'object')
 
                 }
                 // TODO: appear animation?
+
+                for(var si=0; si<includeScripts.length; si++)
+                    ClientSocketWorker.includeScript(includeScripts[si]);
 
             });
         }

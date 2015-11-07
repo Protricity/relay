@@ -86,7 +86,7 @@ function ClientSocketWorker() {
         while(target = target.parentNode) {
             var aMaxAnchor = target.querySelector('a[href*=MAXIMIZE]');
             if(aMaxAnchor){
-                console.log(aMaxAnchor);
+//                 console.log(aMaxAnchor);
                 var commandString = aMaxAnchor
                     .getAttribute('href')
                     .replace(/^#/,'');
@@ -165,7 +165,8 @@ function ClientSocketWorker() {
         var content = args[3];
 
         var includeScripts = [];
-        content = parseScripts(content, includeScripts);
+        content = ClientSocketWorker.parseScripts(content, includeScripts);
+        content = ClientSocketWorker.parseStyleSheets(content, includeScripts);
 
         var htmlContainer = document.createElement('div');
         htmlContainer.innerHTML = content;
@@ -240,7 +241,8 @@ function ClientSocketWorker() {
 
         var content = args[1];
         var includeScripts = [];
-        content = parseScripts(content, includeScripts);
+        content = ClientSocketWorker.parseScripts(content, includeScripts);
+        content = ClientSocketWorker.parseStyleSheets(content, includeScripts);
 
         var htmlContainer = document.createElement('div');
         htmlContainer.innerHTML = content;
@@ -356,39 +358,43 @@ function ClientSocketWorker() {
                 callback();
         }
     }
-
-    function parseScripts(content, includeScripts) {
-        var match;
-        while(match = /<script([^>]*)><\/script>/gi.exec(content)) {
-            var scriptContent = match[0];
-            content = content.replace(scriptContent, '');
-            var match2 = /\s*src=['"]([^'"]*)['"]/gi.exec(match[1]);
-            if(match2) {
-                var srcValue = match2[1];
-                includeScripts.push(srcValue);
-
-            } else {
-                throw new Error("Invalid Script: " + scriptContent);
-            }
-        }
-
-        while(match = /<link([^>]*)\/?>(<\/link>)?/gi.exec(content)) {
-            var linkContent = match[0];
-            content = content.replace(linkContent, '');
-            var match3 = /\s*href=['"]([^'"]*)['"]/gi.exec(match[1]);
-            if(match3) {
-                var hrefValue = match3[1];
-                includeScripts.push(hrefValue);
-
-            } else {
-                throw new Error("Invalid Script: " + linkContent);
-            }
-        }
-
-        return content;
-    }
 })();
 
+
+ClientSocketWorker.parseStyleSheets = function(content, includeScripts) {
+    var match;
+    while(match = /<link([^>]*)\/?>(<\/link>)?/gi.exec(content)) {
+        var linkContent = match[0];
+        content = content.replace(linkContent, '');
+        var match3 = /\s*href=['"]([^'"]*)['"]/gi.exec(match[1]);
+        if(match3) {
+            var hrefValue = match3[1];
+            includeScripts.push(hrefValue);
+
+        } else {
+            throw new Error("Invalid Script: " + linkContent);
+        }
+    }
+    return content;
+};
+
+ClientSocketWorker.parseScripts = function(content, includeScripts) {
+    var match;
+    while(match = /<script([^>]*)><\/script>/gi.exec(content)) {
+        var scriptContent = match[0];
+//             console.log(scriptContent);
+        content = content.replace(scriptContent, '');
+        var match2 = /\s*src=['"]([^'"]*)['"]/gi.exec(match[1]);
+        if(match2) {
+            var srcValue = match2[1];
+            includeScripts.push(srcValue);
+
+        } else {
+            throw new Error("Invalid Script: " + scriptContent);
+        }
+    }
+    return content;
+};
 
 ClientSocketWorker.includeScript = function(styleSheetURL, callback) {
     var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(styleSheetURL);
