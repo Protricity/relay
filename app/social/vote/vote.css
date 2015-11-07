@@ -21,16 +21,14 @@
 
 /** Vote Form **/
 
-form[name=vote-booth-form] > select,
-.ks-feed-entry > select {
+form[name=app-vote-form] > input[type=text],
+form[name=app-vote-form] > select {
     width: 20em;
 }
 
-
-form[name=vote-booth-form] > input,
-form[name=vote-booth-form] > select,
-.ks-feed-entry > input,
-.ks-feed-entry > select {
+form[name=app-vote-form] > input,
+form[name=app-vote-form] > button,
+form[name=app-vote-form] > select {
     padding: 0.6em;
     margin: 0.2em;
 }

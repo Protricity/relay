@@ -67,7 +67,9 @@
                 <div class='timestamp_formatted'>{$entry_timestamp_formatted}</div>
                 <hr/>
             </header>
-            {$entry_content}
+            <main data-pgp-id-public="{$entry_pgp_id_public}" data-timestamp="{$entry_timestamp}">
+                {$entry_content}
+            </main>
         </article>
 
     </main>

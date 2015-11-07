@@ -4,9 +4,45 @@
 if(typeof document === 'object')
 (function() {
 
+    var FORM_VOTE_TEMPLATE =
+        "<form name='app-vote-form'>" +
+            "<hr>" +
+            "<select name='choice' oninput='this.form.submit_vote.click()'>" +
+                "<option value=''>Select your Voter Choice</option>" +
+                "{$html_options}" +
+            "</select>" +
+            "<input type='submit' value='Vote!' name='submit_vote'>" +
+            "<a href='#VOTE {$pgp_id_public} {$timestamp}' style='float: right;'>View...</a>" +
+        "</form>";
+
     // Events
 
     document.addEventListener('render', onRenderEvent, false);
+    setTimeout(onRenderEvent, 200);
+
+
+
+    document.addEventListener('submit', onFormEvent, false);
+
+    function onFormEvent(e, formElm) {
+        if (!formElm) formElm = e.target.form ? e.target.form : e.target;
+        if (formElm.nodeName.toLowerCase() !== 'form')
+            return false;
+
+        switch (formElm.getAttribute('name')) {
+            case 'app-vote-form':
+                if (e.type === 'submit')
+                    e.preventDefault() ||
+                    submitVoteForm(e, formElm);
+                return true;
+        }
+    }
+
+
+    function submitVoteForm(e, formElm) {
+        console.log(formElm.choice.value);
+    }
+
 
     var voteArticles = document.getElementsByClassName('app-vote:');
     var voteArticlesProcessed = document.getElementsByClassName('app-vote: processed');
@@ -17,68 +53,49 @@ if(typeof document === 'object')
         for(var i=0; i<voteArticles.length; i++)
             processVoteArticle(voteArticles[i]);
     }
-    setTimeout(onRenderEvent, 200);
+
+
 
     function processVoteArticle(voteElement) {
-        if(voteElement.classList.contains('processed'))
+        if(voteElement.classList.contains('processed')
+            || voteElement.classList.contains('processing'))
             return false;
+        voteElement.classList.add('processing');
 
-        var pgp_id_public = voteElement.getAttribute('data-pgp-id-public');
-        var timestamp = voteElement.getAttribute('data-timestamp');
+        var voteContainerElm = voteElement.parentNode;
+
+        var pgp_id_public = voteContainerElm.getAttribute('data-pgp-id-public');
+        if(!pgp_id_public)
+            throw new Error("No PGP ID found");
+        var timestamp = voteContainerElm.getAttribute('data-timestamp');
+        if(!timestamp)
+            throw new Error("No Timestamp found");
+
         //var uid = pgp_id_public + ' ' + timestamp;
 
         var choiceElms = voteElement.getElementsByClassName('app-vote-choice:');
-        console.log("Found vote with " + choiceElms.length + " choices");
-
-
-        var selectElm = voteElement.parentNode.querySelector('select[name=choice]');
-        if(!selectElm) {
-            selectElm = document.createElement('select');
-            selectElm.setAttribute('name', 'choice');
-            selectElm.classList.add('app-vote-choice:');
-
-            voteElement.parentNode.appendChild(document.createElement('hr'));
-            if(pgp_id_public) {
-                var anchorElm = document.createElement('a');
-                anchorElm.setAttribute('href', '#VOTE ' + pgp_id_public + ' ' + timestamp);
-                anchorElm.style.float = 'right';
-                anchorElm.innerHTML = 'View...';
-                voteElement.parentNode.appendChild(anchorElm);
-            }
-
-            voteElement.parentNode.appendChild(selectElm);
-        }
-
-        var submitElm = voteElement.parentNode.querySelector('input[type=submit], button[type=submit]');
-        if(!submitElm) {
-            submitElm = document.createElement('input');
-            submitElm.setAttribute('type', 'submit');
-            submitElm.classList.add('app-vote-submit:');
-            //submitElm.setAttribute('name', 'submit');
-            voteElement.parentNode.appendChild(submitElm);
-        }
 
         var html_options = [];
         var oi=1;
         for(var ci=0; ci<choiceElms.length; ci++) {
             var choiceElm = choiceElms[ci];
             var titleElm = choiceElm.querySelector('header') || choiceElm;
-            var title = choiceElm.innerHTML.replace(/(<([^>]+)>)/ig,"");
-            html_options.push("<option value='" + ci + "'>" + (oi++) + '. ' + title + "</option>");
+            var title = titleElm.innerHTML.replace(/(<([^>]+)>)/ig,"");
+            html_options.push("<option value='" + (ci + 1) + "'>" + (oi++) + '. ' + title + "</option>");
             html_options.sort(function() {
                 return .5 - Math.random();
             });
         }
 
-        selectElm.innerHTML =
-            "<option value=''>Select your Voter Choice</option>\n" +
-            html_options.join("\n");
+        voteContainerElm.parentNode.innerHTML += FORM_VOTE_TEMPLATE
+            .replace(/{\$pgp_id_public}/gi, pgp_id_public)
+            .replace(/{\$timestamp}/gi, timestamp)
+            .replace(/{\$html_options}/gi, html_options.join("\n"));
 
-        // TODO: link to view vote externally
-        //buttonElm.innerHTML = 'Vote';
-        //selectElm.onclick = function() { ClientSocketWorker.sendCommand("VOTE " + pgp_id_public + ' ' + timestamp)}
-
+        voteElement.classList.remove('processing');
         voteElement.classList.add('processed');
+
+        console.log("Processed vote with " + choiceElms.length + " choices");
         return true;
     }
 
