@@ -53,7 +53,9 @@ if(typeof module === 'object') (function() {
             if(xhr.status !== 200)
                 throw new Error("Error: " + xhr.responseText);
             callback(xhr.responseText
-                    .replace(/{\$html_content}/gi, html_content)
+                .replace(/{\$html_content}/gi, html_content)
+                .replace(/{\$pgp_id_public}/gi, pgp_id_public)
+                .replace(/{\$timestamp}/gi, timestamp)
             );
 
         });

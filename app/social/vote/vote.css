@@ -1,3 +1,5 @@
+/** Default theme **/
+
 .vote-default-theme {
 }
 
@@ -15,4 +17,20 @@
 .vote-default-theme main {
     text-indent: 0.5em;
     padding-bottom: 1em;
+}
+
+/** Vote Form **/
+
+form[name=vote-booth-form] > select,
+.ks-feed-entry > select {
+    width: 20em;
+}
+
+
+form[name=vote-booth-form] > input,
+form[name=vote-booth-form] > select,
+.ks-feed-entry > input,
+.ks-feed-entry > select {
+    padding: 0.6em;
+    margin: 0.2em;
 }

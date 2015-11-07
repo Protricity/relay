@@ -11,8 +11,12 @@
      --><a href='#MAXIMIZE vote-booth:'>[+]</a><!--
      --><a href='#CLOSE vote-booth:'>[x]</a>
     </div>
-    <main class='vote-booth-content:'>
-        {$html_content}
+    <main>
+        <form name="vote-booth-form">
+            <input type="hidden" name="timestamp" value="{$timestamp}" />
+            <input type="hidden" name="pgp_id_public" value="{$pgp_id_public}" />
+            {$html_content}
+        </form>
     </main>
     <footer class='footer-bar'>&nbsp;</footer>
 </article>
