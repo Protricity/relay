@@ -3,6 +3,7 @@ article.vote-booth\3A {
     /* position: absolute; */
     /* top: 1em; */
     float: right;
+    min-width: 30em;
 }
 
 .vote-booth\3A > main {

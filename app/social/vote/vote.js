@@ -8,11 +8,13 @@ if(typeof document === 'object')
         "<form name='app-vote-form'>" +
             "<hr>" +
             "<select name='choice' oninput='this.form.submit_vote.click()'>" +
-                "<option value=''>Select your Voter Choice</option>" +
+                "<option value=''>Select your Vote</option>" +
                 "{$html_options}" +
             "</select>" +
-            "<input type='submit' value='Vote!' name='submit_vote'>" +
+            "<input type='submit' value='Vote!' name='submit_vote' />" +
             "<a href='#VOTE {$pgp_id_public} {$timestamp}' style='float: right;'>View...</a>" +
+            "<input type='hidden' value='{$pgp_id_public}' name='pgp_id_public' />" +
+            "<input type='hidden' value='{$timestamp}' name='timestamp' />" +
         "</form>";
 
     // Events
@@ -40,7 +42,24 @@ if(typeof document === 'object')
 
 
     function submitVoteForm(e, formElm) {
-        console.log(formElm.choice.value);
+        var timestamp = formElm.timestamp.value;
+        var pgp_id_public = formElm.pgp_id_public.value;
+        var choice = formElm.choice.value;
+        var commandString = "VOTE " + pgp_id_public + ' ' + timestamp + ' ' + choice;
+
+        var socketEvent = new CustomEvent('command', {
+            detail: commandString,
+            cancelable:true,
+            bubbles:true
+        });
+        formElm.dispatchEvent(socketEvent);
+        if(!socketEvent.defaultPrevented)
+            throw new Error("Command was not received");
+
+        formElm.classList.add('success');
+        formElm.submit_vote.disabled = true;
+        console.log("TODO: ", commandString);
+        return false;
     }
 
 
