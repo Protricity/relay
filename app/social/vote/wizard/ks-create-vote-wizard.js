@@ -23,7 +23,7 @@ if(typeof document === 'object') (function() {
                     submitCreateChoiceForm(e, formElm);
                 return true;
 
-            case 'ks-create-vote-form':
+            case 'ks-create-vote-wizard':
                 if(e.type === 'submit'
                     || (e.keyCode == 13 && event.shiftKey))
                     e.preventDefault() ||
@@ -59,7 +59,7 @@ if(typeof document === 'object') (function() {
         var choiceID = parseInt(formElm.i.value);
 
         // TODO: select local to article
-        var createFormElm = document.querySelector('form[name=ks-create-vote-form]');
+        var createFormElm = document.querySelector('form[name=ks-create-vote-wizard]');
 
         var templateElm = document.createElement('div');
         templateElm.innerHTML = createFormElm.choices.value;
@@ -86,7 +86,7 @@ if(typeof document === 'object') (function() {
         if(!title)
             throw new Error("Missing new choice Title");
 
-        var createFormElm = document.querySelector('form[name=ks-create-vote-form]');
+        var createFormElm = document.querySelector('form[name=ks-create-vote-wizard]');
 
         var templateElm = document.createElement('div');
         templateElm.innerHTML = createFormElm.choices.value;
@@ -117,7 +117,7 @@ if(typeof document === 'object') (function() {
         var choiceID = parseInt(editSelectChoiceFormElm.i.value);
 
         // TODO: select local to article
-        var createFormElm = document.querySelector('form[name=ks-create-vote-form]');
+        var createFormElm = document.querySelector('form[name=ks-create-vote-wizard]');
         var editFormElm = createFormElm.parentNode.querySelector('form[name=ks-create-vote-edit-choice-form]');
         createFormElm.className = 'show-step-edit';
 
@@ -151,7 +151,7 @@ if(typeof document === 'object') (function() {
         if(!title)
             throw new Error("Missing Choice Title");
 
-        var createFormElm = createChoiceFormElm.parentNode.querySelector('form[name=ks-create-vote-form]');
+        var createFormElm = createChoiceFormElm.parentNode.querySelector('form[name=ks-create-vote-wizard]');
 
         var html_template = createFormElm.getElementsByClassName('vote-choice-template:')[0].content.children[0].outerHTML;
         var html = parseTemplateHTML(html_template, createChoiceFormElm);
@@ -190,7 +190,7 @@ if(typeof document === 'object') (function() {
     }
 
     function updateVoteChoices(e, createChoiceFormElm) {
-        var createFormElm = createChoiceFormElm.parentNode.querySelector('form[name=ks-create-vote-form]');
+        var createFormElm = createChoiceFormElm.parentNode.querySelector('form[name=ks-create-vote-wizard]');
         //var html_choice_template = createFormElm.getElementsByClassName('vote-choice-template:')[0].content.children[0].outerHTML;
         //var template_html = parseTemplateHTML(html_choice_template, createChoiceFormElm);
 

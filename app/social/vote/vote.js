@@ -21,7 +21,17 @@ if(typeof document === 'object')
             var choiceElms = voteElement.getElementsByClassName('app-vote-choice:');
             console.log("Found vote with " + choiceElms.length + " choices");
 
-            
+            //for(var ci=0; ci<choiceElms.length; ci++) {
+            //    var choiceElm = choiceElms[ci];
+            //}
+
+            var buttonElm = voteElement.querySelector('button');
+            if(!buttonElm) {
+                buttonElm = document.createElement('button');
+                buttonElm.classList.add('app-vote-button:');
+                buttonElm.innerHTML = 'Vote';
+                voteElement.appendChild(buttonElm);
+            }
 
             voteElement.classList.add('processed');
         })(voteArticles[i]);
@@ -72,7 +82,7 @@ if(typeof module === 'object') (function() {
         }
     };
 
-    var TEMPLATE_URL = "app/social/vote/form/ks-create-vote-form.html";
+    var TEMPLATE_URL = "app/social/vote/wizard/ks-create-vote-wizard.html";
 
     module.exports.renderContentScript = function (commandString, callback) {
         var xhr = new XMLHttpRequest();

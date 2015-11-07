@@ -19,24 +19,25 @@
     /* font-style: italic; */
 }
 
-form[name=ks-create-script-form] .section-step {
+form[name=ks-create-wizard] .section-step {
     clear: left;
 }
 
 
 /** Form Buttons **/
-form[name=ks-create-script-form] input,
-form[name=ks-create-script-form] select {
+form[name=ks-create-wizard] button,
+form[name=ks-create-wizard] input,
+form[name=ks-create-wizard] select {
     padding: 0.5em 1em;
 }
 
 /** Hide Radio Buttons **/
-form[name=ks-create-script-form] input[name=radio-step] {
+form[name=ks-create-wizard] input[name=radio-step] {
     display: none;
 }
 
 /** Tab Buttons **/
-form[name=ks-create-script-form] .button-step {
+form[name=ks-create-wizard] .button-step {
     /* font-weight: bold; */
     border: 2px outset;
     padding: 0.5em 1em;
@@ -46,12 +47,12 @@ form[name=ks-create-script-form] .button-step {
 }
 
 /** Hide Future Tab Button **/
-form[name=ks-create-script-form] input[name=radio-step]:checked ~ .button-step {
+form[name=ks-create-wizard] input[name=radio-step]:checked ~ .button-step {
     display: none;
 }
 
 /** Activated Tab Button **/
-form[name=ks-create-script-form] input[name=radio-step]:checked + .button-step {
+form[name=ks-create-wizard] input[name=radio-step]:checked + .button-step {
     border-style: inset;
     display: inline-block;
     font-weight: bold;

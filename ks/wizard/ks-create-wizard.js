@@ -17,7 +17,7 @@ if(typeof document === 'object')
             return false;
 
         switch(formElm.getAttribute('name')) {
-            case 'ks-create-script-form':
+            case 'ks-create-wizard':
                 return handleCreateScriptForm(e, formElm);
 
             default:
@@ -29,6 +29,7 @@ if(typeof document === 'object')
     function handleCreateScriptForm(e, formElm) {
         switch(e.type) {
             case 'submit':
+                e.preventDefault();
                 updatePreview(e, formElm);
                 return handleSubmitEvent(e, formElm);
 
@@ -45,32 +46,29 @@ if(typeof document === 'object')
     }
 
     function handleSubmitEvent(e, formElm) {
-        e.preventDefault();
-        var radios = formElm.querySelectorAll('input[name=radio-step]');
-        for(var i=0; i<radios.length; i++) {
-            if(radios[i].checked) {
-                if(i == radios.length - 1) {
-                    submitForm(e, formElm);
-
-                } else {
-                    radios[i+1].checked = true;
-                    var nextSection = radios[i+1].parentNode.querySelector('#' + radios[i+1].id + ' + label + .section-step');
-                    var nextInput = nextSection.querySelector('input, textarea, select');
-                    nextInput.focus();
-                }
-                return true;
-            }
-        }
-        radios[0].checked = true;
-        return true;
-    }
-
-    function submitForm(e, formElm) {
         var template_html = parseTemplateHTML(e, formElm);
         ClientSocketWorker.sendCommand('PUT.FORM ' + template_html
             .replace(/</g, '&lt;')
             .replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '')     // Remove empty html tags
         );
+
+        //var radios = formElm.querySelectorAll('input[name=radio-step]');
+        //for(var i=0; i<radios.length; i++) {
+        //    if(radios[i].checked) {
+        //        if(i == radios.length - 1) {
+        //            submitForm(e, formElm);
+        //
+        //        } else {
+        //            radios[i+1].checked = true;
+        //            var nextSection = radios[i+1].parentNode.querySelector('#' + radios[i+1].id + ' + label + .section-step');
+        //            var nextInput = nextSection.querySelector('input, textarea, select');
+        //            nextInput.focus();
+        //        }
+        //        return true;
+        //    }
+        //}
+        //radios[0].checked = true;
+        //return true;
     }
 
     function updatePreview(e, formElm) {
@@ -110,7 +108,7 @@ if(typeof document === 'object')
 
 // Worker Script
 if(typeof module === 'object') (function() {
-    var TEMPLATE_URL = "ks/scripts/create/ks-script-create-form.html";
+    var TEMPLATE_URL = "ks/wizard/ks-create-wizard.html";
 
     module.exports.renderContentScript = function(commandString, callback) {
         var xhr = new XMLHttpRequest();
