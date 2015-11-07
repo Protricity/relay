@@ -14,30 +14,38 @@ if(typeof document === 'object')
         if(voteArticles.length <= voteArticlesProcessed.length)
             return;
 
-        for(var i=0; i<voteArticles.length; i++) (function(voteElement) {
-            if(voteElement.classList.contains('processed'))
-                return;
-
-            var choiceElms = voteElement.getElementsByClassName('app-vote-choice:');
-            console.log("Found vote with " + choiceElms.length + " choices");
-
-            //for(var ci=0; ci<choiceElms.length; ci++) {
-            //    var choiceElm = choiceElms[ci];
-            //}
-
-            var buttonElm = voteElement.querySelector('button');
-            if(!buttonElm) {
-                buttonElm = document.createElement('button');
-                buttonElm.classList.add('app-vote-button:');
-                buttonElm.innerHTML = 'Vote';
-                voteElement.appendChild(buttonElm);
-            }
-
-            voteElement.classList.add('processed');
-        })(voteArticles[i]);
+        for(var i=0; i<voteArticles.length; i++)
+            processVoteArticle(voteArticles[i]);
     }
     setTimeout(onRenderEvent, 200);
 
+    function processVoteArticle(voteElement) {
+        if(voteElement.classList.contains('processed'))
+            return false;
+
+        var timestamp = voteElement.getAttribute('data-timestamp');
+        var pgp_id_public = voteElement.getAttribute('data-pgp-id-public');
+        //var uid = pgp_id_public + ' ' + timestamp;
+
+        var choiceElms = voteElement.getElementsByClassName('app-vote-choice:');
+        console.log("Found vote with " + choiceElms.length + " choices");
+
+        //for(var ci=0; ci<choiceElms.length; ci++) {
+        //    var choiceElm = choiceElms[ci];
+        //}
+
+        var buttonElm = voteElement.querySelector('button');
+        if(!buttonElm) {
+            buttonElm = document.createElement('button');
+            buttonElm.classList.add('app-vote-button:');
+            buttonElm.innerHTML = 'Vote';
+            buttonElm.onclick = function() { ClientSocketWorker.sendCommand("VOTE " + pgp_id_public + ' ' + timestamp)}
+            voteElement.appendChild(buttonElm);
+        }
+
+        voteElement.classList.add('processed');
+        return true;
+    }
 
     // Includes
 

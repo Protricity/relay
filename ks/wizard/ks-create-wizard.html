@@ -1,4 +1,4 @@
-<article class='ks-script-create-window:'>
+<article class='ks-create-wizard:'>
     <script src='ks/wizard/ks-create-wizard.js'></script>
     <link href='ks/wizard/ks-create-wizard.css' type='text/css' rel='stylesheet' property='stylesheet'>
     <style>
@@ -30,12 +30,12 @@
         
     </style>
     <header class='header-bar show-on-minimized'>
-        <a href='#MAXIMIZE ks-script-create-window:'>Simple Article Wizard</a>
+        <a href='#MAXIMIZE ks-create-wizard:'>Simple Article Wizard</a>
     </header>
     <div class='header-bar-buttons show-on-minimized'>
-        <a href='#MINIMIZE ks-script-create-window:'>[-]</a><!--
-     --><a href='#MAXIMIZE ks-script-create-window:'>[+]</a><!--
-     --><a href='#CLOSE ks-script-create-window:'>[x]</a>
+        <a href='#MINIMIZE ks-create-wizard:'>[-]</a><!--
+     --><a href='#MAXIMIZE ks-create-wizard:'>[+]</a><!--
+     --><a href='#CLOSE ks-create-wizard:'>[x]</a>
     </div>
 
     <form name='ks-create-wizard' id='ks-create-wizard' class="show-step-1" action='#' onsubmit='return false;'>
@@ -71,7 +71,7 @@
             <strong>Add an <i>optional</i> title for this article:</strong>
             <br>
             <br>
-            <input type='text' name='title' size='36' placeholder='Your Article Title'>
+            <input type='text' name='title' size='50' placeholder='Your Article Title'>
             <br>
             <br>
             <button type='button' onclick="this.form.className = 'show-step-2';" >
@@ -84,7 +84,7 @@
             <strong>Add content for this article:</strong>
             <br>
             <br>
-            <textarea name='content' placeholder='Article Content' cols='48' rows='6'></textarea>
+            <textarea name='content' placeholder='Article Content' cols='58' rows='6'></textarea>
             <br>
             <br>
             <button type='button' onclick="this.form.className = 'show-step-3';" >
@@ -108,7 +108,7 @@
             <strong>Add an <i>optional</i> signature to this article:</strong>
             <br>
             <br>
-            <textarea name='footer' placeholder='Article Signature/Footer' cols='48' rows='3'></textarea>
+            <textarea name='footer' placeholder='Article Signature/Footer' cols='58' rows='3'></textarea>
             <br>
             <br>
             <button type='button' onclick="this.form.className = 'show-step-5';" >
@@ -130,19 +130,13 @@
             <input type='submit' value='Finish'/>
         </section>
     </form>
-    <section class="put-preview-section" style="display: none;">
-        <strong>Preview</strong>:
-        <div class='put-preview-output'></div>
-        <br />
-        <strong>Code</strong>:
-        <pre class='put-preview-source-output'></pre>
-        <!--<strong>Theme</strong>:-->
-        <!--<label style="display: block;">-->
-        <!--<select name="theme" form="ks-create-wizard">-->
-        <!--</select>-->
-        <!--</label>-->
-        <!--<br />-->
-    </section>
+
+    <header>Preview</header>
+    <section class="ks-create-wizard-preview-output:"></section>
+
+    <header>Source Code</header>
+    <section class="ks-create-wizard-source-output:"></section>
+
     <footer class='footer-bar'>
         <a href='#PUT.SCRIPT'>use a different content script</a>...
     </footer>

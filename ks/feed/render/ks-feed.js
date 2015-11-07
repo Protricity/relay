@@ -181,6 +181,8 @@ if(typeof document === 'object')
                     articleDiv = articleDiv.children[0];
 
                 articleDiv.classList.add('ks-verified-content');
+                articleDiv.setAttribute('data-timestamp', entryData.timestamp);
+                articleDiv.setAttribute('data-pgp-id-public', entryData.pgp_id_public);
                 articleHTMLContent = articleDiv.outerHTML;
 
             } else {            // TODO: if PGP KEY BLOCK

@@ -18,30 +18,16 @@ if(typeof document === 'object')
 
         switch(formElm.getAttribute('name')) {
             case 'ks-create-wizard':
-                return handleCreateScriptForm(e, formElm);
-
-            default:
-                return false;
-        }
-    }
-
-
-    function handleCreateScriptForm(e, formElm) {
-        switch(e.type) {
-            case 'submit':
-                e.preventDefault();
-                updatePreview(e, formElm);
-                return handleSubmitEvent(e, formElm);
-
-            case 'input':
-            case 'keyup':
-                updatePreview(e, formElm);
-                if(e.keyCode == 13 && event.shiftKey)
+                if(e.type === 'submit'
+                    || (e.keyCode == 13 && event.shiftKey)) {
+                    e.preventDefault();
                     handleSubmitEvent(e, formElm);
+                }
+                updatePreview(e, formElm);
                 return true;
 
             default:
-                throw new Error("Unhandled: " + e.type);
+                return false;
         }
     }
 
@@ -52,37 +38,27 @@ if(typeof document === 'object')
             .replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '')     // Remove empty html tags
         );
 
-        //var radios = formElm.querySelectorAll('input[name=radio-step]');
-        //for(var i=0; i<radios.length; i++) {
-        //    if(radios[i].checked) {
-        //        if(i == radios.length - 1) {
-        //            submitForm(e, formElm);
-        //
-        //        } else {
-        //            radios[i+1].checked = true;
-        //            var nextSection = radios[i+1].parentNode.querySelector('#' + radios[i+1].id + ' + label + .section-step');
-        //            var nextInput = nextSection.querySelector('input, textarea, select');
-        //            nextInput.focus();
-        //        }
-        //        return true;
-        //    }
-        //}
-        //radios[0].checked = true;
-        //return true;
+
+        formElm.getElementsByClassName('section-status')[0].innerHTML =
+            "<span class='success'>Wizard has completed successfully</span>";
+
+        // Close Form
+        var windowElm = document.getElementsByClassName('ks-create-wizard:')[0];
+        windowElm.classList.add('closed');
     }
 
     function updatePreview(e, formElm) {
         var template_html = parseTemplateHTML(e, formElm);
 
-        formElm.parentNode.getElementsByClassName('put-preview-output')[0].innerHTML = template_html
+        formElm.parentNode.getElementsByClassName('ks-create-wizard-preview-output:')[0].innerHTML = template_html
             .replace(/\[\$[^}]+\]/g, '');                        // Remove empty variables
 
-        formElm.parentNode.getElementsByClassName('put-preview-source-output')[0].innerHTML = template_html
+        formElm.parentNode.getElementsByClassName('ks-create-wizard-source-output:')[0].innerHTML = template_html
             .replace(/<[^\/>][^>]*>\s*<\/[^>]+>/gm, '')     // Remove empty html tags
             .replace(/</g, '&lt;');
 
         //.replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '');     // Remove empty html tags
-        formElm.parentNode.querySelector('.put-preview-section').style.display = 'block';
+        //formElm.parentNode.querySelector('.put-preview-section').style.display = 'block';
     }
 
 
