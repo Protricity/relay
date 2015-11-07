@@ -77,6 +77,7 @@ li {
 }
 
 .theme-minimal > article.maximized {
+    min-width: 16em;
     position: absolute;
     z-index: 2;
     top: 10%;

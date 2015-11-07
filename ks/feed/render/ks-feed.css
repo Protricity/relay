@@ -64,11 +64,17 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
     margin: 1.5em 0 0.5em 0;
     border-radius: 0.5em;
     background-color: white;
-    overflow: auto;
-    width: 36em;
+/*     overflow: auto; */
+/*     width: 36em; */
     animation: ks-feed-entry-fade-in .5s linear forwards;
 }
 
+
+.ks-feed-entries\3A > .ks-feed-entry > article {
+    overflow: auto;
+    width: 36em;
+    max-height: 18em;
+}
 
 .ks-feed-entries\3A > .ks-feed-entry:empty {
     display: none;

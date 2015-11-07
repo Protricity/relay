@@ -30,18 +30,21 @@ if(typeof document === 'object')
         var choiceElms = voteElement.getElementsByClassName('app-vote-choice:');
         console.log("Found vote with " + choiceElms.length + " choices");
 
+
+        var selectElm = voteElement.parentNode.querySelector('select[name=choice]');
+        if(!selectElm) {
+            selectElm = document.createElement('select');
+            selectElm.setAttribute('name', 'choice');
+            selectElm.classList.add('app-vote-button:');
+            //buttonElm.innerHTML = 'Vote';
+            //selectElm.onclick = function() { ClientSocketWorker.sendCommand("VOTE " + pgp_id_public + ' ' + timestamp)}
+            voteElement.parentNode.appendChild(document.createElement('hr'));
+            voteElement.parentNode.appendChild(selectElm);
+        }
+
         //for(var ci=0; ci<choiceElms.length; ci++) {
         //    var choiceElm = choiceElms[ci];
         //}
-
-        var buttonElm = voteElement.querySelector('button');
-        if(!buttonElm) {
-            buttonElm = document.createElement('button');
-            buttonElm.classList.add('app-vote-button:');
-            buttonElm.innerHTML = 'Vote';
-            buttonElm.onclick = function() { ClientSocketWorker.sendCommand("VOTE " + pgp_id_public + ' ' + timestamp)}
-            voteElement.appendChild(buttonElm);
-        }
 
         voteElement.classList.add('processed');
         return true;
@@ -74,15 +77,19 @@ if(typeof module === 'object') (function() {
          * @param commandString VOTE
          */
         function voteCommand(commandString) {
-            var match = /^vote/im.exec(commandString);
+            var match = /^vote\s+([a-f0-9]{8,16})\s+(\d+)\s*([\s\S]+)?$/im.exec(commandString);
             if (!match)
                 return false;
 
+            var pgp_id_public = match[1];
+            var timestamp = match[2];
+            var voteContent = match[3];
+
             self.module = {exports: {}};
-            importScripts('app/social/vote/render/vote-window.js');
+            importScripts('app/social/vote/booth/vote-booth.js');
             var renderExports = self.module.exports;
 
-            renderExports.renderVote(commandString, function (html) {
+            renderExports.renderVoteBooth(commandString, function (html) {
                 Client.render(html);
             });
 
