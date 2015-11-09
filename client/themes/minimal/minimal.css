@@ -219,9 +219,9 @@ li {
 }
 
 
-.theme-minimal .status-box:empty {
-    display: none;
-}
+/*.theme-minimal .status-box:empty {*/
+    /*display: none;*/
+/*}*/
 
 .theme-minimal code.status-box > * {
     animation: fadein 0.5s;

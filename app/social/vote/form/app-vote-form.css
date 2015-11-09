@@ -1,0 +1,19 @@
+
+/** Vote Form **/
+
+form[name=app-vote-form].no-passphrase-required .hide-on-no-passphrase-required,
+form[name=app-vote-form] .status-box:empty {
+    display: none;
+}
+
+form[name=app-vote-form] input[type=text],
+form[name=app-vote-form] select {
+    width: 20em;
+}
+
+form[name=app-vote-form] input,
+form[name=app-vote-form] button,
+form[name=app-vote-form] select {
+    padding: 0.6em;
+    margin: 0.2em;
+}

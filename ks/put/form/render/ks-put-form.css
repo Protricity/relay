@@ -7,6 +7,11 @@ article.ks-put\3A > section {
     border: 3px inset;
 }
 
+article.ks-put\3A  .status-box:empty {
+    display: none;
+}
+
+
 /** Compact **/
 
 article.ks-put\3A.compact .hide-on-compact {

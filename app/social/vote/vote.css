@@ -18,17 +18,3 @@
     text-indent: 0.5em;
     padding-bottom: 1em;
 }
-
-/** Vote Form **/
-
-form[name=app-vote-form] > input[type=text],
-form[name=app-vote-form] > select {
-    width: 20em;
-}
-
-form[name=app-vote-form] > input,
-form[name=app-vote-form] > button,
-form[name=app-vote-form] > select {
-    padding: 0.6em;
-    margin: 0.2em;
-}

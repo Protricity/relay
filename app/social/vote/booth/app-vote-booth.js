@@ -15,7 +15,7 @@ if(typeof document === 'object') (function() {
 
 // Worker Scripts
 if(typeof module === 'object') (function() {
-    var TEMPLATE_URL = 'app/social/vote/booth/vote-booth.html';
+    var TEMPLATE_URL = 'app/social/vote/booth/app-vote-booth.html';
 
     module.exports.renderVoteBooth = function(commandString, callback) {
         var html_content = '';

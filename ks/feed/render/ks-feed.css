@@ -9,7 +9,9 @@ article.ks-feed\3A > section {
     overflow-y: auto;
 }
 
-
+article.ks-feed\3A  .status-box:empty {
+    display: none;
+}
 
 /** Form **/
 
