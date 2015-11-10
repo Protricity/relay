@@ -60,7 +60,7 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
 
 /** Feed Entry **/
 
-.ks-feed-entries\3A > .ks-feed-entry {
+.ks-feed-entries\3A > .ks-feed-entry\3A {
     border: 1px inset;
     padding: 0.5em;
     margin: 1.5em 0 0.5em 0;
@@ -72,33 +72,33 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
 }
 
 
-.ks-feed-entries\3A > .ks-feed-entry > article {
+.ks-feed-entries\3A > .ks-feed-entry\3A > article {
     overflow: auto;
     width: 36em;
     max-height: 18em;
 }
 
-.ks-feed-entries\3A > .ks-feed-entry:empty {
+.ks-feed-entries\3A > .ks-feed-entry\3A:empty {
     display: none;
 }
 
-.ks-feed-entries\3A > .ks-feed-entry button.command {
+.ks-feed-entries\3A > .ks-feed-entry\3A button.command {
     padding: 0.2em 0.5em;
     margin: 0.1em;
     transition: 1s;
     opacity: 1;
 }
 
-.ks-feed-entries\3A > .ks-feed-entry .timestamp_formatted {
+.ks-feed-entries\3A > .ks-feed-entry\3A .timestamp_formatted {
     color: gray;
 }
 
 
-.ks-feed-entry-template {
+.ks-feed-entry-template\3A {
     display: none;
 }
 
-.ks-feed-entry > .ks-unverified-content {
+.ks-feed-entry\3A > .ks-unverified-content {
     max-height: 7em;
     color: grey;
 }
@@ -122,6 +122,12 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
 
 }
 
+/** Timestamp **/
+.timestamp_formatted {
+    float: right;
+    font-style: italic;
+}
+
 /** Icon **/
 
 .user_icon {
@@ -133,5 +139,5 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
 
 .user_icon.tiny {
     width: 24px;
-    height: 24px;
+    height: 20px;
 }

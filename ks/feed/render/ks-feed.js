@@ -203,7 +203,7 @@ if(typeof document === 'object')
             if(entryData.timestamp < containerElm.feedEndTime)
                 containerElm.feedEndTime = entryData.timestamp-1;
 
-            var templateElm = containerElm.getElementsByClassName('ks-feed-entry-template')[0];
+            var templateElm = containerElm.getElementsByClassName('ks-feed-entry-template:')[0];
             var templateHTML = templateElm.outerHTML;
 
             queryAuthorByKey(entryData.pgp_id_public, function(author) {
@@ -226,9 +226,9 @@ if(typeof document === 'object')
 
                 newFeedContainer.innerHTML = templateHTML;
                 var newFeedEntry = newFeedContainer.children[0];
-                newFeedEntry.classList.remove('ks-feed-entry-template');
+                newFeedEntry.classList.remove('ks-feed-entry-template:');
                 //articleDiv.classList.add('ks-feed-entry');
-                var templateElm = containerElm.getElementsByClassName('ks-feed-entry-template')[0];
+                var templateElm = containerElm.getElementsByClassName('ks-feed-entry-template:')[0];
                 if(prepend && templateElm && templateElm.nextSibling) {
                     containerElm.insertBefore(newFeedEntry, templateElm.nextSibling);
 
@@ -521,7 +521,7 @@ if(typeof document === 'object')
             articleElm.setAttribute('data-path', pathElm.value);
             //articleElm.setAttribute('data-timestamp', timestamp.toString());
 
-            articleElm.classList.add('ks-feed-entry');
+            articleElm.classList.add('ks-feed-entry:');
             postContent = articleElm.outerHTML;
             postContent = protectHTMLContent(postContent, formElm);
 
@@ -529,7 +529,7 @@ if(typeof document === 'object')
 
             var newFeedContainer = document.createElement('div');
 
-            var templateElm = formElm.parentNode.parentNode.getElementsByClassName('ks-feed-entry-template')[0];
+            var templateElm = formElm.parentNode.parentNode.getElementsByClassName('ks-feed-entry-template:')[0];
             var templateHTML = templateElm.outerHTML;
 
             templateHTML = templateHTML
@@ -543,7 +543,7 @@ if(typeof document === 'object')
 
             newFeedContainer.innerHTML = templateHTML;
             var newFeedEntry = newFeedContainer.children[0];
-            newFeedEntry.classList.remove('ks-feed-entry-template');
+            newFeedEntry.classList.remove('ks-feed-entry-template:');
             //containerElm.appendChild(newFeedEntry);
 
             // TODO: ugly parent node stack

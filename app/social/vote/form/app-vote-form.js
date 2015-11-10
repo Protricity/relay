@@ -106,10 +106,10 @@ if(typeof document === 'object')
             voteContainerElm.innerHTML +=
                 "<hr/>" +
                 xhr.responseText
-                .replace(/{\$status_box}/gi, '')
-                .replace(/{\$pgp_id_public}/gi, pgp_id_public)
-                .replace(/{\$timestamp}/gi, timestamp)
-                .replace(/{\$html_options}/gi, html_options.join("\n"));
+                    .replace(/{\$status_box}/gi, '')
+                    .replace(/{\$pgp_id_public}/gi, pgp_id_public)
+                    .replace(/{\$timestamp}/gi, timestamp)
+                    .replace(/{\$html_options}/gi, html_options.join("\n"));
 
             includeScript(URL_VOTE_FORM_SCRIPT);
             includeStylesheet(URL_VOTE_FORM_STYLESHEET);
