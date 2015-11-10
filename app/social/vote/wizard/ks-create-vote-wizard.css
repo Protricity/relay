@@ -1,0 +1,80 @@
+.ks-create-vote-window\3A > main,
+.ks-create-vote-window\3A > form > section,
+.ks-create-vote-window\3A > section {
+    /* min-width: 30em; */
+    max-width: 37em;
+    /* max-height: 18em; */
+    /* overflow: auto; */
+    padding: 1em 2em 1em 2em;
+    border: 3px inset;
+    background-color: #FAFAFA;
+}
+
+.ks-create-vote-window\3A  .section-status {
+    background: linear-gradient(to top left, #E5FDD5, #F5FFF5);
+    text-indent: 1em;
+}
+
+.ks-create-vote-window\3A  .section-status:empty,
+.ks-create-vote-window\3A > section:empty {
+    display: none;
+}
+
+.ks-put-preview-output\3A,
+.ks-put-preview-source-output\3A {
+    margin: 0;
+    overflow: auto;
+    max-height: 11em;
+    max-width: 6em;
+    /* display: none; */
+}
+
+.ks-put-preview-source-output\3A {
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+ul.ks-create-vote-choices\3A {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+ul.ks-create-vote-choices\3A > li {
+/*     border: 1px inset; */
+/*     min-height: 3em; */
+    margin: 0.5em 0;
+}
+
+ul.ks-create-vote-choices\3A > li .button-edit-choice,
+ul.ks-create-vote-choices\3A > li .button-remove-choice {
+    padding: 0.5em 1em;
+    float: right;
+}
+
+
+
+
+/** Form **/
+
+
+form[name=ks-create-vote-wizard] .section-step {
+    clear: left;
+}
+
+
+/** Form Inputs **/
+form[name=ks-create-vote-wizard] input,
+form[name=ks-create-vote-wizard] button,
+form[name=ks-create-vote-wizard] textarea,
+form[name=ks-create-vote-wizard] select {
+    padding: 0.5em 1em;
+}
+
+/** Form Buttons **/
+form[name=ks-create-vote-wizard] input[type=text],
+form[name=ks-create-vote-wizard] textarea,
+form[name=ks-create-vote-wizard] select
+{
+    width: 30em;
+}

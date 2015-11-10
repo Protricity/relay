@@ -1,0 +1,20 @@
+/** Default theme **/
+
+.vote-default-theme {
+}
+
+.vote-default-theme header {
+    font-weight: bold;
+    font-style: italic;
+    padding-bottom: 0.2em;
+    font-size: larger;
+}
+
+.vote-default-theme > header {
+    font-size: x-large;
+}
+
+.vote-default-theme main {
+    text-indent: 0.5em;
+    padding-bottom: 1em;
+}

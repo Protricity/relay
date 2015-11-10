@@ -1,0 +1,61 @@
+article.vote-booth\3A {
+    /* right: 1em; */
+    /* position: absolute; */
+    /* top: 1em; */
+    float: right;
+    min-width: 30em;
+}
+
+.vote-booth\3A > section,
+.vote-booth\3A > main {
+    padding: 0.5em 1em;
+    border: 1px inset;
+    background: #EEE;
+}
+
+.vote-booth-list .open {
+    color: green;
+}
+
+.vote-booth-list .connecting {
+    color: blue;
+}
+
+.vote-booth-list .closing {
+    color: red;
+}
+
+.vote-booth-list .closed {
+    color: darkred;
+}
+
+/** Form **/
+
+form[name=app-vote-booth-form] textarea,
+form[name=app-vote-booth-form] select,
+form[name=app-vote-booth-form] input {
+    padding: 0.7em 0.8em;
+    margin: 0.5em 0;
+    border-radius: 0.6em;
+    border-width: 1px;
+    font-family: monospace;
+}
+
+form[name=app-vote-booth-form] input[type=submit]:enabled {
+    font-weight: bold;
+    transition: 1s;
+    transition-delay: 1s;
+    box-shadow: 0 0 3em #5F5;
+    cursor: pointer;
+}
+
+
+form[name=app-vote-booth-form].no-passphrase-required .hide-on-no-passphrase-required {
+    display: none;
+}
+
+form[name=app-vote-booth-form].passphrase-accepted input[type=password] {
+    font-weight: bold;
+    color: green;
+    background-color: #EFFFEF;
+}

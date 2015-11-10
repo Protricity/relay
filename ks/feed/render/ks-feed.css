@@ -5,11 +5,13 @@ article.ks-feed\3A > section {
     padding: 1em 2em 1em 2em;
     border: 3px inset;
     background: #EEE;
-    max-height: 60em;
+    max-height: 42em;
     overflow-y: auto;
 }
 
-
+article.ks-feed\3A  .status-box:empty {
+    display: none;
+}
 
 /** Form **/
 
@@ -64,11 +66,17 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
     margin: 1.5em 0 0.5em 0;
     border-radius: 0.5em;
     background-color: white;
-    overflow: auto;
-    width: 36em;
+/*     overflow: auto; */
+/*     width: 36em; */
     animation: ks-feed-entry-fade-in .5s linear forwards;
 }
 
+
+.ks-feed-entries\3A > .ks-feed-entry > article {
+    overflow: auto;
+    width: 36em;
+    max-height: 18em;
+}
 
 .ks-feed-entries\3A > .ks-feed-entry:empty {
     display: none;

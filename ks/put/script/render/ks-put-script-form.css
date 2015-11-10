@@ -1,7 +1,7 @@
 /** Form **/
 
-.ks-put-script-select-window main,
-.ks-put-script-select-window section {
+.ks-put-script-select-window\3A  main,
+.ks-put-script-select-window\3A  section {
     padding: 1em 2em 1em 2em;
     border: 3px inset;
     background-color: #FAFAFA;

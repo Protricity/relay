@@ -12,12 +12,10 @@
             }, 100);
 
             setTimeout(function() {
-                // Render PUT
-                ClientSocketWorker.sendCommand("PUT.SCRIPT APP/SOCIAL/VOTE/VOTE.JS");
+                // Render PUT/FEED
+//                ClientSocketWorker.sendCommand("PUT.SCRIPT KS/WIZARD/KS-CREATE-WIZARD.JS");
+                ClientSocketWorker.sendCommand("FEED"); // "PUT.SCRIPT APP/SOCIAL/VOTE/VOTE.JS");
             }, 1000);
-
-            //Render FEED
-            //ClientSocketWorker.sendCommand("feed");
 
             // Join Timezone Channel
             setTimeout(function() {

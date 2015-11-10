@@ -56,7 +56,7 @@ module.exports.initClientCommands = function(Client) {
 
     // App Commands
 
-    Client.require('app/app-client-commands.js')
+    Client.require('app/client-app-command-proxies.js')
         .initClientAppCommands(Client);
 
 };

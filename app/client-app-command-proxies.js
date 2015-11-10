@@ -16,5 +16,17 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
+        // About Window Commands
+        Client.addCommand(importVoteCommand);
+        function importVoteCommand(commandString, e) {
+            if (!/^vote/i.test(commandString))
+                return false;
+            Client.removeCommand(importVoteCommand);
+            importScripts('app/social/vote/vote.js');
+            module.exports.initClientAppSocialVoteCommands(Client);
+            return false;
+        }
+
+
     };
 })();

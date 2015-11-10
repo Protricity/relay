@@ -1,0 +1,180 @@
+<article class='ks-create-vote-window:'>
+    <script src='app/social/vote/wizard/ks-create-vote-wizard.js'></script>
+    <link href='app/social/vote/wizard/ks-create-vote-wizard.css' type='text/css' rel='stylesheet' property='stylesheet'>
+    <style>
+        /** Show visible forms **/
+        form[name=ks-create-vote-wizard]:not(.show-step-1) .section-step-1,
+        form[name=ks-create-vote-wizard]:not(.show-step-2) .section-step-2,
+        form[name=ks-create-vote-wizard]:not(.show-step-3) .section-step-3,
+        form[name=ks-create-vote-wizard]:not(.show-step-edit) .section-step-edit {
+            display: none;
+        }
+
+        /** Tab Buttons **/
+        form[name=ks-create-vote-wizard] .button-steps input,
+        form[name=ks-create-vote-wizard] .button-steps button {
+            border-style: outset;
+            width: 33.3%;
+        }
+
+        /** Selected Tab Button **/
+        form[name=ks-create-vote-wizard].show-step-1 .button-step-1,
+        form[name=ks-create-vote-wizard].show-step-2 .button-step-2,
+        form[name=ks-create-vote-wizard].show-step-3 .button-step-3 {
+            font-weight: bold;
+            border-style: inset;
+        }
+    </style>
+    <header class='header-bar show-on-minimized'>
+        <a href='#MAXIMIZE ks-create-vote-window:'>Create a new public vote (WIP)</a>
+    </header>
+    <div class='header-bar-buttons show-on-minimized'>
+        <a href='#MINIMIZE ks-create-vote-window:'>[-]</a><!--
+     --><a href='#MAXIMIZE ks-create-vote-window:'>[+]</a><!--
+     --><a href='#CLOSE ks-create-vote-window:'>[x]</a>
+    </div>
+
+
+    <form name='ks-create-vote-edit-choice-form' id='ks-create-vote-edit-choice-form' action='#'>
+        <input type='hidden' name='i' />
+    </form>
+
+
+    <form name='ks-create-vote-choice-form' id='ks-create-vote-choice-form' action='#'>
+    </form>
+
+    <form name='ks-create-vote-wizard' id='ks-create-vote-wizard' action='#' class='show-step-1'>
+
+<template class='vote-template:'>
+<article class='app-vote: [$theme]'>
+    [$assets]
+    <header>[$title]</header>
+    <main>
+        [$content]
+    </main>
+    [$choices]
+</article>
+</template>
+<textarea name='assets' style='display:none'>
+    &lt;script src='app/social/vote/vote.js'>&lt;/script>
+    &lt;link href='app/social/vote/vote.css' type='text/css' rel='stylesheet' property='stylesheet'>
+</textarea>
+
+<template class='vote-choice-template:'>
+    <section class='app-vote-select-choice:'>
+        <header>[$choice_title]</header>
+        <main>[$choice_content]</main>
+    </section>
+</template>
+
+        <header class='button-steps'>
+            <input type="button" value="Describe the Vote" class='button-step-1' onclick="this.form.className = 'show-step-1';" /><!--
+         --><input type="button" value="Add Vote Choices" class='button-step-2' onclick="this.form.className = 'show-step-2';" /><!--
+         --><input type="button" value="Select a Theme" class='button-step-3' onclick="this.form.className = 'show-step-3';" />
+        </header>
+
+        <section class="section-status">
+            Use this <strong>form wizard</strong> to create a new <i>public vote</i> or <i>call to action</i> for your <strong>Key Space</strong>
+        </section>
+
+        <section class='section-step-1'>
+            <strong>Add a title for this vote:</strong>
+            <br/>
+            <input type='text' name='title' required="required" placeholder='Your Vote Title'>
+            <br/>
+            <br/>
+            <strong>Add a description for this vote:</strong>
+            <br/>
+            <textarea name='content' placeholder='
+    Vote Description.
+        HTML Tags <i>allowed<i>
+            so make it look good!' rows='6'></textarea>
+            <br/>
+            <br/>
+            <button type='button' onclick="this.form.className = 'show-step-2';" >
+                Next: Add some voter <i>choices</i>...
+            </button>
+        </section>
+
+        <section class='section-step-2'>
+            <strong>Add a <i>vote choice</i>:</strong>
+            <br/>
+            <input type='text' name='choice_title' size='36' placeholder='Vote Choice Title'
+                   required="required"
+                   form='ks-create-vote-choice-form'>
+            <br/>
+            <br/>
+            <strong>Add a description for this <i>vote choice</i>:</strong>
+            <br/>
+            <textarea name='choice_content' placeholder='
+    Vote Choice Description.
+        HTML Tags <i>allowed<i>
+            so make it look good!' form='ks-create-vote-choice-form'
+                      rows='6'></textarea>
+            <br/>
+            <br/>
+            <input type='submit' value='Add this Choice' name='choice_submit' form='ks-create-vote-choice-form' />
+            or <input class='button-step-3' type='button' value='Done adding choices' onclick="this.form.className = 'show-step-3';" />
+
+            <textarea name='choices' style='display:none'></textarea>
+        </section>
+
+        <section class='section-step-edit'>
+            <strong>Edit a <i>vote choice</i>:</strong>
+            <br/>
+            <input type='text' name='choice_title' size='36' placeholder='Vote Choice Title'
+                   required="required"
+                   form='ks-create-vote-edit-choice-form'>
+            <br/>
+            <br/>
+            <strong>Add a description for this <i>vote choice</i>:</strong>
+            <br/>
+            <textarea name='choice_content' placeholder='
+    Vote Choice Description.
+        HTML Tags <i>allowed<i>
+            so make it look good!' form='ks-create-vote-edit-choice-form'
+                      rows='6'></textarea>
+            <br/>
+            <br/>
+            <input type='submit' value='Update this Choice' name='choice_submit' form='ks-create-vote-edit-choice-form' />
+            or <input class='button-step-3' type='button' value='Ignore Changes' onclick="this.form.className = 'show-step-3';" />
+        </section>
+
+        <section class='section-step-3'>
+            <strong>Select <i>optional</i> CSS stylesheet theme:</strong>
+            <br/>
+            <br/>
+            <select name="theme">
+                <option value="">No Theme</option>
+                <option value="vote-default-theme" selected="selected">Default Vote Theme</option>
+            </select>
+            <br/>
+            <br/>
+            <input type='submit' value='Finish'/>
+            or
+            <input type='button' value='Add More Vote Choices' onclick="this.form.className = 'show-step-2';" />
+        </section>
+    </form>
+
+    <header>Vote Choices</header>
+    <section>
+        <ul class="ks-create-vote-choices:">
+            <li class='info'>No votee choices added yet.
+                or <button form="ks-create-vote-wizard" onclick="this.form.className = 'show-step-2';" style="padding: 0.5em;">
+                    Add More Voter Choices...
+                </button>
+            </li>
+        </ul>
+    </section>
+
+    <header>Preview</header>
+    <section class="ks-put-preview-output:"></section>
+
+    <header>Source Code</header>
+    <section class="ks-put-preview-source-output:"></section>
+
+
+    <footer class='footer-bar'>
+        <a href='#PUT.SCRIPT'>or use a different content script</a>...
+    </footer>
+</article>

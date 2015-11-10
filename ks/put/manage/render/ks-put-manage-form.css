@@ -6,6 +6,9 @@ article.ks-put-manage\3A > section {
     border: 3px inset;
 }
 
+article.ks-put-manage\3A > .status-box:empty {
+    display: none;
+}
 
 /** Table **/
 .ks-put-manage-info > table {

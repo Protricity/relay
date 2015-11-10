@@ -4,53 +4,28 @@
 if(typeof document === 'object')
 (function() {
 
-    // Events
+    var URL_VOTE_FORM_SCRIPT = 'app/social/vote/form/app-vote-form.js';
 
-    document.addEventListener('render', onRenderEvent, false);
-
-    function onRenderEvent(e) {
-        var voteElements = document.getElementsByClassName('app.vote');
-
-        for(var i=0; i<voteElements.length; i++) (function(voteElement) {
-            var titleElements = voteElement.getElementsByClassName('app.vote.title');
-            if(titleElements.length === 0)
-                throw new Error('Missing Title: class="app.vote.title"');
-            var title = titleElements[0].innerHTML;
-            if(!title)
-                throw new Error('Empty Title Element: class="app.vote.title"');
-
-            var optionElements = voteElement.getElementsByClassName('app.vote.option');
-            if(optionElements.length === 0)
-                throw new Error('Missing Option Elements: class="app.vote.option"');
-
-            var options = {};
-            for(var i=0; i<optionElements.length; i++) (function(optionElement) {
-                var optionID = optionElement.getAttribute('data-option-id');
-                if(!optionID)
-                    throw new Error('Missing Option ID: data-option-id="[option id]"');
-
-                options[optionID] = optionElement;
-            })(optionElements[i]);
-
-            console.log("Found vote: ", title, options);
-        })(voteElements[i]);
-    }
-    setTimeout(onRenderEvent, 200);
+    document.addEventListener('render', onRenderVoteFormProxy, false);
+    setTimeout(onRenderVoteFormProxy, 200);
 
 
-    // Includes
+    var voteArticles = document.getElementsByClassName('app-vote:');
+    var voteArticlesProcessed = document.getElementsByClassName('app-vote: processed');
+    function onRenderVoteFormProxy(e) {
+        if(voteArticles.length <= voteArticlesProcessed.length)
+            return;
 
-    function includeScript(scriptPath) {
+        document.removeEventListener('render', onRenderVoteFormProxy, false);
+
         var head = document.getElementsByTagName('head')[0];
-        if (head.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+        if (head.querySelectorAll('script[src=' + URL_VOTE_FORM_SCRIPT.replace(/[/.]/g, '\\$&') + ']').length === 0) {
             var newScript = document.createElement('script');
-            newScript.setAttribute('src', scriptPath);
+            newScript.setAttribute('src', URL_VOTE_FORM_SCRIPT);
             head.appendChild(newScript);
         }
-    }
 
-    // For Public/Private Key Database access
-    includeScript('ks/ks-db.js');
+    }
 })();
 
 
@@ -65,15 +40,19 @@ if(typeof module === 'object') (function() {
          * @param commandString VOTE
          */
         function voteCommand(commandString) {
-            var match = /^vote/im.exec(commandString);
+            var match = /^vote\s+([a-f0-9]{8,16})\s+(\d+)\s*([\s\S]+)?$/im.exec(commandString);
             if (!match)
                 return false;
 
+            var pgp_id_public = match[1];
+            var timestamp = match[2];
+            var voteContent = match[3];
+
             self.module = {exports: {}};
-            importScripts('app/social/vote/render/vote-window.js');
+            importScripts('app/social/vote/booth/vote-booth.js');
             var renderExports = self.module.exports;
 
-            renderExports.renderVote(commandString, function (html) {
+            renderExports.renderVoteBooth(commandString, function (html) {
                 Client.render(html);
             });
 
@@ -81,7 +60,7 @@ if(typeof module === 'object') (function() {
         }
     };
 
-    var TEMPLATE_URL = "app/social/vote/form/ks-create-vote-form.html";
+    var TEMPLATE_URL = "app/social/vote/wizard/ks-create-vote-wizard.html";
 
     module.exports.renderContentScript = function (commandString, callback) {
         var xhr = new XMLHttpRequest();
