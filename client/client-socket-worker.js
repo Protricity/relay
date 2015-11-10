@@ -259,15 +259,11 @@ function ClientSocketWorker() {
             contentElement.classList.add('__no-class');
         var targetClass = contentElement.classList.item(0);
 
-        // Hide other maximized windows
-        if(contentElement.classList.contains('maximized')) {
-            var maximizedElms = document.getElementsByClassName('maximized');
-            while(maximizedElms.length > 0)
-                maximizedElms[0].classList.remove('maximized');
+        var maximizedElms = document.getElementsByClassName('maximized');
+        while(maximizedElms.length > 0)
+            maximizedElms[0].classList.remove('maximized');
 
-            // TODO: Maximize new window, but only when user requested
-            //contentElements[0].classList.add('maximized');
-        }
+        contentElement.classList.add('maximized');
 
         var targetElements = document.getElementsByClassName(targetClass);
         var targetElement;
