@@ -228,7 +228,7 @@ if(typeof document === 'object') (function() {
         var template_html = parseTemplateHTML(html_template, createFormElm);
 
         ClientSocketWorker.handleResponse("REPLACE ks-put-preview-output: " +
-            "<section class='ks-put-preview-output:'>" +
+            "<section class='ks-put-preview-output: disable-app-vote-form'>" +
                 template_html +
             "</section>"
         );
