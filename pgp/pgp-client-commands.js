@@ -30,6 +30,18 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
+        // PGP.DELETE Command
+        Client.addCommand(importPGPDeleteCommand);
+        function importPGPDeleteCommand(commandString, e) {
+            if (!/^pgp\.delete/i.test(commandString))
+                return false;
+            Client.removeCommand(importPGPDeleteCommand);
+            self.module = {exports: {}};
+            importScripts('pgp/delete/pgp-client-delete-command.js');
+            module.exports.initClientPGPDeleteCommand(Client);
+            return false;
+        }
+
         // PGP.IMPORT Command
         Client.addCommand(importPGPImportCommand);
         Client.addResponse(importPGPImportCommand);
