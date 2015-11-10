@@ -103,15 +103,11 @@ if(typeof document === 'object')
         if(!contentPath)
             throw new Error("No Path provided");
 
-        if(contentPath[0] === '~') {
-            contentPath = contentPath.substr(1);
-            if(!contentPath || contentPath[0] !== '/')
-                contentPath = '/' + contentPath;
-            contentPath = '/home/' + pgp_id_public.substr(pgp_id_public.length-16) + contentPath;
-        }
+        if(contentPath[0] === '~')
+            contentPath = '/home/' + pgp_id_public.substr(pgp_id_public.length-16) + contentPath.substr(1);
 
-        if (contentPath[0] !== '/')
-            contentPath = '/' + contentPath;
+        while(contentPath[0] === '/')
+            contentPath = contentPath.substr(1);
 
         // Query private key
         var path = 'http://' + pgp_id_public + '.ks/.private/id';

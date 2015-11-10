@@ -23,8 +23,10 @@ if(typeof module === 'object') (function() {
 
             var status_box = "Paste a new PGP PRIVATE KEY BLOCK to import a new PGP Identity manually";
 
-            var privateKeyID, publicKeyID, userIDString, publicKeyBlock, publicKeyTimeStamp, privateKeyTimeStamp;
-            if (privateKeyBlock) {
+
+            if (!showForm && privateKeyBlock) {
+                var privateKeyID, publicKeyID, userIDString, publicKeyBlock, publicKeyTimeStamp, privateKeyTimeStamp;
+
                 self.exports = {};
                 self.module = {exports: {}};
                 importScripts('pgp/lib/openpgpjs/openpgp.js');
@@ -35,13 +37,13 @@ if(typeof module === 'object') (function() {
                 privateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();
                 privateKeyID = privateKeyID.substr(privateKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
                 var publicKeyCreateDate = privateKey.subKeys[0].subKey.created;
-                publicKeyTimeStamp = publicKeyCreateDate.getTime();
+                privateKeyTimeStamp = publicKeyCreateDate.getTime();
 
                 var publicKey = privateKey.toPublic();
                 publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
                 publicKeyBlock = publicKey.armor();
                 publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
-                privateKeyTimeStamp = publicKeyTimeStamp + 1; // UID must be different from public key
+                publicKeyTimeStamp = publicKeyCreateDate.getTime() + 1;  // UID must be different from private key
 
                 userIDString = privateKey.getUserIds().join('; ');
 
@@ -52,10 +54,6 @@ if(typeof module === 'object') (function() {
                     Private Key ID: <strong>" + privateKeyID + "</strong><br/>\n\
                     Public Key ID: <strong>" + publicKeyID + "</strong><br/>\n\
                     Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
-            }
-
-
-            if (!showForm && privateKeyBlock) {
 
                 var customFields = {
                     pgp_id_private: privateKeyID,

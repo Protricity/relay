@@ -255,7 +255,7 @@ function KeySpaceDB(dbReadyCallback) {
             host = match[4],
             contentPath = match[5].toLowerCase() || '';
 
-        if(contentPath[0] === '/')
+        while(contentPath[0] === '/')
             contentPath = contentPath.substr(1);
             
         var publicKeyID = null;

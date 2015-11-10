@@ -102,13 +102,14 @@ if(typeof document === 'object') (function() {
 
         choiceElms[choiceID].outerHTML = html;
         createFormElm.choices.value = templateElm.innerHTML;
-        createFormElm.className = 'show-step-2';
 
         updateVoteChoices(e, createFormElm);
         updatePreview(e, createFormElm);
 
         createFormElm.getElementsByClassName('section-status')[0].innerHTML =
             "<span class='success'>Choice entry updated successfully</span>";
+
+        createFormElm.className = 'show-step-2';
     }
 
 
@@ -143,6 +144,7 @@ if(typeof document === 'object') (function() {
         } else {
             editFormElm.choice_content.value = choiceElm.innerHTML.trim();
         }
+
     }
 
 
@@ -170,6 +172,8 @@ if(typeof document === 'object') (function() {
 
         createFormElm.getElementsByClassName('section-status')[0].innerHTML =
             "<span class='success'>Choice entry added successfully (Total: " + choiceElms.length + ")</span>";
+
+        createChoiceFormElm.choice_title.focus();
     }
 
     function submitCreateForm(e, createFormElm) {
