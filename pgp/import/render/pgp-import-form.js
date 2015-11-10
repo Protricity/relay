@@ -51,6 +51,10 @@ if(typeof document === 'object')
                 cancelable:true
             });
             document.dispatchEvent(messageEvent);
+
+            // Close Window
+            var windowElm = document.getElementsByClassName('pgp-import:')[0];
+            windowElm.classList.add('closed');
         }
 
     })();

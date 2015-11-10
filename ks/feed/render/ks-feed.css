@@ -18,7 +18,7 @@ article.ks-feed\3A  .status-box:empty {
 form[name=ks-feed-put-form] textarea[name=content] {
     width: 34em;
     /* padding: 0; */
-    /* margin: 0; */
+    margin: 0;
 }
 
 form[name=ks-feed-put-form] textarea,
