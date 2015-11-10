@@ -4,7 +4,6 @@
 if(typeof module === 'object') (function() {
     module.exports.initClientPGPImportCommands = function (Client) {
         Client.addCommand(importCommand);
-        Client.addCommand(deleteCommand);
 
         /**
          * @param commandString PGP.IMPORT
@@ -87,7 +86,7 @@ if(typeof module === 'object') (function() {
                         self.module = {exports: {}};
                         importScripts('pgp/manage/render/pgp-manage-form.js');
                         self.module.exports.renderPGPManageForm(status_box, function (html) {
-                            Client.replace('pgp:', html);
+                            Client.render(html);
                         });
 
                     });
@@ -106,43 +105,5 @@ if(typeof module === 'object') (function() {
             }
         }
 
-
-        /**
-         * @param commandString DELETE [PGP Private Key ID]
-         */
-        function deleteCommand(commandString, e) {
-            var match = /^pgp.delete\s+(.*)$/im.exec(commandString);
-            if (!match)
-                return false;
-
-            self.module = {exports: {}};
-            importScripts('ks/ks-db.js');
-            var KeySpaceDB = self.module.exports.KeySpaceDB;
-
-            var publicKeyIDs = match[1].trim().split(/\W+/g);
-            for (var i = 0; i < publicKeyIDs.length; i++) {
-                (function (publicKeyID) {
-                    publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
-
-                    // Query private key(s)
-                    var privateKeyPath = 'http://' + publicKeyID + '.ks/.private/id';
-                    KeySpaceDB.queryOne(privateKeyPath, function (err, privateKeyData) {
-                        if (err)
-                            throw new Error(err);
-                        if (privateKeyData) {
-                            KeySpaceDB.deleteContent(privateKeyData.pgp_id_public, privateKeyData.timestamp, function (err) {
-                                if (err)
-                                    throw new Error(err);
-                                console.info("PGP Identity deleted successfully: " + privateKeyData.user_id);
-                                manageCommand("MANAGE", e, "<span class='success'>PGP Identity deleted successfully</span>: " + privateKeyData.user_id + "<br/>Public Key ID: " + publicKeyID);
-                            });
-                        } else {
-                            console.error("Not found: " + publicKeyID);
-                        }
-                    });
-                })(publicKeyIDs[i]);
-            }
-            return true;
-        }
     };
 })();
