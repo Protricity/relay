@@ -1,19 +1,26 @@
-<form name='app-vote-form' class='no-passphrase-required'>
+<form name='app-vote-form' class='no-passphrase-required no-choice-selected'>
     <input type='hidden' value='{$pgp_id_public}' name='pgp_id_public' />
     <input type='hidden' value='{$timestamp}' name='timestamp' />
 
     <code class="status-box">{$status_box}</code>
 
-    <select name='choice' oninput='this.form.submit_vote.click()' style="width: 40%;">
-        <option value=''>Select your Vote</option>
-        {$html_options}
-    </select>
+    <label class='label-vote'>
+        <select name='choice' oninput='this.form.submit_vote.click()' style="width: 25%;">
+            <option value=''>Select your Vote</option>
+            {$html_options}
+        </select>
+    </label>
 
-    <select name='pgp_id_public' style='width: 40%;'>
-        <option value=''>Select a PGP Identity</option>
-        {$html_pgp_id_public_options}
-    </select>
-    <input type='submit' value='Vote!' name='submit_vote' style='width: 12%;' />
+    <label class='label-id hide-on-no-choice-selected'>
+        <select name='pgp_id_public' style='width: 25%;'>
+            <option value=''>Select Identity</option>
+            {$html_pgp_id_public_options}
+        </select>
+    </label>
+
+    <label class='label-submit hide-on-no-choice-selected'>
+        <input type='submit' value='Submit Vote' name='submit_vote'/>
+    </label>
 
     <label class='label-submit hide-on-compact hide-on-no-passphrase-required'>
         <br/>
