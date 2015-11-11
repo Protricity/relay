@@ -547,7 +547,7 @@ if(typeof document === 'object')
             //containerElm.appendChild(newFeedEntry);
 
             // TODO: ugly parent node stack
-            var previewElms = document.getElementsByClassName('ks-put-preview:');
+            var previewElms = formElm.parentNode.getElementsByClassName('ks-put-preview:');
             for(var i=0; i<previewElms.length; i++)
                 previewElms[i].innerHTML = newFeedEntry.outerHTML;
         }

@@ -234,7 +234,7 @@ if(typeof document === 'object')
         postContent = articleElm.outerHTML;
         postContent = protectHTMLContent(postContent, formElm);
 
-        var previewElm = document.getElementsByClassName('ks-put-preview:')[0];
+        var previewElm = formElm.parentNode.parentNode.getElementsByClassName('ks-put-preview:')[0];
         previewElm.innerHTML = postContent;
     }
 
