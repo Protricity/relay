@@ -126,6 +126,7 @@ form[name=ks-feed-put-form]:not(.compact) .show-on-compact {
 .timestamp_formatted {
     float: right;
     font-style: italic;
+    color: grey;
 }
 
 /** Icon **/
