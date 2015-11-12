@@ -12,9 +12,7 @@
     display: none;
 }
 
-.found-session-uid {
-    display: none;
-}
+/** Form **/
 
 form[name=channel-form] {
     min-width: 29em;
