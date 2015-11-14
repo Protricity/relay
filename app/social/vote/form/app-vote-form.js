@@ -38,39 +38,269 @@ if(typeof document === 'object')
 
     function submitVoteForm(e, formElm) {
 
-        var split = formElm.pgp_id_public.value.split(',');
-        if(!split)
+        // User Values
+        var user_identity = formElm.user_pgp_id_public.value.split(',');
+        if(!user_identity)
             throw new Error("Invalid pgp_id_public");
 
-        var pgp_id_public = split[0];
-        var username = split[1];
-        var passphrase_required = split[2];
+        var user_passphrase = formElm.user_passphrase.value;
 
-        var choice = formElm.choice.value;
-        if(!choice)
+        var user_pgp_id_public = user_identity[0];
+        var user_username = user_identity[1];
+        var user_passphrase_required = user_identity[2];
+
+        var user_choice = formElm.user_choice.value;
+        if(!user_choice)
             throw new Error("Invalid choice");
 
-        var timestamp = formElm.timestamp.value;
-        if(!timestamp)
-            throw new Error("Invalid vote entry timestamp");
+        // Vote Values
+        var vote_pgp_id_public = formElm.vote_pgp_id_public.value;
+        if(!vote_pgp_id_public)
+            throw new Error("Invalid Vote Entry PGP Key ID")
 
-        var commandString = "VOTE " + pgp_id_public + ' ' + timestamp + ' ' + choice;
+        var vote_timestamp = formElm.vote_timestamp.value;
+        if(!vote_timestamp)
+            throw new Error("Invalid Vote Entry timestamp");
 
-        var socketEvent = new CustomEvent('command', {
-            detail: commandString,
-            cancelable:true,
-            bubbles:true
+        //formElm.submit_vote.disabled = true;
+        // TODO: Query Vote Content
+
+
+        // Query Vote Public Key for encrypting
+        var path = 'http://' + vote_pgp_id_public + '.ks/public/id';
+        KeySpaceDB.queryOne(path, function (err, publicKeyBlock) {
+            if (err)
+                throw new Error(err);
+            if (!publicKeyBlock)
+                throw new Error("Vote Public key not found: " + user_pgp_id_public);
+
+            var publicKeyForEncryption = openpgp.key.readArmored(publicKeyBlock.content).keys[0];
+
+
+            // Query user private key for signing
+            var path = 'http://' + user_pgp_id_public + '.ks/.private/id';
+            KeySpaceDB.queryOne(path, function (err, privateKeyBlock) {
+                if (err)
+                    throw new Error(err);
+                if (!privateKeyBlock)
+                    throw new Error("User Private key not found: " + user_pgp_id_public);
+
+                var privateKeyForSigning = openpgp.key.readArmored(privateKeyBlock.content).keys[0];
+
+
+                if (!privateKeyForSigning.primaryKey.isDecrypted)
+                    if (user_passphrase)
+                        privateKeyForSigning.primaryKey.decrypt(user_passphrase);
+
+                if (!privateKeyForSigning.primaryKey.isDecrypted) {
+                    var errMSG = user_passphrase === ''
+                        ? 'PGP key pair requires a passphrase'
+                        : 'Invalid PGP passphrase';
+                    //statusBoxElm.innerHTML = "<span class='error'>" + errMSG + "</span>";
+                    console.error(errMSG);
+                    formElm.passphrase.focus();
+                    throw new Error(errMSG);
+                }
+
+                openpgp.signAndEncryptMessage(publicKeyForEncryption, privateKeyForSigning, user_choice)
+                    .then(function (pgpSignedContent) {
+
+                        console.log("TODO: ", pgpSignedContent);
+                        formElm.classList.add('success');
+
+                    });
+            });
+
         });
-        formElm.dispatchEvent(socketEvent);
-        if(!socketEvent.defaultPrevented)
-            throw new Error("Command was not received");
 
-        formElm.classList.add('success');
-//         formElm.submit_vote.disabled = true;
-        console.log("TODO: ", commandString);
+        //var commandString = "VOTE " + user_pgp_id_public + ' ' + vote_timestamp + ' ' + user_choice;
+        //
+        //var socketEvent = new CustomEvent('command', {
+        //    detail: commandString,
+        //    cancelable:true,
+        //    bubbles:true
+        //});
+        //formElm.dispatchEvent(socketEvent);
+        //if(!socketEvent.defaultPrevented)
+        //    throw new Error("Command was not received");
+
         return false;
     }
 
+    // signAndEncryptMessage
+
+    function queryPublicKey(pgp_id_public, callback) {
+
+        var path = 'http://' + pgp_id_public + '.ks/public/id';
+        KeySpaceDB.queryOne(path, function (err, publicKeyBlock) {
+            if (err)
+                throw new Error(err);
+            if (!publicKeyBlock)
+                throw new Error("Public key not found: " + pgp_id_public);
+
+            var publicKey = openpgp.key.readArmored(publicKeyBlock.content).keys[0];
+            callback(publicKey);
+        });
+    }
+
+    function queryPrivateKey(pgp_id_public, callback) {
+
+    }
+
+    function encryptAndSign(postContent, privateKey, passphrase) {
+
+        //var publicKey = privateKey.toPublic();
+        //
+        //if (!privateKey.primaryKey.isDecrypted)
+        //    if (passphrase)
+        //        privateKey.primaryKey.decrypt(passphrase);
+        //
+        //if (!privateKey.primaryKey.isDecrypted) {
+        //    var errMSG = passphrase === ''
+        //        ? 'PGP key pair requires a passphrase'
+        //        : 'Invalid PGP passphrase';
+        //    statusBoxElm.innerHTML = "<span class='error'>" + errMSG + "</span>";
+        //    formElm.passphrase.focus();
+        //    throw new Error(errMSG);
+        //}
+
+
+        //statusBoxElm.innerHTML = "<span class='command'>Encrypt</span>ing content...";
+
+        openpgp.signClearMessage(privateKey, postContent)
+            .then(function (pgpSignedContent) {
+                var pgpClearSignedMessage = openpgp.cleartext.readArmored(pgpSignedContent);
+
+                ////Add PublicKeyEncryptedSessionKey
+                //var symAlgo = openpgp.key.getPreferredSymAlgo(privateKey);
+                //var encryptionKeyPacket = privateKey.getEncryptionKeyPacket();
+                //if (encryptionKeyPacket) {
+                //    var pkESKeyPacket = new openpgp.packet.PublicKeyEncryptedSessionKey();
+                //    pkESKeyPacket.publicKeyId = encryptionKeyPacket.getKeyId();
+                //    pkESKeyPacket.publicKeyAlgorithm = encryptionKeyPacket.algorithm;
+                //    pkESKeyPacket.sessionKey = publicKey;
+                //    pkESKeyPacket.sessionKeyAlgorithm = openpgp.enums.read(openpgp.enums.symmetric, symAlgo);
+                //    pkESKeyPacket.encrypt(encryptionKeyPacket);
+                //    pgpClearSignedMessage.packets.push(pkESKeyPacket);
+                //
+                //} else {
+                //    throw new Error('Could not find valid key packet for encryption in key ' + key.primaryKey.getKeyId().toHex());
+                //}
+                //
+                //var finalPGPSignedContent = pgpClearSignedMessage.armor();
+                ////console.log(pgpSignedContent, finalPGPSignedContent);
+
+                //var commandString = "PUT " + pgp_id_public + "\n" + pgpSignedContent; // finalPGPSignedContent;
+                //
+                //var socketEvent = new CustomEvent('command', {
+                //    detail: commandString,
+                //    cancelable: true,
+                //    bubbles: true
+                //});
+                //formElm.dispatchEvent(socketEvent);
+                //
+                //if (!socketEvent.defaultPrevented)
+                //    throw new Error("Socket event for new post was not handled");
+                //
+                //statusBoxElm.innerHTML = "<span class='command'>Put</span> <span class='success'>Successful</span>";
+                //formElm.content.value = '';
+                //
+                //// Close Form
+                //var windowElm = document.getElementsByClassName('ks-put:')[0];
+                //windowElm.classList.add('closed');
+                //
+                //commandString = 'PUT.MANAGE http://' + pgp_id_public + '.ks/' + contentPath;
+                //
+                //socketEvent = new CustomEvent('command', {
+                //    detail: commandString,
+                //    cancelable: true,
+                //    bubbles: true
+                //});
+                //formElm.dispatchEvent(socketEvent);
+                //
+                //if (!socketEvent.defaultPrevented)
+                //    throw new Error("Socket event for new post was not handled");
+
+            });
+    }
+
+
+    function encrypt(postContent, privateKey, passphrase) {
+
+        var publicKey = privateKey.toPublic();
+
+        if (!privateKey.primaryKey.isDecrypted)
+            if (passphrase)
+                privateKey.primaryKey.decrypt(passphrase);
+
+        if (!privateKey.primaryKey.isDecrypted) {
+            var errMSG = passphrase === ''
+                ? 'PGP key pair requires a passphrase'
+                : 'Invalid PGP passphrase';
+            statusBoxElm.innerHTML = "<span class='error'>" + errMSG + "</span>";
+            formElm.passphrase.focus();
+            throw new Error(errMSG);
+        }
+
+
+        //statusBoxElm.innerHTML = "<span class='command'>Encrypt</span>ing content...";
+
+        openpgp.signClearMessage(privateKey, postContent)
+            .then(function (pgpSignedContent) {
+                var pgpClearSignedMessage = openpgp.cleartext.readArmored(pgpSignedContent);
+
+                //Add PublicKeyEncryptedSessionKey
+                var symAlgo = openpgp.key.getPreferredSymAlgo(privateKey);
+                var encryptionKeyPacket = privateKey.getEncryptionKeyPacket();
+                if (encryptionKeyPacket) {
+                    var pkESKeyPacket = new openpgp.packet.PublicKeyEncryptedSessionKey();
+                    pkESKeyPacket.publicKeyId = encryptionKeyPacket.getKeyId();
+                    pkESKeyPacket.publicKeyAlgorithm = encryptionKeyPacket.algorithm;
+                    pkESKeyPacket.sessionKey = publicKey;
+                    pkESKeyPacket.sessionKeyAlgorithm = openpgp.enums.read(openpgp.enums.symmetric, symAlgo);
+                    pkESKeyPacket.encrypt(encryptionKeyPacket);
+                    pgpClearSignedMessage.packets.push(pkESKeyPacket);
+
+                } else {
+                    throw new Error('Could not find valid key packet for encryption in key ' + key.primaryKey.getKeyId().toHex());
+                }
+
+                var finalPGPSignedContent = pgpClearSignedMessage.armor();
+                //console.log(pgpSignedContent, finalPGPSignedContent);
+
+                var commandString = "PUT " + pgp_id_public + "\n" + pgpSignedContent; // finalPGPSignedContent;
+
+                var socketEvent = new CustomEvent('command', {
+                    detail: commandString,
+                    cancelable: true,
+                    bubbles: true
+                });
+                formElm.dispatchEvent(socketEvent);
+
+                if (!socketEvent.defaultPrevented)
+                    throw new Error("Socket event for new post was not handled");
+
+                statusBoxElm.innerHTML = "<span class='command'>Put</span> <span class='success'>Successful</span>";
+                formElm.content.value = '';
+
+                // Close Form
+                var windowElm = document.getElementsByClassName('ks-put:')[0];
+                windowElm.classList.add('closed');
+
+                commandString = 'PUT.MANAGE http://' + pgp_id_public + '.ks/' + contentPath;
+
+                socketEvent = new CustomEvent('command', {
+                    detail: commandString,
+                    cancelable: true,
+                    bubbles: true
+                });
+                formElm.dispatchEvent(socketEvent);
+
+                if (!socketEvent.defaultPrevented)
+                    throw new Error("Socket event for new post was not handled");
+
+            });
+    }
 
 
     var URL_VOTE_FORM_TEMPLATE = 'app/social/vote/form/app-vote-form.html';
@@ -87,25 +317,25 @@ if(typeof document === 'object')
         if(voteContainerElm.classList.contains('disable-app-vote-form'))
             return;
 
-        var pgp_id_public = voteContainerElm.getAttribute('data-pgp-id-public');
-        if(!pgp_id_public)
+        var vote_pgp_id_public = voteContainerElm.getAttribute('data-pgp-id-public');
+        if(!vote_pgp_id_public)
             throw new Error("No PGP ID found");
-        var timestamp = voteContainerElm.getAttribute('data-timestamp');
-        if(!timestamp)
+        var vote_timestamp = voteContainerElm.getAttribute('data-timestamp');
+        if(!vote_timestamp)
             throw new Error("No Timestamp found");
 
         //var uid = pgp_id_public + ' ' + timestamp;
 
         var choiceElms = voteElement.getElementsByClassName('app-vote-choice:');
 
-        var html_options = [];
+        var html_choice_options = [];
         var choiceN=1;
         for(var ci=0; ci<choiceElms.length; ci++) {
             var choiceElm = choiceElms[ci];
             var titleElm = choiceElm.querySelector('header') || choiceElm;
             var title = titleElm.innerHTML.replace(/(<([^>]+)>)/ig,"");
-            html_options.push("<option value='" + (ci + 1) + "'>" + (choiceN++) + '. ' + title + "</option>");
-            html_options.sort(function() {
+            html_choice_options.push("<option value='" + (ci + 1) + "'>" + (choiceN++) + '. ' + title + "</option>");
+            html_choice_options.sort(function() {
                 return .5 - Math.random();
             });
         }
@@ -125,9 +355,9 @@ if(typeof document === 'object')
                     xhr.responseText
                         .replace(/{\$html_pgp_id_public_options}/gi, html_pgp_id_public_options)
                         .replace(/{\$status_box}/gi, '')
-                        .replace(/{\$pgp_id_public}/gi, pgp_id_public)
-                        .replace(/{\$timestamp}/gi, timestamp)
-                        .replace(/{\$html_options}/gi, html_options.join("\n"));
+                        .replace(/{\$vote_pgp_id_public}/gi, vote_pgp_id_public)
+                        .replace(/{\$vote_timestamp}/gi, vote_timestamp)
+                        .replace(/{\$html_choice_options}/gi, html_choice_options.join("\n"));
 
                 includeScript(URL_VOTE_FORM_SCRIPT);
                 includeStylesheet(URL_VOTE_FORM_STYLESHEET);

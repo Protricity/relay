@@ -115,7 +115,7 @@ if(typeof document === 'object')
             if (err)
                 throw new Error(err);
             if (!privateKeyBlock)
-                throw new Error("Private key not found: " + selectedPrivateKeyID);
+                throw new Error("Private key not found: " + pgp_id_public);
 
             var privateKey = openpgp.key.readArmored(privateKeyBlock.content).keys[0];
             var publicKey = privateKey.toPublic();

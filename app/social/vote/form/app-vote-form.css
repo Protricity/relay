@@ -18,10 +18,15 @@ form[name=app-vote-form] select {
     margin: 0.1em;
 }
 
-form[name=app-vote-form] select[name=pgp_id_public] {
+form[name=app-vote-form] select[name=user_pgp_id_public] {
     width: 13em;
 }
 
-form[name=app-vote-form] select[name=choice] {
+
+form[name=app-vote-form] input[name=user_passphrase] {
+    width: 13em;
+}
+
+form[name=app-vote-form] select[name=user_choice] {
     width: 12em;
 }
