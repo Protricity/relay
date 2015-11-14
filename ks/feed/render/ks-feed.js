@@ -330,9 +330,24 @@ if(typeof document === 'object')
 
             // Refresh pgp identities
 
-            var queryPath = '/.private/id';
-            var html_pgp_id_public_options = "<option value=''>Select a PGP Identity</option>";
             var default_pgp_id_public = null;
+            queryPGPIdentities(default_pgp_id_public, function(html_pgp_id_public_options, idCount) {
+                formElm.getElementsByClassName('status-box')[0].innerHTML =
+                    idCount > 0 ? '' :
+                    "<span class='error'>No PGP Identities were found on this client.</span>" +
+                    "<br/>" +
+                    "<a href='#PGP.KEYGEN'>Generate</a> a new <strong>PGP Identity</strong> in order to post on the <span class='command'>feed</span>";
+
+                formElm.pgp_id_public.innerHTML =
+                    "<option value=''>Select a PGP Identity</option>"
+                    + html_pgp_id_public_options;
+            });
+        }
+
+        function queryPGPIdentities(default_pgp_id_public, callback) {
+
+            var queryPath = '/.private/id';
+            var html_pgp_id_public_options = ''; // "<option value=''>Select a PGP Identity</option>";
             var idCount = 0;
             KeySpaceDB.queryAll(queryPath, function(err, contentEntry) {
                 if(err)
@@ -351,24 +366,20 @@ if(typeof document === 'object')
                         (default_pgp_id_public === contentEntry.pgp_id_public ? ' selected="selected"' : '') +
                         ">" +
                         (contentEntry.passphrase_required?'* ':'&nbsp;  ') +
+
                         contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) +
-                        ' - ' + contentEntry.user_id +
+                        ' - ' +
+                        contentEntry.user_id +
+
                         "</option>";
 
                     idCount++;
+
                 } else {
-
-                    formElm.getElementsByClassName('status-box')[0].innerHTML =
-                        idCount > 0 ? '' :
-                        "<span class='error'>No PGP Identities were found on this client.</span>" +
-                        "<br/>" +
-                        "<a href='#PGP.KEYGEN'>Generate</a> a new <strong>PGP Identity</strong> in order to post on the <span class='command'>feed</span>";
-
-                    formElm.pgp_id_public.innerHTML = html_pgp_id_public_options
+                    callback(html_pgp_id_public_options, idCount);
                 }
             });
         }
-
 
         function submitHTTPPutForm(e, formElm) {
             e.preventDefault();

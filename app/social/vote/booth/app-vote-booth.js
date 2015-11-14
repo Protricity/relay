@@ -28,6 +28,7 @@ if(typeof module === 'object') (function() {
         var timestamp = match[2];
         var voteContent = match[3];
 
+        // TODO: insert 
 
         self.module = {exports: {}};
         importScripts('ks/ks-db.js');

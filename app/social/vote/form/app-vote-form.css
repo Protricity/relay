@@ -17,3 +17,11 @@ form[name=app-vote-form] select {
     padding: 0.4em;
     margin: 0.1em;
 }
+
+form[name=app-vote-form] select[name=pgp_id_public] {
+    width: 13em;
+}
+
+form[name=app-vote-form] select[name=choice] {
+    width: 12em;
+}

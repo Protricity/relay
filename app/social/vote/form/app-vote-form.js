@@ -37,9 +37,23 @@ if(typeof document === 'object')
 
 
     function submitVoteForm(e, formElm) {
-        var timestamp = formElm.timestamp.value;
-        var pgp_id_public = formElm.pgp_id_public.value;
+
+        var split = formElm.pgp_id_public.value.split(',');
+        if(!split)
+            throw new Error("Invalid pgp_id_public");
+
+        var pgp_id_public = split[0];
+        var username = split[1];
+        var passphrase_required = split[2];
+
         var choice = formElm.choice.value;
+        if(!choice)
+            throw new Error("Invalid choice");
+
+        var timestamp = formElm.timestamp.value;
+        if(!timestamp)
+            throw new Error("Invalid vote entry timestamp");
+
         var commandString = "VOTE " + pgp_id_public + ' ' + timestamp + ' ' + choice;
 
         var socketEvent = new CustomEvent('command', {
@@ -52,7 +66,7 @@ if(typeof document === 'object')
             throw new Error("Command was not received");
 
         formElm.classList.add('success');
-        formElm.submit_vote.disabled = true;
+//         formElm.submit_vote.disabled = true;
         console.log("TODO: ", commandString);
         return false;
     }
@@ -96,33 +110,74 @@ if(typeof document === 'object')
             });
         }
 
-        // TODO: query identities
 
-        var xhr = new XMLHttpRequest();
-        xhr.addEventListener("load", function() {
-            if(xhr.status !== 200)
-                throw new Error("Error: " + xhr.responseText);
+        // Refresh pgp identities
 
-            voteContainerElm.innerHTML +=
-                "<hr/>" +
-                xhr.responseText
-                    .replace(/{\$status_box}/gi, '')
-                    .replace(/{\$pgp_id_public}/gi, pgp_id_public)
-                    .replace(/{\$timestamp}/gi, timestamp)
-                    .replace(/{\$html_options}/gi, html_options.join("\n"));
+        var default_pgp_id_public = null;
+        queryPGPIdentities(default_pgp_id_public, function(html_pgp_id_public_options) {
+            var xhr = new XMLHttpRequest();
+            xhr.addEventListener("load", function() {
+                if(xhr.status !== 200)
+                    throw new Error("Error: " + xhr.responseText);
 
-            includeScript(URL_VOTE_FORM_SCRIPT);
-            includeStylesheet(URL_VOTE_FORM_STYLESHEET);
+                voteContainerElm.innerHTML +=
+                    "<hr/>" +
+                    xhr.responseText
+                        .replace(/{\$html_pgp_id_public_options}/gi, html_pgp_id_public_options)
+                        .replace(/{\$status_box}/gi, '')
+                        .replace(/{\$pgp_id_public}/gi, pgp_id_public)
+                        .replace(/{\$timestamp}/gi, timestamp)
+                        .replace(/{\$html_options}/gi, html_options.join("\n"));
 
-            voteElement.classList.remove('processing');
-            voteElement.classList.add('processed');
+                includeScript(URL_VOTE_FORM_SCRIPT);
+                includeStylesheet(URL_VOTE_FORM_STYLESHEET);
 
-            console.log("Processed vote with " + choiceElms.length + " choices");
+                voteElement.classList.remove('processing');
+                voteElement.classList.add('processed');
+
+                console.log("Processed vote with " + choiceElms.length + " choices");
+            });
+            xhr.open("GET", URL_VOTE_FORM_TEMPLATE);
+            xhr.send();
+
         });
-        xhr.open("GET", URL_VOTE_FORM_TEMPLATE);
-        xhr.send();
 
         return true;
+    }
+
+    function queryPGPIdentities(default_pgp_id_public, callback) {
+
+        var queryPath = '/.private/id';
+        var html_pgp_id_public_options = ''; // "<option value=''>Select a PGP Identity</option>";
+        var idCount = 0;
+        KeySpaceDB.queryAll(queryPath, function(err, contentEntry) {
+            if(err)
+                throw new Error(err);
+
+            if(contentEntry) {
+                if(!default_pgp_id_public)
+                    default_pgp_id_public = contentEntry.pgp_id_public;
+
+                var optionValue = contentEntry.pgp_id_public +
+                    ',' + contentEntry.user_id +
+                    ',' + (contentEntry.passphrase_required?1:0);
+
+                html_pgp_id_public_options +=
+                    "<option value='" + optionValue + "'" +
+                    (default_pgp_id_public === contentEntry.pgp_id_public ? ' selected="selected"' : '') +
+                    ">" +
+                    (contentEntry.passphrase_required?'* ':'&nbsp;  ') +
+                    contentEntry.user_id +
+                    ' - ' +
+                    contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8) +
+                    "</option>";
+
+                idCount++;
+
+            } else {
+                callback(html_pgp_id_public_options, idCount);
+            }
+        });
     }
 
     // Includes

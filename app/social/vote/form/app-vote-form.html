@@ -1,19 +1,18 @@
 <form name='app-vote-form' class='no-passphrase-required no-choice-selected'>
-    <input type='hidden' value='{$pgp_id_public}' name='pgp_id_public' />
     <input type='hidden' value='{$timestamp}' name='timestamp' />
 
     <code class="status-box">{$status_box}</code>
 
     <label class='label-vote'>
-        <select name='choice' oninput='this.form.submit_vote.click()' style="width: 5em;">
-            <option value=''>Vote</option>
+        <select name='choice' oninput='this.form.submit_vote.click()' required="required">
+            <option value=''>Select a Choice</option>
             {$html_options}
         </select>
     </label>
 
     <label class='label-id hide-on-no-choice-selected'>
-        <select name='pgp_id_public' style='width: 6em;'>
-            <option value=''>Identity</option>
+        <select name='pgp_id_public'>
+            <option value=''>Select an Identity</option>
             {$html_pgp_id_public_options}
         </select>
     </label>

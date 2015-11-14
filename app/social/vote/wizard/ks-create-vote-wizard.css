@@ -42,7 +42,7 @@ ul.ks-create-vote-choices\3A {
 
 ul.ks-create-vote-choices\3A > li {
 /*     border: 1px inset; */
-/*     min-height: 3em; */
+min-height: 2em;
     margin: 0.5em 0;
 }
 
