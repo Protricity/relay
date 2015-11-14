@@ -22,25 +22,11 @@ if(typeof module === 'object') (function() {
             importScripts('ks/ks-db.js');
             var KeySpaceDB = self.module.exports.KeySpaceDB;
 
-            // Only encrypted messages will be accepted
+            // Only clear-signed or encrypted messages will be accepted
             self.module = {exports: {}};
             importScripts('pgp/lib/openpgpjs/openpgp.js');
             var openpgp = self.module.exports;
-            var pgpClearSignedMessage = openpgp.cleartext.readArmored(content);
-            var pgpSignedContent = pgpClearSignedMessage.armor().trim();
 
-            //console.log(pgpClearSignedMessage);
-
-            var path = /data-path=["'](\S+)["']/i.exec(pgpClearSignedMessage.text)[1];
-            var timestamp = pgpClearSignedMessage.packets[0].created.getTime();
-            // parseInt(/data-timestamp=["'](\d+)["']/i.exec(pgpClearSignedMessage.text)[1]);
-
-            //if(!pgp_id_public) {
-            //    var pgpClearSignedMessage = openpgp.cleartext.readArmored(pgpSignedContent);
-            //    pgpSignedContent = pgpClearSignedMessage.armor();
-            //    var encIDs = getEncryptionKeyIds(pgpClearSignedMessage.packets);
-            //    pgp_id_public = encIDs[0].toHex().toUpperCase();
-            //}
 
             // Query public key for verification
             var requestURL = 'http://' + pgp_id_public + '.ks/public/id';
@@ -52,48 +38,80 @@ if(typeof module === 'object') (function() {
 
                 var publicKey = openpgp.key.readArmored(publicKeyBlock.content).keys[0];
 
-                openpgp.verifyClearSignedMessage(publicKey, pgpClearSignedMessage)
-                    .then(function (decryptedContent) {
-                        for (var i = 0; i < decryptedContent.signatures.length; i++)
-                            if (!decryptedContent.signatures[i].valid)
-                                throw new Error("Invalid Signature: " + decryptedContent.signatures[i].keyid.toHex().toUpperCase());
+                if(content.indexOf("-----BEGIN PGP SIGNED MESSAGE-----") === 0) {
 
-                        console.info("Verified Signed Content for: " + pgp_id_public);
-                        KeySpaceDB.addVerifiedContentToDB(pgpSignedContent, pgp_id_public, timestamp, path, {},
-                            function (err, insertData) {
+                    var pgpClearSignedMessage = openpgp.cleartext.readArmored(content);
+                    var pgpSignedContent = pgpClearSignedMessage.armor().trim();
 
-                                var url = "http://" + pgp_id_public + '.ks/' + insertData.path;
+                    openpgp.verifyClearSignedMessage(publicKey, pgpClearSignedMessage)
+                        .then(function (decryptedContent) {
+                            for (var i = 0; i < decryptedContent.signatures.length; i++)
+                                if (!decryptedContent.signatures[i].valid)
+                                    throw new Error("Invalid Signature: " + decryptedContent.signatures[i].keyid.toHex().toUpperCase());
 
-                                // Publish only if requested
-                                if (publish) {
-                                    console.info("Publishing: " + url);
-                                    Client.sendWithSocket("PUT " + pgp_id_public + "\n" + content);
+                            var path = /data-path=["'](\S+)["']/i.exec(decryptedContent)[1];
+                            var timestamp = pgpClearSignedMessage.packets[0].created.getTime();
 
-                                } else {
-                                    console.info("Added Unpublished Keyspace Content: " + url);
-                                }
+                            console.info("Verified Signed Content for: " + pgp_id_public);
+                            KeySpaceDB.addVerifiedContentToDB(pgpSignedContent, pgp_id_public, timestamp, path, {},
+                                function (err, insertData) {
+                                    if(err)
+                                        throw new Error(err);
 
-                                //
-                                //var status_box = "<strong>Key Space</strong> content stored <span class='success'>Successfully</span>: " +
-                                //    "<br/><a href='" + url + "'>" + insertData.path + "</a>";
-                                //
-                                //self.module = {exports: {}};
-                                //importScripts('ks/put/manage/render/ks-put-manage-form.js');
-                                //self.module.exports.renderPutManageForm(url, status_box, function (html) {
-                                //    Client.render(html);
-                                //    //Client.postResponseToClient("CLOSE ks-put:");
-                                //});
-                            });
+                                    // Publish only if requested
+                                    if (publish) {
+                                        console.info("Publishing: " + pgp_id_public + " " + timestamp);
+                                        Client.sendWithSocket("PUT " + pgp_id_public + "\n" + content);
+                                    }
+                                });
+                        });
 
-                    })
-                    .catch(function (err) {
-                        callback(err, null);
-                    });
+                } else if(content.indexOf("-----BEGIN PGP MESSAGE-----") === 0) {
+
+                    var pgpEncryptedMessage = openpgp.message.readArmored(content);
+                    var pgpEncryptedContent = pgpEncryptedMessage.armor().trim();
+
+
+                    var path = null; // /data-path=["'](\S+)["']/i.exec(decryptedContent)[1];
+                    // TODO: seperate database for messages?
+
+                    KeySpaceDB.addEncryptedMessageToDB(pgpEncryptedContent, pgp_id_public, {},
+                        function (err, insertData) {
+                            if(err)
+                                throw new Error(err);
+
+                            // Publish only if requested
+                            console.info("Publishing Encrypted Message: " + pgp_id_public);
+                            Client.sendWithSocket("PUT " + pgp_id_public + "\n" + content);
+                        });
+
+                } else {
+                    throw new Error("KeySpace content must be a PGP SIGNED MESSAGE or PGP MESSAGE");
+                }
 
             });
 
             return true;
         }
+
+        //
+        //var status_box = "<strong>Key Space</strong> content stored <span class='success'>Successfully</span>: " +
+        //    "<br/><a href='" + url + "'>" + insertData.path + "</a>";
+        //
+        //self.module = {exports: {}};
+        //importScripts('ks/put/manage/render/ks-put-manage-form.js');
+        //self.module.exports.renderPutManageForm(url, status_box, function (html) {
+        //    Client.render(html);
+        //    //Client.postResponseToClient("CLOSE ks-put:");
+        //});
+
+        //if(!pgp_id_public) {
+        //    var pgpClearSignedMessage = openpgp.cleartext.readArmored(pgpSignedContent);
+        //    pgpSignedContent = pgpClearSignedMessage.armor();
+        //    var encIDs = getEncryptionKeyIds(pgpClearSignedMessage.packets);
+        //    pgp_id_public = encIDs[0].toHex().toUpperCase();
+        //}
+
 
         //function getEncryptionKeyIds(packets) {
         //    var keyIds = [];

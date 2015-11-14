@@ -9,12 +9,16 @@ module.exports.KeySpaceDB = KeySpaceDB;
 KeySpaceDB.DB_VERSION               = 3;
 KeySpaceDB.DB_NAME                  = 'keyspace';
 KeySpaceDB.DB_TABLE_HTTP_CONTENT    = 'content';
+KeySpaceDB.DB_TABLE_HTTP_MESSAGE    = 'message';
 //KeySpaceDB.DB_TABLE_HTTP_URL        = 'url';
 
 KeySpaceDB.DB_INDEX_PATH            = 'path';
 KeySpaceDB.DB_INDEX_ID_PATH         = 'id_path';
 KeySpaceDB.DB_INDEX_TIMESTAMP       = 'timestamp';
 KeySpaceDB.DB_INDEX_PUBLISHED       = 'published';
+
+KeySpaceDB.DB_INDEX_TO_ID           = 'to_id';
+KeySpaceDB.DB_INDEX_FROM_ID         = 'from_id';
 
 KeySpaceDB.DB_PGP_KEY_LENGTH        = 8;
 
@@ -77,20 +81,28 @@ function KeySpaceDB(dbReadyCallback) {
                 var upgradeDB = e.target.result;
                 var transaction = e.target.transaction;
 
+                if(!upgradeDB.objectStoreNames.contains(KeySpaceDB.DB_TABLE_HTTP_CONTENT)) {
+                    var contentStore = upgradeDB.createObjectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT, { keyPath: ["pgp_id_public", "timestamp"] });
+                    contentStore.createIndex(KeySpaceDB.DB_INDEX_PATH, ["path", "timestamp"], { unique: false });
+                    contentStore.createIndex(KeySpaceDB.DB_INDEX_ID_PATH, ["pgp_id_public", "path", "timestamp"], { unique: false });
+                    contentStore.createIndex(KeySpaceDB.DB_INDEX_TIMESTAMP, "timestamp", { unique: false });
+                    contentStore.createIndex(KeySpaceDB.DB_INDEX_PUBLISHED, ["published", "timestamp"], { unique: false });
+
+                    console.log('Upgraded Table: ' + KeySpaceDB.DB_NAME + '.' + contentStore.name);
+                }
+
+                if(!upgradeDB.objectStoreNames.contains(KeySpaceDB.DB_TABLE_HTTP_MESSAGE)) {
+                    var messageStore = upgradeDB.createObjectStore(KeySpaceDB.DB_TABLE_HTTP_MESSAGE, { autoIncrement: true });
+                    messageStore.createIndex(KeySpaceDB.DB_INDEX_TO_ID, "to_pgp_id_public", { unique: false });
+                    messageStore.createIndex(KeySpaceDB.DB_INDEX_FROM_ID, "from_pgp_id_public", { unique: false });
+
+                    console.log('Upgraded Table: ' + KeySpaceDB.DB_NAME + '.' + messageStore.name);
+                }
+
                 //if(upgradeDB.objectStoreNames.contains(KeySpaceDB.DB_TABLE_HTTP_CONTENT)) {
                 //    upgradeDB.deleteObjectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
                 //    console.log('Deleted Table: ' + KeySpaceDB.DB_NAME + '.' + KeySpaceDB.DB_TABLE_HTTP_CONTENT);
                 //}
-
-                if(!upgradeDB.objectStoreNames.contains(KeySpaceDB.DB_TABLE_HTTP_CONTENT)) {
-                    var postStore = upgradeDB.createObjectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT, { keyPath: ["pgp_id_public", "timestamp"] });
-                    postStore.createIndex(KeySpaceDB.DB_INDEX_PATH, ["path", "timestamp"], { unique: false });
-                    postStore.createIndex(KeySpaceDB.DB_INDEX_ID_PATH, ["pgp_id_public", "path", "timestamp"], { unique: false });
-                    postStore.createIndex(KeySpaceDB.DB_INDEX_TIMESTAMP, "timestamp", { unique: false });
-                    postStore.createIndex(KeySpaceDB.DB_INDEX_PUBLISHED, ["published", "timestamp"], { unique: false });
-
-                    console.log('Upgraded Table: ' + KeySpaceDB.DB_NAME + '.' + postStore.name);
-                }
 
                 //if(!upgradeDB.objectStoreNames.contains(KeySpaceDB.DB_TABLE_HTTP_URL)) {
                 //    var urlStore = upgradeDB.createObjectStore(KeySpaceDB.DB_TABLE_HTTP_URL, { keyPath: "url"});
@@ -130,7 +142,33 @@ function KeySpaceDB(dbReadyCallback) {
     };
 
 
+    KeySpaceDB.addEncryptedMessageToDB = function (encryptedMessageContent, pgp_id_public, customFields, callback) {
+        if(!pgp_id_public || typeof path !== 'string')
+            throw new Error("Invalid PGP Public Key ID");
+        pgp_id_public = pgp_id_public.toUpperCase();
+        pgp_id_public = pgp_id_public.substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
 
+        var insertData = {
+            'pgp_id_public': pgp_id_public,
+            'content': encryptedMessageContent
+        };
+
+        for(var customField in customFields)
+            if(customFields.hasOwnProperty(customField))
+                if(typeof insertData[customField] === 'undefined')
+                    insertData[customField] = customFields[customField];
+
+        KeySpaceDB.insert(
+            KeySpaceDB.DB_TABLE_HTTP_MESSAGE,
+            insertData,
+            function(err, insertData) {
+                if(callback)
+                    callback(err, insertData);
+
+                 console.info("Added encrypted message to database", insertData);
+            }
+        );
+    };
 
     KeySpaceDB.addVerifiedContentToDB = function(verifiedContent, pgp_id_public, timestamp, path, customFields, callback) {
         if(!path || typeof path !== 'string')

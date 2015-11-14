@@ -34,6 +34,7 @@ if(typeof module === 'object') (function() {
         importScripts('ks/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;
 
+        // Get Vote Content
         KeySpaceDB.getContent(pgp_id_public, timestamp, function (err, voteEntryData) {
             if (err)
                 throw new Error(err);
