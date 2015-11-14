@@ -71,11 +71,26 @@ if(typeof module === 'object') (function() {
                     var pgpEncryptedMessage = openpgp.message.readArmored(content);
                     var pgpEncryptedContent = pgpEncryptedMessage.armor().trim();
 
+                    var to_pgp_id_public = pgpEncryptedMessage.packets[0].publicKeyId.toHex().toUpperCase();
+                    var from_pgp_id_public = pgpEncryptedMessage.packets[1].publicKeyId.toHex().toUpperCase();
+                    to_pgp_id_public = to_pgp_id_public.substr(to_pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+                    from_pgp_id_public = from_pgp_id_public.substr(from_pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+
+                    if(from_pgp_id_public !== pgp_id_public) {
+                        if(to_pgp_id_public !== pgp_id_public)
+                            throw new Error("Destination PGP ID not found in packet (" + to_pgp_id_public + ", " + from_pgp_id_public + " !== " + pgp_id_public + ")");
+
+                        // Switch order
+                        from_pgp_id_public = to_pgp_id_public;
+                        to_pgp_id_public = pgp_id_public;
+                    }
+
+                    console.log("Get to: ", pgpEncryptedMessage, to_pgp_id_public, from_pgp_id_public);
 
                     var path = null; // /data-path=["'](\S+)["']/i.exec(decryptedContent)[1];
                     // TODO: seperate database for messages?
 
-                    KeySpaceDB.addEncryptedMessageToDB(pgpEncryptedContent, pgp_id_public, {},
+                    KeySpaceDB.addEncryptedMessageToDB(pgpEncryptedContent, to_pgp_id_public, from_pgp_id_public, {},
                         function (err, insertData) {
                             if(err)
                                 throw new Error(err);

@@ -6,7 +6,7 @@ if (!module) var module = {exports: {}};
 module.exports.KeySpaceDB = KeySpaceDB;
 
 
-KeySpaceDB.DB_VERSION               = 3;
+KeySpaceDB.DB_VERSION               = 4;
 KeySpaceDB.DB_NAME                  = 'keyspace';
 KeySpaceDB.DB_TABLE_HTTP_CONTENT    = 'content';
 KeySpaceDB.DB_TABLE_HTTP_MESSAGE    = 'message';
@@ -142,15 +142,16 @@ function KeySpaceDB(dbReadyCallback) {
     };
 
 
-    KeySpaceDB.addEncryptedMessageToDB = function (encryptedMessageContent, pgp_id_public, customFields, callback) {
-        if(!pgp_id_public)
+    KeySpaceDB.addEncryptedMessageToDB = function (encryptedMessageContent, to_pgp_id_public, from_pgp_id_public, customFields, callback) {
+        if(!to_pgp_id_public)
             throw new Error("Invalid PGP Public Key ID");
-            
-        pgp_id_public = pgp_id_public.toUpperCase();
-        pgp_id_public = pgp_id_public.substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+
+        to_pgp_id_public = to_pgp_id_public.substr(to_pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH).toUpperCase();
+        from_pgp_id_public = from_pgp_id_public.substr(from_pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH).toUpperCase();
 
         var insertData = {
-            'pgp_id_public': pgp_id_public,
+            'to_pgp_id_public': to_pgp_id_public,
+            'from_pgp_id_public': from_pgp_id_public,
             'content': encryptedMessageContent
         };
 
