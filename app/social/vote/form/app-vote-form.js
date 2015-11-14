@@ -82,7 +82,7 @@ if(typeof document === 'object')
                 if (!publicKeyBlock)
                     throw new Error("Vote Public key not found: " + user_pgp_id_public);
 
-                var publicKeyForEncryption = openpgp.key.readArmored(publicKeyBlock.content).keys[0];
+                var publicKeysForEncryption = openpgp.key.readArmored(publicKeyBlock.content).keys;
 
 
                 // Query user private key for signing
@@ -94,7 +94,8 @@ if(typeof document === 'object')
                         throw new Error("User Private key not found: " + user_pgp_id_public);
 
                     var privateKeyForSigning = openpgp.key.readArmored(privateKeyBlock.content).keys[0];
-
+                    publicKeysForEncryption.push(privateKeyForSigning.toPublic());
+                    // TODO: unique pk
 
                     if (!privateKeyForSigning.primaryKey.isDecrypted)
                         if (user_passphrase)
@@ -109,9 +110,11 @@ if(typeof document === 'object')
                         throw new Error(errMSG);
                     }
 
-                    openpgp.signAndEncryptMessage(publicKeyForEncryption, privateKeyForSigning, voteContent)
-                        .then(function (pgpEncryptedMessage) {
+//                     console.log("Public keys ", publicKeysForEncryption);
 
+                    openpgp.signAndEncryptMessage(publicKeysForEncryption, privateKeyForSigning, voteContent)
+                        .then(function (pgpEncryptedMessage) {
+console.log("Signed and Encrypted: ", pgpEncryptedMessage);
                             formElm.classList.add('success');
 
                             var commandString = "PUT " + user_pgp_id_public + "\n" + pgpEncryptedMessage; // finalPGPSignedContent;

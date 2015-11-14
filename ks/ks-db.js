@@ -143,8 +143,9 @@ function KeySpaceDB(dbReadyCallback) {
 
 
     KeySpaceDB.addEncryptedMessageToDB = function (encryptedMessageContent, pgp_id_public, customFields, callback) {
-        if(!pgp_id_public || typeof path !== 'string')
+        if(!pgp_id_public)
             throw new Error("Invalid PGP Public Key ID");
+            
         pgp_id_public = pgp_id_public.toUpperCase();
         pgp_id_public = pgp_id_public.substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
 
@@ -176,7 +177,7 @@ function KeySpaceDB(dbReadyCallback) {
         timestamp = parseInt(timestamp);
         if(!timestamp)
             throw new Error("Invalid Timestamp");
-        if(!pgp_id_public || typeof path !== 'string')
+        if(!pgp_id_public)
             throw new Error("Invalid PGP Public Key ID");
 
         pgp_id_public = pgp_id_public.toUpperCase();
