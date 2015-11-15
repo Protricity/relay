@@ -63,7 +63,15 @@ if(typeof document === 'object')
         if(!vote_timestamp)
             throw new Error("Invalid Vote Entry timestamp");
 
-        var voteContent = user_choice; // TODO: vote name
+        var voteContent =
+            "<article " +
+                "class='app-vote-entry:' " +
+                "data-re='" + vote_pgp_id_public + ' ' + vote_timestamp + "' " +
+                "data-voter-id='" + user_pgp_id_public + "' " +
+                "data-timestamp='" + Date.now() + "'>" +
+                user_choice +
+            "</article>";
+        console.log(voteContent);
 
         // Query Vote Content
         KeySpaceDB.getContent(vote_pgp_id_public, vote_timestamp, function (err, voteEntryData) {
@@ -114,7 +122,7 @@ if(typeof document === 'object')
 
                     openpgp.signAndEncryptMessage(publicKeysForEncryption, privateKeyForSigning, voteContent)
                         .then(function (pgpEncryptedMessage) {
-console.log("Signed and Encrypted: ", pgpEncryptedMessage);
+
                             formElm.classList.add('success');
 
                             var commandString = "PUT " + user_pgp_id_public + "\n" + pgpEncryptedMessage; // finalPGPSignedContent;

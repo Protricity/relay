@@ -20,6 +20,9 @@ KeySpaceDB.DB_INDEX_PUBLISHED       = 'published';
 KeySpaceDB.DB_INDEX_TO_ID           = 'to_id';
 KeySpaceDB.DB_INDEX_FROM_ID         = 'from_id';
 
+KeySpaceDB.DB_INDEX_RE              = 're';
+KeySpaceDB.DB_INDEX_UNPROCESSED     = 'unprocessed';
+
 KeySpaceDB.DB_PGP_KEY_LENGTH        = 8;
 
 // Config Database
@@ -87,6 +90,7 @@ function KeySpaceDB(dbReadyCallback) {
                     contentStore.createIndex(KeySpaceDB.DB_INDEX_ID_PATH, ["pgp_id_public", "path", "timestamp"], { unique: false });
                     contentStore.createIndex(KeySpaceDB.DB_INDEX_TIMESTAMP, "timestamp", { unique: false });
                     contentStore.createIndex(KeySpaceDB.DB_INDEX_PUBLISHED, ["published", "timestamp"], { unique: false });
+                    contentStore.createIndex(KeySpaceDB.DB_INDEX_RE, "re", { unique: false });
 
                     console.log('Upgraded Table: ' + KeySpaceDB.DB_NAME + '.' + contentStore.name);
                 }
@@ -95,6 +99,8 @@ function KeySpaceDB(dbReadyCallback) {
                     var messageStore = upgradeDB.createObjectStore(KeySpaceDB.DB_TABLE_HTTP_MESSAGE, { autoIncrement: true });
                     messageStore.createIndex(KeySpaceDB.DB_INDEX_TO_ID, "to_pgp_id_public", { unique: false });
                     messageStore.createIndex(KeySpaceDB.DB_INDEX_FROM_ID, "from_pgp_id_public", { unique: false });
+                    messageStore.createIndex(KeySpaceDB.DB_INDEX_RE, "re", { unique: false });
+                    messageStore.createIndex(KeySpaceDB.DB_INDEX_UNPROCESSED, "unprocessed", { unique: false });
 
                     console.log('Upgraded Table: ' + KeySpaceDB.DB_NAME + '.' + messageStore.name);
                 }

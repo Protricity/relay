@@ -49,7 +49,7 @@ if(typeof module === 'object') (function() {
                                 if (!decryptedContent.signatures[i].valid)
                                     throw new Error("Invalid Signature: " + decryptedContent.signatures[i].keyid.toHex().toUpperCase());
 
-                            var path = /data-path=["'](\S+)["']/i.exec(decryptedContent)[1];
+                            var path = /data-path=["'](\S+)["']/i.exec(decryptedContent.text)[1];
                             var timestamp = pgpClearSignedMessage.packets[0].created.getTime();
 
                             console.info("Verified Signed Content for: " + pgp_id_public);
@@ -85,12 +85,10 @@ if(typeof module === 'object') (function() {
                         to_pgp_id_public = pgp_id_public;
                     }
 
-                    console.log("Get to: ", pgpEncryptedMessage, to_pgp_id_public, from_pgp_id_public);
-
-                    var path = null; // /data-path=["'](\S+)["']/i.exec(decryptedContent)[1];
-                    // TODO: seperate database for messages?
-
-                    KeySpaceDB.addEncryptedMessageToDB(pgpEncryptedContent, to_pgp_id_public, from_pgp_id_public, {},
+                    var entryFields = {
+                        unprocessed: 1
+                    };
+                    KeySpaceDB.addEncryptedMessageToDB(pgpEncryptedContent, to_pgp_id_public, from_pgp_id_public, entryFields,
                         function (err, insertData) {
                             if(err)
                                 throw new Error(err);
