@@ -31,7 +31,7 @@ if(typeof module === 'object') (function() {
         // TODO: vote value shouldn't be used here
 
         self.module = {exports: {}};
-        importScripts('ks/ks-db.js');
+        importScripts('keyspace/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;
 
         // Get Vote Content

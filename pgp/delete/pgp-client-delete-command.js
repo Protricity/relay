@@ -16,7 +16,7 @@ if(typeof module === 'object') (function() {
                 return false;
 
             self.module = {exports: {}};
-            importScripts('ks/ks-db.js');
+            importScripts('keyspace/ks-db.js');
             var KeySpaceDB = self.module.exports.KeySpaceDB;
 
             var publicKeyIDs = match[1].trim().split(/\W+/g);

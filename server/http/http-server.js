@@ -99,7 +99,7 @@ function HTTPServer() {
     //// Feed Commands
     //HTTPServer.addCommandProxy(
     //    ['feed'],
-    //    'ks/feed/feed-server-commands.js');
+    //    'keyspace/feed/feed-server-commands.js');
     //
 
 

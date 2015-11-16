@@ -14,7 +14,7 @@ if(typeof module === 'object') (function() {
                 return false;
 
             self.module = {exports: {}};
-            importScripts('ks/ks-db.js');
+            importScripts('keyspace/ks-db.js');
             var KeySpaceDB = self.module.exports.KeySpaceDB;
 
             // TODO: require passphrase on register?

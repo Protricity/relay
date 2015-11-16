@@ -284,7 +284,7 @@ if(typeof document === 'object')
     }
 
     // For Public/Private Key Database access
-    includeScript('ks/ks-db.js');
+    includeScript('keyspace/ks-db.js');
 })();
 
 

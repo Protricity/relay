@@ -6,9 +6,9 @@ if (!module.exports) module.exports = {};
 module.exports.initHTTPServerCommands = function(HTTPServer) {
     HTTPServer.addCommand(getStaticHTTPCommand);
 
-    require('../../ks/ks-server-commands.js')
+    require('../../keyspace/ks-server-commands.js')
         .initHTTPServerKSCommands(HTTPServer);
-    console.log("Loaded ks/ks-server-commands.js");
+    console.log("Loaded keyspace/ks-server-commands.js");
 };
 
 function getStaticHTTPCommand(request, response) {

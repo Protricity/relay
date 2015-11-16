@@ -142,7 +142,7 @@ if(typeof document === 'object')
 
 
         // For HTTP Content Database access
-        includeScript('ks/ks-db.js');
+        includeScript('keyspace/ks-db.js');
 
         function includeScript(scriptPath) {
             var head = document.getElementsByTagName('head')[0];
@@ -162,7 +162,7 @@ if(typeof module === 'object') (function() {
 
         self.exports = {};
         self.module = {exports: {}};
-        importScripts('ks/ks-db.js');
+        importScripts('keyspace/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;
 
         var html_manage_entries = '';
