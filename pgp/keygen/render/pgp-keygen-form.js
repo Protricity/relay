@@ -71,6 +71,8 @@ if(typeof document === 'object')
             cancelable:true
         });
         document.dispatchEvent(messageEvent);
+
+
     }
 
     function clientSideKeyGen(bits, userID, passphrase) {
@@ -94,6 +96,11 @@ if(typeof document === 'object')
                 cancelable:true
             });
             document.dispatchEvent(messageEvent);
+
+            // Close Window
+            var windowElm = document.getElementsByClassName('pgp-keygen:')[0];
+            windowElm.classList.add('closed');
+
 
             //var userIDString = privateKey.getUserIds().join('; ');
             //

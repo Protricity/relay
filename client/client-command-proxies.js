@@ -22,7 +22,7 @@ module.exports.initClientCommands = function(Client) {
         Client.removeCommand(importHTTPCommands);
         Client.removeResponse(importHTTPCommands);
         self.module = {exports: {}};
-        importScripts('ks/ks-client-commands.js');
+        importScripts('keyspace/ks-client-commands.js');
         module.exports.initClientKSCommands(Client);
 //         console.info("Loaded: pgp/pgp-client-commands.js");
         return false;

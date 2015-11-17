@@ -16,9 +16,9 @@ module.exports.initSocketServerCommandProxies = function(SocketServer) {
             return false;
         SocketServer.removeCommand(httpCommand);
 
-        require('../../ks/ks-server-commands.js')
+        require('../../keyspace/ks-server-commands.js')
             .initSocketServerKSCommands(SocketServer);
-        console.log("Loaded ks/ks-server-commands.js");
+        console.log("Loaded keyspace/ks-server-commands.js");
 
         return false;
     }

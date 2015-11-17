@@ -48,8 +48,10 @@ if(typeof module === 'object') (function() {
             var timestamp = match[2];
             var voteContent = match[3];
 
+            // TODO:
+
             self.module = {exports: {}};
-            importScripts('app/social/vote/booth/vote-booth.js');
+            importScripts('app/social/vote/booth/app-vote-booth.js');
             var renderExports = self.module.exports;
 
             renderExports.renderVoteBooth(commandString, function (html) {

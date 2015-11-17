@@ -160,7 +160,7 @@ li {
 }
 
 .theme-minimal span.action {
-    color: red;
+    color: purple;
     font-size: smaller;
     font-style: italic;
 }
@@ -241,6 +241,22 @@ li {
 .default-article-theme {
     background-color: #EEE;
     text-indent: 1em;
+}
+
+.default-article-theme header {
+    font-weight: bold;
+    font-style: italic;
+    padding-bottom: 0.2em;
+    font-size: large;
+}
+
+.default-article-theme > header {
+    font-size: x-large;
+}
+
+.default-article-theme main {
+    text-indent: 0.5em;
+    padding-bottom: 1em;
 }
 
 /* Animation */

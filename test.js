@@ -5,6 +5,6 @@
 if (!module) var module = {};
 if (!module.exports) module.exports = {};
 module.exports.test = function() {
-    require('./ks/ks-tests.js').test();
+    require('./keyspace/ks-tests.js').test();
 };
 module.exports.test();

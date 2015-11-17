@@ -28,11 +28,13 @@ if(typeof module === 'object') (function() {
         var timestamp = match[2];
         var voteContent = match[3];
 
+        // TODO: vote value shouldn't be used here
 
         self.module = {exports: {}};
-        importScripts('ks/ks-db.js');
+        importScripts('keyspace/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;
 
+        // Get Vote Content
         KeySpaceDB.getContent(pgp_id_public, timestamp, function (err, voteEntryData) {
             if (err)
                 throw new Error(err);

@@ -1,25 +1,32 @@
-<form name='app-vote-form' class='no-passphrase-required'>
-    <input type='hidden' value='{$pgp_id_public}' name='pgp_id_public' />
-    <input type='hidden' value='{$timestamp}' name='timestamp' />
+<form name='app-vote-form' class='no-passphrase-required no-choice-selected'>
+    <input type='hidden' value='{$vote_timestamp}' name='vote_timestamp' />
+    <input type='hidden' value='{$vote_pgp_id_public}' name='vote_pgp_id_public' />
 
     <code class="status-box">{$status_box}</code>
 
-    <select name='choice' oninput='this.form.submit_vote.click()' style="width: 40%;">
-        <option value=''>Select your Vote</option>
-        {$html_options}
-    </select>
+    <label class='label-vote'>
+        <select name='user_choice' oninput1='this.form.submit_vote.click()' required="required">
+            <option value=''>Select a Choice</option>
+            {$html_choice_options}
+        </select>
+    </label>
 
-    <select name='pgp_id_public' style='width: 40%;'>
-        <option value=''>Select a PGP Identity</option>
-        {$html_pgp_id_public_options}
-    </select>
-    <input type='submit' value='Vote!' name='submit_vote' style='width: 10%;' />
+    <label class='label-id hide-on-no-choice-selected'>
+        <select name='user_pgp_id_public'>
+            <option value=''>Select an Identity</option>
+            {$html_pgp_id_public_options}
+        </select>
+    </label>
+
+    <label class='label-submit hide-on-no-choice-selected'>
+        <input type='submit' value='Submit' name='submit_vote'/>
+    </label>
 
     <label class='label-submit hide-on-compact hide-on-no-passphrase-required'>
         <br/>
         <br/>
         A <span class='passphrase'>passphrase</span> is required to use this <strong>PGP Identity</strong>:<br />
-        <input type='password' name='passphrase' style='width: 13em;'/>
+        <input type='password' name='user_passphrase' style='width: 13em;'/>
         <select name='auto_pgp_id_public' style="width: 11.5em; float:right;">
             <option value=''>Ask me every time (safer)</option>
             <option value='memory'>Keep private key decrypted in memory (less safe)</option>

@@ -14,6 +14,19 @@ form[name=app-vote-form] select {
 form[name=app-vote-form] input,
 form[name=app-vote-form] button,
 form[name=app-vote-form] select {
-    padding: 0.6em;
-    margin: 0.2em;
+    padding: 0.4em;
+    margin: 0.1em;
+}
+
+form[name=app-vote-form] select[name=user_pgp_id_public] {
+    width: 13em;
+}
+
+
+form[name=app-vote-form] input[name=user_passphrase] {
+    width: 13em;
+}
+
+form[name=app-vote-form] select[name=user_choice] {
+    width: 12em;
 }

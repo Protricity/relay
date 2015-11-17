@@ -1,4 +1,4 @@
-article.vote-booth\3A {
+article.app-vote-booth\3A {
     /* right: 1em; */
     /* position: absolute; */
     /* top: 1em; */
@@ -6,26 +6,26 @@ article.vote-booth\3A {
     min-width: 30em;
 }
 
-.vote-booth\3A > section,
-.vote-booth\3A > main {
+.app-vote-booth\3A > section,
+.app-vote-booth\3A > main {
     padding: 0.5em 1em;
     border: 1px inset;
     background: #EEE;
 }
 
-.vote-booth-list .open {
+.app-vote-booth-list .open {
     color: green;
 }
 
-.vote-booth-list .connecting {
+.app-vote-booth-list .connecting {
     color: blue;
 }
 
-.vote-booth-list .closing {
+.app-vote-booth-list .closing {
     color: red;
 }
 
-.vote-booth-list .closed {
+.app-vote-booth-list .closed {
     color: darkred;
 }
 
