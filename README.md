@@ -2,14 +2,13 @@
 
 What is the Relay Network?
 
-Intro:
-
 Relay is an up-and-coming socket-based Social Network. All the features you’ve come to expect from the big brands can be found within Relay - feeds, comments, user groups, forums, but there's much more.....
 Open-Source, Community Owned, Democratically Operated, 
 and free-to-use forever!
 (So what is it?)
 
 Metaphors:
+
 Relay is Democracy. Anyone can contribute. All developmental decisions occur in a public space subject to community audits. Relay will never be sold, shelved, or repurposed and will exist as long as it has a user base. Anyone can create and publish a (secret ballot) public vote for any reason. It’s your call.
 
 Relay is Content. The Relay KeySpace is a paradigm shift in web content delivery. Using the latest browser technology, content loads instantly via always-on two-way socket communication. Using PGP Encryption, user-contributed Relay content is verified automatically and cannot be faked or manipulated in any way. Only the original author has the power to change their KeySpace Content. Content consists of anything from feed posts, to personal web pages, business functionality, even a technology sandbox. It’s your KeySpace.
@@ -34,6 +33,7 @@ Relay is Best Practice. As new technology appears, as new software patterns emer
 
 
 Features:
+
 Relay is a Cloud. By design, Relay has no single points of failure. As the Relay Network grows, more servers around the world will be added to the master list dramatically increasing user capacity and bandwidth. Unlike the Cloud, data redundancy exists on the user clients rather than on the servers, reducing dependence on expensive, fast, high-capacity servers and endless hard drive mirroring.
 
 Relay is a BlockChain. Similar to modern cryptocurrencies, the Relay Network consists of an endless stream of user entries linked by verifiable encryption (a blockchain). Individual entries refer to each other up and down the blockchain and coalesce into meaningful data, which is interpreted by the user’s client. Once something is sent (relayed) across the network, it cannot be altered, faked or lost.
@@ -44,12 +44,14 @@ Relay is Encryption. Utilizing PGP (Pretty Good Privacy) Encryption, Relay gives
 
 
 Anti-Features:
+
 Relay is not a Walled Garden. Designed to adapt to new technologies as they surface, Relay developers will not close any doors or windows to new ideas, and will resist any attempts by outside influences to wrest control away from the community. Instead, the developers have an obligation to consider to the best available solution, allow competing solutions, benefiting everyone with the power of Community Source.
 
 Relay has no Administration. Instead, Relay is built from the ground-up with cooperation in mind. Typically found in other software are features like moderation, banning, editing of posts, viewing private messages of users, deleting history, censorship, and surveillance to name a few. Relay doesn’t have these, but more to the point, such features are not possible on the Relay Network. Abuse is countered in two major ways: By preventing exposure in the first place, and by making it very difficult to commit yet very easy to ignore. A PGP Identity’s reputation is the determining factor by which KeySpace content is trusted or ignored by the community.
 
 
 Release Info:
+
 Relay is a work-in-progress and will be launching an invite-only beta in December. Most features are not online as of yet.
 Donations: 
 BTC: 1AT6o3mmPRZVdzXPh7SbThgAhv9g4o3j92 
@@ -58,16 +60,19 @@ PayPal: ari dot asulin at gmail dot com
 
 
 Instructions for Contributors
+
 (How to contribute to the relay repository)
 
 If you’re viewing this page, hopefully it’s because you want to help contribute to the Relay project (anyone can!). This is accomplished by ‘cloning’ the relay repository to your local computer, making edits, and then committing the changes back to the repo. Changes are then peer-reviewed, authorized and pushed live. 
 
-Contributions include
+Contributions include:
+
 .js files (programming) - Javascript files provide all Relay functionality for both Servers and Clients and can be found throughout the source code. 
 .html files (content) - HTML5 is the Relay content format. All UI and local content is defined in single .html files throughout the source code.
 .css files (design) - CSS is how one makes HTML5 content look (and act) like anything you can think up. CSS files also define Themes used in Relay allowing new themes to be contributed
 
-Repository Instructions
+Repository Instructions:
+
 Install git (the repository manager):
 If you already have git, skip this step.
 [Windows git] Download cygwin setup.exe from https://www.cygwin.com/ [x86 or x64]
@@ -75,6 +80,7 @@ Install with packages ssh, git, python, wget, nano
 Search for each package and select install on each library in the group
 
 Clone the Relay git repository:
+
 After Cygwin is installed (or using your own console/git), open your command console, 
 browse (command cd) to your dev directory, 
 and execute git clone [repo url]:
@@ -85,34 +91,43 @@ $ git clone https://github.com/Protricity/relay
 
 
 
-Server Instructions
+Server Instructions:
+
 (If you want to run a Relay server locally)
 
 Install node.js and mongodb (if you want to run the server locally):
+
 Skip this step if you prefer to run the server remotely. You will need your own server to access the html file i.e. http://[your dev server]/relay/index.html 
 
 
-Install Node.JS 
+Install Node.JS
+
 https://docs.npmjs.com/getting-started/installing-node
 
 
 Download and Install MongoDB
+
 https://www.mongodb.org/downloads?_ga=1.56315051.1067887463.1444014081#production
+
 Instructions:
+
 http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/
 
 
 Init node libraries:
+
 $ cd [your dev folder]
 $ sh init-node.sh
 
 
 Browse to the relay directory and execute:
+
 $ cd [your dev folder, if you’re still there]
 $ node server.js
 
 
 Try to access your localhost server:
+
 http://localhost/
 
 
@@ -120,9 +135,7 @@ http://localhost/
 
 
 
-
-
-Testing
+Testing:
 
 Test in Chrome (edit files via chrome debugger):
 Open the index page in chrome on your local server i.e. http://localhost/ (or your own dev server link)
@@ -132,9 +145,8 @@ In the debugger, select the ‘sources’ tab, and right click. Select ‘add fo
 Select the relay folder you cloned earlier and chrome should be able to sync up the local and remote asset files. Any file edited in real-time is saved locally and can be committed back to the repo.
 
 
-
-
 Directory structure:
+
 /client - Contains all client files (Javascript/HTML5)
 /app - Applications and Non-Core features
 /channel - Chat and Channel features
@@ -149,6 +161,7 @@ Directory structure:
 
 
 For Designers:
+
 Open the test page corresponding to a design template in the browser to view
 ex. http://localhost:8080/relay-server/command/template/base/pages/home/index.html 
 Edit the template by modifying associated css/image files and refreshing the page in the browser
@@ -162,10 +175,12 @@ Please update this file with any questions, improvements on the instructions, or
 
 
 Clone commands:
+
 $ cd [your dev folder]
 $ git clone https://github.com/Protricity/relay
 
 Commit commands:
+
 $ cd [your dev folder]/relay/ 
 $ git status (shows the status if your commit)
 $ git add [your file path] (add your file to the repo)
