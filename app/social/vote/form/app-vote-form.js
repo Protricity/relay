@@ -159,6 +159,9 @@ if(typeof document === 'object')
         return false;
     }
 
+    var CLASS_BALLOT = 'app-vote:';
+    var CLASS_BALLOT_CHOICE = 'app-vote-choice:';
+    //var CLASS_BALLOT_ENTRY = 'app-vote-entry:';
 
     var URL_VOTE_FORM_TEMPLATE = 'app/social/vote/form/app-vote-form.html';
     var URL_VOTE_FORM_SCRIPT = 'app/social/vote/form/app-vote-form.js';
