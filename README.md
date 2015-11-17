@@ -148,14 +148,23 @@ Select the relay folder you cloned earlier and chrome should be able to sync up 
 Directory structure:
 
 /client - Contains all client files (Javascript/HTML5)
+
 /app - Applications and Non-Core features
+
 /channel - Chat and Channel features
+
 /client - Client features and UI
+
 /client/themes - Client Themes and theme resources
+
 /keyspace - KeySpace features and database
+
 /node_modules - Node.js support files
+
 /pgp - PGP Encryption features 
+
 /server/http - HTTP Server
+
 /server/socket - Socket Server 
 
 
