@@ -1,5 +1,4 @@
 # relay
-Relay Server/Client
 
 What is the Relay Network?
 
@@ -58,8 +57,129 @@ PayPal: ari dot asulin at gmail dot com
 
 
 
+Instructions for Contributors
+(How to contribute to the relay repository)
+
+If you’re viewing this page, hopefully it’s because you want to help contribute to the Relay project (anyone can!). This is accomplished by ‘cloning’ the relay repository to your local computer, making edits, and then committing the changes back to the repo. Changes are then peer-reviewed, authorized and pushed live. 
+
+Contributions include
+.js files (programming) - Javascript files provide all Relay functionality for both Servers and Clients and can be found throughout the source code. 
+.html files (content) - HTML5 is the Relay content format. All UI and local content is defined in single .html files throughout the source code.
+.css files (design) - CSS is how one makes HTML5 content look (and act) like anything you can think up. CSS files also define Themes used in Relay allowing new themes to be contributed
+
+Repository Instructions
+Install git (the repository manager):
+If you already have git, skip this step.
+[Windows git] Download cygwin setup.exe from https://www.cygwin.com/ [x86 or x64]
+Install with packages ssh, git, python, wget, nano 
+Search for each package and select install on each library in the group
+
+Clone the Relay git repository:
+After Cygwin is installed (or using your own console/git), open your command console, 
+browse (command cd) to your dev directory, 
+and execute git clone [repo url]:
+$ cd [your dev folder]
+$ git clone https://github.com/Protricity/relay
+
+
 
 
+
+Server Instructions
+(If you want to run a Relay server locally)
+
+Install node.js and mongodb (if you want to run the server locally):
+Skip this step if you prefer to run the server remotely. You will need your own server to access the html file i.e. http://[your dev server]/relay/index.html 
+
+
+Install Node.JS 
+https://docs.npmjs.com/getting-started/installing-node
+
+
+Download and Install MongoDB
+https://www.mongodb.org/downloads?_ga=1.56315051.1067887463.1444014081#production
+Instructions:
+http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/
+
+
+Init node libraries:
+$ cd [your dev folder]
+$ sh init-node.sh
+
+
+Browse to the relay directory and execute:
+$ cd [your dev folder, if you’re still there]
+$ node server.js
+
+
+Try to access your localhost server:
+http://localhost/
+
+
+
+
+
+
+
+
+Testing
+
+Test in Chrome (edit files via chrome debugger):
+Open the index page in chrome on your local server i.e. http://localhost/ (or your own dev server link)
+Experiment with the chrome debugger (F12 or Ctrl-Shift-I) which lets you step through client code. This debugger is literally all you need to develop for this project client-side, but feel free to use PHPStorm (way better) or NetBeans, or any javascript IDE
+Additional instructions on editing project files from your chrome browser debugger: https://developer.chrome.com/devtools/docs/workspaces 
+In the debugger, select the ‘sources’ tab, and right click. Select ‘add folder to workspace’
+Select the relay folder you cloned earlier and chrome should be able to sync up the local and remote asset files. Any file edited in real-time is saved locally and can be committed back to the repo.
+
+
+
+
+Directory structure:
+/client - Contains all client files (Javascript/HTML5)
+/app - Applications and Non-Core features
+/channel - Chat and Channel features
+/client - Client features and UI
+/client/themes - Client Themes and theme resources
+/keyspace - KeySpace features and database
+/node_modules - Node.js support files
+/pgp - PGP Encryption features 
+/server/http - HTTP Server
+/server/socket - Socket Server 
+
+
+
+For Designers:
+Open the test page corresponding to a design template in the browser to view
+ex. http://localhost:8080/relay-server/command/template/base/pages/home/index.html 
+Edit the template by modifying associated css/image files and refreshing the page in the browser
+Use test.html files to test individual template components. Add tests as necessary
+Commit your changes back to the repo
+
+
+
+
+Please update this file with any questions, improvements on the instructions, or anything else you feel like changing
+
+
+Clone commands:
+$ cd [your dev folder]
+$ git clone https://github.com/Protricity/relay
+
+Commit commands:
+$ cd [your dev folder]/relay/ 
+$ git status (shows the status if your commit)
+$ git add [your file path] (add your file to the repo)
+$ git commit -m “fixed the thing, added stuff” (commit to repo with message)
+$ git push origin master (push commit to server)
+
+
+cygwin is a unix driver for windows that lets you do many of the same things linux/unix can do on the command line. The command line is called the CygWin Terminal
+
+
+
+
+
+
 
 Feature List (old)
 Free and Community Owned
@@ -117,3 +237,5 @@ Voter fraud is regulated by community audits of vote receipts
 Financial incentive can be used to promote a public vote by incentivizing users to vote, review and debate on issues, and audit vote receipts 
 Votes are tallied and protected by vote registrars who are responsible for auditing and tallying all votes under their account. This is all handled automatically. In the event of fraud, a review of voter identities is triggered. Failing to do this may result in all votes in the hierarchy becoming invalidated. Anyone can be a vote registrar, but trust comes down to reputation.
 Vote receipts are periodically updated with public-facing hashes that do not give away the voter’s identity or vote value, but do allow for duplicate votes to be detected. Fraud that may have gone undetected may be found after the fact when new hash algorithms become available. 
+
+
