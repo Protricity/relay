@@ -6,10 +6,11 @@ article.about\3A {
     max-width: 45em;
 }
 
-.about\3A > main {
+.about\3A > main,
+.about\3A > section {
     /* width: 63em; */
-    height: 34em;
-    overflow: auto;
+    /* height: 34em; */
+    /* overflow: auto; */
     padding: 1em;
     border: 3px inset;
     background: #EEE;

@@ -131,7 +131,8 @@ li {
 
 /** Sections **/
 
-.theme-minimal > article > main {
+.theme-minimal > article > main,
+.theme-minimal > article > section {
     background-color: white;
 }
 

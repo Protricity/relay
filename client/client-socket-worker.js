@@ -259,11 +259,14 @@ function ClientSocketWorker() {
             contentElement.classList.add('__no-class');
         var targetClass = contentElement.classList.item(0);
 
-        var maximizedElms = document.getElementsByClassName('maximized');
-        while(maximizedElms.length > 0)
-            maximizedElms[0].classList.remove('maximized');
+        if(contentElement.classList.contains('maximize-on-render')) {
+            var maximizedElms = document.getElementsByClassName('maximized');
+            while (maximizedElms.length > 0)
+                maximizedElms[0].classList.remove('maximized');
 
-        contentElement.classList.add('maximized');
+            contentElement.classList.add('maximized');
+        }
+
 
         var targetElements = document.getElementsByClassName(targetClass);
         var targetElement;
