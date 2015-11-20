@@ -2,7 +2,7 @@
     <script src='client/console/render/console-window.js'></script>
     <link rel='stylesheet' href='client/console/render/console-window.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
-        <a href='#MAXIMIZE console:'>
+        <a href='#MINIMIZE console:'>
             Client <span class='command'>console</span>
         </a>
     </header>
@@ -17,8 +17,8 @@
             <tbody>
             <tr class='show-on-minimized'>
                 <td>
-                    $<input name='message' type='text' class='reset focus'
-                           placeholder='Commands: join [channel], nick [username], message [username]' style='width: 95%;'/>
+                    <input name='message' type='text' class='reset focus'
+                           placeholder='ex. render &#123;nav&#125;' style='width: 95%;'/>
                 </td>
                 <td style='width:1px'>
                     <input type='submit' value='Send' name='submit-send-console' />

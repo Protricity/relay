@@ -10,7 +10,7 @@ function ClientSocketWorker() {
     var NO_CLASS = '_you_got_no-class';
 
     var socketWorker = null;
-    document.addEventListener('click', onClickEvent, false);
+    //document.addEventListener('click', onClickEvent, false); // TODO: handle links globally? probably bad idea
     document.addEventListener('dblclick', onDblClick, false);
     document.addEventListener('command', onCommandEvent, false);
     window.addEventListener('hashchange', onHashChange, false);
@@ -259,11 +259,14 @@ function ClientSocketWorker() {
             contentElement.classList.add('__no-class');
         var targetClass = contentElement.classList.item(0);
 
-        var maximizedElms = document.getElementsByClassName('maximized');
-        while(maximizedElms.length > 0)
-            maximizedElms[0].classList.remove('maximized');
+        if(contentElement.classList.contains('maximize-on-render')) {
+            var maximizedElms = document.getElementsByClassName('maximized');
+            while (maximizedElms.length > 0)
+                maximizedElms[0].classList.remove('maximized');
 
-        contentElement.classList.add('maximized');
+            contentElement.classList.add('maximized');
+        }
+
 
         var targetElements = document.getElementsByClassName(targetClass);
         var targetElement;

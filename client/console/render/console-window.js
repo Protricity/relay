@@ -10,6 +10,7 @@
         // Events
         //document.addEventListener('command', onCommandEvent, false);
         document.addEventListener('submit', onFormEvent, false);
+        document.addEventListener('keydown', onFormEvent, false);
         //if(console.log !== consoleLogCallback) {
         //    var oldLog = console.log;
         //    console.log = function(message) {
@@ -92,7 +93,8 @@
             case 'console-form':
                 if(e.type === 'submit')
                     submitConsoleForm(e, formElm);
-
+                if(e.type.substr(0, 3) === 'key')
+                    handleFormKeyEvent(e, formElm);
                 return true;
 
             default:
@@ -100,20 +102,30 @@
         }
     }
 
-    function onCommandEvent(e) {
-        e.preventDefault();
-        var commandString = e.detail || e.data;
-        renderConsoleEntry(
-            "<span class='prompt'>$</span>" + commandString + "<span class='command'>",
-            function(html) {
-            var consoleLogs = document.getElementsByClassName('console-content:');
-            for(var i=0; i<consoleLogs.length; i++) {
-                var elm = document.createElement('div');
-                elm.innerHTML = html;
-                consoleLogs[i].appendChild(elm.children[0]);
-            }
-        });
+    var history = [];
+    var historyPos = 0;
+    function handleFormKeyEvent(e, formElm) {
+        var messageElm = formElm.querySelector('*[name=message], input[type=text], textarea');
+        switch(e.which) {
+            case 38: // UP
+                messageElm.value = nextHistory(-1);
+                break;
+
+            case 40: // Down
+                messageElm.value = nextHistory(1);
+                break;
+        }
+
+        function nextHistory(inc) {
+            historyPos += inc;
+            if(historyPos > history.length-1)
+                historyPos = 0;
+            else if (historyPos < 0)
+                historyPos = history.length-1;
+            return history[historyPos];
+        }
     }
+
 
     function submitConsoleForm(e, formElm) {
         e.preventDefault();
@@ -138,8 +150,25 @@
             bubbles:true
         });
         formElm.dispatchEvent(commandEvent);
-        if(commandEvent.defaultPrevented)
-            messageElm.value = '';
+        if(!commandEvent.defaultPrevented)
+            throw new Error("Command event not handled");
+        history.push(messageElm.value);
+        messageElm.value = '';
         return false;
+    }
+
+    function onCommandEvent(e) {
+        e.preventDefault();
+        var commandString = e.detail || e.data;
+        renderConsoleEntry(
+            "<span class='prompt'>$</span>" + commandString + "<span class='command'>",
+            function(html) {
+                var consoleLogs = document.getElementsByClassName('console-content:');
+                for(var i=0; i<consoleLogs.length; i++) {
+                    var elm = document.createElement('div');
+                    elm.innerHTML = html;
+                    consoleLogs[i].appendChild(elm.children[0]);
+                }
+            });
     }
 })();

@@ -77,7 +77,7 @@ li {
 }
 
 .theme-minimal > article.maximized {
-    min-width: 16em;
+    min-width: 80vw;
     position: absolute;
     z-index: 2;
     top: 10%;
@@ -131,7 +131,8 @@ li {
 
 /** Sections **/
 
-.theme-minimal > article > main {
+.theme-minimal > article > main,
+.theme-minimal > article > section {
     background-color: white;
 }
 
