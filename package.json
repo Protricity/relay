@@ -18,10 +18,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://Protricity@github.com/Protricity/relay.git"
+    "url": "git+https://clevertree@github.com/clevertree/relay.git"
   },
   "gitHead___": "e2e04b04ea318b4c64cb95c6c174749a524f49ef",
   "bugs": {
-    "url": "https://github.com/Protricity/relay/issues"
+    "url": "https://github.com/clevertree/relay/issues"
   }
 }
