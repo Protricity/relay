@@ -7,7 +7,7 @@ article.about\3A {
 }
 
 article.about\3A.maximized {
-    /* left: 2%; */
+    left: inherit;
     top: 2%;
 }
 
