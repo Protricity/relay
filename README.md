@@ -1,60 +1,152 @@
 # relay
 
-What is the Relay Network?
+FAQs - The Relay Network
 
-Relay is an up-and-coming socket-based Social Network. All the features you’ve come to expect from the big brands can be found within Relay - feeds, comments, user groups, forums, but there's much more.....
-Open-Source, Community Owned, Democratically Operated, 
-and free-to-use forever!
-(So what is it?)
-
-Metaphors:
-
-Relay is Democracy. Anyone can contribute. All developmental decisions occur in a public space subject to community audits. Relay will never be sold, shelved, or repurposed and will exist as long as it has a user base. Anyone can create and publish a (secret ballot) public vote for any reason. It’s your call.
-
-Relay is Content. The Relay KeySpace is a paradigm shift in web content delivery. Using the latest browser technology, content loads instantly via always-on two-way socket communication. Using PGP Encryption, user-contributed Relay content is verified automatically and cannot be faked or manipulated in any way. Only the original author has the power to change their KeySpace Content. Content consists of anything from feed posts, to personal web pages, business functionality, even a technology sandbox. It’s your KeySpace.
-
-Relay is Privacy. By default you can’t see anyone and no one can see you. Like any social network, you add friends and contacts and determine what level of access each user has to your KeySpace. No fire walls. No data leaks. No state surveillance. You have Control.
+(ask a question and it will be answered)
 
 
-
+WHAT IS RELAY?
 
-Relay is Reputation. Once you create a PGP Identity, it can never be altered or faked. Public identities created for the purposes of delivering consumer content will inevitably build a strong reputation among that user base. Your Brand is your Reputation.
-
-Relay is Business. Small and Large Business alike benefit by taking advantage of free Enterprise-level functionality in Relay. Whether the goal is a quick and simple business card webpage, or a feature-rich ecommerce shop with cart and payment options, or just live customer support, Relay is the way to go. No server maintenance. No staff overhead. No costs at all. Just business.
-
-Relay is Unifying. Although decentralized in design, all Relay servers are purposed with centralizing the flow of information. On the Relay network, channels of information are unified (via smart networking), and users are only ever one degree of separation away from their destination, or each other. Together is better.
-
-Relay is Local. Once you’re ready to meet people, Relay offers communication in every conceivable category. You can join channels based on interest, locality (like timezone or town), or make up your own. Quickly and easily find like-minded people in a controlled and safe chat environment. Unleash the power of Community Source.
-
-Relay is Customization. Create a public profile and customize its content to the last HTML tag. Or set up a small (or big) business website that will live on the relay network for-free and forever. You can get involved in activities like Public Votes or Community Calls to Action or even write your own new relay scripts to further enrich the social experience. Taking social networking to the next level.
-
-Relay is Best Practice. As new technology appears, as new software patterns emerge, Relay Developers are purposed with implementing the best available solution for any particular problem while maintaining backwards compatibility. As Relay is not owned by anyone, there is no financial (or otherwise) incentive to anything less than the best practice.
-
-
-
-Features:
-
-Relay is a Cloud. By design, Relay has no single points of failure. As the Relay Network grows, more servers around the world will be added to the master list dramatically increasing user capacity and bandwidth. Unlike the Cloud, data redundancy exists on the user clients rather than on the servers, reducing dependence on expensive, fast, high-capacity servers and endless hard drive mirroring.
-
-Relay is a BlockChain. Similar to modern cryptocurrencies, the Relay Network consists of an endless stream of user entries linked by verifiable encryption (a blockchain). Individual entries refer to each other up and down the blockchain and coalesce into meaningful data, which is interpreted by the user’s client. Once something is sent (relayed) across the network, it cannot be altered, faked or lost.
-
-Relay is Push Notification. Contemporary push notification networks tend to operate one-way, from server to client, and tend to require scalable infrastructure. Relay pushes in all directions, server to clients, client to servers, client to clients (thousands, millions, there’s no limit). This translates into a significantly more interactive event-driven internet experience for the end user. Page loads become obsolete and instantaneous. UI becomes the norm. Relay waits for you.
-
-Relay is Encryption. Utilizing PGP (Pretty Good Privacy) Encryption, Relay gives the end user full control over their identity and exposure. PGP Private Keys allow optional passwords, but Relay does not require any passwords to use (It’s a good idea though). PGP Encryption is the lynch pin that makes all of Relay work. For Relay intents and purposes, PGP Encryption offers virtually unbreakable security which operates as logic gates containing and validating KeySpace content as it flows through the Relay network. Relay encryption eliminates the need for old-fashioned peace-of-mind security considerations like firewalls or strong passwords, which can be circumvented even in the best of circumstances.  
+Relay is the project name for the free, socket-based, Social Content Network known as The Relay Network, which is meant to be accessed by today’s user on a modern browser.
 
 
-Anti-Features:
+WHAT DOES ‘SOCKET-BASED’ MEAN?
 
-Relay is not a Walled Garden. Designed to adapt to new technologies as they surface, Relay developers will not close any doors or windows to new ideas, and will resist any attempts by outside influences to wrest control away from the community. Instead, the developers have an obligation to consider to the best available solution, allow competing solutions, benefiting everyone with the power of Community Source.
+The Relay Network and Client are built on ‘WebSocket technology’ which is a recent protocol meant for modern browsers. While other websites and social networks load content via slow HTTP requests, which requires the browser to refresh the entire page, the Relay Client maintains an always-on, two-way socket connection providing near-instant browsing and a faster, more reliable user experience.
 
-Relay has no Administration. Instead, Relay is built from the ground-up with cooperation in mind. Typically found in other software are features like moderation, banning, editing of posts, viewing private messages of users, deleting history, censorship, and surveillance to name a few. Relay doesn’t have these, but more to the point, such features are not possible on the Relay Network. Abuse is countered in two major ways: By preventing exposure in the first place, and by making it very difficult to commit yet very easy to ignore. A PGP Identity’s reputation is the determining factor by which KeySpace content is trusted or ignored by the community.
+
+WHAT IS A SOCIAL CONTENT NETWORK?
+
+While a Social Network allows members to communicate, a Social Content Network allows members to create and publish original content, build entire websites, run a shop, or maybe even just customize a public profile page. All Social Content is either generated by forms or written from scratch in HTML5 (or both).  With Relay, there are many options available to the user which were only imagined before.  For example, Social Content can also be functional and provide software as a service (SAAS). All of this is accomplished by The Relay Network employing the powers of PGP Encryption.
+
+
+WHAT IS ‘PGP’ ENCRYPTION?
+
+‘Pretty Good Privacy’ (PGP) is an encryption protocol allowing end-to-end client encryption and verification features used in managing all KeySpace Content. Encryption performed on the Client cannot be viewed, tampered with, or decrypted by anyone who is not authorized by that Client. PGP gives the end user absolute control over their KeySpace Content.
+
+
+WHAT IS RELAY KEYSPACE CONTENT?
+
+A Relay KeySpace describes all content signed by a PGP Private Key and published on the network. As a signature cannot be faked, all content in the KeySpace is secured by the creator’s (user) PGP Identity even after being published and relayed across the network. Therefore content signed by a PGP Identity exists in the KeySpace corresponding with that identity and cannot be changed by anyone else. Additionally, any users viewing KeySpace content can verify each content entry against that KeySpace’s PGP Public Key.
+
+
+WHAT ARE SOME EXAMPLES OF SOCIAL CONTENT?
+
+Published ‘Feed’ posts, pictures, videos, hyperlinks, etc.
+
+HTML5 profile pages, about pages, blogs, etc.
+
+e-Business cards & pages
+
+e-Commerce, shopping carts, etc.
+
+Secret Ballot or Public Call-To-Action
+
+Forums, replies, signatures, rating & like features, etc.
+
+Classified ads for services, sales, housing, etc.
+
+
+WHO IS SEEING THIS CONTENT?
+
+Social Content is viewed in two ways. Firstly, anyone who’s subscribed to you or the channel you’re publishing on will see your published content on their feed, and visa versa. Secondly, KeySpace Content can be browsed through, similar to how websites operate. KeySpace Content can be organized into a multi-page website of unlimited size. Users may browse KeySpace content in maximized or full-page view for a classic browsing experience. Using WebSocket technology, KeySpace content consumed on the Relay Network is loaded near-instantly for an impressive and responsive browsing experience. No more slow page loads.
+
+
+IS VIEWING CONTENT ON THE RELAY NETWORK SAFE?
+
+Relay utilizes the latest in HTML5.  In order to view Social Content on the Relay Network, you must “Enter the KeySpace” of the Host which the content belongs to. This process is accomplished  in the background by adding the Host’s PGP Public Key Identity to the Relay Client’s keyring. PGP Ids are added any time a user subscribes or adds a contact to their contact list. Once a PGP Public Key is obtained, it is used by the Relay Client to verify KeySpace content on the fly as it is consumed.  In other words, we guarantee that the content you’re viewing comes from the user who created it.
+
+
+HOW DO I KNOW CONTENT CAN’T BE TAMPERED WITH?
+
+PGP Signatures provide a way to validate exact content against a PGP Public Key Identity. This happens instantly and automatically on the Relay Client. Any content that isn’t verified will be ignored. Utilizing PGP Signature Verification, The Relay Network automatically ensures nobody can change your published Social Content but you.
+
+
+WHERE IS MY INFORMATION STORED?
+
+As there is no central database in the Relay Network, all KeySpace information is stored on the Client (your browser).  Only published KeySpace content is received and rebroadcasted by Relay servers or anywhere else.  Once published, content is relayed across the network, and cached along the way. Cached content is defined as published KeySpace content that is temporarily (or permanently) stored on each client and server that encounters it. A single client with a cache of KeySpace content can serve, through Relay cache servers, an unlimited amount of visitors without encountering scaling issues or bandwidth limitations.
+
+
+WHO OWNS RELAY?
+
+In short, nobody and everybody.  Relay will be licensed under a new type of Software License that will be known as Community Source. Relay is owned and maintained by the community that uses it and is therefore unownable. Anyone may clone the source code, make edits, submit fixes and original contributions, and become a part of Relay history.
+
+
+WHY CAN’T RELAY BE OWNED?
+
+In order for the Relay Network to exist as long as possible, it cannot be subject to profit motive. While there is an abundance of lucrative financial opportunities made available by the new platform, no component of the platform itself may ever be sold, shelved, repurposed, or rebranded without the community’s direct involvement and consent.
+
+
+HOW ARE COMMUNITY DECISIONS MADE?
+
+Public votes can be used to organize ideas, make decisions, or feel out public opinion.  Anyone can create a Secret Ballot with Relay for any reason at any time; however, a tally result is only as good as the reputation of the host of that vote. Therefore, in order to be taken seriously by other users on the Relay Network, a host must build and maintain a strong host reputation, and adhere to the high standards of transparency, objectivity, inclusivity, and respect.
+
+
+WHAT IS PARKING TO RELAY?
+
+This is a feature made possible by the Relay Network Cache Servers. Each server caches KeySpace content indefinitely, even if the publisher’s client is offline. This means one can host a website on Relay for free forever, and only pay for the cost of buying the domain.
+
+
+HOW ABOUT SEO?
+
+Search Engine Optimization (SEO) may apply to parked domains that use Relay for hosting, however content available on the Relay Network is not exposed to the existing internet, and won’t be seen by SEO spiders.
+
+
+WHAT ARE RELAY TEAM’S CROWDFUNDING GOALS?
+
+Relay is clearly an ambitious project and as such, the Relay team is preparing to begin crowdfunding to bring Relay from concept to reality. Funding raised will be prioritized to the following goals:
+
+Fund the first network of public Relay servers around the world to facilitate the Relay Beta launch.
+Servers will be added based on usage needs as the Beta membership grows. Since The Relay Network is free, long-term funding for servers is necessary until servers become self-reliant (via donations or contributed hardware). Relay servers are purposed with centralizing communication and will require long-term server funding to ensure network cohesion on the long-term.
+
+Recruit and organize the first team of contributors.
+This team will gradually take over development of relay from the original founders, and the transition will be organized in an inclusive and democratic manner. Examples of contribution include programming (javascript), design (css, png), content (html5), translation, quality assurance, documentation, and legal work. Examples of core Primary Projects that will become part of Relay include website templates, profile tools, shopping carts, democracy tools, and IRC features. Examples of non-core Secondary Projects include games, apps, scripts, themes, and UI tools. In order to volunteer for recruitment, registrants are required to make a $1 or greater donation. This ensures the first pool of registrants are using their real names, and are serious about helping.
+
+Fund awareness and legal defence of The Relay Network.
+In order to assure the long-term survival of The Relay Network, efforts should be made to inform potential users of the differences between Relay and corporate-owned software. The Relay Development Team works for free and does not enjoy the security of being defended (legally and otherwise) by a rich, powerful corporation. The project is therefore vulnerable to a range of competitive tactics employed by the private sector and will require a measure of legal counsel to ensure the project can defend itself on the long-term.
+
+Integrate The Relay Network into existing networks and infrastructure.
+Given adequate funding, it becomes possible to port the Relay Client to other software platforms like Android, iOS, Facebook, or even fund exciting community endeavours such as a low-cost Relay Phone. Relay is not a walled garden and aims to seek integration with anything and everything.
+
+
+WHAT IS THE RELAY BETA?
+
+The Relay Beta is the first public launch of Relay for testing purposes. Only members with an invite will be able to connect to The Relay Network. Members are given a limited set of invites to invite anyone they wish. Upon the conclusion of the Beta, The Relay Network will allow unlimited invites for all users indefinitely.
+
+
+WHAT ARE INVITES?
+
+The Relay Network requires an invite to register on the network. During the Beta, invites are limited. This is necessary for testing purposes in order to grow the network with a measured approach. Invites may be obtained from registered users or by making a donation. Invites are required in order to meet the following goals:
+
+
+Reduce registration fraud.
+Anyone who makes a donation will receive a priority invite to The Relay Network. This ensures the first pool of users are serious about early adoption and reduces the potential for abuse accounts. By requiring invites, the likelihood of multiple registrations and identity fraud are significantly reduced.
+
+Build a Reputation Tree.
+The only way to use The Relay Network is to be invited to register. This makes every user responsible for each member they invite. Abuse committed under invited accounts might cause the invitor account to be flagged for abuse as well. Instances of large-scale abuse can be flagged at the source, rather than flagging each individual account on the Reputation Tree.
+
+Facilitate Measured network growth.
+By controlling the number of activated invites, server performance can be observed. This facilitates a steady network growth during testing. Invites will be prioritized and batched in groups. Users will be notified when their invite is ready
+
+
+HOW DO I CONTRIBUTE?
+
+Donate! Whether you’re looking to throw down your skills, or just want to be an early adopter, start with a small (or large) donation. Making a donation is also the best way to signal a serious bid for contribution. Simply select the appropriate tier when making a donation to indicate interest in contributing to relay. Contributors will gradually take over development of relay from the original founders, and the transition will be organized in an inclusive and democratic manner. Examples of contribution include programming (javascript), design (css, png), content (html5), translation, quality assurance, documentation, and legal work. Examples of core Primary Projects that will become part of Relay include website templates, profile tools, shopping carts, democracy tools, and IRC features. Examples of non-core Secondary Projects include games, apps, scripts, themes, and UI tools. In order to volunteer for recruitment, registrants are required to make a $1 or greater donation. This ensures the first pool of registrants are using their real names, and are serious about helping.
+
+
+DO YOU HAVE A POLITICAL POSITION?
+
+If the vision behind Relay can be attributed a political position on any issue, it would likely be that all parties to that issue should enter into inclusive public dialog using tools of democratic best practice available (like relay) so that every last voice is counted, every plan has time to be vetted, and every conceivable concern given a chance to surface. As such, Relay is nonpartisan.
 
 
 Release Info:
 
 Relay is a work-in-progress and will be launching an invite-only beta in December. Most features are not online as of yet.
+
 Donations: 
+
 BTC: 1AT6o3mmPRZVdzXPh7SbThgAhv9g4o3j92 
+
 PayPal: ari dot asulin at gmail dot com
 
 
