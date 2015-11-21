@@ -2,8 +2,13 @@ article.about\3A {
     position: absolute !important;
     bottom: 1em;
     /* float: right; */
-    right: 1em;
-    max-width: 45em;
+    right: 2%;
+    /* max-width: 47em; */
+}
+
+article.about\3A.maximized {
+    left: inherit;
+    top: 2%;
 }
 
 .about\3A > main,

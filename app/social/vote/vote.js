@@ -1,6 +1,9 @@
 /**
  * Created by ari on 7/2/2015.
+ *
+ * This is a voting application for Relay
  */
+
 if(typeof document === 'object')
 (function() {
 

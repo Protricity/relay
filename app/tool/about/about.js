@@ -1,5 +1,7 @@
 /**
  * Created by ari on 10/30/2015.
+ *
+ * This is an about-window script for Relay
  */
 
 if(typeof module === 'object') (function() {
