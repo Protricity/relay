@@ -200,7 +200,7 @@ Clone the Relay git repository:
  * browse (command cd) to your dev directory, 
  * and execute git clone [repo url]:
  * $ cd [your dev folder]
- * $ git clone https://github.com/Protricity/relay
+ * $ git clone https://github.com/clevertree/relay
 
 
 
@@ -312,7 +312,7 @@ Clone commands:
 -----------------
 
 $ cd [your dev folder]
-$ git clone https://github.com/Protricity/relay
+$ git clone https://github.com/clevertree/relay
 
 Commit commands:
 -----------------
