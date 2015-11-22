@@ -130,15 +130,19 @@ function ClientSocketWorker() {
         var targetElement = targetElements[0];
         var hasClass = targetElement.classList.contains(command + 'd');
 
-        switch(command) {
-            case 'maximize':
-                var maximizedElms = document.getElementsByClassName('maximized');
-                while(maximizedElms.length > 0)
-                    maximizedElms[0].classList.remove('maximized');
-                break;
-            default:
-                break;
-        }
+        //switch(command) {
+        //    case 'minimize':
+        //    case 'maximize':
+        //    case 'close':
+
+        var maximizedElms = document.getElementsByClassName('maximized');
+        while(maximizedElms.length > 0)
+            maximizedElms[0].classList.remove('maximized');
+
+                //break;
+            //default:
+            //    break;
+        //}
 
         for(var i=0; i<targetElements.length; i++) {
             targetElement = targetElements[i];

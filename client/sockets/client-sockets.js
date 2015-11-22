@@ -50,9 +50,9 @@ function ClientSockets(socketURL) {
                 newSocket.url
             );
 
-            setTimeout(function () {
-                newSocket.send("NICK relay" + Date.now().toString().substr(6));
-            }, 500);
+            //setTimeout(function () {
+            //    newSocket.send("NICK relay" + Date.now().toString().substr(6));
+            //}, 500);
             //newSocket.send("AUTH AEA00E8FAA7CF1D1");
             //newSocket.send("AUTH AEA00E8FAA7CF1D1");
             renderClientSocketsWindow();

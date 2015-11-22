@@ -1,14 +1,16 @@
 article.about\3A {
+}
+
+article.about\3A:not(.maximized) {
     position: absolute !important;
-    bottom: 1em;
-    /* float: right; */
     right: 2%;
-    /* max-width: 47em; */
+    min-width: 60vw;
+    bottom: 1em;
 }
 
 article.about\3A.maximized {
-    left: inherit;
     top: 2%;
+    min-width: 43em;
 }
 
 .about\3A > main,

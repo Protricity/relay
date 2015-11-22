@@ -26,15 +26,14 @@ li {
 .theme-minimal > article {
     display: inline-block;
     margin: 0.5em;
-    /* position: relative; */
     vertical-align: top;
+    /* background: linear-gradient(to bottom right, #E5DDD5, #F5FFF5); */
     background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
-    border-radius: 2px;
-    transition: 0.5s ease-out;
-    transition-delay: 0.2s;
+    box-shadow: 0.1em 0.2em 0.8em #999;
+    border-radius: 0.4em;
+    transition: 2s ease-out;
+     /*transition-delay: 0.2s;*/
     animation: theme-minimal-article-fade-in .5s ease-out forwards;
-    /* max-height: 80em; */
-    /* max-width: 64em; */
     float: left;
 }
 
@@ -52,7 +51,9 @@ li {
 
 .theme-minimal > article:hover {
     /*cursor: pointer;*/
-    box-shadow: 1px 2px 6px #999;
+    box-shadow: 0 0 3em #558;
+    transition: 0.5s ease-out;
+
 }
 
 .theme-minimal > article:last-child {
@@ -77,16 +78,16 @@ li {
 }
 
 .theme-minimal > article.maximized {
-    min-width: 80vw;
+    /* min-width: 10em; */
     position: absolute;
     z-index: 2;
     top: 10%;
     bottom: inherit;
     left: 10%;
-    box-shadow: 0 0 4em #558;
-    transition: 500ms;
+    /*transition: 500ms;*/
     /* transform: translate(50%, 0%); */
-    font-size: large;
+    font-size: x-large;
+    /* border-radius: 1em; */
 }
 
 .theme-minimal > article:not(.maximized) {
@@ -100,7 +101,6 @@ li {
 
 .theme-minimal > article > footer,
 .theme-minimal > article > header {
-    background: linear-gradient(to bottom right, #E5DDD5, #F5FFF5);
     text-indent: 0.3em;
     padding: 0 0 0.3em 0;
     border-bottom: 2px double threedface;
@@ -133,7 +133,7 @@ li {
 
 .theme-minimal > article > main,
 .theme-minimal > article > section {
-    background-color: white;
+    /* background-color: white; */
 }
 
 .theme-minimal > article > section {

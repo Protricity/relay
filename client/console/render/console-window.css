@@ -1,9 +1,9 @@
 .console-content\3A {
     padding: 1em 2em 1em 2em;
     border: 3px inset;
-    background: #EEE;
     max-height: 36em;
     overflow-y: auto;
+    background: #FFF;
 }
 
 article.console\3A {
@@ -12,6 +12,11 @@ article.console\3A {
     position: absolute;
     min-width: 31em;
 }
+article.console\3A > main,
+article.console\3A > section {
+     background: #FFF;
+}
+
 
 .console-entry {
     max-width: 40em;
