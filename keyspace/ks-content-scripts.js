@@ -7,8 +7,8 @@ if (!module.exports) module.exports = {};
 
 module.exports.getContentScripts = function() {
     return [
-        ['keyspace/wizard/ks-create-wizard.js', 'Secret Ballot Wizard'],
-        ['app/social/vote/vote.js', 'Create a new Public Vote']
+        ['keyspace/wizard/ks-create-wizard.js', 'Simple Content Wizard'],
+        ['app/social/vote/vote.js', 'Secret Ballot Wizard']
 
     ];
 };
