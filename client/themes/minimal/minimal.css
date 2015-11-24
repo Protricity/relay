@@ -1,16 +1,26 @@
 /** BODY **/
 
 body.theme-minimal {
-    font-family: monospace;
-/*     vertical-align: top; */
+    font-family: body, monospace;
+    font-size: small;
 }
 
+/** Font **/
 
+@font-face {
+    font-family: body;
+    src: url( DroidSerif-Regular.ttf ) format("truetype");
+}
+
+@font-face {
+    font-family: command ;
+    src: url( Oswald-Bold.ttf ) format("truetype");
+}
 
 /** General **/
 
 li {
-    font-family: monospace;
+    /* font-family: monospace; */
     color: #333;
 }
 
@@ -133,11 +143,7 @@ li {
 
 .theme-minimal > article > main,
 .theme-minimal > article > section {
-    /* background-color: white; */
-}
-
-.theme-minimal > article > section {
-    background-color: #F5F5FA;
+/*     background-color: #F5F5FA; */
 }
 
 
@@ -153,11 +159,19 @@ li {
 /*     color: black; */
 }
 
-.theme-minimal span.command{
-    color: green;
+.theme-minimal span.response,
+.theme-minimal span.command {
     text-transform: uppercase;
-    font-size: smaller;
-    font-family: monospace;
+    /* font-size: smaller; */
+    font-family: command, monospace;
+}
+
+.theme-minimal span.command {
+    color: green;
+}
+
+.theme-minimal span.response {
+    color: #2f69c0;
 }
 
 .theme-minimal span.action {
@@ -166,11 +180,14 @@ li {
     font-style: italic;
 }
 
-.theme-minimal span.response {
-    color: blue;
-    text-transform: uppercase;
-    font-size: smaller;
-    font-style: italic;
+.theme-minimal span.response {}
+
+.theme-minimal .console-entry {
+    /* color: blue; */
+    /* text-transform: uppercase; */
+    /* font-size: smaller; */
+    /* font-style: italic; */
+    font-family: monospace;
 }
 
 .theme-minimal span.error {

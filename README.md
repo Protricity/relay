@@ -1,7 +1,4 @@
-# relay
-
-FAQs - The Relay Network
-================
+# FAQ - The Relay Network
 
 WHAT IS RELAY?
 -----------------

@@ -60,9 +60,11 @@ function Client() {
         for(var i=0; i<commandHandlers.length; i++)
             if(commandHandlers[i](commandString, e))
                 return (function() {
+
+                    var parts = commandString.split(' ', 2);
                     Client.log(
                         '<span class="direction">$</span> ' +
-                        '<span class="command">' + commandString + '</span>'
+                        '<span class="command">' + parts[0] + '</span>' + (parts[1] ? ' ' + parts[1] : '')
                     );
                     return true;
                 })();
@@ -84,9 +86,11 @@ function Client() {
         for(var i=0; i<responseHandlers.length; i++)
             if(responseHandlers[i](responseString, e))
                 return (function() {
+
+                    var parts = responseString.split(' ', 2);
                     Client.log(
                         '<span class="direction">I</span> ' +
-                        '<span class="response">' + responseString + '</span>'
+                        '<span class="response">' + parts[0] + '</span>' + (parts[1] ? ' ' + parts[1] : '')
                     );
                     return true;
                 })();

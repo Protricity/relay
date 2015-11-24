@@ -7,6 +7,14 @@ article.ks-put\3A > section {
     border: 3px inset;
 }
 
+article.ks-put\3A > section {
+    background-color: #F5F5FA;
+}
+
+article.ks-put\3A > main {
+    background-color: #FFFFFF;
+}
+
 article.ks-put\3A  .status-box:empty {
     display: none;
 }

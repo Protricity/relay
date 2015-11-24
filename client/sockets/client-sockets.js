@@ -194,9 +194,11 @@ function ClientSockets(socketURL) {
     ClientSockets.send = function(commandString, e, withSocket) {
         function send(socket){
             socket.send(commandString);
+
+            var parts = commandString.split(' ', 2);
             Client.log(
                 "<span class='direction'>O</span> " +
-                "<span class='command'>" + commandString + "</span>"
+                "<span class='command'>" + parts[0] + "</span>" + (parts[1] ? ' ' + parts[1] : '')
             );
         }
         if(withSocket) {
