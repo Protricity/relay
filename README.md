@@ -1,3 +1,32 @@
+# Anyone can contribute to The Relay Project. 
+------
+
+Examples of Contributions include the following:
+ * Bug Reports and QA (no skills required but debug report really helps)
+ * Bug Fixes (skills required: JavaScript)
+ * New Features and Scripts (skills required: JavaScript, CSS3, HTML5)
+ * User Interface Design (skills required: CSS3, HTML5)
+ * User Interface Themes (skills required: CSS3)
+ * Content Templates (skills required: HTML5, CSS3) 
+
+Repository Instructions:
+------
+Contributions are made by adding or editing content in the git repository.
+
+https://docs.google.com/document/d/1EkqkcxM7OUbgzihPedpvZ6ZPlYKytd6YlhDYoj9QsQY/edit?usp=sharing
+
+Ready to Help?
+------
+Make a pull request
+
+https://github.com/clevertree/relay/pulls
+
+
+Questions?
+------
+Feel free to reply to this thread with any questions or comments
+
+
 # FAQ - The Relay Project
 
 WHAT IS RELAY?
