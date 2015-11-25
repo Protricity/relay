@@ -8,8 +8,15 @@
         <script>
             setTimeout(function() {
                 ClientSocketWorker.sendCommand("about");
+                ClientSocketWorker.sendCommand("minimize about:");
             }, 500);
         </script>
+        <style>
+            body {
+                background: url('app/tool/about/assets/relay-splash.png') no-repeat;
+                background-position-x: center;
+            }
+        </style>
         <link rel="stylesheet" href="client/themes/minimal/minimal.css" type="text/css" />
     </head>
     <body class='theme-minimal'></body>
