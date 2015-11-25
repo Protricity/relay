@@ -33,6 +33,7 @@
                 // Render ABOUT
                 setTimeout(function() {
                     ClientSocketWorker.sendCommand("about");
+                    ClientSocketWorker.sendCommand("minimize about:");
                 }, 5000);
             }
 
