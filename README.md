@@ -1,4 +1,4 @@
-# FAQ - The Relay Network
+# FAQ - The Relay Project
 
 WHAT IS RELAY?
 -----------------

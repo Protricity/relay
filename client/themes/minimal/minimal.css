@@ -1,8 +1,12 @@
 /** BODY **/
 
 body.theme-minimal {
-    font-family: body, monospace;
+    font-family: monospace;
     font-size: small;
+}
+
+body.theme-minimal header{
+    font-family: body, monospace;
 }
 
 /** Font **/
