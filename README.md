@@ -19,7 +19,7 @@ https://docs.google.com/document/d/1EkqkcxM7OUbgzihPedpvZ6ZPlYKytd6YlhDYoj9QsQY/
  1. Make a new Issue thread describing your feature and allow peer-review.
 https://github.com/clevertree/relay/issues/new
 
-###### Take a look at other 'Feature' threads for a suggestion on how to format your new thread
+    Take a look at other 'Feature' threads for a suggestion on how to format your new thread
 
  2. Make a pull request
 https://github.com/clevertree/relay/pulls
