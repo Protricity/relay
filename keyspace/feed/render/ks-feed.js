@@ -250,7 +250,7 @@ if(typeof document === 'object')
             pgp_id_public = pgp_id_public.substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH).toUpperCase();
             if(authorCache[pgp_id_public])
                 return callback(authorCache[pgp_id_public]);
-            authorCallbacks.push(callback);
+            authorCallbacks.push([pgp_id_public, callback]);
 
             if(authorCache[pgp_id_public] === null)
                 return null;
@@ -259,7 +259,7 @@ if(typeof document === 'object')
             var requestPath = "public/id";
             var requestURL = "http://" + pgp_id_public + ".ks/" + requestPath;
 
-//             console.log("Requesting author for " + pgp_id_public + "...");
+             console.log("Requesting author for " + pgp_id_public + "...");
             KeySpaceDB.queryOne(requestURL, function (err, contentData) {
                 if (err)
                     return callback(err);
@@ -269,8 +269,14 @@ if(typeof document === 'object')
                 if(contentData)
                     authorCache[pgp_id_public] = contentData.user_id;
 
-                for(var i=0; i<authorCallbacks.length; i++)
-                    authorCallbacks[i](authorCache[pgp_id_public]);
+                for(var i=0; i<authorCallbacks.length; i++) {
+                    var callback = authorCallbacks[i];
+                    if(authorCache[callback[0]]) {
+                        callback[1](authorCache[callback[0]]);
+                        authorCallbacks.splice(i, 1);
+                        i--;
+                    }
+                }
             });
         }
 

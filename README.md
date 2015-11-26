@@ -94,10 +94,10 @@ Feel free to reply to this thread with any questions or comments
   This team will gradually take over development of relay from the original founders, and the transition will be organized in an inclusive and democratic manner. Examples of contribution include programming (javascript), design (css, png), content (html5), translation, quality assurance, documentation, and legal work. Examples of core Primary Projects that will become part of Relay include website templates, profile tools, shopping carts, democracy tools, and IRC features. Examples of non-core Secondary Projects include games, apps, scripts, themes, and UI tools. In order to volunteer for recruitment, registrants are required to make a $1 or greater donation. This ensures the first pool of registrants are using their real names, and are serious about helping. 
   
  * Fund awareness and legal defence of The Relay Network.
-  In order to assure the long-term survival of The Relay Network, efforts should be made to inform potential users of the differences between Relay and corporate-owned software. The Relay Development Team works for free and does not enjoy the security of being defended (legally and otherwise) by a rich, powerful corporation. The project is therefore vulnerable to a range of competitive tactics employed by the private sector and will require a measure of legal counsel to ensure the project can defend itself on the long-term.
-  
+   In order to assure the long-term survival of The Relay Network, efforts should be made to inform potential users of the differences between Relay and corporate-owned software. The Relay Development Team works for free and does not enjoy the security of being defended (legally and otherwise) by a rich, powerful corporation. The project is therefore vulnerable to a range of competitive tactics employed by the private sector and will require a measure of legal counsel to ensure the project can defend itself on the long-term.
+ 
  * Integrate The Relay Network into existing networks and infrastructure.
-  Given adequate funding, it becomes possible to port the Relay Client to other software platforms like Android, iOS, Facebook, or even fund exciting community endeavours such as a low-cost Relay Phone. Relay is not a walled garden and aims to seek integration with anything and everything.
+   Given adequate funding, it becomes possible to port the Relay Client to other software platforms like Android, iOS, Facebook, or even fund exciting community endeavours such as a low-cost Relay Phone. Relay is not a walled garden and aims to seek integration with anything and everything.
   
   
 ### WHAT IS THE RELAY BETA?
