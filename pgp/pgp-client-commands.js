@@ -56,33 +56,33 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
-        // PGP.AUTH and PGP.VALIDATE Command
-        Client.addCommand(importPGPAuthCommand);
-        Client.addResponse(importPGPAuthCommand);
-        function importPGPAuthCommand(commandString, e) {
-            if (!/^pgp\.(auth|validate)/i.test(commandString))
-                return false;
-            Client.removeCommand(importPGPAuthCommand);
-            Client.removeResponse(importPGPAuthCommand);
-            self.module = {exports: {}};
-            importScripts('pgp/auth/pgp-client-auth-command.js');
-            module.exports.initClientPGPAuthCommands(Client);
-            return false;
-        }
+        //// PGP.DEFAULT Command
+        //Client.addCommand(importPGPDefaultCommand);
+        //Client.addResponse(importPGPDefaultCommand);
+        //function importPGPDefaultCommand(commandString, e) {
+        //    if (!/^pgp\.default/i.test(commandString))
+        //        return false;
+        //    Client.removeCommand(importPGPDefaultCommand);
+        //    Client.removeResponse(importPGPDefaultCommand);
+        //    self.module = {exports: {}};
+        //    importScripts('pgp/default/pgp-client-default-command.js');
+        //    module.exports.initClientPGPDefaultCommands(Client);
+        //    return false;
+        //}
 
-        // PGP.DEFAULT Command
-        Client.addCommand(importPGPDefaultCommand);
-        Client.addResponse(importPGPDefaultCommand);
-        function importPGPDefaultCommand(commandString, e) {
-            if (!/^pgp\.default/i.test(commandString))
-                return false;
-            Client.removeCommand(importPGPDefaultCommand);
-            Client.removeResponse(importPGPDefaultCommand);
-            self.module = {exports: {}};
-            importScripts('pgp/default/pgp-client-default-command.js');
-            module.exports.initClientPGPDefaultCommands(Client);
-            return false;
-        }
+        //// PGP.AUTH and PGP.VALIDATE Command
+        //Client.addCommand(importPGPAuthCommand);
+        //Client.addResponse(importPGPAuthCommand);
+        //function importPGPAuthCommand(commandString, e) {
+        //    if (!/^pgp\.(auth|validate)/i.test(commandString))
+        //        return false;
+        //    Client.removeCommand(importPGPAuthCommand);
+        //    Client.removeResponse(importPGPAuthCommand);
+        //    self.module = {exports: {}};
+        //    importScripts('pgp/auth/pgp-client-auth-command.js');
+        //    module.exports.initClientPGPAuthCommands(Client);
+        //    return false;
+        //}
 
     };
 })();
