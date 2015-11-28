@@ -14,10 +14,6 @@
                 ClientSocketWorker.sendCommand("about");
                 ClientSocketWorker.sendCommand("minimize about:");
             }, 500);
-
-            setTimeout(function() {
-                Host.showToast("Test Toast");
-            }, 2000);
         </script>
         <style>
             body {
@@ -28,9 +24,5 @@
 
         <link rel="stylesheet" href="client/themes/minimal/minimal.css" type="text/css" />
     </head>
-    <body class='theme-minimal'>
-
-        <input type="button" value="Say hello" onClick="Android.showToast('Hello Android!')" />
-
-    </body>
+    <body class='theme-minimal'></body>
 </html>

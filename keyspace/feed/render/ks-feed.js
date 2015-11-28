@@ -259,7 +259,7 @@ if(typeof document === 'object')
             var requestPath = "public/id";
             var requestURL = "http://" + pgp_id_public + ".ks/" + requestPath;
 
-             console.log("Requesting author for " + pgp_id_public + "...");
+            // console.log("Requesting author for " + pgp_id_public + "...");
             KeySpaceDB.queryOne(requestURL, function (err, contentData) {
                 if (err)
                     return callback(err);

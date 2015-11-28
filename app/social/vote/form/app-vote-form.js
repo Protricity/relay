@@ -120,6 +120,7 @@ if(typeof document === 'object')
 
 //                     console.log("Public keys ", publicKeysForEncryption);
 
+                    // TODO: message? or encrypted keyspace content? Messages should be sent directly
                     openpgp.signAndEncryptMessage(publicKeysForEncryption, privateKeyForSigning, voteContent)
                         .then(function (pgpEncryptedMessage) {
 

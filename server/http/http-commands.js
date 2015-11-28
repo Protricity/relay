@@ -26,8 +26,8 @@ function handleFileRequest(requestURI, responseCallback) {
     var fs = require('fs');
 
     var filePath = '.' + requestURI.split('?')[0];
-    if (filePath == './')
-        filePath = './index.html';
+    if (filePath[filePath.length-1] === '/')
+        filePath += 'index.html';
 
     var contentType = getContentType(filePath);
 
