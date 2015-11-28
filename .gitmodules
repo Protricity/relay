@@ -1,3 +1,0 @@
-[submodule "app/client/android"]
-	path = app/client/android
-	url = https://github.com/clevertree/relay-app-client-android.git
