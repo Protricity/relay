@@ -9,6 +9,7 @@ body.theme-minimal header{
     font-family: body, monospace;
 }
 
+
 /** Font **/
 
 @font-face {
@@ -34,78 +35,6 @@ li {
 }
 
 
-/** Channels **/
-
-
-.theme-minimal > article {
-    display: inline-block;
-    margin: 0.5em;
-    vertical-align: top;
-    /* background: linear-gradient(to bottom right, #E5DDD5, #F5FFF5); */
-    background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
-    box-shadow: 0.1em 0.2em 0.8em #999;
-    border-radius: 0.4em;
-    transition: 2s ease-out;
-     /*transition-delay: 0.2s;*/
-    animation: theme-minimal-article-fade-in .5s ease-out forwards;
-    float: left;
-}
-
-@keyframes theme-minimal-article-fade-in {
-    from {
-        opacity: 0;
-        transform : translate(10px, 10px);
-    }
-
-    to {
-        opacity: 1;
-        transform : translate(0, 0);
-    }
-}
-
-.theme-minimal > article:hover {
-    /*cursor: pointer;*/
-    box-shadow: 0 0 3em #558;
-    transition: 0.5s ease-out;
-
-}
-
-.theme-minimal > article:last-child {
-}
-
-
-/** Channel Windows **/
-
-.theme-minimal > article.closed {
-    display: none;
-}
-
-.theme-minimal > article:not(.minimized) {
-}
-.theme-minimal > article.minimized {
-    min-width: 16em;
-    max-height: 20px;
-    max-width: 24em;
-    overflow: hidden;
-    transition: 1s ease-in;
-    opacity: 0.6;
-}
-
-.theme-minimal > article.maximized {
-    /* min-width: 10em; */
-    position: absolute;
-    z-index: 2;
-    top: 10%;
-    bottom: inherit;
-    left: 10%;
-    /*transition: 500ms;*/
-    /* transform: translate(50%, 0%); */
-    font-size: x-large;
-    /* border-radius: 1em; */
-}
-
-.theme-minimal > article:not(.maximized) {
-}
 
 /** Headers and Footers **/
 
@@ -124,6 +53,7 @@ li {
     padding: 0 0 0.1em 0;
     /* border-top: 2px double threedface; */
 }
+
 .theme-minimal > article:hover > header:first-of-type {
     font-weight: bold;
 /*     text-decoration: underline; */
@@ -134,10 +64,12 @@ li {
     right: 2px;
     top: 0;
 }
+
 .theme-minimal > article > .header-bar-buttons a {
     text-decoration: none;
     color: #888;
 }
+
 .theme-minimal > article > .header-bar-buttons a:hover {
     color: black;
 }
@@ -279,27 +211,4 @@ li {
 .default-article-theme main {
     text-indent: 0.5em;
     padding-bottom: 1em;
-}
-
-/* Animation */
-
-@keyframes fade-in {
-    from { opacity:0; }
-    to { opacity:1; }
-}
-
-@keyframes fade-out {
-    from { opacity:1; }
-    to { opacity:0; }
-}
-
-@keyframes fade-in-resize {
-    from {
-        max-width: 5px;
-        max-height: 5px;
-    }
-    to {
-        max-width: 800px;
-        max-height: 500px;
-    }
 }
