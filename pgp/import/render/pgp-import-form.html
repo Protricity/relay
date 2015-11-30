@@ -1,16 +1,16 @@
 <article class='pgp-import: maximize-on-render'>
     <script src='pgp/import/render/pgp-import-form.js'></script>
     <link rel='stylesheet' href='pgp/import/render/pgp-import-form.css' type='text/css' property="stylesheet">
-    <header class='header-bar show-on-minimized'> 
+    <header class='header-bar show-on-minimized'>
+        <span class='header-bar-buttons'>
+            <a href='#MINIMIZE pgp-import:'>[-]</a><!--
+         --><a href='#MAXIMIZE pgp-import:'>[+]</a><!--
+         --><a href='#CLOSE pgp-import:'>[x]</a>
+        </span>
         <a href='#MAXIMIZE pgp-import:'>
             <span class='command'>Import</span> a new PGP Key Pair
         </a> 
     </header> 
-    <div class='header-bar-buttons show-on-minimized'> 
-        <a href='#MINIMIZE pgp-import:'>[-]</a><!--
-     --><a href='#MAXIMIZE pgp-import:'>[+]</a><!--
-     --><a href='#CLOSE pgp-import:'>[x]</a>
-    </div> 
     <main>
         <form name='pgp-import-form' action='#' method='post' >
             <code class='status-box'>{$status_box}</code>

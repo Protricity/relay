@@ -277,9 +277,18 @@ function ClientSocketWorker() {
         if(targetElements.length === 0) {
             var bodyElm = document.getElementsByTagName('body')[0];
 
+            var insertBefore;
+            for(var i=0; i<bodyElm.children.length; i++)
+                if(bodyElm.children[i].nodeName.toLowerCase() === 'article') {
+                    insertBefore = bodyElm.children[i];
+                    break;
+                }
 
-            //while(contentElements.length > 0)
-            bodyElm.appendChild(contentElement);
+            if(insertBefore)
+                bodyElm.insertBefore(contentElement, insertBefore);
+            else
+                bodyElm.appendChild(contentElement);
+
 
             if(targetElements.length === 0)
                 throw new Error("Shouldn't Happen. Missing class='" + targetClass + "'\n" + content);
@@ -295,6 +304,8 @@ function ClientSocketWorker() {
             targetElement.parentNode.removeChild(targetElement);
             targetElement = contentElement;
         }
+
+        targetElement.scrollIntoView();
 
         // Include scripts after insert:
         includeScriptsAsync(targetElement, includeScripts, function() {

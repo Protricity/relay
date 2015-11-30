@@ -8,7 +8,12 @@
 
         <script src="client/client-socket-worker.js"></script>
         <link rel="stylesheet" href="client/themes/minimal/minimal.css" type="text/css" />
-        <link rel="stylesheet" href="client/themes/minimal/minimal-layout-phone.css" type="text/css" />
+
+        <script>
+                        ClientSocketWorker.sendCommand("render {nav}");
+            ClientSocketWorker.sendCommand("feed");
+            ClientSocketWorker.sendCommand("pgp.manage");
+        </script>
     </head>
     <body class='theme-minimal layout-phone'></body>
 </html>

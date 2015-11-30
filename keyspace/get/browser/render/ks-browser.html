@@ -2,15 +2,15 @@
     <script src='keyspace/get/browser/render/ks-browser.js'></script>
     <link rel='stylesheet' href='keyspace/get/browser/render/ks-browser.css' type='text/css'>
     <header class='header-bar show-on-minimized'>
+        <span class='header-bar-buttons'>
+            <a href='#MINIMIZE ks-browser:{$browser_id}'>[-]</a><!--
+         --><a href='#MAXIMIZE ks-browser:{$browser_id}'>[+]</a><!--
+         --><a href='#CLOSE ks-browser:{$browser_id}'>[x]</a>
+        </span>
         <a href='#MAXIMIZE ks-browser:{$browser_id}'>
             <span class='command'>GET</span> <span class='url'>{$request_url}</span>
         </a>
     </header>
-    <div class='header-bar-buttons show-on-minimized'>
-        <a href='#MINIMIZE ks-browser:{$browser_id}'>[-]</a><!--
-     --><a href='#MAXIMIZE ks-browser:{$browser_id}'>[+]</a><!--
-     --><a href='#CLOSE ks-browser:{$browser_id}'>[x]</a>
-    </div>
     <nav>
         <form name='ks-browser-navigation-form'>
             <button type='submit' name='back'>&#8678;</button>

@@ -2,15 +2,15 @@
     <script src='pgp/manage/render/pgp-manage-form.js'></script>
     <link rel='stylesheet' href='pgp/manage/render/pgp-manage-form.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
+        <span class='header-bar-buttons'>
+            <a href='#MINIMIZE pgp-manage:'>[-]</a><!--
+         --><a href='#MAXIMIZE pgp-manage:'>[+]</a><!--
+         --><a href='#CLOSE pgp-manage:'>[x]</a>
+        </span>
         <a href='#MAXIMIZE pgp-manage:'>
             <span class='command'>Manage</span> PGP Identities
         </a>
     </header>
-    <div class='header-bar-buttons show-on-minimized'>
-        <a href='#MINIMIZE pgp-manage:'>[-]</a><!--
-     --><a href='#MAXIMIZE pgp-manage:'>[+]</a><!--
-     --><a href='#CLOSE pgp-manage:'>[x]</a>
-    </div>
     <main>
         <form name='pgp-manage-form' action='#'>
             <code class='status-box'>{$status_box}</code>

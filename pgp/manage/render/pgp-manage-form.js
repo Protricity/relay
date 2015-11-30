@@ -207,7 +207,7 @@ if(typeof module === 'object') (function() {
     module.exports.renderPGPManageFormEntry = renderPGPManageFormEntry;
     function renderPGPManageFormEntry(contentEntry, callback) {
         var MANAGE_TEMPLATE_ENTRY = "\
-        <div class='pgp-manage-entries:'>\
+        <div class='pgp-manage-entry:'>\
             <label>\n\
                 <fieldset class='pgp-id-box pgp-id-box:{$id_public}'>\n\
                     <legend class='title'>\n\

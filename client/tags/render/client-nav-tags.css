@@ -2,10 +2,10 @@
 /* Navigation */
 
 .navigation-commands {
-    float: left;
+    /* float: left; */
     background-color: lightgrey;
     padding: 0.5em;
-    margin-bottom: 0.5em;
+    /* margin: 0 1em 1em 0em; */
     border: 1px outset;
     border-radius: 4px;
     overflow: hidden;
@@ -21,7 +21,7 @@
 .navigation-commands:not(.closed),
 .navigation-commands:hover {
     max-height: 50em;
-    max-width: 100%;
+    max-width: 16em;
     transition-delay: 0s;
     transition: max-height 0.5s ease-in-out;
 }

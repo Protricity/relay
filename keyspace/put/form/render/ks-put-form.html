@@ -4,15 +4,15 @@
     <script src='keyspace/put/form/render/ks-put-form.js'></script>
     <link rel='stylesheet' href='keyspace/put/form/render/ks-put-form.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
+        <span class='header-bar-buttons'>
+            <a href='#MINIMIZE ks-put:'>[-]</a><!--
+         --><a href='#MAXIMIZE ks-put:'>[+]</a><!--
+         --><a href='#CLOSE ks-put:'>[x]</a>
+        </span>
         <a href='#MAXIMIZE ks-put:'>
             <span class='command'>Put</span><span> content in your </span> <strong>Key Space</strong>
         </a>
     </header>
-    <div class='header-bar-buttons show-on-minimized'>
-        <a href='#MINIMIZE ks-put:'>[-]</a><!--
-     --><a href='#MAXIMIZE ks-put:'>[+]</a><!--
-     --><a href='#CLOSE ks-put:'>[x]</a>
-    </div>
     <main>
         <form name='ks-put-form' class='no-passphrase-required'>
             <code class="status-box">{$status_box}</code>

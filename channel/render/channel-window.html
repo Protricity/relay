@@ -2,15 +2,15 @@
     <script src='channel/render/channel-window.js'></script>
     <link rel='stylesheet' href='channel/render/channel-window.css' type='text/css'>
     <header class='header-bar show-on-minimized'>
+        <span class='header-bar-buttons'>
+            <a href='#MINIMIZE chat:{$channel_lowercase}'>[-]</a><!--
+         --><a href='#MAXIMIZE chat:{$channel_lowercase}'>[+]</a><!--
+         --><a href='#CLOSE chat:{$channel_lowercase}'>[x]</a>
+        </span>
         <a href='#MAXIMIZE chat:{$channel_lowercase}'>
             <span class='command'>Join</span> {$channel}
         </a>
     </header>
-    <div class='header-bar-buttons show-on-minimized'>
-        <a href='#MINIMIZE chat:{$channel_lowercase}'>[-]</a><!--
-     --><a href='#MAXIMIZE chat:{$channel_lowercase}'>[+]</a><!--
-     --><a href='#CLOSE chat:{$channel_lowercase}'>[x]</a>
-    </div>
     <form name='channel-form' class='show-on-minimized'>
         <table style='width:100%'>
             <tbody>

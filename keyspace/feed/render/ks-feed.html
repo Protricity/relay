@@ -4,15 +4,15 @@
     <script src='keyspace/feed/render/ks-feed.js'></script>
     <link rel='stylesheet' href='keyspace/feed/render/ks-feed.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
+        <span class="header-bar-buttons">
+            <a href='#MINIMIZE ks-feed:'>[-]</a><!--
+         --><a href='#MAXIMIZE ks-feed:'>[+]</a><!--
+         --><a href='#CLOSE ks-feed:'>[x]</a>
+        </span>
         <a href='#MAXIMIZE ks-feed:'>
             <span class='command'>Feed</span>: {$filter}
         </a>
     </header>
-    <div class='header-bar-buttons show-on-minimized'>
-        <a href='#MINIMIZE ks-feed:'>[-]</a><!--
-     --><a href='#MAXIMIZE ks-feed:'>[+]</a><!--
-     --><a href='#CLOSE ks-feed:'>[x]</a>
-    </div>
     <main class="ks-feed-entries:">
         <form name='ks-feed-put-form' class='no-passphrase-required compact'>
             <code class="status-box">{$status_box}</code>

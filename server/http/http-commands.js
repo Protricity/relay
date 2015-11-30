@@ -75,6 +75,8 @@ function getContentType(filePath) {
             return 'audio/wav';
         case 'ico':
             return 'image/x-icon';
+        case 'ttf':
+            return 'application/octet-stream';
 
         default:
             console.error("Unknown file type: " + filePath);

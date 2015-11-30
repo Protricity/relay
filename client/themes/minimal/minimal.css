@@ -6,7 +6,7 @@ body.theme-minimal {
 }
 
 body.theme-minimal header{
-    font-family: body, monospace;
+    /* font-family: body, monospace; */
 }
 
 
@@ -59,18 +59,18 @@ li {
 /*     text-decoration: underline; */
 }
 
-.theme-minimal > article > .header-bar-buttons {
-    position: absolute;
-    right: 2px;
-    top: 0;
+.theme-minimal > article > header > .header-bar-buttons {
+    float: right;
 }
 
-.theme-minimal > article > .header-bar-buttons a {
+.theme-minimal > article > header > .header-bar-buttons a {
     text-decoration: none;
     color: #888;
+    font-family: command, monospace;
+    margin: 1em 0;
 }
 
-.theme-minimal > article > .header-bar-buttons a:hover {
+.theme-minimal > article > header > .header-bar-buttons a:hover {
     color: black;
 }
 
@@ -112,7 +112,7 @@ li {
 
 .theme-minimal span.action {
     color: purple;
-    font-size: smaller;
+/*     font-size: smaller; */
     font-style: italic;
 }
 
@@ -201,14 +201,123 @@ li {
     font-weight: bold;
     font-style: italic;
     padding-bottom: 0.2em;
-    font-size: large;
+/*     font-size: large; */
 }
 
 .default-article-theme > header {
-    font-size: x-large;
+/*     font-size: x-large; */
 }
 
 .default-article-theme main {
     text-indent: 0.5em;
     padding-bottom: 1em;
+}
+
+
+
+
+/** Layout - Browser **/
+
+/** Channels **/
+
+.theme-minimal.layout-browser > article {
+    position: relative;
+
+    display: inline-block;
+    margin: 0.5em;
+    vertical-align: top;
+    /* background: linear-gradient(to bottom right, #E5DDD5, #F5FFF5); */
+    background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
+    box-shadow: 0.1em 0.2em 0.8em #999;
+    border-radius: 0.4em;
+    float: left;
+
+    /*animation: theme-minimal-article-fade-in .5s ease-out forwards;*/
+    transition: 2s ease-out;
+    max-height: 50em;
+}
+
+
+.theme-minimal.layout-browser > article:hover {
+    /*cursor: pointer;*/
+    box-shadow: 0 0 3em #558;
+    transition: 0.5s ease-out;
+
+}
+
+
+/** Channel Windows **/
+
+.theme-minimal.layout-browser > article.closed {
+    display: none;
+}
+
+.theme-minimal.layout-browser > article.minimized {
+    min-width: 16em;
+    max-height: 20px;
+    max-width: 24em;
+    overflow: hidden;
+    transition: 1s ease-in;
+    opacity: 0.6;
+}
+
+.theme-minimal.layout-browser > article.maximized {
+    /* min-width: 10em; */
+    position: absolute;
+    z-index: 2;
+    top: 10%;
+    bottom: inherit;
+    left: 10%;
+    /*transition: 500ms;*/
+    /* transform: translate(50%, 0%); */
+    font-size: x-large;
+    /* border-radius: 1em; */
+}
+
+
+
+/** Layout - Phone Layout **/
+
+body.theme-minimal.layout-phone {
+    font-size: 3vw;
+}
+
+/** Header Bar - Phone Layout **/
+
+body.theme-minimal.layout-phone > article > header a,
+body.theme-minimal.layout-phone > article > header{
+    /* font-size: large; */
+}
+
+/** Channels - Phone Layout **/
+
+.theme-minimal.layout-phone > article {
+    /* position: relative; */
+    /* display: block; */
+    margin: 1em 0.5em 2em 0;
+    background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
+    border-radius: 0.4em;
+    box-shadow: 0.1em 0.2em 0.8em #999;
+    width: 100%;
+    transition: 1s;
+    max-height: 50em;
+    /* font-size: 2vw; */
+}
+
+
+/** Channel Windows - Phone Layout **/
+
+.theme-minimal.layout-phone > article.closed {
+    display: none;
+}
+
+.theme-minimal.layout-phone > article.minimized {
+    overflow: hidden;
+    /* min-width: 16em; */
+    max-height: 22px;
+    /* max-width: 24em; */
+}
+
+.theme-minimal.layout-phone > article.maximized {
+    /*font-size: 2vw;*/
 }
