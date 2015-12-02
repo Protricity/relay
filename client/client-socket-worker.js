@@ -54,10 +54,17 @@ function ClientSocketWorker() {
                 renderWindowCommand(responseString);
                 break;
 
+            case 'event':
+                if(typeof Host === 'object' && Host.handleResponse)
+                    Host.handleResponse(responseString);
+                //console.info(responseString);
+                break;
+
             default:
                 console.error("Unhandled client-side command: " + responseString);
                 break;
         }
+
     };
 
     // Events

@@ -84,16 +84,19 @@ function Client() {
     Client.processResponse = function(responseString, e) {
         var oldCounter = handlerCounter;
         for(var i=0; i<responseHandlers.length; i++)
-            if(responseHandlers[i](responseString, e))
-                return (function() {
+            if(responseHandlers[i](responseString, e)) {
+                var parts = responseString.split(' ', 2);
+                Client.log(
+                    '<span class="direction">I</span> ' +
+                    '<span class="response">' + parts[0] + '</span>' + (parts[1] ? ' ' + parts[1] : '')
+                );
 
-                    var parts = responseString.split(' ', 2);
-                    Client.log(
-                        '<span class="direction">I</span> ' +
-                        '<span class="response">' + parts[0] + '</span>' + (parts[1] ? ' ' + parts[1] : '')
-                    );
-                    return true;
-                })();
+                Client.postResponseToClient("EVENT " + responseString);
+
+                return true;
+            }
+
+
 
         if(handlerCounter > oldCounter)
             // Commands were added or removed, so try again
