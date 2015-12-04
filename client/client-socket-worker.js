@@ -54,17 +54,16 @@ function ClientSocketWorker() {
                 renderWindowCommand(responseString);
                 break;
 
-            case 'event':
-                if(typeof Host === 'object' && Host.handleResponse)
-                    Host.handleResponse(responseString);
-                //console.info(responseString);
-                break;
-
             default:
-                console.error("Unhandled client-side command: " + responseString);
+                // some responses aren't used by the client, but should be passed through the client anyway
+                //console.error("Unhandled client-side command: " + responseString);
                 break;
         }
 
+        // If host thread exists,
+        if(typeof Host === 'object' && Host.handleResponse)
+            // Send response to host thread
+            Host.handleResponse(responseString);
     };
 
     // Events

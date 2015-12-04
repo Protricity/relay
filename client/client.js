@@ -86,12 +86,15 @@ function Client() {
         for(var i=0; i<responseHandlers.length; i++)
             if(responseHandlers[i](responseString, e)) {
                 var parts = responseString.split(' ', 2);
+
+                // TODO: only pass if handled?
+                // Pass response event to client thread
+                Client.postResponseToClient(responseString);
+
                 Client.log(
                     '<span class="direction">I</span> ' +
                     '<span class="response">' + parts[0] + '</span>' + (parts[1] ? ' ' + parts[1] : '')
                 );
-
-                Client.postResponseToClient("EVENT " + responseString);
 
                 return true;
             }

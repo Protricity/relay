@@ -6,7 +6,7 @@ if(typeof module === 'object') (function() {
         Client.addCommand(keygenCommand);
 
         /**
-         * @param commandString PGP.KEYGEN --bits [2048] --pass [passphrase] --user [user id]
+         * @param commandString PGP.KEYGEN --bits [2048] --pass [passphrase] --name [user id]
          */
         function keygenCommand(commandString, e) {
             var match = /^pgp.keygen\s*(.+)?$/im.exec(commandString);
@@ -28,7 +28,7 @@ if(typeof module === 'object') (function() {
                 });
 
                 var userID = content.trim();
-                content.replace(/--user ([^-]+)/i, function (match, contents, offset, s) {
+                content.replace(/--(?:name|user) ([^-]+)/i, function (match, contents, offset, s) {
                     userID = contents;
                     return '';
                 });
