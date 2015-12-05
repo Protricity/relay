@@ -15,6 +15,12 @@ if(typeof module === 'object') (function() {
 
             var content = match[1] || '';
             if (content) {
+                var autoImport = false;
+                content = content.replace(/--import /i, function (match, contents, offset, s) {
+                    autoImport = true;
+                    return '';
+                });
+
                 var bits = 2048;
                 content = content.replace(/--bits (\d+)/i, function (match, contents, offset, s) {
                     bits = parseInt(contents);
@@ -56,7 +62,6 @@ if(typeof module === 'object') (function() {
 
                     //var publicKeyBlock = publicKey.armor();
 
-                    var autoImport = false;
 
                     self.module = {exports: {}};
                     importScripts('pgp/import/render/pgp-import-form.js');

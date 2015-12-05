@@ -44,7 +44,7 @@ module.exports.initClientCommands = function(Client) {
     Client.addCommand(importChatCommands);
     Client.addResponse(importChatCommands);
     function importChatCommands(commandString, e) {
-        if(!/^(join|leave|message|chat|nick)/i.test(commandString))
+        if(!/^(autojoin|join|leave|message|chat|nick)/i.test(commandString))
             return false;
         Client.removeCommand(importChatCommands);
         Client.removeResponse(importChatCommands);

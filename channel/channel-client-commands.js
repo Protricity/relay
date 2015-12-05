@@ -7,6 +7,7 @@ if(typeof module === 'object') (function() {
         importScripts('channel/render/channel-window.js');
         var chatExports = self.module.exports;
 
+        Client.addCommand(autoJoinCommand);
 
         Client.addCommand(joinCommand);
         Client.addResponse(joinResponse);
@@ -53,12 +54,47 @@ if(typeof module === 'object') (function() {
             return true;
         }
 
+        function autoJoinCommand(commandString) {
+            var match = /^autojoin/im.exec(commandString);
+            if (!match)
+                return false;
+
+            // Update Settings
+            self.module = {exports: {}};
+            importScripts('client/settings/settings-db.js');
+            var SettingsDB = self.module.exports.SettingsDB;
+            SettingsDB.getAllSettings("channel:*", function(channelSettings) {
+                console.log("Settings: ", channelSettings);
+                if(channelSettings) {
+                    if(channelSettings.auto_join === 1) {
+                        console.log("Auto Joining: " + channelSettings.name_original_case, channelSettings);
+                        joinCommand("JOIN " + channelSettings.name_original_case);
+                    }
+                }
+            });
+
+            return true;
+        }
+
         var channelUsers = {};
 
         function joinCommand(commandString) {
-            var match = /^join/i.exec(commandString);
+            var match = /^join\s+(\S+)/im.exec(commandString);
             if (!match)
                 return false;
+
+            var channelPath = match[1];
+
+            // Update Settings
+            self.module = {exports: {}};
+            importScripts('client/settings/settings-db.js');
+            var SettingsDB = self.module.exports.SettingsDB;
+            SettingsDB.getSettings("channel:" + channelPath.toLowerCase(), function(channelSettings) {
+                channelSettings.auto_join = 1;
+                channelSettings.name_original_case = channelPath;
+                SettingsDB.updateSettings(channelSettings);
+            });
+
             Client.sendWithSocket(commandString);
             return true;
         }
@@ -114,10 +150,23 @@ if(typeof module === 'object') (function() {
         }
 
         function leaveCommand(commandString) {
-            var match = /^leave/i.exec(commandString);
+            var match = /^leave\s+(\S+)/im.exec(commandString);
             if (!match)
                 return false;
-            Client.send(commandString);
+            var channelPath = match[1];
+
+            // Update Settings
+            self.module = {exports: {}};
+            importScripts('client/settings/settings-db.js');
+            var SettingsDB = self.module.exports.SettingsDB;
+            SettingsDB.getSettings("channel:" + channelPath, function(channelSettings) {
+                delete channelSettings.auto_join;
+                // TODO: delete empty channel settings
+                SettingsDB.updateSettings(channelSettings);
+            });
+
+            Client.sendWithSocket(commandString);
+            return true;
         }
 
         function leaveResponse(responseString) {

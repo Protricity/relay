@@ -61,7 +61,7 @@ function ClientSocketWorker() {
         }
 
         // If host thread exists,
-        if(typeof Host === 'object' && Host.handleResponse)
+        if(typeof Host === 'object')
             // Send response to host thread
             Host.handleResponse(responseString);
     };
