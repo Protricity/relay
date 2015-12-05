@@ -2,11 +2,7 @@
     <script src='client/console/render/console-window.js'></script>
     <link rel='stylesheet' href='client/console/render/console-window.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
-        <span class='header-bar-buttons'>
-            <a href='#MINIMIZE console:'>[-]</a><!--
-         --><a href='#MAXIMIZE console:'>[+]</a><!--
-         --><a href='#CLOSE console:'>[x]</a>
-        </span>
+        {nav:header-buttons console:}
         <a href='#MINIMIZE console:'>
             <span class='command'>console</span>
         </a>
@@ -19,7 +15,7 @@
                 <tr class='show-on-minimized'>
                     <td>
                         <input name='message' type='text' class='reset focus'
-                               placeholder='ex. render &#123;nav&#125;' style='width: 99%;'/>
+                               placeholder='ex. render &#123;nav:menu&#125;' style='width: 99%;'/>
                     </td>
                     <td style='width:1px'>
                         <input type='submit' value='Send' name='submit-send-console' />

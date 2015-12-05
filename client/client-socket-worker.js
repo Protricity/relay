@@ -11,7 +11,7 @@ function ClientSocketWorker() {
 
     var socketWorker = null;
     //document.addEventListener('click', onClickEvent, false); // TODO: handle links globally? probably bad idea
-    document.addEventListener('dblclick', onDblClick, false);
+//    document.addEventListener('dblclick', onDblClick, false);
     document.addEventListener('command', onCommandEvent, false);
     window.addEventListener('hashchange', onHashChange, false);
 

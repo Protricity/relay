@@ -1,12 +1,8 @@
 <article class='chat:{$channel_lowercase} maximize-on-render'>
     <script src='channel/render/channel-window.js'></script>
-    <link rel='stylesheet' href='channel/render/channel-window.css' type='text/css'>
+    <link rel='stylesheet' href='channel/render/channel-window.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
-        <span class='header-bar-buttons'>
-            <a href='#MINIMIZE chat:{$channel_lowercase}'>[-]</a><!--
-         --><a href='#MAXIMIZE chat:{$channel_lowercase}'>[+]</a><!--
-         --><a href='#CLOSE chat:{$channel_lowercase}'>[x]</a>
-        </span>
+        {nav:header-buttons chat:{$channel_lowercase}}
         <a href='#MINIMIZE chat:{$channel_lowercase}'>
             <span class='command'>Join</span> {$channel}
         </a>

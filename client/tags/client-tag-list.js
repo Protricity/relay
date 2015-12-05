@@ -8,7 +8,7 @@ module.exports.tags = [
     [/^\{nav[^}]*}$/i, function(tagHTML, callback, Client) {
         self.exports = {};
         self.module = {exports: {}};
-        importScripts('client/tags/render/client-nav-tags.js');
+        importScripts('client/tags/nav/client-nav-tags.js');
         self.module.exports.renderNavTag(tagHTML, callback, Client);
     }],
 

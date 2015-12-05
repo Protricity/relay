@@ -2,7 +2,7 @@
 /* Navigation */
 
 .navigation-commands {
-    /* float: left; */
+    float: left;
     background-color: lightgrey;
     padding: 0.5em;
     /* margin: 0 1em 1em 0em; */

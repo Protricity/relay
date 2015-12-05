@@ -4,11 +4,7 @@
     <script src='keyspace/feed/render/ks-feed.js'></script>
     <link rel='stylesheet' href='keyspace/feed/render/ks-feed.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
-        <span class="header-bar-buttons">
-            <a href='#MINIMIZE ks-feed:'>[-]</a><!--
-         --><a href='#MAXIMIZE ks-feed:'>[+]</a><!--
-         --><a href='#CLOSE ks-feed:'>[x]</a>
-        </span>
+        {nav:header-buttons ks-feed:}
         <a href='#MINIMIZE ks-feed:'>
             <span class='command'>Feed</span>: {$filter}
         </a>

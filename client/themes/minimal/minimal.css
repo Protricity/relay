@@ -43,7 +43,7 @@ li {
 
 /** Headers and Footers **/
 
-.theme-minimal > article > header > a:first-child {
+.theme-minimal > article > header > a:first-of-type {
     display: block;
 }
 
@@ -82,6 +82,10 @@ li {
 
 
 /** Sections **/
+
+theme-minimal > article {
+    max-height: 50em;
+}
 
 .theme-minimal > article > main,
 .theme-minimal > article > section {
@@ -224,7 +228,7 @@ li {
 
 /** Layout - Browser **/
 
-/** Channels **/
+/** Articles **/
 
 .theme-minimal.layout-browser > article {
     position: relative;
@@ -240,7 +244,6 @@ li {
 
     /*animation: theme-minimal-article-fade-in .5s ease-out forwards;*/
     transition: 2s ease-out;
-    max-height: 50em;
 }
 
 
@@ -252,13 +255,13 @@ li {
 }
 
 
-/** Channel Windows **/
+/** Articles Windows **/
 
 .theme-minimal.layout-browser > article.closed {
     display: none;
 }
 
-.theme-minimal.layout-browser > article .hide-on-minimize {
+.hide-on-minimize {
     max-height: 100em;
     transition: 1s ease-in;
 }
@@ -308,7 +311,7 @@ body.theme-minimal.layout-phone > article > header{
     /* font-size: large; */
 }
 
-/** Channels - Phone Layout **/
+/** Articles - Phone Layout **/
 
 .theme-minimal.layout-phone > article {
     /* position: relative; */
@@ -319,7 +322,6 @@ body.theme-minimal.layout-phone > article > header{
     box-shadow: 0.1em 0.2em 0.8em #999;
     width: 100%;
     transition: 1s ease-in;
-    max-height: 50em;
     /* font-size: 2vw; */
 }
 
@@ -331,7 +333,7 @@ body.theme-minimal.layout-phone > article > header{
     opacity: 1 !important;
 }
 
-/** Channel Windows - Phone Layout **/
+/** Articles Windows - Phone Layout **/
 
 .theme-minimal.layout-phone > article.closed {
     display: none;
@@ -369,6 +371,9 @@ body.theme-minimal.layout-phone > article > header{
     /* max-width: 24em; */
 /*}*/
 
-.theme-minimal.layout-phone > article.maximized {
+/** Hide Maximized Button **/
+.theme-minimal.layout-phone > article > header > .header-bar-buttons > a.header-bar-button-maximize {
+    display: none;
     /*font-size: 2vw;*/
 }
+

@@ -1,5 +1,9 @@
 /** Article **/
 
+article.ks-feed\3A {
+    max-height: 80em;
+}
+
 article.ks-feed\3A > main,
 article.ks-feed\3A > section {
     padding: 1em 2em 1em 2em;

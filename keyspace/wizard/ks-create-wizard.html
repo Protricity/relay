@@ -30,14 +30,11 @@
         
     </style>
     <header class='header-bar show-on-minimized'>
-        <span class='header-bar-buttons'>
-            <a href='#MINIMIZE ks-create-wizard:'>[-]</a><!--
-         --><a href='#MAXIMIZE ks-create-wizard:'>[+]</a><!--
-         --><a href='#CLOSE ks-create-wizard:'>[x]</a>
-        </span>
+        {nav:header-buttons ks-create-wizard:}
+        <a href='#MINIMIZE ks-create-wizard:'>
+            KeySpace Article Wizard
+        </a>
     </header>
-    <div class='header-bar-buttons show-on-minimized'>
-    </div>
 
     <form name='ks-create-wizard' id='ks-create-wizard' class="show-step-1 hide-on-minimize" action='#' onsubmit='return false;'>
 

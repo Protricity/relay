@@ -2,11 +2,7 @@
     <script src='keyspace/put/manage/render/ks-put-manage-form.js'></script>
     <link rel='stylesheet' href='keyspace/put/manage/render/ks-put-manage-form.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
-        <span class='header-bar-buttons'>
-            <a href='#MINIMIZE ks-put-manage:'>[-]</a><!--
-         --><a href='#MAXIMIZE ks-put-manage:'>[+]</a><!--
-         --><a href='#CLOSE ks-put-manage:'>[x]</a>
-        </span>
+        {nav:header-buttons ks-put-manage:}
         <a href='#MINIMIZE ks-put-manage:'>
             Manage: {$url}
         </a>
