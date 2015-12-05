@@ -8,7 +8,7 @@ if(typeof document === 'object') (function() {
     // Events
 
     document.addEventListener('submit', onFormEvent, false);
-//     self.addEventListener('input', onFormEvent, false);
+     document.addEventListener('input', onFormEvent, false);
 
     function onFormEvent(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
@@ -17,8 +17,15 @@ if(typeof document === 'object') (function() {
 
         switch(formElm.getAttribute('name')) {
             case 'channel-form':
-                if(e.type === 'submit')
+                if(e.type === 'submit') {
+                    e.preventDefault();
                     submitChatForm(e, formElm);
+
+                } else if(e.type === 'input' && e.target.name === 'user-list-commands') {
+                    var commandString = e.target.value;
+                    e.target.value = '';
+                    console.log("Command: " + commandString);
+                }
 
                 return true;
 
@@ -28,7 +35,6 @@ if(typeof document === 'object') (function() {
     }
 
     function submitChatForm(e) {
-        e.preventDefault();
         var formElm = e.target;
         if(formElm.nodeName.toLowerCase() !== 'form')
             throw new Error("Invalid Form: " + formElm);
@@ -151,7 +157,7 @@ if(typeof module === 'object') (function() {
 
 
     module.exports.renderChatUserList = function(channelPath, userList, callback) {
-        var optionHTML = "<optgroup class='channel-active-users:" + channelPath.toLowerCase() + "' label='Active Users (" + userList.length + ")'>\n";
+        var optionHTML = "<optgroup class='channel-users:" + channelPath.toLowerCase() + "' label='Active Users (" + userList.length + ")'>\n";
 
         for (var i = 0; i < userList.length; i++) {
             var username = userList[i];

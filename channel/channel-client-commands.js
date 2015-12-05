@@ -121,7 +121,7 @@ if(typeof module === 'object') (function() {
 
                     userList.sort();
                     chatExports.renderChatUserList(channelPath, userList, function (html) {
-                        Client.replace('channel-active-users:' + channelPath.toLowerCase(), html);
+                        Client.replace('channel-users:' + channelPath.toLowerCase(), html);
                     });
                 }
             });
@@ -143,7 +143,7 @@ if(typeof module === 'object') (function() {
                 channelUsers[channelPath.toLowerCase()] = userList;
 
                 chatExports.renderChatUserList(channelPath, userList, function (html) {
-                    Client.replace('channel-active-users:' + channelPath.toLowerCase(), html);
+                    Client.replace('channel-users:' + channelPath.toLowerCase(), html);
                 });
             });
             return true;
@@ -190,7 +190,7 @@ if(typeof module === 'object') (function() {
                 });
 
                 chatExports.renderChatUserList(channelPath, userList, function (html) {
-                    Client.replace('channel-active-users:' + channelPath.toLowerCase(), html);
+                    Client.replace('channel-users:' + channelPath.toLowerCase(), html);
                 });
             });
             return true;
@@ -228,7 +228,7 @@ if(typeof module === 'object') (function() {
 
                             // Render New User List
                             chatExports.renderChatUserList(channelPathLowerCase, userList, function (html) {
-                                Client.replace('channel-active-users:' + channelPathLowerCase, html);
+                                Client.replace('channel-users:' + channelPathLowerCase, html);
                             });
                             found = true;
                         }

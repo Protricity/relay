@@ -13,9 +13,13 @@
             <tbody class="hide-on-minimize">
                 <tr>
                     <td style='vertical-align: top; width:1px;'>
-                        <select multiple='multiple' name='user-list' class="channel-users:{$channel_lowercase}" size='5'>
-                            <optgroup class='channel-active-users:{$channel_lowercase}' label='Active Users (0)'></optgroup>
-                            <optgroup class='channel-inactive-users:{$channel_lowercase}' label='Inactive Users (0)'></optgroup>
+                        <select multiple='multiple' name='user-list' size='5'>
+                            <optgroup class='channel-users:{$channel_lowercase}' label='Channel Users (0)'></optgroup>
+                        </select>
+                        <select name="user-list-commands">
+                            <option value="">Commands...</option>
+                            <option value="MESSAGE [$user]">Private Message User</option>
+                            <option value="MESSAGE [$user] !request public/id">Request Public Key (Add to contact list)</option>
                         </select>
                     </td>
                     <td style='vertical-align: top;'>

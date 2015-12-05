@@ -27,6 +27,14 @@ form[name=channel-form] input[name=message] {
 form[name=channel-form] input[type=submit] {
 }
 
+form[name=channel-form] select[name=user-list] {
+    width: 10em;
+}
+
+form[name=channel-form] select[name=user-list-commands] {
+    width: 10em;
+}
+
 form[name=channel-form] .pgp-message {
     white-space: pre;
 
