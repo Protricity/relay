@@ -248,7 +248,7 @@ li {
     /*cursor: pointer;*/
     box-shadow: 0 0 3em #558;
     transition: 0.5s ease-out;
-
+    opacity: 1 !important;
 }
 
 
@@ -323,6 +323,13 @@ body.theme-minimal.layout-phone > article > header{
     /* font-size: 2vw; */
 }
 
+
+.theme-minimal.layout-phone > article:hover {
+    /*cursor: pointer;*/
+    box-shadow: 0 0 3em #558;
+    transition: 0.5s ease-out;
+    opacity: 1 !important;
+}
 
 /** Channel Windows - Phone Layout **/
 
