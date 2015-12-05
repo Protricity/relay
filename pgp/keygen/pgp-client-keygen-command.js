@@ -56,21 +56,47 @@ if(typeof module === 'object') (function() {
 
                     //var publicKeyBlock = publicKey.armor();
 
-                    var status_box = "\
-                    <span class='success'>PGP Key Pair generated successfully</span><br/><br/>\n\
-                    <span class='info'>You may now import the following identity:</span><br/>\n\
-                    User ID: <strong>" + userIDString.replace(/</g, '&lt;') + "</strong><br/>\n\
-                    Private Key ID: <strong>" + newPrivateKeyID + "</strong><br/>\n\
-                    Public Key ID: <strong>" + newPublicKeyID + "</strong><br/>\n\
-                    Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
+                    var autoImport = false;
 
                     self.module = {exports: {}};
                     importScripts('pgp/import/render/pgp-import-form.js');
                     var templateExports = self.module.exports;
-                    templateExports.renderPGPImportForm(keyPair.privateKeyArmored, status_box, function (html) {
-                        Client.render(html);
-                    });
-                    return true;
+
+                    if(autoImport) {
+
+                        var commandString = "PGP.IMPORT " + keyPair.privateKeyArmored;
+                        Client.execute(commandString);
+                        return true;
+
+                        //var manage_status_box = "\
+                        //<span class='success'>PGP Key Pair <strong>generated</strong> and <strong>imported</strong> successfully</span><br/><br/>\n\
+                        //<span class='info'>You may now use the following identity:</span><br/>\n\
+                        //User ID: <strong>" + userIDString.replace(/</g, '&lt;') + "</strong><br/>\n\
+                        //Private Key ID: <strong>" + newPrivateKeyID + "</strong><br/>\n\
+                        //Public Key ID: <strong>" + newPublicKeyID + "</strong><br/>\n\
+                        //Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
+                        //
+                        //// TODO: manage form?
+                        //templateExports.renderPGPManageForm(manage_status_box, function (html) {
+                        //    Client.render(html);
+                        //});
+                        //return true;
+
+                    } else {
+                        var generated_status_box = "\
+                        <span class='success'>PGP Key Pair generated successfully</span><br/><br/>\n\
+                        <span class='info'>You may now import the following identity:</span><br/>\n\
+                        User ID: <strong>" + userIDString.replace(/</g, '&lt;') + "</strong><br/>\n\
+                        Private Key ID: <strong>" + newPrivateKeyID + "</strong><br/>\n\
+                        Public Key ID: <strong>" + newPublicKeyID + "</strong><br/>\n\
+                        Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
+
+                        templateExports.renderPGPImportForm(keyPair.privateKeyArmored, generated_status_box, function (html) {
+                            Client.render(html);
+                        });
+                        return true;
+                    }
+
 
                 });
 

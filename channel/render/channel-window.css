@@ -49,7 +49,7 @@ form[name=channel-form] .channel-log {
     overflow: auto;
     max-height: 18em;
     max-width: 48em;
-    min-width: 32em;
+    /*min-width: 32em;*/
     background-color: white;
 }
 

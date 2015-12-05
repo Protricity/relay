@@ -30,6 +30,18 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
+        // PGP.LIST Command
+        Client.addCommand(importPGPListCommand);
+        function importPGPListCommand(commandString, e) {
+            if (!/^pgp\.list/i.test(commandString))
+                return false;
+            Client.removeCommand(importPGPListCommand);
+            self.module = {exports: {}};
+            importScripts('pgp/list/pgp-client-list-command.js');
+            module.exports.initClientPGPListCommand(Client);
+            return false;
+        }
+
         // PGP.DELETE Command
         Client.addCommand(importPGPDeleteCommand);
         function importPGPDeleteCommand(commandString, e) {

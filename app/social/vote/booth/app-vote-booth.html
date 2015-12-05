@@ -7,11 +7,12 @@
          --><a href='#MAXIMIZE app-vote-booth:'>[+]</a><!--
          --><a href='#CLOSE app-vote-booth:'>[x]</a>
         </span>
-        <a href='#MAXIMIZE app-vote-booth:'>
+        <a href='#MINIMIZE app-vote-booth:'>
             <span class="command">Vote</span>:
         </a>
     </header>
-    <main data-pgp-id-public="{$pgp_id_public}" data-timestamp="{$timestamp}" class="disable-app-vote-form1">
+    <main data-pgp-id-public="{$pgp_id_public}" data-timestamp="{$timestamp}"
+          class="disable-app-vote-form1 hide-on-minimize">
         {$html_content}
     </main>
 

@@ -7,11 +7,11 @@
          --><a href='#MAXIMIZE ks-put-script-select-window:'>[+]</a><!--
          --><a href='#CLOSE ks-put-script-select-window:'>[x]</a>
         </span>
-        <a href='#MAXIMIZE ks-put-script-select-window:'>
+        <a href='#MINIMIZE ks-put-script-select-window:'>
             <strong>Choose a </strong><span class='command'>Template</span><span>:</span>
         </a>
     </header>
-    <main>
+    <main class="hide-on-minimize">
         <form name='ks-put-script-select-form'>
             Generate <strong>Key Space</strong> content with a <strong>Content Script</strong>:<br/>
             <select name='template'>
@@ -21,7 +21,7 @@
             <input type='submit' value='Start' disabled="disabled"/>
         </form>
     </main>
-    <section>
+    <section class="hide-on-minimize">
         Choose a Content script to quickly and easily<br/>
         generate HTML5-rich content for your <strong>KeySpace</strong><br/>
     </section>

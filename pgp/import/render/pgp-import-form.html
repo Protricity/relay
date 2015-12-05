@@ -7,11 +7,11 @@
          --><a href='#MAXIMIZE pgp-import:'>[+]</a><!--
          --><a href='#CLOSE pgp-import:'>[x]</a>
         </span>
-        <a href='#MAXIMIZE pgp-import:'>
+        <a href='#MINIMIZE pgp-import:'>
             <span class='command'>Import</span> a new PGP Key Pair
         </a> 
-    </header> 
-    <main>
+    </header>
+    <main class="hide-on-minimize">
         <form name='pgp-import-form' action='#' method='post' >
             <code class='status-box'>{$status_box}</code>
             <label><strong>Paste a PGP Private key block into the box below:</strong><br/>

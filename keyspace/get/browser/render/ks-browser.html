@@ -7,11 +7,11 @@
          --><a href='#MAXIMIZE ks-browser:{$browser_id}'>[+]</a><!--
          --><a href='#CLOSE ks-browser:{$browser_id}'>[x]</a>
         </span>
-        <a href='#MAXIMIZE ks-browser:{$browser_id}'>
+        <a href='#MINIMIZE ks-browser:{$browser_id}'>
             <span class='command'>GET</span> <span class='url'>{$request_url}</span>
         </a>
     </header>
-    <nav>
+    <nav class="hide-on-minimize">
         <form name='ks-browser-navigation-form'>
             <button type='submit' name='back'>&#8678;</button>
             <button type='submit' name='forward'>&#8680;</button>
@@ -20,6 +20,6 @@
             <button type='submit' name='navigate'>&#8476;</button>
         </form>
     </nav>
-    <main class='ks-body'>{$response_body}</main>
+    <main class='ks-body hide-on-minimize'>{$response_body}</main>
     <footer class='ks-status'>{$response_code} {$response_text}</footer>
 </article>

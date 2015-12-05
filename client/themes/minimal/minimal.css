@@ -5,6 +5,11 @@ body.theme-minimal {
     font-size: small;
 }
 
+select,
+input {
+    font-size: inherit;
+}
+
 body.theme-minimal header{
     /* font-family: body, monospace; */
 }
@@ -14,12 +19,12 @@ body.theme-minimal header{
 
 @font-face {
     font-family: body;
-    src: url( DroidSerif-Regular.ttf ) format("truetype");
+    src: url( "fonts/DroidSerif-Regular.ttf" ) format("truetype");
 }
 
 @font-face {
     font-family: command ;
-    src: url( Oswald-Bold.ttf ) format("truetype");
+    src: url( "fonts/Oswald-Bold.ttf" ) format("truetype");
 }
 
 /** General **/
@@ -61,6 +66,7 @@ li {
 
 .theme-minimal > article > header > .header-bar-buttons {
     float: right;
+    margin-right: 0.2em;
 }
 
 .theme-minimal > article > header > .header-bar-buttons a {
@@ -252,17 +258,29 @@ li {
     display: none;
 }
 
-.theme-minimal.layout-browser > article.minimized {
-    min-width: 16em;
-    max-height: 20px;
-    max-width: 24em;
-    overflow: hidden;
+.theme-minimal.layout-browser > article .hide-on-minimize {
+    max-height: 100vw;
     transition: 1s ease-in;
+}
+
+.theme-minimal.layout-browser > article.minimized .hide-on-minimize {
+    max-height: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    overflow: hidden;
+}
+
+.theme-minimal.layout-browser > article.minimized {
+    /*min-width: 16em;*/
+    /*max-height: 20px;*/
+    /*max-width: 24em;*/
+    /*overflow: hidden;*/
+    /*transition: 1s ease-in;*/
     opacity: 0.6;
 }
 
 .theme-minimal.layout-browser > article.maximized {
-    /* min-width: 10em; */
     position: absolute;
     z-index: 2;
     top: 10%;
@@ -311,12 +329,36 @@ body.theme-minimal.layout-phone > article > header{
     display: none;
 }
 
-.theme-minimal.layout-phone > article.minimized {
-    overflow: hidden;
-    /* min-width: 16em; */
-    max-height: 22px;
-    /* max-width: 24em; */
+
+.theme-minimal.layout-phone > article .hide-on-minimize {
+    max-height: 100vw;
+    transition: 1s ease-in;
 }
+
+.theme-minimal.layout-phone > article.minimized .hide-on-minimize {
+    max-height: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    overflow: hidden;
+}
+
+.theme-minimal.layout-phone > article.minimized {
+    /*min-width: 16em;*/
+    /*max-height: 20px;*/
+    /*max-width: 24em;*/
+    /*overflow: hidden;*/
+    /*transition: 1s ease-in;*/
+    opacity: 0.6;
+}
+
+
+/*.theme-minimal.layout-phone > article.minimized {*/
+    /*overflow: hidden;*/
+    /* min-width: 16em; */
+    /*max-height: 1.5em;*/
+    /* max-width: 24em; */
+/*}*/
 
 .theme-minimal.layout-phone > article.maximized {
     /*font-size: 2vw;*/

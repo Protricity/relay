@@ -7,13 +7,14 @@
          --><a href='#MAXIMIZE chat:{$channel_lowercase}'>[+]</a><!--
          --><a href='#CLOSE chat:{$channel_lowercase}'>[x]</a>
         </span>
-        <a href='#MAXIMIZE chat:{$channel_lowercase}'>
+        <a href='#MINIMIZE chat:{$channel_lowercase}'>
             <span class='command'>Join</span> {$channel}
         </a>
     </header>
-    <form name='channel-form' class='show-on-minimized'>
+    <form name='channel-form'>
+        <div class="hide-on-minimize">
         <table style='width:100%'>
-            <tbody>
+            <tbody class="hide-on-minimize">
                 <tr>
                     <td style='vertical-align: top; width:1px;'>
                         <select multiple='multiple' name='user-list' class="channel-users:{$channel_lowercase}" size='5'>
@@ -21,12 +22,17 @@
                             <optgroup class='channel-inactive-users:{$channel_lowercase}' label='Inactive Users (0)'></optgroup>
                         </select>
                     </td>
-                    <td colspan='2' style='vertical-align: top;'>
+                    <td style='vertical-align: top;'>
                         <fieldset class='channel-log channel-log:{$channel_lowercase}'>Joining {$channel}...</fieldset>
                     </td>
                 </tr>
-                <tr class='show-on-minimized'>
-                    <td colspan='2'>
+                </tbody>
+            </table>
+        </div>
+        <table style='width:100%'>
+            <tbody>
+                <tr>
+                    <td>
                         <input name='message' type='text' class='reset focus'
                                placeholder='Commands: /join [channel], /nick [username], /message [username]' style='width: 100%;'/>
                     </td>

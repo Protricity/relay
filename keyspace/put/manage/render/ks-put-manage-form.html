@@ -7,7 +7,7 @@
          --><a href='#MAXIMIZE ks-put-manage:'>[+]</a><!--
          --><a href='#CLOSE ks-put-manage:'>[x]</a>
         </span>
-        <a href='#MAXIMIZE ks-put-manage:'>
+        <a href='#MINIMIZE ks-put-manage:'>
             Manage: {$url}
         </a>
     </header>
@@ -33,7 +33,7 @@
         Commands
     </header>
 
-    <section class="ks-put-manage-commands">
+    <section class="ks-put-manage-commands hide-on-minimize">
         <form name="ks-put-manage-add-form">
             <input type="hidden" name="url" value="{$url}" />
             <button>Add</button>
@@ -55,21 +55,21 @@
     <header class="section-bar">
         Content
     </header>
-    <section class="ks-put-manage-content"><!--
+    <section class="ks-put-manage-content hide-on-minimize"><!--
      -->{$html_content}<!--
  --></section>
 
     <header class="section-bar">
         Other Files {$file_search_pattern}
     </header>
-    <section class="ks-put-manage-file-list:">
+    <section class="ks-put-manage-file-list: hide-on-minimize">
         {$html_file_list}
     </section>
 
     <header class="section-bar">
         Entries for {$path}
     </header>
-    <section class="ks-put-manage-entry-list:">
+    <section class="ks-put-manage-entry-list: hide-on-minimize">
         {$html_entry_list}
     </section>
 

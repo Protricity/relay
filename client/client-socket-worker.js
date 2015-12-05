@@ -69,30 +69,44 @@ function ClientSocketWorker() {
     // Events
 
     function onClickEvent(e) {
-        if(e.defaultPrevented
-            || e.target.nodeName.toLowerCase() !== 'a'
-            || !e.target.href
-            || e.target.host != document.location.host)
-            return;
+        var target = e.target;
+        while(target = target.parentNode) {
+            var aMinAnchor = target.querySelector('a[href*=MINIMIZE]');
+            if(aMinAnchor){
+                 console.log(aMinAnchor, e);
+                var commandString = aMinAnchor
+                    .getAttribute('href')
+                    .replace(/^#/,'');
+                ClientSocketWorker.sendCommand(commandString);
+                return;
+            }
+        }
 
-        e.preventDefault();
-
-        if(e.target.hash
-            && e.target.host == document.location.host
-            && e.target.pathname == document.location.pathname
-            )
-            return onHashChange(e, e.target.hash);
-
-        var commandString = "GET " + e.target.href;
-        ClientSocketWorker.sendCommand(commandString);
+        //
+        //if(e.defaultPrevented
+        //    || e.target.nodeName.toLowerCase() !== 'a'
+        //    || !e.target.href
+        //    || e.target.host != document.location.host)
+        //    return;
+        //
+        //e.preventDefault();
+        //
+        //if(e.target.hash
+        //    && e.target.host == document.location.host
+        //    && e.target.pathname == document.location.pathname
+        //    )
+        //    return onHashChange(e, e.target.hash);
+        //
+        //var commandString = "GET " + e.target.href;
+        //ClientSocketWorker.sendCommand(commandString);
     }
 
     function onDblClick(e) {
         var target = e.target;
         while(target = target.parentNode) {
-            var aMaxAnchor = target.querySelector('a[href*=MAXIMIZE]');
+            var aMaxAnchor = target.querySelector('a[href*=MINIMIZE]');
             if(aMaxAnchor){
-//                 console.log(aMaxAnchor);
+                 console.log(aMaxAnchor);
                 var commandString = aMaxAnchor
                     .getAttribute('href')
                     .replace(/^#/,'');

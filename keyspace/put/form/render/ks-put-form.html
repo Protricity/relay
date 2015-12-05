@@ -9,11 +9,11 @@
          --><a href='#MAXIMIZE ks-put:'>[+]</a><!--
          --><a href='#CLOSE ks-put:'>[x]</a>
         </span>
-        <a href='#MAXIMIZE ks-put:'>
+        <a href='#MINIMIZE ks-put:'>
             <span class='command'>Put</span><span> content in your </span> <strong>Key Space</strong>
         </a>
     </header>
-    <main>
+    <main class="hide-on-minimize">
         <form name='ks-put-form' class='no-passphrase-required'>
             <code class="status-box">{$status_box}</code>
 
@@ -76,13 +76,13 @@
             </label>
         </form>
     </main>
-    <header class="section-bar hide-on-compact">
+    <header class="section-bar hide-on-compact hide-on-minimize">
         <label>
             <input type="checkbox" style="vertical-align:bottom;" />
             Preview Content
         </label>
     </header>
-    <section class="hide-on-compact">
+    <section class="hide-on-compact hide-on-minimize">
         <div class='ks-put-preview:' style="position: relative;">
             <code>
                 No preview yet... Type something!
@@ -105,13 +105,13 @@
             <!--</div>-->
         <!--</form>-->
     <!--</section>-->
-    <section class="show-on-compact">
+    <section class="show-on-compact hide-on-minimize">
         <a href='#PUT.SCRIPT'>
             You can also use a <strong>Content Script</strong> to generate <br/>
             <strong class="key-space">Key Space</strong> content quickly and easily...
        </a>
     </section>
-    <footer class='footer-bar'>
+    <footer class='footer-bar hide-on-minimize'>
         <a href='#PUT.SCRIPT'>content script</a>s...
     </footer>
 </article>
