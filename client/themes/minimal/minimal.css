@@ -259,7 +259,7 @@ li {
 }
 
 .theme-minimal.layout-browser > article .hide-on-minimize {
-    max-height: 100vw;
+    max-height: 100em;
     transition: 1s ease-in;
 }
 
@@ -269,6 +269,7 @@ li {
     margin: 0;
     border: 0;
     overflow: hidden;
+    transition: 1s ease-out;
 }
 
 .theme-minimal.layout-browser > article.minimized {
@@ -317,7 +318,7 @@ body.theme-minimal.layout-phone > article > header{
     border-radius: 0.4em;
     box-shadow: 0.1em 0.2em 0.8em #999;
     width: 100%;
-    transition: 1s;
+    transition: 1s ease-in;
     max-height: 50em;
     /* font-size: 2vw; */
 }
@@ -331,7 +332,7 @@ body.theme-minimal.layout-phone > article > header{
 
 
 .theme-minimal.layout-phone > article .hide-on-minimize {
-    max-height: 100vw;
+    max-height: 100em;
     transition: 1s ease-in;
 }
 
@@ -341,6 +342,7 @@ body.theme-minimal.layout-phone > article > header{
     margin: 0;
     border: 0;
     overflow: hidden;
+    transition: 1s ease-out;
 }
 
 .theme-minimal.layout-phone > article.minimized {

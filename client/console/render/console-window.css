@@ -1,7 +1,7 @@
 .console-content\3A {
     padding: 1em 2em 1em 2em;
     border: 3px inset;
-    max-height: 36em;
+    height: 16em;
     overflow-y: auto;
     background: #FFF;
 
