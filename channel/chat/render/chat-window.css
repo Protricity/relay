@@ -20,7 +20,7 @@ form[name=channel-form] {
 }
 
 form[name=channel-form] input {
-    /* padding: 0.1em 0.5em; */
+    /* padding: 0.1em 0; */
     /* margin: 0; */
 }
 

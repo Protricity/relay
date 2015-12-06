@@ -8,30 +8,31 @@
         </a>
     </header>
     <form name='channel-form'>
+        <input type='hidden' value='{$channel}' name='channel' />
         <div class="hide-on-minimize">
-        <table style='width:100%'>
-            <tbody class="hide-on-minimize">
-                <tr>
-                    <td style='vertical-align: top; width:1px;'>
-                        <select multiple='multiple' name='user_list' size='5'>
-                            <optgroup class='channel-users:{$channel_lowercase}' label='Channel Users (0)'></optgroup>
-                        </select>
-                        <select name="user_list_command">
-                            <option value="">Select a Command</option>
-                            <optgroup label="Channel Commands">
-                                <option value="LEAVE [$channel]">Leave Channel</option>
-                                <option value="MESSAGE [$username]">Private Message User</option>
-                                <option value="MESSAGE [$username] !get public/id">Request Public Key (Add to Contact List)</option>
-                            </optgroup>
-                            <optgroup label="Username Commands">
-                                <option value="NICK [prompt:Enter a new Nickname]">Change nickname</option>
-                            </optgroup>
-                        </select>
-                    </td>
-                    <td style='vertical-align: top;'>
-                        <fieldset class='channel-log: channel-log:{$channel_lowercase}'>Joining {$channel}...</fieldset>
-                    </td>
-                </tr>
+            <table style='width:100%'>
+                <tbody class="hide-on-minimize">
+                    <tr>
+                        <td style='vertical-align: top; width:1px;'>
+                            <select multiple='multiple' name='user_list' size='5'>
+                                <optgroup class='channel-users:{$channel_lowercase}' label='Channel Users (0)'></optgroup>
+                            </select>
+                            <select name="user_list_command">
+                                <option value="">Select a Command</option>
+                                <optgroup label="Channel Commands">
+                                    <option value="LEAVE [$channel]">Leave Channel</option>
+                                    <option value="MESSAGE [$username]">Private Message User</option>
+                                    <option value="MESSAGE [$username] !get public/id">Request Public Key (Add to Contact List)</option>
+                                </optgroup>
+                                <optgroup label="Username Commands">
+                                    <option value="NICK [prompt:Enter a new Nickname]">Change nickname</option>
+                                </optgroup>
+                            </select>
+                        </td>
+                        <td style='vertical-align: top;'>
+                            <fieldset class='channel-log: channel-log:{$channel_lowercase}'>Joining {$channel}...</fieldset>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -44,11 +45,9 @@
                     </td>
                     <td style='width:1px'>
                         <input type='submit' value='Send' name='submit-send-chat' />
-                        <input type='hidden' value='{$channel}' name='channel' />
                     </td>
                 </tr>
             </tbody>
         </table>
     </form>
-    <!--<footer class='footer-bar'>&nbsp;</footer>-->
 </article>

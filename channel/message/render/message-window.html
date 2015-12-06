@@ -13,15 +13,16 @@
             <tbody class="hide-on-minimize">
                 <tr>
                     <td style='vertical-align: top; width:1px;'>
-                        <select name="message_encryption_options">
-                            <option value="">Don't encrypt</option>
-                            <option disabled="disabled" value="">Encrypt each message</option>
-                        </select>
-                        <select name="message_command">
-                            <option value="">Commands...</option>
-                            <option value="MESSAGE [$username] !get public/id">Request Public Key (Add to Contact List)</option>
-                            <option value="MESSAGE [$username] !get public/profile">Request Public Profile</option>
-                        </select>
+                        <label>
+                            <select name="message_encryption_options">
+                                <option value="">Commands...</option>
+                                <option value="">Don't encrypt</option>
+                                <option disabled="disabled" value="">Encrypt for Public Key(s)</option>
+                                <option disabled="disabled" value="">Auto Encrypt with Public Key</option>
+                                <option value="MESSAGE [$username] !get public/id">Request Public Key (Add to Contact List)</option>
+                                <option value="MESSAGE [$username] !get public/profile">Request Public Profile</option>
+                            </select>
+                        </label>
                     </td>
                     <td style='vertical-align: top;'>
                         <fieldset class='message-log: message-log:{$username}'>Private Messaging
@@ -41,7 +42,7 @@
                     </td>
                     <td style='width:1px'>
                         <input type='submit' value='Send' name='submit-send-chat' />
-                        <input type='hidden' value='{$username}' name='username' />
+                        <input class='message-username-input:{$username}' type='hidden' value='{$username}' name='username' />
                     </td>
                 </tr>
             </tbody>

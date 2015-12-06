@@ -254,6 +254,9 @@ if(typeof module === 'object') (function() {
                             getChatExports().renderChatUserList(channelPathLowerCase, userList, function (html) {
                                 Client.replace('channel-users:' + channelPathLowerCase, html);
                             });
+
+                            // TODO: refresh private message
+
                             found = true;
                         }
                     })(channelPathLowerCase);

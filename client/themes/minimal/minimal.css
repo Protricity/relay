@@ -48,13 +48,15 @@ li {
 }
 
 .theme-minimal > article > footer,
+.theme-minimal > article > form > footer,
 .theme-minimal > article > header {
     text-indent: 0.3em;
     padding: 0 0 0.3em 0;
     border-bottom: 2px double threedface;
 }
 
-.theme-minimal > article > footer:last-of-type {
+.theme-minimal > article > footer:last-of-type,
+.theme-minimal > article > form > footer:last-of-type {
     padding: 0 0 0.1em 0;
     /* border-top: 2px double threedface; */
 }
@@ -356,21 +358,9 @@ body.theme-minimal.layout-vertical > article > header{
 }
 
 .theme-minimal.layout-vertical > article.minimized {
-    /*min-width: 16em;*/
-    /*max-height: 20px;*/
-    /*max-width: 24em;*/
-    /*overflow: hidden;*/
-    /*transition: 1s ease-in;*/
     opacity: 0.6;
 }
 
-
-/*.theme-minimal.layout-vertical > article.minimized {*/
-    /*overflow: hidden;*/
-    /* min-width: 16em; */
-    /*max-height: 1.5em;*/
-    /* max-width: 24em; */
-/*}*/
 
 /** Hide Maximized Button **/
 .theme-minimal.layout-vertical > article > header > .header-bar-buttons > a.header-bar-button-maximize {
