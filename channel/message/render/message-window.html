@@ -1,0 +1,51 @@
+<article class='message:{$username} maximize-on-render'>
+    <script src='channel/message/render/message-window.js'></script>
+    <link rel='stylesheet' href='channel/message/render/message-window.css' type='text/css' property="stylesheet">
+    <header class='header-bar show-on-minimized'>
+        {nav:header-buttons message:{$username}}
+        <a href='#MINIMIZE message:{$username}'>
+            <span class='command'>Message</span> {$username}
+        </a>
+    </header>
+    <form name='message-form'>
+        <div class="hide-on-minimize">
+        <table style='width:100%'>
+            <tbody class="hide-on-minimize">
+                <tr>
+                    <td style='vertical-align: top; width:1px;'>
+                        <select name="message_encryption_options">
+                            <option value="">Don't encrypt</option>
+                            <option disabled="disabled" value="">Encrypt each message</option>
+                        </select>
+                        <select name="message_command">
+                            <option value="">Commands...</option>
+                            <option value="MESSAGE [$username] !get public/id">Request Public Key (Add to Contact List)</option>
+                            <option value="MESSAGE [$username] !get public/profile">Request Public Profile</option>
+                        </select>
+                    </td>
+                    <td style='vertical-align: top;'>
+                        <fieldset class='message-log: message-log:{$username}'>Private Messaging
+                            <a href="#MESSAGE {$username}" class="username">{$username}</a>...
+                        </fieldset>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <table style='width:100%'>
+            <tbody>
+                <tr>
+                    <td>
+                        <input name='message' type='text' class='reset focus'
+                               placeholder='Type a message' style='width: 100%;'/>
+                    </td>
+                    <td style='width:1px'>
+                        <input type='submit' value='Send' name='submit-send-chat' />
+                        <input type='hidden' value='{$username}' name='username' />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+    <!--<footer class='footer-bar'>&nbsp;</footer>-->
+</article>

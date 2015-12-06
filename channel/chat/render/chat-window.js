@@ -8,7 +8,7 @@ if(typeof document === 'object') (function() {
     // Events
 
     document.addEventListener('submit', onFormEvent, false);
-     document.addEventListener('input', onFormEvent, false);
+     document.addEventListener('change', onFormEvent, false);
 
     function onFormEvent(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
@@ -21,10 +21,58 @@ if(typeof document === 'object') (function() {
                     e.preventDefault();
                     submitChatForm(e, formElm);
 
-                } else if(e.type === 'input' && e.target.name === 'user-list-commands') {
-                    var commandString = e.target.value;
-                    e.target.value = '';
-                    console.log("Command: " + commandString);
+                } else if(e.type === 'change') {
+
+                    var selectedUsers = [];
+                    for(var i=0; i<formElm.user_list.options.length; i++)
+                        if(formElm.user_list.options[i].selected)
+                            selectedUsers.push(formElm.user_list.options[i].value);
+
+                    switch(e.target.name) {
+                        case 'user_list':
+                            console.log("Users Selected: " + selectedUsers.join(', '));
+                            break;
+
+                        case 'user_list_command':
+                            var commandString = formElm.user_list_command.value;
+                            var formattedCommandString = commandString;
+                            e.target.value = '';
+
+                            var promptMatch = /\[prompt:([^\]]+)\]/i.exec(formattedCommandString);
+                            if(promptMatch)
+                                formattedCommandString = formattedCommandString.replace(promptMatch[0],
+                                    prompt(promptMatch[1]))
+
+                            if(formattedCommandString.indexOf("[$username]") !== -1) {
+                                for(var j=0; j<selectedUsers.length; j++) {
+                                    formattedCommandString = formattedCommandString
+                                        .replace('[$username]', selectedUsers[j])
+                                        .replace('[$channel]', formElm.channel.value);
+
+                                    var socketEvent = new CustomEvent('command', {
+                                        detail: formattedCommandString,
+                                        cancelable:true,
+                                        bubbles:true
+                                    });
+                                    formElm.dispatchEvent(socketEvent);
+                                    console.log("User Command: " + formattedCommandString);
+                                }
+
+                            } else {
+                                formattedCommandString = formattedCommandString
+                                    .replace('[$channel]', formElm.channel.value);
+
+                                var socketEvent = new CustomEvent('command', {
+                                    detail: formattedCommandString,
+                                    cancelable:true,
+                                    bubbles:true
+                                });
+                                formElm.dispatchEvent(socketEvent);
+                                console.log("Channel Command: " + formattedCommandString);
+                            }
+
+                            break;
+                    }
                 }
 
                 return true;
@@ -70,7 +118,7 @@ if(typeof document === 'object') (function() {
 
 // Worker Script
 if(typeof module === 'object') (function() {
-    var TEMPLATE_URL = 'channel/render/channel-window.html';
+    var TEMPLATE_URL = 'channel/chat/render/chat-window.html';
 
     module.exports.renderChatWindow = function(channelPath, callback) {
         var xhr = new XMLHttpRequest();
@@ -99,7 +147,7 @@ if(typeof module === 'object') (function() {
 
         var MESSAGE_TEMPLATE =
             '<div class="channel-log-entry">' +
-                '<span class="username" data-timestamp="{$timestamp}">{$username}</span>' +
+                '<a href="#MESSAGE {$username}" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
                 ': <span class="message">{$content}</span>' +
             '</div>';
 
@@ -126,7 +174,7 @@ if(typeof module === 'object') (function() {
 
         var ACTION_TEMPLATE =
             '<div class="channel-log-entry">' +
-                '<span class="username">{$username}</span>' +
+                '<a href="#MESSAGE {$username}" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
                 ' has <span class="action">{$action}</span>' +
                 ' <a href="#JOIN {$channel}" class="path">{$channel}</a>' +
             '</div>';
@@ -146,12 +194,14 @@ if(typeof module === 'object') (function() {
         var NICK_TEMPLATE =
             '<div class="channel-log-entry">' +
                 'Username <span class="username">{$old_username}</span>' +
-                ' has been <span class="action">renamed</span> to <span class="username">{$new_username}</span>' +
+                ' has been <span class="action">renamed</span> to' +
+                ' <a href="#MESSAGE {$username}" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
+
             '</div>';
 
         callback(NICK_TEMPLATE
             .replace(/{\$old_username}/gi, old_username)
-            .replace(/{\$new_username}/gi, new_username)
+            .replace(/{\$username}/gi, new_username)
         );
     };
 

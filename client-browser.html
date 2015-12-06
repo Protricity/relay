@@ -37,6 +37,12 @@
                 }, 500);
             }
 
+            window.onresize = function(evt) {
+                var height = (evt.srcElement || evt.currentTarget).innerHeight;
+                var width = (evt.srcElement || evt.currentTarget).innerWidth;
+                document.body.classList.add(width > height / 2 ? 'layout-horizontal' : 'layout-vertical');
+                document.body.classList.remove(width > height / 2 ? 'layout-vertical' : 'layout-horizontal');
+            };
         </script>
         <link rel="stylesheet" href="client/themes/minimal/minimal.css" type="text/css" />
         <style>
@@ -45,5 +51,5 @@
             }
         </style>
     </head>
-    <body class='theme-minimal layout-browser'></body>
+    <body class='theme-minimal layout-horizontal'></body>
 </html>

@@ -230,7 +230,7 @@ theme-minimal > article {
 
 /** Articles **/
 
-.theme-minimal.layout-browser > article {
+.theme-minimal.layout-horizontal > article {
     position: relative;
 
     display: inline-block;
@@ -247,7 +247,7 @@ theme-minimal > article {
 }
 
 
-.theme-minimal.layout-browser > article:hover {
+.theme-minimal.layout-horizontal > article:hover {
     /*cursor: pointer;*/
     box-shadow: 0 0 3em #558;
     transition: 0.5s ease-out;
@@ -257,7 +257,7 @@ theme-minimal > article {
 
 /** Articles Windows **/
 
-.theme-minimal.layout-browser > article.closed {
+.theme-minimal.layout-horizontal > article.closed {
     display: none;
 }
 
@@ -266,7 +266,7 @@ theme-minimal > article {
     transition: 1s ease-in;
 }
 
-.theme-minimal.layout-browser > article.minimized .hide-on-minimize {
+.theme-minimal.layout-horizontal > article.minimized .hide-on-minimize {
     max-height: 0;
     padding: 0;
     margin: 0;
@@ -275,7 +275,7 @@ theme-minimal > article {
     transition: 1s ease-out;
 }
 
-.theme-minimal.layout-browser > article.minimized {
+.theme-minimal.layout-horizontal > article.minimized {
     /*min-width: 16em;*/
     /*max-height: 20px;*/
     /*max-width: 24em;*/
@@ -284,7 +284,7 @@ theme-minimal > article {
     opacity: 0.6;
 }
 
-.theme-minimal.layout-browser > article.maximized {
+.theme-minimal.layout-horizontal > article.maximized {
     position: absolute;
     z-index: 2;
     top: 10%;
@@ -300,21 +300,21 @@ theme-minimal > article {
 
 /** Layout - Phone Layout **/
 
-body.theme-minimal.layout-phone {
+body.theme-minimal.layout-vertical {
     margin: 2px;
     font-size: 3vw;
 }
 
 /** Header Bar - Phone Layout **/
 
-body.theme-minimal.layout-phone > article > header a,
-body.theme-minimal.layout-phone > article > header{
+body.theme-minimal.layout-vertical > article > header a,
+body.theme-minimal.layout-vertical > article > header{
     /* font-size: large; */
 }
 
 /** Articles - Phone Layout **/
 
-.theme-minimal.layout-phone > article {
+.theme-minimal.layout-vertical > article {
     /* position: relative; */
     /* display: block; */
     margin: 0 0 0.5em 0;
@@ -327,7 +327,7 @@ body.theme-minimal.layout-phone > article > header{
 }
 
 
-.theme-minimal.layout-phone > article:hover {
+.theme-minimal.layout-vertical > article:hover {
     /*cursor: pointer;*/
     box-shadow: 0 0 3em #558;
     transition: 0.5s ease-out;
@@ -336,17 +336,17 @@ body.theme-minimal.layout-phone > article > header{
 
 /** Articles Windows - Phone Layout **/
 
-.theme-minimal.layout-phone > article.closed {
+.theme-minimal.layout-vertical > article.closed {
     display: none;
 }
 
 
-.theme-minimal.layout-phone > article .hide-on-minimize {
+.theme-minimal.layout-vertical > article .hide-on-minimize {
     max-height: 100em;
     transition: 1s ease-in;
 }
 
-.theme-minimal.layout-phone > article.minimized .hide-on-minimize {
+.theme-minimal.layout-vertical > article.minimized .hide-on-minimize {
     max-height: 0;
     padding: 0;
     margin: 0;
@@ -355,7 +355,7 @@ body.theme-minimal.layout-phone > article > header{
     transition: 1s ease-out;
 }
 
-.theme-minimal.layout-phone > article.minimized {
+.theme-minimal.layout-vertical > article.minimized {
     /*min-width: 16em;*/
     /*max-height: 20px;*/
     /*max-width: 24em;*/
@@ -365,7 +365,7 @@ body.theme-minimal.layout-phone > article > header{
 }
 
 
-/*.theme-minimal.layout-phone > article.minimized {*/
+/*.theme-minimal.layout-vertical > article.minimized {*/
     /*overflow: hidden;*/
     /* min-width: 16em; */
     /*max-height: 1.5em;*/
@@ -373,7 +373,7 @@ body.theme-minimal.layout-phone > article > header{
 /*}*/
 
 /** Hide Maximized Button **/
-.theme-minimal.layout-phone > article > header > .header-bar-buttons > a.header-bar-button-maximize {
+.theme-minimal.layout-vertical > article > header > .header-bar-buttons > a.header-bar-button-maximize {
     display: none;
     /*font-size: 2vw;*/
 }

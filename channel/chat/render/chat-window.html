@@ -1,6 +1,6 @@
 <article class='chat:{$channel_lowercase} maximize-on-render'>
-    <script src='channel/render/channel-window.js'></script>
-    <link rel='stylesheet' href='channel/render/channel-window.css' type='text/css' property="stylesheet">
+    <script src='channel/chat/render/chat-window.js'></script>
+    <link rel='stylesheet' href='channel/chat/render/chat-window.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {nav:header-buttons chat:{$channel_lowercase}}
         <a href='#MINIMIZE chat:{$channel_lowercase}'>
@@ -13,17 +13,23 @@
             <tbody class="hide-on-minimize">
                 <tr>
                     <td style='vertical-align: top; width:1px;'>
-                        <select multiple='multiple' name='user-list' size='5'>
+                        <select multiple='multiple' name='user_list' size='5'>
                             <optgroup class='channel-users:{$channel_lowercase}' label='Channel Users (0)'></optgroup>
                         </select>
-                        <select name="user-list-commands">
-                            <option value="">Commands...</option>
-                            <option value="MESSAGE [$user]">Private Message User</option>
-                            <option value="MESSAGE [$user] !request public/id">Request Public Key (Add to contact list)</option>
+                        <select name="user_list_command">
+                            <option value="">Select a Command</option>
+                            <optgroup label="Channel Commands">
+                                <option value="LEAVE [$channel]">Leave Channel</option>
+                                <option value="MESSAGE [$username]">Private Message User</option>
+                                <option value="MESSAGE [$username] !get public/id">Request Public Key (Add to Contact List)</option>
+                            </optgroup>
+                            <optgroup label="Username Commands">
+                                <option value="NICK [prompt:Enter a new Nickname]">Change nickname</option>
+                            </optgroup>
                         </select>
                     </td>
                     <td style='vertical-align: top;'>
-                        <fieldset class='channel-log channel-log:{$channel_lowercase}'>Joining {$channel}...</fieldset>
+                        <fieldset class='channel-log: channel-log:{$channel_lowercase}'>Joining {$channel}...</fieldset>
                     </td>
                 </tr>
                 </tbody>

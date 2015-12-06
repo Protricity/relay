@@ -18,7 +18,6 @@ if(typeof module === 'object') (function() {
 
             var feedEndTime = Date.now();
 
-            self.exports = {};
             self.module = {exports: {}};
             importScripts('keyspace/feed/render/ks-feed.js');
             var renderExports = self.module.exports;

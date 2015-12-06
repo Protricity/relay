@@ -12,6 +12,7 @@ module.exports.initSocketServerChannelCommands = function(SocketServer) {
     SocketServer.addCommand(nickClient);
 };
 
+var clientUserNames = {};
 function getClientInfo(client) {
     if(client.chat)
         return client.chat;
@@ -19,6 +20,7 @@ function getClientInfo(client) {
     var uid = generateUID('xxxx');
     client.chat = {};
     client.chat.username = "guest-" + uid.substring(uid.length - 4);
+    clientUserNames[client.chat.username] = client;
     client.chat.channels = [];
     return client.chat;
 }
@@ -58,7 +60,7 @@ function send(client, message) {
 }
 
 function nickClient(commandString, client) {
-    var match = /^nick\s+([a-z0-9_-]{2,})$/im.exec(commandString);
+    var match = /^nick\s+([a-z0-9_-]{2,64})$/im.exec(commandString);
     if(!match)
         return false;
 
@@ -67,7 +69,13 @@ function nickClient(commandString, client) {
     var oldNick = clientInfo.username;
     var now = Date.now();
 
+    var targetClient = clientUserNames[newNick.toLowerCase()];
+    if(typeof targetClient !== 'undefined' && isClientActive(targetClient))
+        throw new Error("Nick already exists. Please choose another.");
+
     clientInfo.username = newNick;
+    delete clientUserNames[oldNick.toLowerCase()];
+    clientUserNames[newNick.toLowerCase()] = client;
 
     var nickedClients = [];
     for(var i=0; i<clientInfo.channels.length; i++) {
@@ -103,7 +111,12 @@ function messageClient(commandString, client) {
     var timestamp = parseInt(match[2]);
     var message = match[3];
 
-    console.log("Message ", userID, timestamp, message);
+    if(typeof clientUserNames[userID.toLowerCase()] !== 'object')
+        throw new Error("User not found: " + userID);
+
+    var targetClient = clientUserNames[userID.toLowerCase()];
+    send(targetClient, commandString);
+
     return true;
 }
 

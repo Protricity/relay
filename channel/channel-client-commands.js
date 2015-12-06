@@ -4,9 +4,6 @@
 if(typeof module === 'object') (function() {
     module.exports.initClientChannelCommands = function (Client) {
 
-        importScripts('channel/render/channel-window.js');
-        var chatExports = self.module.exports;
-
         Client.addCommand(autoJoinCommand);
 
         Client.addCommand(joinCommand);
@@ -45,11 +42,12 @@ if(typeof module === 'object') (function() {
                 return false;
 
             var channelPath = match[1];
-            renderChatWindow(channelPath, function () {
-                console.info("Channel has Activity: " + channelPath);
-                chatExports.renderChatMessage(responseString, function (html) {
-                    Client.appendChild('channel-log:' + channelPath.toLowerCase(), html);
-                });
+
+            renderChatWindow(channelPath);
+
+            console.info("Channel has Activity: " + channelPath);
+            getChatExports().renderChatMessage(responseString, function (html) {
+                Client.appendChild('channel-log:' + channelPath.toLowerCase(), html);
             });
             return true;
         }
@@ -59,10 +57,19 @@ if(typeof module === 'object') (function() {
             if (!match)
                 return false;
 
-            // Update Settings
             self.module = {exports: {}};
             importScripts('client/settings/settings-db.js');
             var SettingsDB = self.module.exports.SettingsDB;
+
+            // Check Nick
+            SettingsDB.getSettings("channel.nick", function(nickSettings) {
+                if(nickSettings && nickSettings.username) {
+                    console.log("Auto Nick: " + nickSettings.username, nickSettings);
+                    nickCommand("NICK " + nickSettings.username);
+                }
+            });
+
+            // Query Auto Join Channels
             SettingsDB.getAllSettings("channel:*", function(channelSettings) {
                 console.log("Settings: ", channelSettings);
                 if(channelSettings) {
@@ -72,6 +79,7 @@ if(typeof module === 'object') (function() {
                     }
                 }
             });
+
 
             return true;
         }
@@ -107,24 +115,24 @@ if(typeof module === 'object') (function() {
             var args = responseString.split(/\s/);
             var channelPath = match[1];
             var username = match[2];
-            renderChatWindow(channelPath, function () {
-                console.info("Joined Channel: " + channelPath);
-                chatExports.renderChatActionEntry(responseString, function (html) {
-                    Client.appendChild('channel-log:' + channelPath.toLowerCase(), html);
-                });
+            renderChatWindow(channelPath);
 
-                var userList = channelUsers[channelPath.toLowerCase()];
-                if (!userList)
-                    userList = channelUsers[channelPath.toLowerCase()] = [];
-                if (userList.indexOf(username) == -1) {
-                    userList.push(username);
-
-                    userList.sort();
-                    chatExports.renderChatUserList(channelPath, userList, function (html) {
-                        Client.replace('channel-users:' + channelPath.toLowerCase(), html);
-                    });
-                }
+            console.info("Joined Channel: " + channelPath);
+            getChatExports().renderChatActionEntry(responseString, function (html) {
+                Client.appendChild('channel-log:' + channelPath.toLowerCase(), html);
             });
+
+            var userList = channelUsers[channelPath.toLowerCase()];
+            if (!userList)
+                userList = channelUsers[channelPath.toLowerCase()] = [];
+            if (userList.indexOf(username) == -1) {
+                userList.push(username);
+
+                userList.sort();
+                getChatExports().renderChatUserList(channelPath, userList, function (html) {
+                    Client.replace('channel-users:' + channelPath.toLowerCase(), html);
+                });
+            }
             return true;
         }
 
@@ -138,13 +146,12 @@ if(typeof module === 'object') (function() {
                 return self.indexOf(value) === index;
             });
 
-            renderChatWindow(channelPath, function () {
-//             console.info("Channel has a user list: " + channelPath);
-                channelUsers[channelPath.toLowerCase()] = userList;
+            renderChatWindow(channelPath);
 
-                chatExports.renderChatUserList(channelPath, userList, function (html) {
-                    Client.replace('channel-users:' + channelPath.toLowerCase(), html);
-                });
+            channelUsers[channelPath.toLowerCase()] = userList;
+
+            getChatExports().renderChatUserList(channelPath, userList, function (html) {
+                Client.replace('channel-users:' + channelPath.toLowerCase(), html);
             });
             return true;
         }
@@ -165,6 +172,8 @@ if(typeof module === 'object') (function() {
                 SettingsDB.updateSettings(channelSettings);
             });
 
+            Client.postResponseToClient("CLOSE chat:" + channelPath.toLowerCase());
+
             Client.sendWithSocket(commandString);
             return true;
         }
@@ -176,31 +185,46 @@ if(typeof module === 'object') (function() {
             var channelPath = match[1];
             var username = match[2];
 
-            renderChatWindow(channelPath, function () {
-                console.info("Channel Has Activity: " + channelPath);
-                var userList = channelUsers[channelPath.toLowerCase()];
-                var pos = userList.indexOf(username);
-                if (pos === -1)
-                    throw new Error("User not in channel [" + channelPath + "]: " + username);
+            renderChatWindow(channelPath);
 
-                userList.splice(pos, 1);
+            console.info("Channel Has Activity: " + channelPath);
+            var userList = channelUsers[channelPath.toLowerCase()];
+            var pos = userList.indexOf(username);
+            if (pos === -1)
+                throw new Error("User not in channel [" + channelPath + "]: " + username);
 
-                chatExports.renderChatActionEntry(responseString, function (html) {
-                    Client.appendChild('channel-log:' + channelPath.toLowerCase(), html);
-                });
+            userList.splice(pos, 1);
 
-                chatExports.renderChatUserList(channelPath, userList, function (html) {
-                    Client.replace('channel-users:' + channelPath.toLowerCase(), html);
-                });
+            getChatExports().renderChatActionEntry(responseString, function (html) {
+                Client.appendChild('channel-log:' + channelPath.toLowerCase(), html);
+            });
+
+            getChatExports().renderChatUserList(channelPath, userList, function (html) {
+                Client.replace('channel-users:' + channelPath.toLowerCase(), html);
             });
             return true;
         }
 
         function nickCommand(commandString) {
-            var match = /^nick/i.exec(commandString);
-            if (!match)
+            var match = /^nick\s+([a-z0-9_-]{2,64})$/im.exec(commandString);
+            if(!match)
                 return false;
 
+            var newNick = match[1];
+
+            self.module = {exports: {}};
+            importScripts('client/settings/settings-db.js');
+            var SettingsDB = self.module.exports.SettingsDB;
+
+            // Update Settings
+            SettingsDB.getSettings("channel.nick", function(nickSettings) {
+                if(nickSettings.username)
+                    nickSettings.old_username = nickSettings.username;
+                nickSettings.username = newNick;
+                SettingsDB.updateSettings(nickSettings);
+            });
+
+            console.log("Changing Username: " + commandString);
             Client.sendWithSocket(commandString);
             return true;
         }
@@ -222,12 +246,12 @@ if(typeof module === 'object') (function() {
                             userList[pos] = new_username;
 
                             // Render Nick Change Event
-                            chatExports.renderChatNickChange(responseString, function (html) {
+                            getChatExports().renderChatNickChange(responseString, function (html) {
                                 Client.appendChild('channel-log:' + channelPathLowerCase, html);
                             });
 
                             // Render New User List
-                            chatExports.renderChatUserList(channelPathLowerCase, userList, function (html) {
+                            getChatExports().renderChatUserList(channelPathLowerCase, userList, function (html) {
                                 Client.replace('channel-users:' + channelPathLowerCase, html);
                             });
                             found = true;
@@ -243,37 +267,83 @@ if(typeof module === 'object') (function() {
 
 
         function messageCommand(commandString) {
-            var match = /^message/i.exec(commandString);
+            var match = /^message\s+(\S+)\s*([\s\S]*)$/im.exec(commandString);
             if (!match)
                 return false;
-            Client.send(commandString);
+
+            var username = match[1];
+            var content = match[2];
+
+            renderMessageWindow(username);
+
+
+            if(content) {
+                var formattedCommandString = "MESSAGE " + username + 
+                    " " + Date.now() + " " + content; 
+                Client.sendWithSocket(formattedCommandString);
+            }
+            return true;
         }
 
         function messageResponse(responseString) {
-            if (!/^message/i.test(responseString))
+            var match = /^message\s+([^\s]+)\s+(\d+)\s+([\s\S]+)$/im.exec(responseString);
+            if(!match)
                 return false;
+
+            var username = match[1];
+            var timestamp = parseInt(match[2]);
+            var message = match[3];
+
             //var username = match[2];
             //var content = fixPGPMessage(match[3]);
-            chatExports.renderChatMessage(responseString, function (html, username) {
-                Client.appendChild('message:' + username, html);
+            renderMessageWindow(username);
+            getMessageExports().renderMessage(responseString, function (html, username) {
+                Client.appendChild('message-log:' + username, html);
             });
             return true;
         }
 
         var activeChannels = [];
-
-        function renderChatWindow(channelPath, callback) {
+        function renderChatWindow(channelPath) {
             var channelPathLowerCase = channelPath.toLowerCase();
 
             if (activeChannels.indexOf(channelPathLowerCase) === -1) {
-                chatExports.renderChatWindow(channelPath, function (html) {
+                getChatExports().renderChatWindow(channelPath, function (html) {
                     Client.render(html);
                     activeChannels.push(channelPathLowerCase);
                 });
             }
+        }
 
-            if (callback)
-                callback();
+
+        var activeMessages = [];
+        function renderMessageWindow(username) {
+            if (activeMessages.indexOf(username) === -1) {
+                getMessageExports().renderMessageWindow(username, function (html) {
+                    Client.render(html);
+                    activeMessages.push(username);
+                });
+            }
+        }
+
+
+        var messageExports = null;
+        function getMessageExports() {
+            if(messageExports)
+                return messageExports;
+            self.module = {exports: {}};
+            importScripts('channel/message/render/message-window.js');
+            return messageExports = self.module.exports;
+        }
+
+
+        var chatExports = null;
+        function getChatExports() {
+            if(chatExports)
+                return chatExports;
+            self.module = {exports: {}};
+            importScripts('channel/chat/render/chat-window.js');
+            return chatExports = self.module.exports;
         }
 
     };

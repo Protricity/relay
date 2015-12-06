@@ -19,6 +19,10 @@ form[name=channel-form] {
     font-family: monospace;
 }
 
+form[name=channel-form] input {
+    /* padding: 0.1em 0.5em; */
+    /* margin: 0; */
+}
 
 form[name=channel-form] input[name=message] {
     font-family: monospace;
@@ -27,11 +31,11 @@ form[name=channel-form] input[name=message] {
 form[name=channel-form] input[type=submit] {
 }
 
-form[name=channel-form] select[name=user-list] {
+form[name=channel-form] select[name=user_list] {
     width: 10em;
 }
 
-form[name=channel-form] select[name=user-list-commands] {
+form[name=channel-form] select[name=user_list_command] {
     width: 10em;
 }
 
@@ -53,21 +57,22 @@ form[name=channel-form] .pgp-message:hover {
     height: 21em;
 }
 
-form[name=channel-form] .channel-log {
+form[name=channel-form] .channel-log\3A {
     overflow: auto;
     max-height: 18em;
     max-width: 48em;
     /*min-width: 32em;*/
+    min-height: 6.5em;
     background-color: white;
 }
 
-form[name=channel-form] .channel-log .channel-log-entry {
+form[name=channel-form] .channel-log\3A .channel-log-entry {
     border: 1px solid transparent;
     overflow: hidden;
     max-height: 5em;
 }
 
-form[name=channel-form] .channel-log .channel-log-entry:hover {
+form[name=channel-form] .channel-log\3A .channel-log-entry:hover {
     border-radius: 0.2em;
     border: 1px solid lightgrey;
     overflow: hidden;

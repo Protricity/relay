@@ -80,7 +80,7 @@ function SettingsDB(dbReadyCallback) {
             var dbStore = db
                 .transaction([SettingsDB.DB_TABLE_CLIENT], "readonly")
                 .objectStore(SettingsDB.DB_TABLE_CLIENT);
-            console.log(settingsName);
+//             console.log(settingsName);
 
             if(settingsName[settingsName.length-1] === '*') {
                 var queryLowBound = settingsName.substr(0, settingsName.length-2);
