@@ -1,0 +1,47 @@
+form[name=pgp-manage-form] .status-box:empty {
+    display: none;
+}
+
+form[name=pgp-manage-form] {
+    padding: 1em 2em 1em 2em;
+    border: 3px inset;
+    background-color: #FAFAFA;
+}
+
+form[name=pgp-manage-form] {
+    max-width: 41em;
+}
+form[name=pgp-manage-form] .pgp-id-box {
+    padding: 0.5em;
+    margin: 0 0.5em 0.5em 0.5em;
+    max-width: 18em;
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+}
+
+form[name=pgp-manage-form] select[name=actions] {
+    width: 11em;
+    font-size: 12px;
+    font-family: monospace;
+}
+
+form[name=pgp-manage-form] .load-pgp-btn {
+    padding: 0.5em 1em;
+    margin: 0.5em;
+}
+
+form[name=pgp-manage-form] input {
+    vertical-align: bottom;
+    margin: 0;
+}
+
+form[name=pgp-manage-form] legend.user {
+    overflow: hidden;
+    max-width: 15em;
+}
+
+
+form[name=pgp-manage-form] .pgp-manage-entry\3A {
+    display: inline-block;
+}

@@ -9,12 +9,13 @@
             // Render Navigation Menu and about box
             setTimeout(function() {
                 ClientSocketWorker.sendCommand("render {nav:menu}");
+                ClientSocketWorker.sendCommand("PGP.CONTACT");
             }, 10);
 
             setTimeout(function() {
                 // Render PUT/FEED
 //                ClientSocketWorker.sendCommand("PUT.SCRIPT KS/WIZARD/KS-CREATE-WIZARD.JS");
-                ClientSocketWorker.sendCommand("FEED"); // "PUT.SCRIPT APP/SOCIAL/VOTE/VOTE.JS");
+//                ClientSocketWorker.sendCommand("FEED"); // "PUT.SCRIPT APP/SOCIAL/VOTE/VOTE.JS");
             }, 300);
 
             // Join Timezone Channel

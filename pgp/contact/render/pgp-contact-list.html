@@ -1,0 +1,63 @@
+<article class='pgp-contact: maximize-on-render'>
+    <script src='pgp/contact/render/pgp-contact-list.js'></script>
+    <link rel='stylesheet' href='pgp/contact/render/pgp-contact-list.css' type='text/css' property="stylesheet">
+    <header class='header-bar show-on-minimized'>
+        {nav:header-buttons pgp-contact:}
+        <a href='#MINIMIZE pgp-contact:'>
+            Contact List
+        </a>
+    </header>
+    <main class="hide-on-minimize">
+        <form name='pgp-contact-list' action='#'>
+            <code class='status-box'>{$status_box}</code>
+            <table style="width:100%">
+                <tbody>
+                    <tr>
+                        <td>
+                            <input name="name" type="text" />
+                        </td>
+                        <td><input type='submit' value="Change Online Nick" disabled="disabled" /></td>
+                        <!--<td rowspan="2">-->
+                            <!--<img width="64" height="64" alt="Icon" />-->
+                        <!--</td>-->
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <details open="open">
+                                <summary>Your PGP Identities</summary>
+                                <p>Contact</p>
+                                <p>Contact</p>
+                            </details>
+                            <details open="open">
+                                <summary>PGP Public Keys</summary>
+                                <p>Contact</p>
+                                <p>Contact</p>
+                            </details>
+                            <details open="open">
+                                <summary>Active Channels</summary>
+                                <p>Channel</p>
+                                <p>Channel</p>
+                                <p>Channel</p>
+                                <p>Channel</p>
+                            </details>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <select name='action'>
+                                <option value=''>Select Command(s)</option>
+                            </select>
+                        </td>
+                        <td><input type='submit' value="Execute Command" disabled="disabled" /></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </form>
+    </main>
+    <!--<footer>-->
+        <!--<a href="#">-->
+            <!--<span class="command">Add</span> a new Contact...-->
+        <!--</a>-->
+    <!--</footer>-->
+</article>

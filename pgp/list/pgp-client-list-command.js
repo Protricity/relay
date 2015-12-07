@@ -9,9 +9,12 @@ if(typeof module === 'object') (function() {
          * @param commandString
          */
         function pgpListCommand(commandString, e) {
-            var match = /^pgp.list/i.exec(commandString);
+            var match = /^(pgp\.list)(\.private)?/i.exec(commandString);
             if (!match)
                 return false;
+
+            var listString = match[0];
+            var listPrivate = match[2] ? true : false;
 
             self.exports = {};
             self.module = {exports: {}};
@@ -19,10 +22,10 @@ if(typeof module === 'object') (function() {
             var KeySpaceDB = self.module.exports.KeySpaceDB;
 
             // Query private keys
-            var path = '/.private/id';
+            var path = listPrivate ? 'public/id' : '.private/id';
             var count = 0;
 
-            var listString = "PGP.LIST";
+            //var listString = "PGP.LIST";
             KeySpaceDB.queryAll(path, function(err, contentEntry) {
                 if(err)
                     throw new Error(err);

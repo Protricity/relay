@@ -64,17 +64,17 @@ if(typeof module === 'object') (function() {
             // Check Nick
             SettingsDB.getSettings("channel.nick", function(nickSettings) {
                 if(nickSettings && nickSettings.username) {
-                    console.log("Auto Nick: " + nickSettings.username, nickSettings);
+//                     console.log("Auto Nick: " + nickSettings.username, nickSettings);
                     nickCommand("NICK " + nickSettings.username);
                 }
             });
 
             // Query Auto Join Channels
             SettingsDB.getAllSettings("channel:*", function(channelSettings) {
-                console.log("Settings: ", channelSettings);
+//                 console.log("Settings: ", channelSettings);
                 if(channelSettings) {
                     if(channelSettings.auto_join === 1) {
-                        console.log("Auto Joining: " + channelSettings.name_original_case, channelSettings);
+//                         console.log("Auto Joining: " + channelSettings.name_original_case, channelSettings);
                         joinCommand("JOIN " + channelSettings.name_original_case);
                     }
                 }
@@ -117,7 +117,7 @@ if(typeof module === 'object') (function() {
             var username = match[2];
             renderChatWindow(channelPath);
 
-            console.info("Joined Channel: " + channelPath);
+//             console.info("Joined Channel: " + channelPath);
             getChatExports().renderChatActionEntry(responseString, function (html) {
                 Client.appendChild('channel-log:' + channelPath.toLowerCase(), html);
             });
@@ -224,7 +224,7 @@ if(typeof module === 'object') (function() {
                 SettingsDB.updateSettings(nickSettings);
             });
 
-            console.log("Changing Username: " + commandString);
+//             console.log("Changing Username: " + commandString);
             Client.sendWithSocket(commandString);
             return true;
         }
@@ -265,7 +265,8 @@ if(typeof module === 'object') (function() {
             if (found)
                 return true;
 
-            throw new Error("Nick not found in user list: " + old_username);
+            return true;
+            // throw new Error("Nick not found in user list: " + old_username);
         }
 
 
