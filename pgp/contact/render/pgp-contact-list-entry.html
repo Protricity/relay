@@ -1,13 +1,13 @@
 <li class="pgp-contact-entry:">
-    <label class="pgp-contact-entry-label:">
+    <input id="contact_selected_{$i}" type="checkbox" class="pgp-contact-entry-checkbox:">
+    <label class="pgp-contact-entry-label:" for="contact_selected_{$i}">
         <img src="{$user_icon_path}" class="pgp-contact-entry-icon:" alt="User Icon" />
-        <input type="checkbox" class="pgp-contact-entry-checkbox:">
-        <label class="pgp-contact-entry-name:">
-            <a href="#MESSAGE {$name}">
+        <span class="pgp-contact-entry-name:">
+            <!--<a href="#MESSAGE {$name}">-->
                 {$name}
-            </a>
-        </label>
+            <!--</a>-->
+        </span>
         <br />
-        <label class="pgp-contact-entry-status:">{$status}</label>
+        <span class="pgp-contact-entry-status:">{$status}</span>
     </label>
 </li>

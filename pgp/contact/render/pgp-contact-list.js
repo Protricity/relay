@@ -69,10 +69,6 @@ if(typeof module === 'object') (function() {
             if(contentEntry) {
                 renderPGPContactListEntry(contentEntry, function(html) {
                     html_public_key_entries += html;
-                    html_public_key_entries += html;
-                    html_public_key_entries += html;
-                    html_public_key_entries += html;
-                    html_public_key_entries += html;
                 });
 
             } else {
@@ -116,6 +112,7 @@ if(typeof module === 'object') (function() {
         return true;
     }
 
+    var i=0;
     module.exports.renderPGPContactListEntry = renderPGPContactListEntry;
     function renderPGPContactListEntry(contentEntry, callback) {
         var TEMPLATE_URL = "pgp/contact/render/pgp-contact-list-entry.html";
@@ -137,6 +134,7 @@ if(typeof module === 'object') (function() {
                 .replace(/{\$id_public_short}/gi, contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8))
                 .replace(/{\$name}/gi, contentEntry.user_id.replace(/</g, '&lt;'))
                 .replace(/{\$status}/gi, status)
+                .replace(/{\$i}/gi, i++)
                 .replace(/{\$user_icon_path}/gi, user_icon_path)
         );
     }
