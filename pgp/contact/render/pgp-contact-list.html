@@ -7,99 +7,31 @@
             Contact List
         </a>
     </header>
-    <form name='pgp-contact-list-form' action='#'>
+    <form name='pgp-contact-list-form' action='#' class="hide-on-minimize">
         <code class='status-box'>{$status_box}</code>
         <details open="open">
             <summary class="pgp-contact-section-header:">Your Identities</summary>
             <ul class="pgp-contact-section:">
-                <li class="pgp-contact-entry:">
-                    <label class="pgp-contact-entry-label:">
-                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
-                        <div class="pgp-contact-entry-name:">Username</div>
-                        <div class="pgp-contact-entry-status:">Status</div>
-                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
-                    </label>
-                </li>
-                <li class="pgp-contact-entry:">
-                    <label class="pgp-contact-entry-label:">
-                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
-                        <div class="pgp-contact-entry-name:">Username</div>
-                        <div class="pgp-contact-entry-status:">Status</div>
-                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
-                    </label>
-                </li>
-                <li class="pgp-contact-entry:">
-                    <label class="pgp-contact-entry-label:">
-                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
-                        <div class="pgp-contact-entry-name:">Username</div>
-                        <div class="pgp-contact-entry-status:">Status</div>
-                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
-                    </label>
-                </li>
+                {$html_private_key_entries}
             </ul>
         </details>
         <details open="open">
             <summary class="pgp-contact-section-header:">Contacts</summary>
             <ul class="pgp-contact-section:">
-                <li class="pgp-contact-entry:">
-                    <label class="pgp-contact-entry-label:">
-                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
-                        <div class="pgp-contact-entry-name:">Username</div>
-                        <div class="pgp-contact-entry-status:">Status</div>
-                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
-                    </label>
-                </li>
-                <li class="pgp-contact-entry:">
-                    <label class="pgp-contact-entry-label:">
-                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
-                        <div class="pgp-contact-entry-name:">Username</div>
-                        <div class="pgp-contact-entry-status:">Status</div>
-                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
-                    </label>
-                </li>
-                <li class="pgp-contact-entry:">
-                    <label class="pgp-contact-entry-label:">
-                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
-                        <div class="pgp-contact-entry-name:">Username</div>
-                        <div class="pgp-contact-entry-status:">Status</div>
-                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
-                    </label>
-                </li>
+                {$html_public_key_entries}
             </ul>
         </details>
         <details open="open">
             <summary class="pgp-contact-section-header:">Channels</summary>
             <ul class="pgp-contact-section:">
-                <li class="pgp-contact-entry:">
-                    <label class="pgp-contact-entry-label:">
-                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
-                        <div class="pgp-contact-entry-name:">Channel</div>
-                        <div class="pgp-contact-entry-status:">5 Users</div>
-                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
-                    </label>
-                </li>
-                <li class="pgp-contact-entry:">
-                    <label class="pgp-contact-entry-label:">
-                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
-                        <div class="pgp-contact-entry-name:">Channel</div>
-                        <div class="pgp-contact-entry-status:">25 Users</div>
-                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
-                    </label>
-                </li>
-                <li class="pgp-contact-entry:">
-                    <label class="pgp-contact-entry-label:">
-                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
-                        <div class="pgp-contact-entry-name:">Channel</div>
-                        <div class="pgp-contact-entry-status:">15 Users</div>
-                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
-                    </label>
-                </li>
+                {$html_channel_entries}
             </ul>
         </details>
         <!--<input type='submit' value="Change Online Nick" disabled="disabled" />-->
         <label>
             <select name='command'>
                 <option value=''>Select Command(s)</option>
+                {$html_command_options}
             </select>
         </label>
     </form>

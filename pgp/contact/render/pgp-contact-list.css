@@ -24,10 +24,10 @@
 /** Contact Entry **/
 
 .pgp-contact-entry\3A {
+    cursor: pointer;
     padding: 0.2em 0.5em;
     border: 1px outset;
-    overflow: hidden;
-
+    /* overflow: hidden; */
     transition: 1s ease-in;
 }
 
@@ -38,7 +38,7 @@
 }
 
 .pgp-contact-entry-name\3A {
-
+/* display: block; */
 }
 
 .pgp-contact-entry\3A:hover .pgp-contact-entry-name\3A {
@@ -47,6 +47,7 @@
 
 
 .pgp-contact-entry-status\3A {
+    /* display: block; */
     color: #AAA;
 }
 
