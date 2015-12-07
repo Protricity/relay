@@ -35,10 +35,10 @@ if(typeof document === 'object')
 
         var head = document.getElementsByTagName('head')[0];
 
-        var newScript = document.createElement('script');
-        newScript.setAttribute('async', 'async');
-        newScript.setAttribute('src', self.location.protocol + '//www.telize.com/geoip?callback=_geoipcallback');
-        head.appendChild(newScript);
+        //var newScript = document.createElement('script');
+        //newScript.setAttribute('async', 'async');
+        //newScript.setAttribute('src', self.location.protocol + '//www.telize.com/geoip?callback=_geoipcallback');
+        //head.appendChild(newScript);
 
         newScript = document.createElement('script');
         newScript.setAttribute('async', 'async');

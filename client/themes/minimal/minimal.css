@@ -32,6 +32,7 @@ body.theme-minimal header{
 li {
     /* font-family: monospace; */
     color: #333;
+    \: block;
 }
 
 .theme-minimal a {
@@ -185,9 +186,10 @@ theme-minimal > article {
 }
 
 
-.theme-minimal .status-box:empty {
-    display: none;
-}
+/** Don't do this here **/
+/*.theme-minimal .status-box:empty {*/
+    /*display: none;*/
+/*}*/
 
 .theme-minimal code.status-box > * {
     animation: fadein 0.5s;

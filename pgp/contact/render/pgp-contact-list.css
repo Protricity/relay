@@ -1,47 +1,84 @@
-form[name=pgp-manage-form] .status-box:empty {
+.pgp-contact\3A {
+    min-width: 14em;
+    /* max-width: 30em; */
+}
+
+/** Contact List**/
+
+.pgp-contact-section\3A {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.pgp-contact-section-header\3A {
+    /* font-family: arial; */
+    /* font-style: italic; */
+    text-decoration: underline;
+    font-weight: bold;
+    padding: 1em 1em 0 1em;
+    /* text-align: center; */
+}
+
+
+/** Contact Entry **/
+
+.pgp-contact-entry\3A {
+    padding: 0.2em 0.5em;
+    border: 1px outset;
+    overflow: hidden;
+
+    transition: 1s ease-in;
+}
+
+.pgp-contact-entry\3A:hover {
+    box-shadow: 0 0 2em #558;
+
+    transition: 0.4s ease-out;
+}
+
+.pgp-contact-entry-name\3A {
+
+}
+
+.pgp-contact-entry\3A:hover .pgp-contact-entry-name\3A {
+    font-weight: bold;
+}
+
+
+.pgp-contact-entry-status\3A {
+    color: #AAA;
+}
+
+.pgp-contact-entry-icon\3A {
+    width: 2em;
+    height: 2em;
+    float: right;
+    clear: right;
+}
+
+/** Form **/
+
+form[name=pgp-contact-list-form] {
+    padding: 2px;
+    border: 1px inset;
+}
+
+form[name=pgp-contact-list-form] .status-box:empty {
     display: none;
 }
 
-form[name=pgp-manage-form] {
-    padding: 1em 2em 1em 2em;
-    border: 3px inset;
-    background-color: #FAFAFA;
-}
-
-form[name=pgp-manage-form] {
-    max-width: 41em;
-}
-form[name=pgp-manage-form] .pgp-id-box {
-    padding: 0.5em;
-    margin: 0 0.5em 0.5em 0.5em;
-    max-width: 18em;
-    display: inline-block;
-    vertical-align: top;
-    position: relative;
-}
-
-form[name=pgp-manage-form] select[name=actions] {
-    width: 11em;
-    font-size: 12px;
-    font-family: monospace;
-}
-
-form[name=pgp-manage-form] .load-pgp-btn {
+form[name=pgp-contact-list-form] select[name=command] {
     padding: 0.5em 1em;
-    margin: 0.5em;
+    margin: 0.4em 0.2em 0 0.2em;
+    border-radius: 0.6em;
+    border-width: 1px;
 }
 
-form[name=pgp-manage-form] input {
-    vertical-align: bottom;
-    margin: 0;
+form[name=pgp-contact-list-form] input[type=checkbox].pgp-contact-entry-checkbox\3A {
+    display: none;
 }
 
-form[name=pgp-manage-form] legend.user {
-    overflow: hidden;
-    max-width: 15em;
-}
-
-
-form[name=pgp-manage-form] .pgp-manage-entry\3A {
-    display: inline-block;
+form[name=pgp-contact-list-form] .pgp-contact-entry-label\3A {
+    cursor: pointer;
 }

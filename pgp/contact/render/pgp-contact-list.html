@@ -7,57 +7,108 @@
             Contact List
         </a>
     </header>
+    <form name='pgp-contact-list-form' action='#'>
+        <code class='status-box'>{$status_box}</code>
+        <details open="open">
+            <summary class="pgp-contact-section-header:">Your Identities</summary>
+            <ul class="pgp-contact-section:">
+                <li class="pgp-contact-entry:">
+                    <label class="pgp-contact-entry-label:">
+                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
+                        <div class="pgp-contact-entry-name:">Username</div>
+                        <div class="pgp-contact-entry-status:">Status</div>
+                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
+                    </label>
+                </li>
+                <li class="pgp-contact-entry:">
+                    <label class="pgp-contact-entry-label:">
+                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
+                        <div class="pgp-contact-entry-name:">Username</div>
+                        <div class="pgp-contact-entry-status:">Status</div>
+                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
+                    </label>
+                </li>
+                <li class="pgp-contact-entry:">
+                    <label class="pgp-contact-entry-label:">
+                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
+                        <div class="pgp-contact-entry-name:">Username</div>
+                        <div class="pgp-contact-entry-status:">Status</div>
+                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
+                    </label>
+                </li>
+            </ul>
+        </details>
+        <details open="open">
+            <summary class="pgp-contact-section-header:">Contacts</summary>
+            <ul class="pgp-contact-section:">
+                <li class="pgp-contact-entry:">
+                    <label class="pgp-contact-entry-label:">
+                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
+                        <div class="pgp-contact-entry-name:">Username</div>
+                        <div class="pgp-contact-entry-status:">Status</div>
+                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
+                    </label>
+                </li>
+                <li class="pgp-contact-entry:">
+                    <label class="pgp-contact-entry-label:">
+                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
+                        <div class="pgp-contact-entry-name:">Username</div>
+                        <div class="pgp-contact-entry-status:">Status</div>
+                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
+                    </label>
+                </li>
+                <li class="pgp-contact-entry:">
+                    <label class="pgp-contact-entry-label:">
+                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
+                        <div class="pgp-contact-entry-name:">Username</div>
+                        <div class="pgp-contact-entry-status:">Status</div>
+                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
+                    </label>
+                </li>
+            </ul>
+        </details>
+        <details open="open">
+            <summary class="pgp-contact-section-header:">Channels</summary>
+            <ul class="pgp-contact-section:">
+                <li class="pgp-contact-entry:">
+                    <label class="pgp-contact-entry-label:">
+                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
+                        <div class="pgp-contact-entry-name:">Channel</div>
+                        <div class="pgp-contact-entry-status:">5 Users</div>
+                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
+                    </label>
+                </li>
+                <li class="pgp-contact-entry:">
+                    <label class="pgp-contact-entry-label:">
+                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
+                        <div class="pgp-contact-entry-name:">Channel</div>
+                        <div class="pgp-contact-entry-status:">25 Users</div>
+                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
+                    </label>
+                </li>
+                <li class="pgp-contact-entry:">
+                    <label class="pgp-contact-entry-label:">
+                        <img src="pgp/contact/render/icons/user_icon_default.png" class="pgp-contact-entry-icon:" alt="User Icon" />
+                        <div class="pgp-contact-entry-name:">Channel</div>
+                        <div class="pgp-contact-entry-status:">15 Users</div>
+                        <input type="checkbox" class="pgp-contact-entry-checkbox:">
+                    </label>
+                </li>
+            </ul>
+        </details>
+        <!--<input type='submit' value="Change Online Nick" disabled="disabled" />-->
+        <label>
+            <select name='command'>
+                <option value=''>Select Command(s)</option>
+            </select>
+        </label>
+    </form>
     <main class="hide-on-minimize">
-        <form name='pgp-contact-list' action='#'>
-            <code class='status-box'>{$status_box}</code>
-            <table style="width:100%">
-                <tbody>
-                    <tr>
-                        <td>
-                            <input name="name" type="text" />
-                        </td>
-                        <td><input type='submit' value="Change Online Nick" disabled="disabled" /></td>
-                        <!--<td rowspan="2">-->
-                            <!--<img width="64" height="64" alt="Icon" />-->
-                        <!--</td>-->
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <details open="open">
-                                <summary>Your PGP Identities</summary>
-                                <p>Contact</p>
-                                <p>Contact</p>
-                            </details>
-                            <details open="open">
-                                <summary>PGP Public Keys</summary>
-                                <p>Contact</p>
-                                <p>Contact</p>
-                            </details>
-                            <details open="open">
-                                <summary>Active Channels</summary>
-                                <p>Channel</p>
-                                <p>Channel</p>
-                                <p>Channel</p>
-                                <p>Channel</p>
-                            </details>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <select name='action'>
-                                <option value=''>Select Command(s)</option>
-                            </select>
-                        </td>
-                        <td><input type='submit' value="Execute Command" disabled="disabled" /></td>
-                    </tr>
 
-                </tbody>
-            </table>
-        </form>
     </main>
-    <!--<footer>-->
-        <!--<a href="#">-->
-            <!--<span class="command">Add</span> a new Contact...-->
-        <!--</a>-->
-    <!--</footer>-->
+    <footer>
+        <a href="#">
+            <span class="command">Add</span> a new Contact...
+        </a>
+    </footer>
 </article>
