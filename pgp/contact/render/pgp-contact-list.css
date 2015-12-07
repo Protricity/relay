@@ -12,12 +12,32 @@
 }
 
 .pgp-contact-section-header\3A {
-    /* font-family: arial; */
-    /* font-style: italic; */
-    text-decoration: underline;
+    cursor: pointer;
+    border: 1px outset;
+
     font-weight: bold;
-    padding: 1em 1em 0 1em;
-    /* text-align: center; */
+    padding: 1em 2em;
+    margin: 0.5em 0 0 0;
+
+    background-color: lightgrey;
+
+    border-radius: 1em;
+
+    transition: 1s;
+}
+
+.pgp-contact-section-details\3A[open] .pgp-contact-section-header\3A {
+    padding: 0.4em 1em 0.3em 1em;
+    border-radius: 0.5em 0.5em 0 0;
+}
+
+.pgp-contact-section-details\3A {
+    transition: 1s;
+    padding: 0;
+    open: none;
+}
+.pgp-contact-section-details\3A[open] {
+    padding: 0 0.5em 1em 0.5em;
 }
 
 
@@ -38,7 +58,8 @@
 }
 
 .pgp-contact-entry-name\3A {
-/* display: block; */
+
+/* display: block; */
 }
 
 .pgp-contact-entry\3A:hover .pgp-contact-entry-name\3A {
@@ -70,7 +91,7 @@ form[name=pgp-contact-list-form] .status-box:empty {
 }
 
 form[name=pgp-contact-list-form] select[name=command] {
-    padding: 0.5em 1em;
+    padding: 0.2em 0.6em;
     margin: 0.4em 0.2em 0 0.2em;
     border-radius: 0.6em;
     border-width: 1px;
