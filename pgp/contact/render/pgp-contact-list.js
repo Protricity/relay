@@ -53,10 +53,32 @@ if(typeof module === 'object') (function() {
         importScripts('keyspace/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;
 
+
+        var TEMPLATE_URL = "pgp/contact/render/pgp-contact-list.html";
+        var HTML_COMMAND_DEFAULT = '';
+        var HTML_CHANNEL_DEFAULT =
+            "<li class='pgp-contact-default_info'>" +
+                "No Active Channels. " +
+                "<br/><a href='#JOIN'>Join</a> a channel..." +
+            "</li>";
+
+        var HTML_PRIVATE_KEY_DEFAULT =
+            "<li class='pgp-contact-default_info'>" +
+                "No Private Keys Found. " +
+                "<br/><a href='#KEYGEN'>KeyGen</a> a new Identity..." +
+            "</li>";
+
+        var HTML_PUBLIC_KEY_DEFAULT =
+            "<li class='pgp-contact-default_info'>" +
+                "No Public Keys Found. " +
+                "<br/><a href='#PGP.ADD'>Search</a> for Contact..." +
+            "</li>";
+
         var status_box = '';
         var html_private_key_entries = '';
         var html_public_key_entries = '';
         var html_channel_entries = '';
+
 
         var html_command_options = '';
 
@@ -85,8 +107,6 @@ if(typeof module === 'object') (function() {
 
                     } else {
 
-                        var TEMPLATE_URL = "pgp/contact/render/pgp-contact-list.html";
-
                         var xhr = new XMLHttpRequest();
                         xhr.open("GET", TEMPLATE_URL, false);
                         xhr.send();
@@ -94,10 +114,10 @@ if(typeof module === 'object') (function() {
                             throw new Error("Error: " + xhr.responseText);
                         callback(xhr.responseText
                                 .replace(/{\$status_box}/gi, status_box || '')
-                                .replace(/{\$html_private_key_entries}/gi, html_private_key_entries || '')
-                                .replace(/{\$html_public_key_entries}/gi, html_public_key_entries || '')
-                                .replace(/{\$html_channel_entries}/gi, html_channel_entries || '')
-                                .replace(/{\$html_command_options}/gi, html_command_options || '')
+                                .replace(/{\$html_private_key_entries}/gi, html_private_key_entries || HTML_PRIVATE_KEY_DEFAULT)
+                                .replace(/{\$html_public_key_entries}/gi, html_public_key_entries || HTML_PUBLIC_KEY_DEFAULT)
+                                .replace(/{\$html_channel_entries}/gi, html_channel_entries || HTML_CHANNEL_DEFAULT)
+                                .replace(/{\$html_command_options}/gi, html_command_options || HTML_COMMAND_DEFAULT)
                         );
                                 //status_box = (status_box ? status_box + "<br/>" : '') + "<strong>No PGP Identities found</strong><br/>" +
                                 //    "<span class='info'>You may <a href='#KEYGEN'>Generate</a>  a new PGP Key Pair Identity</span>";
