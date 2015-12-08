@@ -40,11 +40,8 @@
             }
 
             function onResize() {
-                var width = window.innerWidth || window.documentElement.clientWidth;
-                var height = window.innerHeight || window.documentElement.clientHeight;
-                console.log(height, width);
-                document.body.classList.add(width > height / 1.2 ? 'layout-horizontal' : 'layout-vertical');
-                document.body.classList.remove(width > height / 1.2 ? 'layout-vertical' : 'layout-horizontal');
+                document.body.classList.add(window.innerWidth > window.innerHeight / 1.2 ? 'layout-horizontal' : 'layout-vertical');
+                document.body.classList.remove(window.innerWidth > window.innerHeight / 1.2 ? 'layout-vertical' : 'layout-horizontal');
             }
             window.onresize = onResize;
             setTimeout(onResize, 500);
