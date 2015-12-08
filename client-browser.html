@@ -10,6 +10,7 @@
             setTimeout(function() {
                 ClientSocketWorker.sendCommand("render {nav:menu}");
                 ClientSocketWorker.sendCommand("PGP.CONTACT");
+                ClientSocketWorker.sendCommand("AUTOJOIN");
             }, 10);
 
             setTimeout(function() {
@@ -38,12 +39,15 @@
                 }, 500);
             }
 
-            window.onresize = function(evt) {
-                var height = (evt.srcElement || evt.currentTarget).innerHeight;
-                var width = (evt.srcElement || evt.currentTarget).innerWidth;
-                document.body.classList.add(width > height / 2 ? 'layout-horizontal' : 'layout-vertical');
-                document.body.classList.remove(width > height / 2 ? 'layout-vertical' : 'layout-horizontal');
-            };
+            function onResize() {
+                var width = window.innerWidth || window.documentElement.clientWidth;
+                var height = window.innerHeight || window.documentElement.clientHeight;
+                console.log(height, width);
+                document.body.classList.add(width > height / 1.2 ? 'layout-horizontal' : 'layout-vertical');
+                document.body.classList.remove(width > height / 1.2 ? 'layout-vertical' : 'layout-horizontal');
+            }
+            window.onresize = onResize;
+            setTimeout(onResize, 500);
         </script>
         <link rel="stylesheet" href="client/themes/minimal/minimal.css" type="text/css" />
         <style>

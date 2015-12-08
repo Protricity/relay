@@ -13,7 +13,10 @@ if(typeof module === 'object') (function() {
             ["Unleash Democracy"],
 
             // Quotes
-            ["Consistency is the hobgoblin of narrow minds"]
+            ["Consistency is the hobgoblin of narrow minds"],
+
+            // Fakes
+            ["Relay's the thing, wherein I'll catch the conscience of the king"]
         ])
     };
 })();

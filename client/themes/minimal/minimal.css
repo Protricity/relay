@@ -12,6 +12,8 @@ input {
 
 body.theme-minimal header{
     /* font-family: body, monospace; */
+    /* margin: 1em 0; */
+    /* padding: 1em 0; */
 }
 
 
@@ -32,7 +34,6 @@ body.theme-minimal header{
 li {
     /* font-family: monospace; */
     color: #333;
-    \: block;
 }
 
 .theme-minimal a {
@@ -75,7 +76,7 @@ li {
 .theme-minimal > article > header > .header-bar-buttons a {
     text-decoration: none;
     color: #888;
-    font-family: command, monospace;
+    /* font-family: command, monospace; */
     margin: 1em 0.1em;
 }
 
@@ -83,17 +84,6 @@ li {
     color: black;
 }
 
-
-/** Sections **/
-
-theme-minimal > article {
-    max-height: 50em;
-}
-
-.theme-minimal > article > main,
-.theme-minimal > article > section {
-/*     background-color: #F5F5FA; */
-}
 
 
 /** Span Formats **/
@@ -236,25 +226,20 @@ theme-minimal > article {
 
 .theme-minimal.layout-horizontal > article {
     position: relative;
-
     display: inline-block;
     margin: 0.5em;
     vertical-align: top;
-    /* background: linear-gradient(to bottom right, #E5DDD5, #F5FFF5); */
     background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
     box-shadow: 0.1em 0.2em 0.8em #999;
     border-radius: 0.4em;
-    float: left;
-
-    /*animation: theme-minimal-article-fade-in .5s ease-out forwards;*/
-    transition: 2s ease-out;
+    max-height: 50em;
+    transition: box-shadow 1s ease-out;
 }
 
 
 .theme-minimal.layout-horizontal > article:hover {
-    /*cursor: pointer;*/
     box-shadow: 0 0 3em #558;
-    transition: 0.5s ease-out;
+    transition-duration: 0.5s;
     opacity: 1 !important;
 }
 
@@ -267,7 +252,7 @@ theme-minimal > article {
 
 .hide-on-minimize {
     max-height: 100em;
-    transition: 1s ease-in;
+    transition: max-height 1s ease-out, padding 1s ease-in;
 }
 
 .theme-minimal.layout-horizontal > article.minimized .hide-on-minimize {
@@ -276,7 +261,6 @@ theme-minimal > article {
     margin: 0;
     border: 0;
     overflow: hidden;
-    transition: 1s ease-out;
 }
 
 .theme-minimal.layout-horizontal > article.minimized {
@@ -284,7 +268,7 @@ theme-minimal > article {
     /*max-height: 20px;*/
     /*max-width: 24em;*/
     /*overflow: hidden;*/
-    /*transition: 1s ease-in;*/
+    transition: opacity 3s ease-in;
     opacity: 0.6;
 }
 
@@ -294,7 +278,6 @@ theme-minimal > article {
     top: 10%;
     bottom: inherit;
     left: 10%;
-    /*transition: 500ms;*/
     /* transform: translate(50%, 0%); */
     font-size: x-large;
     /* border-radius: 1em; */
@@ -313,28 +296,24 @@ body.theme-minimal.layout-vertical {
 
 body.theme-minimal.layout-vertical > article > header a,
 body.theme-minimal.layout-vertical > article > header{
-    /* font-size: large; */
+    padding: 0.2em 0;
 }
 
 /** Articles - Phone Layout **/
 
 .theme-minimal.layout-vertical > article {
-    /* position: relative; */
-    /* display: block; */
     margin: 0 0 0.5em 0;
     background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
     border-radius: 0.4em;
     box-shadow: 0.1em 0.2em 0.8em #999;
     width: 100%;
-    transition: 1s ease-in;
-    /* font-size: 2vw; */
+    max-height: 50em;
+    /*transition: box-shadow 0.5s ease-out;*/
 }
 
 
 .theme-minimal.layout-vertical > article:hover {
-    /*cursor: pointer;*/
     box-shadow: 0 0 3em #558;
-    transition: 0.5s ease-out;
     opacity: 1 !important;
 }
 
@@ -347,7 +326,6 @@ body.theme-minimal.layout-vertical > article > header{
 
 .theme-minimal.layout-vertical > article .hide-on-minimize {
     max-height: 100em;
-    transition: 1s ease-in;
 }
 
 .theme-minimal.layout-vertical > article.minimized .hide-on-minimize {
@@ -356,10 +334,10 @@ body.theme-minimal.layout-vertical > article > header{
     margin: 0;
     border: 0;
     overflow: hidden;
-    transition: 1s ease-out;
 }
 
 .theme-minimal.layout-vertical > article.minimized {
+    transition: opacity 1s ease-in;
     opacity: 0.6;
 }
 

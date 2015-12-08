@@ -9,6 +9,7 @@
     </header>
     <form name='pgp-contact-list-form' action='#' class="hide-on-minimize">
         <code class='status-box'>{$status_box}</code>
+        <input type='hidden' placeholder="Change Username" value="{$nick_value}" />
         <details open="open" class="pgp-contact-section-details:">
             <summary class="pgp-contact-section-header:">Your Identities</summary>
             <ul class="pgp-contact-section:">
@@ -27,20 +28,17 @@
                 {$html_channel_entries}
             </ul>
         </details>
-        <!--<input type='submit' value="Change Online Nick" disabled="disabled" />-->
-        <label>
-            <select name='command'>
-                <option value=''>Select Command(s)</option>
-                {$html_command_options}
-            </select>
-        </label>
+        <select name='command'>
+            <option value=''>Select Command(s)</option>
+            {$html_command_options}
+        </select>
     </form>
     <main class="hide-on-minimize">
 
     </main>
-    <footer>
-        <a href="#">
-            <span class="command">Add</span> a new Contact...
-        </a>
-    </footer>
+    <!--<footer>-->
+        <!--<a href="#">-->
+            <!--<span class="command">Add</span> a new Contact...-->
+        <!--</a>-->
+    <!--</footer>-->
 </article>

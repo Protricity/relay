@@ -22,8 +22,6 @@
     background-color: lightgrey;
 
     border-radius: 1em;
-
-    transition: 1s;
 }
 
 .pgp-contact-section-details\3A[open] .pgp-contact-section-header\3A {
@@ -32,9 +30,7 @@
 }
 
 .pgp-contact-section-details\3A {
-    transition: 1s;
     padding: 0;
-    open: none;
 }
 .pgp-contact-section-details\3A[open] {
     padding: 0 0.5em 1em 0.5em;
@@ -48,14 +44,13 @@
     /* padding: 0.2em 0.5em; */
     border: 1px outset;
     overflow: hidden;
-    transition: 1s ease-in;
+    transition: box-shadow 1s ease-in;
 }
 
-.pgp-contact-entry\3A:hover, 
 .pgp-contact-entry\3A:hover {
     box-shadow: 0 0 2em #558;
 
-    transition: 0.4s ease-out;
+    transition: box-shadow 0.4s ease-out;
 }
 
 .pgp-contact-entry-name\3A {
@@ -85,17 +80,22 @@
 form[name=pgp-contact-list-form] {
     padding: 2px;
     border: 1px inset;
+    position: relative;
 }
 
 form[name=pgp-contact-list-form] .status-box:empty {
     display: none;
 }
 
-form[name=pgp-contact-list-form] select[name=command] {
-    padding: 0.5em 1em;
-    margin: 0.4em 0.2em 0 0.2em;
+form[name=pgp-contact-list-form] input,
+form[name=pgp-contact-list-form] select {
+    padding: 0.2em 0.5em;
+    /* margin: 0.4em 0.2em 0 0.2em; */
     border-radius: 0.6em;
     border-width: 1px;
+    width: 90%;
+    margin: 0.5em auto;
+    display: block;
 }
 
 form[name=pgp-contact-list-form] input[type=checkbox].pgp-contact-entry-checkbox\3A {
@@ -106,7 +106,7 @@ form[name=pgp-contact-list-form] .pgp-contact-entry-label\3A {
     cursor: pointer;
     display: block;
     padding: 0.2em 0.5em;
-    transition: 1s;
+    transition: padding 0.3s;
 }
 
 form[name=pgp-contact-list-form] .pgp-contact-entry-checkbox\3A:checked
