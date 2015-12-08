@@ -2,9 +2,9 @@
  * Created by ari.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientKSAuthCommands = function (Client) {
-        Client.addCommand(ksChallengeCommand);
-        Client.addResponse(ksChallengeResponse);
+    module.exports.initClientKSAuthCommands = function (ClientWorker) {
+        ClientWorker.addCommand(ksChallengeCommand);
+        ClientWorker.addResponse(ksChallengeResponse);
 
         //var challengeValidations = [];
 
@@ -39,7 +39,7 @@ if(typeof module === 'object') (function() {
                 openpgp.decryptMessage(privateKey, pgpEncryptedMessage)
                     .then(function (decryptedChallenge) {
                         //challengeValidations.push([pgp_id_public, decryptedChallenge]);
-                        Client.sendWithSocket("auth.validate " + decryptedChallenge);
+                        ClientWorker.sendWithSocket("auth.validate " + decryptedChallenge);
 
                     }).catch(console.error);
             });

@@ -234,8 +234,6 @@ li {
     background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
     box-shadow: 0.1em 0.2em 0.8em #999;
     border-radius: 0.4em;
-    /* max-height: 50em; */
-     /*transition: box-shadow 1s ease-in, opacity 1s ease-in;*/
     animation: article-fade-in 1s ease-out;
 }
 
@@ -279,15 +277,10 @@ li {
 
 .theme-minimal.layout-horizontal > article.maximized {
     position: absolute;
-    display: block;
-    margin: 0 auto;
+    top: 2%;
+    left: 2%;
     z-index: 2;
-    /* top: 10%; */
-    /* bottom: inherit; */
-    /* left: 10%; */
-    /* transform: translate(50%, 0%); */
     font-size: x-large;
-    /* border-radius: 1em; */
 }
 
 

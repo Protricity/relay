@@ -2,8 +2,8 @@
  * Ari 7/2/2015.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientPGPImportCommands = function (Client) {
-        Client.addCommand(importCommand);
+    module.exports.initClientPGPImportCommands = function (ClientWorker) {
+        ClientWorker.addCommand(importCommand);
 
         /**
          * @param commandString PGP.IMPORT
@@ -84,7 +84,7 @@ if(typeof module === 'object') (function() {
                         self.module = {exports: {}};
                         importScripts('pgp/manage/render/pgp-manage-form.js');
                         self.module.exports.renderPGPManageForm(status_box, function (html) {
-                            Client.render(html);
+                            ClientWorker.render(html);
                         });
 
                     });
@@ -96,7 +96,7 @@ if(typeof module === 'object') (function() {
                 importScripts('pgp/import/render/pgp-import-form.js');
                 var templateExports = self.module.exports;
                 templateExports.renderPGPImportForm(privateKeyBlock, status_box, function (html) {
-                    Client.render(html);
+                    ClientWorker.render(html);
                 });
                 return true;
 

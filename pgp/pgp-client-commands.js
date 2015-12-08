@@ -2,81 +2,81 @@
  * Ari 7/2/2015.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientPGPCommands = function (Client) {
+    module.exports.initClientPGPCommands = function (ClientWorker) {
 
         // PGP.KEYGEN Command
-        Client.addCommand(importKeyGenCommand);
-        Client.addResponse(importKeyGenCommand);
+        ClientWorker.addCommand(importKeyGenCommand);
+        ClientWorker.addResponse(importKeyGenCommand);
         function importKeyGenCommand(commandString, e) {
             if (!/^pgp\.keygen/i.test(commandString))
                 return false;
-            Client.removeCommand(importKeyGenCommand);
-            Client.removeResponse(importKeyGenCommand);
+            ClientWorker.removeCommand(importKeyGenCommand);
+            ClientWorker.removeResponse(importKeyGenCommand);
             self.module = {exports: {}};
             importScripts('pgp/keygen/pgp-client-keygen-command.js');
-            module.exports.initClientPGPKeyGenCommand(Client);
+            module.exports.initClientPGPKeyGenCommand(ClientWorker);
             return false;
         }
 
         // PGP.MANAGE Command
-        Client.addCommand(importPGPManageCommand);
+        ClientWorker.addCommand(importPGPManageCommand);
         function importPGPManageCommand(commandString, e) {
             if (!/^pgp\.manage/i.test(commandString))
                 return false;
-            Client.removeCommand(importPGPManageCommand);
+            ClientWorker.removeCommand(importPGPManageCommand);
             self.module = {exports: {}};
             importScripts('pgp/manage/pgp-client-manage-command.js');
-            module.exports.initClientPGPManageCommand(Client);
+            module.exports.initClientPGPManageCommand(ClientWorker);
             return false;
         }
 
         // PGP.LIST Command
-        Client.addCommand(importPGPListCommand);
+        ClientWorker.addCommand(importPGPListCommand);
         function importPGPListCommand(commandString, e) {
             if (!/^pgp\.list/i.test(commandString))
                 return false;
-            Client.removeCommand(importPGPListCommand);
+            ClientWorker.removeCommand(importPGPListCommand);
             self.module = {exports: {}};
             importScripts('pgp/list/pgp-client-list-command.js');
-            module.exports.initClientPGPListCommand(Client);
+            module.exports.initClientPGPListCommand(ClientWorker);
             return false;
         }
 
         // PGP.CONTACT Command
-        Client.addCommand(importPGPContactCommand);
+        ClientWorker.addCommand(importPGPContactCommand);
         function importPGPContactCommand(commandString, e) {
             if (!/^pgp\.contact/i.test(commandString))
                 return false;
-            Client.removeCommand(importPGPContactCommand);
+            ClientWorker.removeCommand(importPGPContactCommand);
             self.module = {exports: {}};
             importScripts('pgp/contact/pgp-client-contact-command.js');
-            module.exports.initClientPGPContactCommand(Client);
+            module.exports.initClientPGPContactCommand(ClientWorker);
             return false;
         }
 
         // PGP.DELETE Command
-        Client.addCommand(importPGPDeleteCommand);
+        ClientWorker.addCommand(importPGPDeleteCommand);
         function importPGPDeleteCommand(commandString, e) {
             if (!/^pgp\.delete/i.test(commandString))
                 return false;
-            Client.removeCommand(importPGPDeleteCommand);
+            ClientWorker.removeCommand(importPGPDeleteCommand);
             self.module = {exports: {}};
             importScripts('pgp/delete/pgp-client-delete-command.js');
-            module.exports.initClientPGPDeleteCommand(Client);
+            module.exports.initClientPGPDeleteCommand(ClientWorker);
             return false;
         }
 
         // PGP.IMPORT Command
-        Client.addCommand(importPGPImportCommand);
-        Client.addResponse(importPGPImportCommand);
+        ClientWorker.addCommand(importPGPImportCommand);
+        ClientWorker.addResponse(importPGPImportCommand);
         function importPGPImportCommand(commandString, e) {
             if (!/^pgp\.import/i.test(commandString))
                 return false;
-            Client.removeCommand(importPGPImportCommand);
-            Client.removeResponse(importPGPImportCommand);
+            ClientWorker.removeCommand(importPGPImportCommand);
+            ClientWorker.removeResponse(importPGPImportCommand);
             self.module = {exports: {}};
             importScripts('pgp/import/pgp-client-import-command.js');
-            module.exports.initClientPGPImportCommands(Client);
+            module.exports.initClientPGPImportCommands(ClientWorker);
             return false;
         }
 

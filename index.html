@@ -8,11 +8,11 @@
         <meta name="keywords" CONTENT="relay, project, encryption, security, pgp, keyspace, socket, websocket, irc, chat, free, open-source">
 
         <link rel="shortcut icon" href="favicon.ico?v=6" />
-        <script src="client/client-socket-worker.js"></script>
+        <script src="client/client.js"></script>
         <script>
             setTimeout(function() {
-                ClientSocketWorker.sendCommand("about");
-                ClientSocketWorker.sendCommand("minimize about:");
+                Client.execute("about");
+                Client.execute("minimize about:");
             }, 500);
             window.onresize = function(evt) {
                 var height = (evt.srcElement || evt.currentTarget).innerHeight;

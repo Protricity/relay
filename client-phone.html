@@ -6,18 +6,18 @@
         <meta name="application-name" CONTENT="relay">
         <meta name="keywords" CONTENT="relay, client, phone">
 
-        <script src="client/client-socket-worker.js"></script>
+        <script src="client/client.js"></script>
         <link rel="stylesheet" href="client/themes/minimal/minimal.css" type="text/css" />
 
         <script>
             // TODO: auto scroll to focus container
 
-            ClientSocketWorker.sendCommand("PGP.LIST");
-            ClientSocketWorker.sendCommand("PGP.CONTACT");
-            ClientSocketWorker.sendCommand("AUTOJOIN");
-            // ClientSocketWorker.sendCommand("render {nav:menu}");
-            // ClientSocketWorker.sendCommand("feed");
-            // ClientSocketWorker.sendCommand("pgp.manage");
+            Client.execute("PGP.LIST");
+            Client.execute("PGP.CONTACT");
+            Client.execute("AUTOJOIN");
+            // Client.execute("render {nav:menu}");
+            // Client.execute("feed");
+            // Client.execute("pgp.manage");
 
 
             function onResize() {

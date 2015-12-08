@@ -2,8 +2,8 @@
  * Created by ari.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientKSPutKeySpaceCommand = function (Client) {
-        Client.addCommand(putCommand);
+    module.exports.initClientKSPutKeySpaceCommand = function (ClientWorker) {
+        ClientWorker.addCommand(putCommand);
         console.info("Loaded: " + self.location);
 
 
@@ -61,7 +61,7 @@ if(typeof module === 'object') (function() {
                                     // Publish only if requested
                                     if (publish) {
                                         console.info("Publishing: " + pgp_id_public + " " + timestamp);
-                                        Client.sendWithSocket("PUT " + pgp_id_public + "\n" + content);
+                                        ClientWorker.sendWithSocket("PUT " + pgp_id_public + "\n" + content);
                                     }
                                 });
                         });
@@ -95,7 +95,7 @@ if(typeof module === 'object') (function() {
 
                             // Publish only if requested
                             console.info("Publishing Encrypted Message: " + pgp_id_public);
-                            Client.sendWithSocket("PUT " + pgp_id_public + "\n" + content);
+                            ClientWorker.sendWithSocket("PUT " + pgp_id_public + "\n" + content);
                         });
 
                 } else {

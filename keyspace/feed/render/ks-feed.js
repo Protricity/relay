@@ -173,8 +173,8 @@ if(typeof document === 'object')
                 var pgpClearSignedMessage = openpgp.cleartext.readArmored(entryData.content);
                 var htmlContent = protectHTMLContent(pgpClearSignedMessage.text);
 
-                htmlContent = ClientSocketWorker.parseScripts(htmlContent, includeScripts);
-                htmlContent = ClientSocketWorker.parseStyleSheets(htmlContent, includeScripts);
+                htmlContent = Client.parseScripts(htmlContent, includeScripts);
+                htmlContent = Client.parseStyleSheets(htmlContent, includeScripts);
                 articleDiv.innerHTML = htmlContent;
 
                 if (articleDiv.children[0].nodeName.toLowerCase() === 'article')
@@ -239,7 +239,7 @@ if(typeof document === 'object')
                 // TODO: appear animation?
 
                 for(var si=0; si<includeScripts.length; si++)
-                    ClientSocketWorker.includeScript(includeScripts[si]);
+                    Client.includeScript(includeScripts[si]);
 
             });
         }

@@ -1,245 +1,504 @@
 /**
  * Created by ari on 6/19/2015.
  */
-"use strict";
-
-if (!module) var module = {};
-if (!module.exports) module.exports = {};
-module.exports.Client = Client;
-
-var tagCallbacks = {};
 
 function Client() {
+    return Client.get();
 }
 
 (function() {
+    var NO_CLASS = '_you_got_no-class';
 
-    var handlerCounter = 0;
-    var responseHandlers = [];
-    var commandHandlers = [];
+    var socketWorker = null;
+    //document.addEventListener('click', onClickEvent, false); // TODO: handle links globally? probably bad idea
+//    document.addEventListener('dblclick', onDblClick, false);
+    document.addEventListener('command', onCommandEvent, false);
+    window.addEventListener('hashchange', onHashChange, false);
 
-    Client.sendWithSocket = function(commandString, e, withSocket) {
-        if(typeof ClientSockets === 'undefined')
-            importScripts('client/sockets/client-sockets.js');
-        return ClientSockets.send(commandString, e, withSocket);
-    };
-
-
-    Client.addCommand = function (commandCallback, prepend) {
-        if(commandHandlers.indexOf(commandCallback) >= 0)
-            throw new Error("Command Callback already added: " + commandCallback);
-        commandHandlers[prepend ? 'unshift' : 'push'](commandCallback);
-        handlerCounter++;
-    };
-
-    Client.removeCommand = function (commandCallback) {
-        var pos = commandHandlers.indexOf(commandCallback);
-        if(pos === -1)
-            throw new Error("Command Callback not added: " + commandCallback);
-        commandHandlers.splice(pos, 1);
-        handlerCounter++;
-    };
-
-    Client.addResponse = function (responseCallback, prepend) {
-        if(responseHandlers.indexOf(responseCallback) >= 0)
-            throw new Error("Response Callback already added: " + responseCallback);
-        responseHandlers[prepend ? 'unshift' : 'push'](responseCallback);
-        handlerCounter++;
-    };
-
-    Client.removeResponse = function (responseCallback) {
-        var pos = responseHandlers.indexOf(responseCallback);
-        if(pos === -1)
-            throw new Error("Response Callback not added: " + responseCallback);
-        responseHandlers.splice(pos, 1);
-        handlerCounter++;
-    };
-
-    Client.execute = function(commandString, e) {
-        var oldCounter = handlerCounter;
-        for(var i=0; i<commandHandlers.length; i++)
-            if(commandHandlers[i](commandString, e))
-                return (function() {
-
-                    var parts = commandString.split(' ', 2);
-                    Client.log(
-                        '<span class="direction">$</span> ' +
-                        '<span class="command">' + parts[0] + '</span>' + (parts[1] ? ' ' + parts[1] : '')
-                    );
-                    return true;
-                })();
-
-        if(handlerCounter > oldCounter)
-            // Commands were added or removed, so try again
-            return Client.execute(commandString, e);
-
-        var err = "Client Command Handlers (" + commandHandlers.length + ") could not handle: " + commandString;
-        Client.log('<span class="error">' + err + '</span>');
-        console.error(err, commandHandlers);
-
-        //Client.postResponseToClient("ERROR " + err);
-        return false;
-    };
-
-    Client.processResponse = function(responseString, e) {
-        var oldCounter = handlerCounter;
-        for(var i=0; i<responseHandlers.length; i++)
-            if(responseHandlers[i](responseString, e)) {
-                var parts = responseString.split(' ', 2);
-
-                // TODO: only pass if handled?
-                // Pass response event to client thread
-                Client.postResponseToClient(responseString);
-
-                Client.log(
-                    '<span class="direction">I</span> ' +
-                    '<span class="response">' + parts[0] + '</span>' + (parts[1] ? ' ' + parts[1] : '')
-                );
-
-                return true;
-            }
-
-
-
-        if(handlerCounter > oldCounter)
-            // Commands were added or removed, so try again
-            return Client.processResponse(responseString, e);
-
-        var err = "Client Response Handlers could not handle: " + responseString;
-        Client.log('<span class="error">' + err + '</span>');
-        console.error(err, commandHandlers);
-
-        //Client.postResponseToClient("ERROR " + err);
-        return false;
-    };
-
-    Client.render = function(content, callback) {
-        parseClientTags(content, function(parsedContent) {
-            Client.postResponseToClient("RENDER " + parsedContent);
-            (callback || function(){})();
-        });
-    };
-
-    Client.appendChild = function(targetClass, childContent) {
-        //parseClientTags(childContent, function(parsedContent) {
-            Client.postResponseToClient("APPEND " + targetClass + " " + childContent);
-        //});
-    };
-
-    Client.prependChild = function(targetClass, childContent) {
-        //parseClientTags(childContent, function(parsedContent) {
-            Client.postResponseToClient("PREPEND " + targetClass + " " + childContent);
-        //});
-    };
-
-    Client.replace = function(targetClass, replaceContent) {
-        //parseClientTags(replaceContent, function(parsedContent) {
-            Client.postResponseToClient("REPLACE " + targetClass + " " + replaceContent);
-        //});
-    };
-
-    Client.postResponseToClient = function(responseString) {
-        self.postMessage(responseString);
-    };
-
-    var consoleExports = false;
-    Client.log = function(message) {
-        if(!consoleExports) {
-            self.module = {exports: {}};
-            importScripts('client/console/render/console-window.js');
-            consoleExports = self.module.exports;
-
-            // Render log window
-            consoleExports.renderConsoleWindow(function(html) {
-                Client.render(html);
-            });
+    Client.get = function() {
+        if(!socketWorker) {
+            socketWorker = new Worker('worker.js');
+            socketWorker.addEventListener('message', function(e) {
+                Client.processResponse(e.data || e.detail);
+            }, true);
         }
-        consoleExports.renderConsoleEntry(message, function(html) {
-            Client.appendChild("console-content:", html);
-        });
-//         console.log(message);
+        return socketWorker;
     };
 
+    Client.execute = function (commandString) {
+        Client.get()
+            .postMessage(commandString);
+    };
 
-    function parseClientTags(tagHTML, callback) {
-        var match = /\{([a-z][^}]+)}/.exec(tagHTML);
-        if (!match) {
-            callback(tagHTML);
-            return;
+    Client.processResponse = function(responseString) {
+        var args = /^\w+/.exec(responseString);
+        if(!args)
+            throw new Error("Invalid Command: " + responseString);
+
+        var command = args[0].toLowerCase();
+
+        switch(command) {
+            case 'render':
+                render(responseString);
+                break;
+
+            case 'replace':
+            case 'append':
+            case 'prepend':
+                renderClass(responseString);
+                break;
+
+            case 'minimize':
+            case 'maximize':
+            case 'close':
+                renderWindowCommand(responseString);
+                break;
+
+            default:
+                // some responses aren't used by the client, but should be passed through the client anyway
+                //console.error("Unhandled client-side command: " + responseString);
+                break;
         }
 
-        var tagString = match[0];
+        document.dispatchEvent(new CustomEvent('response', {
+            detail: responseString
+        }));
 
-        var tags = Client.require('client/tags/client-tag-list.js').tags;
-        for (var i = 0; i < tags.length; i++) {
-            if (tags[i][0].test(tagString)) {
-                tags[i][1](tagString, function (tagReplacedContent) {
-                    tagHTML = tagHTML
-                        .replace(tagString, tagReplacedContent);
-                    parseClientTags(tagHTML, callback);
-                }, Client);
+        document.dispatchEvent(new CustomEvent('response:' + command, {
+            detail: responseString
+        }));
+
+        // If host thread exists,
+        if(typeof Host === 'object')
+            // Send response to host thread
+            Host.processResponse(responseString);
+    };
+
+    // Events
+
+    function onClickEvent(e) {
+        var target = e.target;
+        while(target = target.parentNode) {
+            var aMinAnchor = target.querySelector('a[href*=MINIMIZE]');
+            if(aMinAnchor){
+                 console.log(aMinAnchor, e);
+                var commandString = aMinAnchor
+                    .getAttribute('href')
+                    .replace(/^#/,'');
+                Client.execute(commandString);
                 return;
             }
         }
 
-        throw new Error("Invalid Tag(" + tags.length+ "): " + tagString);
+        //
+        //if(e.defaultPrevented
+        //    || e.target.nodeName.toLowerCase() !== 'a'
+        //    || !e.target.href
+        //    || e.target.host != document.location.host)
+        //    return;
+        //
+        //e.preventDefault();
+        //
+        //if(e.target.hash
+        //    && e.target.host == document.location.host
+        //    && e.target.pathname == document.location.pathname
+        //    )
+        //    return onHashChange(e, e.target.hash);
+        //
+        //var commandString = "GET " + e.target.href;
+        //Client.execute(commandString);
     }
 
-    Client.require = function(path) {
-        if(typeof require === 'function')
-            return require('../' + path);
+    function onDblClick(e) {
+        var target = e.target;
+        while(target = target.parentNode) {
+            var aMaxAnchor = target.querySelector('a[href*=MINIMIZE]');
+            if(aMaxAnchor){
+                 console.log(aMaxAnchor);
+                var commandString = aMaxAnchor
+                    .getAttribute('href')
+                    .replace(/^#/,'');
+                Client.execute(commandString);
+                return;
+            }
+        }
+    }
 
-        self.exports = {};
-        self.module = {exports: {}};
-        importScripts(path);
-        return self.module.exports;
-    };
+    function onCommandEvent(e) {
+        e.preventDefault();
+        var commandString = e.detail || e.data;
+        Client.execute(commandString);
+    }
 
-    Client.require('client/client-command-proxies.js')
-        .initClientCommands(Client);
-
-// Default
-
-    //var defaultResponse = function(responseString) {
-    //    defaultResponse = function(responseString) {
-    //        throw new Error("Command Response Handler failed to load: " + responseString);
-    //    };
-    //
-    //};
-    //Client.addResponse(/^\w+/, defaultResponse);
-
-    // Socket Client
-    Client.addResponse(consoleResponse);
-    function consoleResponse(commandResponse, e) {
-        var match = /^(info|error|assert|warn)/i.exec(commandResponse);
-        if(!match)
+    function onHashChange(e, hash) {
+        hash = hash || document.location.hash;
+        var hashCommand = decodeURIComponent(hash.replace(/^#/, '').trim());
+        document.location.hash = '';
+        if(!hashCommand)
             return false;
-
-        var command = match[1].toLowerCase();
-        console[command](commandResponse);
-        return true;
+        e.preventDefault();
+        console.info("Hash Command: ", hashCommand);
+        Client.execute(hashCommand);
     }
 
 
-    // Window Client
-    Client.addCommand(channelButtonCommand);
-    function channelButtonCommand(commandString, e) {
-        if(!/^(minimize|maximize|close)/i.test(commandString))
-            return false;
-        Client.postResponseToClient(commandString);
-        return true;
+
+
+    function renderWindowCommand(commandString) {
+        var args = /^(minimize|maximize|close)\s+(\S+)$/mi.exec(commandString);
+        if(!args)
+            throw new Error("Invalid Command: " + commandString);
+
+        var command = args[1].toLowerCase();
+        var targetClass = args[2];
+        var targetElements = document.getElementsByClassName(targetClass);
+        if(targetElements.length === 0)
+            throw new Error("Class not found: " + targetClass + " - " + commandString);
+
+        var targetElement = targetElements[0];
+        var hasClass = targetElement.classList.contains(command + 'd');
+
+        //switch(command) {
+        //    case 'minimize':
+        //    case 'maximize':
+        //    case 'close':
+
+        var maximizedElms = document.getElementsByClassName('maximized');
+        while(maximizedElms.length > 0)
+            maximizedElms[0].classList.remove('maximized');
+
+                //break;
+            //default:
+            //    break;
+        //}
+
+        for(var i=0; i<targetElements.length; i++) {
+            targetElement = targetElements[i];
+            if(hasClass) {
+                targetElement.classList.remove(command + 'd');
+
+            } else {
+                targetElement.classList.remove('minimized');
+                targetElement.classList.remove('maximized');
+                targetElement.classList.remove('closed');
+                targetElement.classList.add(command + 'd');
+            }
+        }
+
     }
 
+    function renderClass(commandString) {
+        var args = /^(replace|append|prepend)\s+(\S+)\s+([\s\S]+)$/mi.exec(commandString);
+        if (!args)
+            throw new Error("Invalid Class Args: " + commandString);
 
-    // Client Render
-    Client.addCommand(clientRenderCommand);
-    function clientRenderCommand(commandString, e) {
-        if(!/^(render|replace|append|prepend)/i.test(commandString))
-            return false;
-        parseClientTags(commandString, function(parsedCommandString) {
-            Client.postResponseToClient(parsedCommandString);
+        var command = args[1].toLowerCase();
+        var targetClass = args[2];
+        var content = args[3];
+
+        var includeScripts = [];
+        content = Client.parseScripts(content, includeScripts);
+        content = Client.parseStyleSheets(content, includeScripts);
+
+        var htmlContainer = document.createElement('div');
+        htmlContainer.innerHTML = content;
+        var contentElements = htmlContainer.children;
+        if(contentElements.length === 0)
+            throw new Error("First child missing", console.log(content, htmlContainer));
+
+        var contentElement = htmlContainer.children[0];     // First Child
+
+        var targetElement;
+        switch(command) {
+            case 'replace': // Replaces entire target element
+                var replaceElements = document.getElementsByClassName(targetClass);
+                if(replaceElements.length === 0)
+                    throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
+
+                targetElement = replaceElements[0];
+                //targetElement.innerHTML = '';
+
+                targetElement.parentNode.insertBefore(contentElement, targetElement);
+
+                // Remove existing element
+                targetElement.parentNode.removeChild(targetElement);
+                targetElement = contentElement;
+
+                break;
+
+            case 'prepend': // Prepends inner content to target element
+                var prependTargets = document.getElementsByClassName(targetClass);
+                if(prependTargets.length === 0)
+                    throw new Error("Invalid prepend content. Missing class='" + targetClass + "'\n" + content);
+                targetElement = prependTargets[0];
+
+                if(targetElement.firstChild) {
+                    while(contentElements.length > 0)
+                        targetElement.insertBefore(contentElements[contentElements.length-1], targetElement.firstChild);
+                } else {
+                    while(contentElements.length > 0)
+                        targetElement.appendChild(contentElements[0]);
+                }
+                targetElement.scrollTop = 0;
+                break;
+
+            case 'append': // Appends inner content to target element
+                var appendTargets = document.getElementsByClassName(targetClass);
+                if(appendTargets.length === 0)
+                    throw new Error("Invalid append content. Missing class='" + targetClass + "'\n" + content);
+                targetElement = appendTargets[0];
+
+                while(contentElements.length > 0)
+                    targetElement.appendChild(contentElements[0]);
+                targetElement.scrollTop = targetElement.scrollHeight;
+                break;
+
+            default:
+                throw new Error("Invalid Command: " + command);
+        }
+
+        // Include scripts after insert:
+        includeScriptsAsync(targetElement, includeScripts, function() {
+            var contentEvent = new CustomEvent('render', {
+                bubbles: true
+            });
+            targetElement.dispatchEvent(contentEvent);
         });
-        return true;
     }
 
+    function render(commandString) {
+        var args = /^render\s+([\s\S]+)$/mi.exec(commandString);
+        if (!args)
+            throw new Error("Invalid Command: " + commandString);
+
+        var content = args[1];
+        var includeScripts = [];
+        content = Client.parseScripts(content, includeScripts);
+        content = Client.parseStyleSheets(content, includeScripts);
+
+        var htmlContainer = document.createElement('div');
+        htmlContainer.innerHTML = content;
+        var contentElements = htmlContainer.children;
+        if(contentElements.length === 0) {
+            htmlContainer.innerHTML = '<article class="' + NO_CLASS + '">' + content + '</article>';
+            contentElements = htmlContainer.children;
+            if(contentElements.length === 0) 
+                throw new Error("First child missing", console.log(content, htmlContainer));
+        }
+
+        var contentElement = contentElements[0];     // First Child
+        if(contentElement.classList.length === 0)
+            contentElement.classList.add('__no-class');
+        var targetClass = contentElement.classList.item(0);
+
+        if(contentElement.classList.contains('maximize-on-render')) {
+            var maximizedElms = document.getElementsByClassName('maximized');
+            while (maximizedElms.length > 0)
+                maximizedElms[0].classList.remove('maximized');
+
+            contentElement.classList.add('maximized');
+        }
+
+
+        var targetElements = document.getElementsByClassName(targetClass);
+        var targetElement;
+        if(targetElements.length === 0) {
+            var bodyElm = document.getElementsByTagName('body')[0];
+
+            var insertBefore;
+            for(var i=0; i<bodyElm.children.length; i++)
+                if(bodyElm.children[i].nodeName.toLowerCase() === 'article') {
+                    insertBefore = bodyElm.children[i];
+                    break;
+                }
+
+            if(insertBefore)
+                bodyElm.insertBefore(contentElement, insertBefore);
+            else
+                bodyElm.appendChild(contentElement);
+
+
+            if(targetElements.length === 0)
+                throw new Error("Shouldn't Happen. Missing class='" + targetClass + "'\n" + content);
+            targetElement = targetElements[0];
+
+        } else {
+
+            // Existing window with same name
+            targetElement = targetElements[0];
+            //replaceHTMLContent(targetElement, contentElement);
+
+            targetElement.parentNode.insertBefore(contentElement, targetElement);
+            targetElement.parentNode.removeChild(targetElement);
+            targetElement = contentElement;
+        }
+
+        targetElement.scrollIntoView();
+
+        // Include scripts after insert:
+        includeScriptsAsync(targetElement, includeScripts, function() {
+            var contentEvent = new CustomEvent('render', {
+                bubbles: true
+            });
+            targetElement.dispatchEvent(contentEvent);
+        });
+    }
+
+    function replaceHTMLContent(oldElement, newElement) {
+        if(oldElement.nodeType !== newElement.nodeType)
+            return replace();
+
+        if(oldElement.nodeName !== newElement.nodeName)
+            return replace();
+
+        switch(newElement.nodeType) {
+            case Node.ELEMENT_NODE:
+                for(var i=0; i<newElement.attributes.length; i++)
+                    if(oldElement.attributes[i].toString() !== newElement.attributes[i].toString())
+                        return replace();
+
+                if(newElement.children.length > 0) {
+                    for(i=0; i<newElement.childNodes.length; i++) {
+                        if(i>=oldElement.childNodes.length) {
+                            oldElement.appendChild(newElement.childNodes[i]);
+                        } else {
+                            replaceHTMLContent(oldElement.childNodes[i], newElement.childNodes[i]);
+                        }
+                    }
+
+                } else {
+                    if(oldElement.innerHTML !== newElement.innerHTML)
+                        return replace();
+                }
+                break;
+
+            case Node.TEXT_NODE:
+                if(oldElement.innerHTML !== newElement.innerHTML)
+                    return replace();
+                break;
+        }
+
+
+//         console.log("Match: ", newElement, oldElement);
+
+        function replace() {
+//             console.log("Mismatch: ", newElement, oldElement);
+            oldElement.parentNode.insertBefore(newElement, oldElement);
+            oldElement.parentNode.removeChild(oldElement);
+        }
+    }
+
+    function includeScriptsAsync(targetElement, scripts, callback) {
+        if(scripts.length > 0) {
+            var script = scripts.shift();
+            Client.includeScript(script, function() {
+                includeScriptsAsync(targetElement, scripts, callback);
+            });
+
+        } else {
+            if(callback)
+                callback();
+        }
+    }
 })();
+
+
+Client.parseStyleSheets = function(content, includeScripts) {
+    var match;
+    while(match = /<link([^>]*)\/?>(<\/link>)?/gi.exec(content)) {
+        var linkContent = match[0];
+        content = content.replace(linkContent, '');
+        var match3 = /\s*href=['"]([^'"]*)['"]/gi.exec(match[1]);
+        if(match3) {
+            var hrefValue = match3[1];
+            includeScripts.push(hrefValue);
+
+        } else {
+            throw new Error("Invalid Script: " + linkContent);
+        }
+    }
+    return content;
+};
+
+Client.parseScripts = function(content, includeScripts) {
+    var match;
+    while(match = /<script([^>]*)><\/script>/gi.exec(content)) {
+        var scriptContent = match[0];
+//             console.log(scriptContent);
+        content = content.replace(scriptContent, '');
+        var match2 = /\s*src=['"]([^'"]*)['"]/gi.exec(match[1]);
+        if(match2) {
+            var srcValue = match2[1];
+            includeScripts.push(srcValue);
+
+        } else {
+            throw new Error("Invalid Script: " + scriptContent);
+        }
+    }
+    return content;
+};
+
+Client.includeScript = function(styleSheetURL, callback) {
+    var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(styleSheetURL);
+    if(!match)
+        throw new Error("Invalid URL: " + styleSheetURL);
+
+    var host = match[4],
+        scriptPath = match[5].toLowerCase() || '';
+    if(host)
+        throw new Error("Only local scripts may be included: " + scriptPath);
+
+    var headElm = document.getElementsByTagName('head')[0];
+
+    var ext = scriptPath.split('.').pop();
+    switch(ext.toLowerCase()) {
+        case 'js':
+            var scriptQuery = headElm.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']');
+            if (scriptQuery.length === 0) {
+                var newScript = document.createElement('script');
+                newScript.setAttribute('src', scriptPath);
+                newScript.onload = callback;
+                headElm.appendChild(newScript);
+                // console.log("Including Script: ", newScript);
+
+                return true;
+            }
+            break;
+
+        case 'css':
+            var linkQuery = headElm.querySelectorAll('link[href=' + scriptPath.replace(/[/.]/g, '\\$&') + ']');
+            if (linkQuery.length === 0) {
+                var newLink = document.createElement('link');
+                newLink.setAttribute('href', scriptPath);
+                newLink.setAttribute('rel', 'stylesheet');
+                newLink.setAttribute('type', 'text/css');
+                newLink.onload = callback;
+                headElm.appendChild(newLink);
+                // console.log("Including StyleSheet: ", newScript);
+
+                return true;
+            }
+            break;
+
+        default:
+            throw new Error("Invalid extension: " + ext);
+    }
+
+    if(callback)
+        callback();
+
+    return false;
+};
+//
+//Client.includeLink = function(linkPath) {
+//    var head = document.getElementsByTagName('head')[0];
+//    if (head.querySelectorAll('link[href=' + linkPath.replace(/[/.]/g, '\\$&') + ']').length === 0) {
+//        var newScript = document.createElement('link');
+//        newScript.setAttribute('href', linkPath);
+//        head.appendChild(newScript);
+//        return true;
+//    }
+//    return false;
+//};
+
+//ClientLoader.includeScript('client/theme/base/base-client-loader.js');

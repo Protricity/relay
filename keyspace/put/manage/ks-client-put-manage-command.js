@@ -2,8 +2,8 @@
  * Created by ari.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientKSPutManageCommand = function (Client) {
-        Client.addCommand(putManageCommand);
+    module.exports.initClientKSPutManageCommand = function (ClientWorker) {
+        ClientWorker.addCommand(putManageCommand);
 
         function putManageCommand(commandString) {
             var match = /^put.manage\s*(\S+)?$/im.exec(commandString);
@@ -15,7 +15,7 @@ if(typeof module === 'object') (function() {
             self.module = {exports: {}};
             importScripts('keyspace/put/manage/render/ks-put-manage-form.js');
             self.module.exports.renderPutManageForm(contentURL, '', function (html) {
-                Client.render(html);
+                ClientWorker.render(html);
             });
 
             return true;

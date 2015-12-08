@@ -33,7 +33,7 @@ if(typeof module !== 'object')
         var HTML_PRIVATE_KEY_DEFAULT =
             "<li class='pgp-contact-default_info'>" +
             "No Private Keys Found. " +
-            "<br/><a href='#KEYGEN'>KeyGen</a> a new Identity..." +
+            "<br/><a href='#PGP.KEYGEN'>KeyGen</a> a new Identity..." +
             "</li>";
 
         var HTML_PUBLIC_KEY_DEFAULT =
@@ -58,11 +58,24 @@ if(typeof module !== 'object')
                 throw new Error(err);
 
             if(contentEntry) {
+                // TODO: get socket user name
+                var html_commands =
+                    "<a href='#MESSAGE " + contentEntry.pgp_id_public + "'>" +
+                        "<span class='command'>Message</span> " + // contentEntry.user_id +
+                    "</a>" +
+                    "<a href='#PGP.DELETE " + contentEntry.pgp_id_public + "'>" +
+                        "<span class='command'>Delete</span>" +
+                    "</a>" +
+                    "<a href='#CHANLIST " + contentEntry.pgp_id_public + "'>" +
+                        "<span class='command'>ChanList</span>" +
+                    "</a>";
 
                 renderPGPContactListEntry(
                     contentEntry.user_id,
-                    contentEntry.pgp_id_private + ' - online',
+                    contentEntry.pgp_id_public + ' - online',
                     'pgp/contact/render/icons/user_icon_default.png',
+                    'public-key',
+                    html_commands,
                     function(html) {
                         html_public_key_entries += html;
                     });
@@ -75,11 +88,20 @@ if(typeof module !== 'object')
                         throw new Error(err);
 
                     if(contentEntry) {
+                        var html_commands =
+                            "<a href='#PUT --with " + contentEntry.pgp_id_public + "'>" +
+                                "<span class='command'>Put</span>" + // to your KeySpace" +
+                            "</a>" +
+                            "<a href='#PGP.EXPORT --with " + contentEntry.pgp_id_public + "'>" +
+                                "<span class='command'>Export</span>" + // Key" +
+                            "</a>";
 
                         renderPGPContactListEntry(
                             contentEntry.user_id,
                             contentEntry.pgp_id_private + ' - private key',
                             'pgp/contact/render/icons/user_icon_default.png',
+                            'private-key',
+                            html_commands,
                             function(html) {
                                 html_private_key_entries += html;
                             });
@@ -98,11 +120,22 @@ if(typeof module !== 'object')
                         // Query Auto Join Channels
                         SettingsDB.getAllSettings("channel:*", function(channelSettings) {
                             if(channelSettings) {
+
+                                var html_commands =
+                                    "<a href='#JOIN " + channelSettings.name_original_case + "'>" +
+                                    "<span class='command'>Join</span> " + // channelSettings.name_original_case +
+                                    "</a>" +
+                                    "<a href='#LEAVE " + channelSettings.name_original_case + "'>" +
+                                        "<span class='command'>Leave</span> " + // channelSettings.name_original_case +
+                                    "</a>";
+
                                 if(channelSettings.auto_join === 1) {
                                     renderPGPContactListEntry(
                                         channelSettings.name_original_case,
                                         '0-25 users',
-                                        'pgp/contact/render/icons/channel_icon_default.png', // TODO: channel icon
+                                        'pgp/contact/render/icons/channel_icon_default.png',
+                                        'channel',
+                                        html_commands,
                                             function(html) {
                                                 html_channel_entries += html;
                                             });
@@ -136,7 +169,7 @@ if(typeof module !== 'object')
 
     var i=0;
     module.exports.renderPGPContactListEntry = renderPGPContactListEntry;
-    function renderPGPContactListEntry(name, status, user_icon_path, callback) {
+    function renderPGPContactListEntry(name, status, user_icon_path, type, html_commands, callback) {
         var TEMPLATE_URL = "pgp/contact/render/pgp-contact-list-entry.html";
 
         var xhr = new XMLHttpRequest();
@@ -150,13 +183,16 @@ if(typeof module !== 'object')
         //status = 'online';
         user_icon_path = user_icon_path || 'pgp/contact/render/icons/user_icon_default.png';
 
+
         // Callback
         callback(xhr.responseText
                 //.replace(/{\$id_public}/gi, contentEntry.pgp_id_public)
 //                 .replace(/{\$id_public_short}/gi, contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8))
+                .replace(/{\$type}/gi, type)
                 .replace(/{\$name}/gi, name)
                 .replace(/{\$status}/gi, status)
                 .replace(/{\$user_icon_path}/gi, user_icon_path)
+                .replace(/{\$html_commands}/gi, html_commands)
                 .replace(/{\$i}/gi, i++)
         );
     }
@@ -169,9 +205,16 @@ if(typeof document === 'object')
         // Events
         var contactExports = module.exports;
 
-        self.addEventListener('submit', onFormEvent, false);
-        self.addEventListener('change', onFormEvent);
-//         self.addEventListener('input', onFormEvent, false);
+        document.addEventListener('submit', onFormEvent, false);
+        document.addEventListener('change', onFormEvent);
+        document.addEventListener('response:keyspace', onKeySpaceEvent);
+        document.addEventListener('response:settings', onKeySpaceEvent);
+//         document.addEventListener('input', onFormEvent, false);
+
+        function onKeySpaceEvent(e) {
+            var commandString = e.detail;
+            console.log(commandString, e);
+        }
 
         function onFormEvent(e, formElm) {
             if(!formElm) formElm = e.target.form ? e.target.form : e.target;
@@ -182,7 +225,8 @@ if(typeof document === 'object')
                 case 'pgp-contact-list-form':
                     updateCommandList(e, formElm);
                     //contactExports.refreshPGPContactList(e, formElm);
-                    //if(e.type === 'submit')
+                    if(e.type === 'submit')
+                        e.preventDefault();
                         //contactExports.submitPGPContactList(e, formElm);
                     return true;
 
@@ -194,29 +238,73 @@ if(typeof document === 'object')
 
         function updateCommandList(e, formElm) {
             var checkedContactEntries = formElm.querySelectorAll('input:checked.pgp-contact-entry-checkbox\\:');
-            console.log(checkedContactEntries);
+            var channels = formElm.querySelectorAll('input:checked.pgp-contact-entry-checkbox\\:[data-type=channel');
+            var privateKeys = formElm.querySelectorAll('input:checked.pgp-contact-entry-checkbox\\:[data-type=private-key');
+            var publicKeys = formElm.querySelectorAll('input:checked.pgp-contact-entry-checkbox\\:[data-type=public-key');
 
-            var count = checkedContactEntries.length;
             var html_command_options = '';
             html_command_options +=
                 "<option value=''>" +
-                    (count > 0 ? '('+count+')' : 'No') + " Contacts Selected..." +
+                    (checkedContactEntries.length > 0 ? '(' + checkedContactEntries.length + ')' : 'No') + " Contacts Selected" +
                 "</option>";
 
-            html_command_options +=
-                "<optgroup label='Choose a command'>";
-
-            if(count > 0) {
+            if(checkedContactEntries.length > 0)
                 html_command_options +=
-                    "<option value='MESSAGE'>" +
-                        "MESSAGE (" + count + ") Contacts" +
-                    "</option>";
-            }
+                    "<option value=''>Clear Selected Contacts</option>";
 
-            // TODO: if user, if channel if etc
+            // Public Keys
 
-            html_command_options +=
-                "</optgroup>";
+            if(publicKeys.length > 0)
+                html_command_options +=
+                    "<optgroup label='User Commands'>" +
+                        "<option value='MESSAGE [user]'>" +
+                            "MESSAGE (" + publicKeys.length + ") Contact" + (publicKeys.length === 1 ? '' : 's') +
+                        "</option>" +
+                    "</optgroup>" +
+                    "<optgroup label='Public Key Commands'>" +
+                        "<option value='PGP.EXPORT [public-key]'>" +
+                            "EXPORT (" + publicKeys.length + ") Public Key" + (publicKeys.length === 1 ? '' : 's') +
+                        "</option>" +
+                        "<option value='PGP.DELETE [public-key]'>" +
+                            "DELETE (" + publicKeys.length + ") Contact" + (publicKeys.length === 1 ? '' : 's') + " from list" +
+                        "</option>" +
+                    "</optgroup>";
+
+
+            // Private Keys
+
+            if(privateKeys.length > 0)
+                html_command_options +=
+                    //"<optgroup label='Account Commands'>" +
+                    //    "<option value='MESSAGE [user]'>" +
+                    //        "MESSAGE (" + privateKeys.length + ") Account" + (privateKeys.length === 1 ? '' : 's') +
+                    //    "</option>" +
+                    //"</optgroup>" +
+                    "<optgroup label='Private Key Commands'>" +
+                        "<option value='PGP.EXPORT [public-key]'>" +
+                            "EXPORT (" + privateKeys.length + ") Private Key" + (privateKeys.length === 1 ? '' : 's') +
+                        "</option>" +
+                        "<option value='PGP.DELETE [public-key]'>" +
+                            "DELETE (" + privateKeys.length + ") Account" + (privateKeys.length === 1 ? '' : 's') + " from list" +
+                        "</option>" +
+                    "</optgroup>";
+
+
+
+            // Channels
+
+            if(channels.length > 0)
+                html_command_options +=
+                    "<optgroup label='Channel Commands'>" +
+                        "<option value='JOIN [channel]'>" +
+                            "JOIN (" + channels.length + ") Channel" + (channels.length === 1 ? '' : 's') +
+                        "</option>" +
+                        "<option value='LEAVE [channel]'>" +
+                            "LEAVE (" + channels.length + ") Channel" + (channels.length === 1 ? '' : 's') +
+                        "</option>" +
+                    "</optgroup>";
+
+
 
             formElm.command.innerHTML = html_command_options;
         }

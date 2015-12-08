@@ -136,6 +136,10 @@ function SettingsDB(dbReadyCallback) {
             putRequest.onsuccess = function(e) {
                 if(callback)
                     callback(null, insertData, putRequest);
+
+                var responseString = "SETTINGS.UPDATE " + settingsData.name;
+                (typeof Client === 'object' ? Client : ClientWorker)
+                    .processResponse(responseString);
             };
             putRequest.onerror = function(e) {
                 if(callback)

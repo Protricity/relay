@@ -2,10 +2,10 @@
  * Created by ari on 6/19/2015.
  */
 
-importScripts('client/client.js');
+importScripts('client/client-worker.js');
 
 self.addEventListener('message', function (e) {
-    Client.execute(e.data, e);
+    ClientWorker.execute(e.data, e);
 }, false);
 
 if(typeof Crypto === 'undefined') {

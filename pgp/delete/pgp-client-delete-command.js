@@ -2,8 +2,8 @@
  * Ari 7/2/2015.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientPGPDeleteCommand = function (Client) {
-        Client.addCommand(deleteCommand);
+    module.exports.initClientPGPDeleteCommand = function (ClientWorker) {
+        ClientWorker.addCommand(deleteCommand);
 
 
 
@@ -40,7 +40,7 @@ if(typeof module === 'object') (function() {
                                 self.module = {exports: {}};
                                 importScripts('pgp/manage/render/pgp-manage-form.js');
                                 self.module.exports.renderPGPManageForm(status_box, function (html) {
-                                    Client.render(html);
+                                    ClientWorker.render(html);
                                 });
                             });
                         } else {

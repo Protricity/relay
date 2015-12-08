@@ -220,7 +220,13 @@ function KeySpaceDB(dbReadyCallback) {
                 if(callback)
                     callback(err, insertData);
 
-//                 console.info("Added content to database: http://" + pgp_id_public + '.ks/' + path, insertData);
+                var responseString = "KEYSPACE.INSERT" +
+                    ' ' + insertData.pgp_id_public +
+                    ' ' + insertData.timestamp +
+                    (path ? ' ' + path : '');
+                (typeof Client === 'object' ? Client : ClientWorker)
+                    .processResponse(responseString);
+                console.info("Added content to database: http://" + pgp_id_public + '.ks/' + path, insertData);
             }
         );
 

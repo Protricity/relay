@@ -44,7 +44,7 @@ function ClientSockets(socketURL) {
                 if(eventListeners[i][0] === 'open')
                     eventListeners[i][1](newSocket);
 
-            Client.log(
+            ClientWorker.log(
                 "<span class='direction'>I</span> " +
                 "<span class='action'>SOCKET OPEN</span>: " +
                 newSocket.url
@@ -83,7 +83,7 @@ function ClientSockets(socketURL) {
                 ClientSockets.get(socketURL);
             }, ClientSockets.SOCKET_RECONNECT_INTERVAL);
 
-            Client.log(
+            ClientWorker.log(
                 "<span class='direction'>I</span> " +
                 "<span class='action'>SOCKET CLOSED</span>: " +
                 newSocket.url
@@ -94,7 +94,7 @@ function ClientSockets(socketURL) {
 
         function onSocketMessage(e) {
 //             console.info("I " + e.data);
-            Client.processResponse(e.data, e);
+            ClientWorker.processResponse(e.data, e);
             var socket = e.target;
             //if(socket instanceof WebSocket) {
             //    Client.log(
@@ -196,7 +196,7 @@ function ClientSockets(socketURL) {
             socket.send(commandString);
 
             var parts = commandString.split(' ', 2);
-            Client.log(
+            ClientWorker.log(
                 "<span class='direction'>O</span> " +
                 "<span class='command'>" + parts[0] + "</span>" + (parts[1] ? ' ' + parts[1] : '')
             );
@@ -229,7 +229,7 @@ function ClientSockets(socketURL) {
 
         // Render sockets window
         self.module.exports.renderClientSocketsWindow(socketURLList, activeSockets, function(html) {
-            Client.render(html);
+            ClientWorker.render(html);
         });
     }
 

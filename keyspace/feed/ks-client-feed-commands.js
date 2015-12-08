@@ -3,9 +3,9 @@
  */
 
 if(typeof module === 'object') (function() {
-    module.exports.initClientKSFeedCommands = function (Client) {
+    module.exports.initClientKSFeedCommands = function (ClientWorker) {
 
-        Client.addCommand(feedCommand);
+        ClientWorker.addCommand(feedCommand);
 
         /**
          *
@@ -23,7 +23,7 @@ if(typeof module === 'object') (function() {
             var renderExports = self.module.exports;
 
             renderExports.renderFeedContainer(commandString, function (html) {
-                Client.render(html);
+                ClientWorker.render(html);
             });
 
             return true;
