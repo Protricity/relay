@@ -170,8 +170,8 @@ if(typeof document === 'object')
         var contactExports = module.exports;
 
         self.addEventListener('submit', onFormEvent, false);
-        //self.addEventListener('change', onFormEvent);
-        self.addEventListener('input', onFormEvent, false);
+        self.addEventListener('change', onFormEvent);
+//         self.addEventListener('input', onFormEvent, false);
 
         function onFormEvent(e, formElm) {
             if(!formElm) formElm = e.target.form ? e.target.form : e.target;
@@ -179,7 +179,8 @@ if(typeof document === 'object')
                 return false;
 
             switch(formElm.getAttribute('name')) {
-                case 'pgp-contact-list':
+                case 'pgp-contact-list-form':
+                    updateCommandList(e, formElm);
                     //contactExports.refreshPGPContactList(e, formElm);
                     //if(e.type === 'submit')
                         //contactExports.submitPGPContactList(e, formElm);
@@ -188,6 +189,36 @@ if(typeof document === 'object')
                 default:
                     return false;
             }
+        }
+
+
+        function updateCommandList(e, formElm) {
+            var checkedContactEntries = formElm.querySelectorAll('input:checked.pgp-contact-entry-checkbox\\:');
+            console.log(checkedContactEntries);
+
+            var count = checkedContactEntries.length;
+            var html_command_options = '';
+            html_command_options +=
+                "<option value=''>" +
+                    (count > 0 ? '('+count+')' : 'No') + " Contacts Selected..." +
+                "</option>";
+
+            html_command_options +=
+                "<optgroup label='Choose a command'>";
+
+            if(count > 0) {
+                html_command_options +=
+                    "<option value='MESSAGE'>" +
+                        "MESSAGE (" + count + ") Contacts" +
+                    "</option>";
+            }
+
+            // TODO: if user, if channel if etc
+
+            html_command_options +=
+                "</optgroup>";
+
+            formElm.command.innerHTML = html_command_options;
         }
 
 

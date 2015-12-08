@@ -1,11 +1,11 @@
 article.about\3A {
+    /* min-width: 20em; */
 }
 
-.layout-horizontal article.about\3A:not(.maximized) {
-    position: absolute !important;
-    right: 2%;
-    /* min-width: 60vw; */
-    bottom: 1em;
+.layout-horizontal article.about\3A {
+    float: right;
+    clear: right;
+    min-width: 20em;
 }
 
 .layout-horizontal article.about\3A.maximized {

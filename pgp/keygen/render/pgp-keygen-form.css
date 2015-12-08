@@ -1,3 +1,6 @@
+.pgp-keygen\3A {
+    min-width: 22em;
+}
 
 form[name=pgp-keygen-form] {
     padding: 1em 2em 1em 2em;

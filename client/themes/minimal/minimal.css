@@ -59,8 +59,9 @@ li {
 
 .theme-minimal > article > footer:last-of-type,
 .theme-minimal > article > form > footer:last-of-type {
-    padding: 0 0 0.1em 0;
+    /* padding: 0 0 0.1em 0; */
     /* border-top: 2px double threedface; */
+    /* min-height: 0.1em; */
 }
 
 .theme-minimal > article:hover > header:first-of-type {
@@ -101,8 +102,9 @@ li {
 .theme-minimal span.response,
 .theme-minimal span.command {
     text-transform: uppercase;
+    font-weight: bold;
     /* font-size: smaller; */
-    font-family: command, monospace;
+    /* font-family: command, monospace; */
 }
 
 .theme-minimal span.command {
@@ -182,7 +184,7 @@ li {
 /*}*/
 
 .theme-minimal code.status-box > * {
-    animation: fadein 0.5s;
+    animation: article-fade-in 0.5s;
 }
 
 /** Inputs **/
@@ -232,8 +234,9 @@ li {
     background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #FFF);
     box-shadow: 0.1em 0.2em 0.8em #999;
     border-radius: 0.4em;
-    max-height: 50em;
-    transition: box-shadow 1s ease-out;
+    /* max-height: 50em; */
+     /*transition: box-shadow 1s ease-in, opacity 1s ease-in;*/
+    animation: article-fade-in 1s ease-out;
 }
 
 
@@ -252,11 +255,13 @@ li {
 
 .hide-on-minimize {
     max-height: 100em;
-    transition: max-height 1s ease-out, padding 1s ease-in;
+    max-width: 100em;
+    transition: max-height 1s ease-out, max-width 2s ease-out, padding 1s ease-in;
 }
 
 .theme-minimal.layout-horizontal > article.minimized .hide-on-minimize {
     max-height: 0;
+    max-width: 0;
     padding: 0;
     margin: 0;
     border: 0;
@@ -274,10 +279,12 @@ li {
 
 .theme-minimal.layout-horizontal > article.maximized {
     position: absolute;
+    display: block;
+    margin: 0 auto;
     z-index: 2;
-    top: 10%;
-    bottom: inherit;
-    left: 10%;
+    /* top: 10%; */
+    /* bottom: inherit; */
+    /* left: 10%; */
     /* transform: translate(50%, 0%); */
     font-size: x-large;
     /* border-radius: 1em; */
@@ -307,8 +314,7 @@ body.theme-minimal.layout-vertical > article > header{
     border-radius: 0.4em;
     box-shadow: 0.1em 0.2em 0.8em #999;
     width: 100%;
-    max-height: 50em;
-    /*transition: box-shadow 0.5s ease-out;*/
+    /* transition: box-shadow 0.5s ease-out; */
 }
 
 
@@ -330,6 +336,7 @@ body.theme-minimal.layout-vertical > article > header{
 
 .theme-minimal.layout-vertical > article.minimized .hide-on-minimize {
     max-height: 0;
+    max-width: 0;
     padding: 0;
     margin: 0;
     border: 0;
@@ -348,3 +355,19 @@ body.theme-minimal.layout-vertical > article > header{
     /*font-size: 2vw;*/
 }
 
+
+
+/** Animations **/
+
+@keyframes article-fade-in {
+    from {
+        /*box-shadow: 0;*/
+        opacity: 0;
+        margin: 2em;
+    }
+    to   {
+        opacity: 1;
+        margin: inherit;
+        /*box-shadow: inherit;*/
+    }
+}

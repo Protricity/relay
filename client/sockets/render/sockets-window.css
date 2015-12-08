@@ -1,8 +1,7 @@
-article.sockets-window\3A {
-    /* right: 1em; */
-    /* position: absolute; */
-    /* top: 1em; */
-    /*float: right;*/
+.layout-horizontal .sockets-window\3A {
+    float: right;
+    clear: right;
+    min-width: 20em;
 }
 
 .sockets-window\3A > main {

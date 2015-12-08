@@ -4,13 +4,13 @@
     <header class='header-bar show-on-minimized'>
         {nav:header-buttons pgp-import:}
         <a href='#MINIMIZE pgp-import:'>
-            Import a new PGP Key Pair
+            <span class="command">Import</span> a new PGP Identity
         </a> 
     </header>
     <main class="hide-on-minimize">
         <form name='pgp-import-form' action='#' method='post' >
             <code class='status-box'>{$status_box}</code>
-            <label><strong>Paste a PGP Private key block into the box below:</strong><br/>
+            <label><strong>Paste a PGP Public or Private Key Block into the box below:</strong><br/>
                 <textarea name='private_key' required='required' placeholder='{$example_public_key}' rows='12' cols='68'>{$private_key_block}</textarea> 
             </label> 
             <br/><br/><strong>Import</strong> this PGP Identity into your Relay Client:<br/>
