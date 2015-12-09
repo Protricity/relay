@@ -96,13 +96,19 @@ if(typeof module !== 'object')
                     if(contentEntry) {
                         var html_commands =
                             "<a href='#ONLINE " + contentEntry.pgp_id_public + "'>" +
+                                "<span>Go</span>" +
+                                "<br />" +
                                 "<span class='command online'>Online</span>" +
                             "</a>" +
                             "<a href='#GET " + contentEntry.pgp_id_public + "'>" +
                                 "<span class='command'>Get</span>" +
+                                //"<br />" +
+                                //"<span>from KeySpace</span>" +
                             "</a>" +
                             "<a href='#PUT --with " + contentEntry.pgp_id_public + "'>" +
                                 "<span class='command'>Put</span>" + // to your KeySpace" +
+                                //"<br />" +
+                                //"<span>to KeySpace</span>" +
                             "</a>" +
                             "<a href='#PGP.EXPORT --with " + contentEntry.pgp_id_public + "'>" +
                                 "<span class='command'>Export</span>" + // Key" +

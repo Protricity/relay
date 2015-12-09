@@ -58,5 +58,17 @@ if(typeof module === 'object') (function() {
             module.exports.initClientKSFeedCommands(ClientWorker);
             return false;
         }
+
+
+        // Feed Commands
+        ClientWorker.addCommand(importOnlineCommand);
+        function importOnlineCommand(commandString, e) {
+            if (!/^online/i.test(commandString))
+                return false;
+            ClientWorker.removeCommand(importFeedCommands);
+            importScripts('keyspace/feed/ks-client-feed-commands.js');
+            module.exports.initClientKSFeedCommands(ClientWorker);
+            return false;
+        }
     };
 })();
