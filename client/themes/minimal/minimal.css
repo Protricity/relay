@@ -107,8 +107,23 @@ li {
     /* font-family: command, monospace; */
 }
 
+.theme-minimal span.offline {
+    color: red;
+    font-weight: bold;
+}
+
+.theme-minimal span.online {
+    color: green;
+    font-weight: bold;
+}
+
 .theme-minimal span.command {
     color: green;
+}
+
+.theme-minimal span.status {
+    color: blue;
+    font-weight: bold;
 }
 
 .theme-minimal span.response {
@@ -235,14 +250,11 @@ li {
     box-shadow: 0.1em 0.2em 0.8em #999;
     border-radius: 0.4em;
     animation: article-fade-in 1s ease-out;
+
+    transition: opacity 1s;
+    opacity: 1;
 }
 
-
-.theme-minimal.layout-horizontal > article:hover {
-    box-shadow: 0 0 3em #558;
-    transition-duration: 0.5s;
-    opacity: 1 !important;
-}
 
 
 /** Articles Windows **/
@@ -271,7 +283,7 @@ li {
     /*max-height: 20px;*/
     /*max-width: 24em;*/
     /*overflow: hidden;*/
-    transition: opacity 3s ease-in;
+/*     transition: opacity 3s ease-in; */
     opacity: 0.6;
 }
 
@@ -281,6 +293,11 @@ li {
     left: 2%;
     z-index: 2;
     font-size: x-large;
+}
+
+.theme-minimal.layout-horizontal > article:hover {
+    box-shadow: 0 0 3em #558;
+    opacity: 1;
 }
 
 

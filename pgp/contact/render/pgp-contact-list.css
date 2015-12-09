@@ -59,10 +59,8 @@
     transition: box-shadow 0.4s ease-out;
 }
 
-.pgp-contact-entry-name\3A {
-/*     font-weight: bold; */
-/* display: block; */
-}
+.pgp-contact-entry-name\3A {font-weight: bold;
+/* display: block; */font-style: italic;}
 
 .pgp-contact-entry\3A:hover .pgp-contact-entry-name\3A {
     font-weight: bold;
@@ -100,7 +98,7 @@ form[name=pgp-contact-list-form] select {
     border-radius: 0.6em;
     border-width: 1px;
     width: 96%;
-    margin: 0 auto;
+    margin: 0.5em auto;
     display: block;
 }
 
@@ -132,16 +130,19 @@ form[name=pgp-contact-list-form] .pgp-contact-entry-checkbox\3A:checked
     transition: padding 1s, max-height 1s, opacity 1s;
     text-align: center;
     margin: auto;
+    /* display: none; */
 }
 
 .layout-horizontal .pgp-contact-entry-commands\3A {
-    max-width: 18em;
+    max-width: 20em;
 }
 
+.pgp-contact-entry-label\3A:hover  .pgp-contact-entry-commands\3A,
 form[name=pgp-contact-list-form] .pgp-contact-entry-checkbox\3A:checked
 + .pgp-contact-entry-label\3A  .pgp-contact-entry-commands\3A {
     max-height: 100em;
     opacity: 1;
+    /* display: block; */
 }
 
 
@@ -155,9 +156,12 @@ form[name=pgp-contact-list-form] .pgp-contact-entry-checkbox\3A:checked
     display: inline-block;
     padding: 0.3em 0.5em;
     margin: 0.1em 0.1em;
-    transition: box-shadow 0.3s;
+    transition: max-width 0.2s, box-shadow 0.3s;
+    max-width: 2em;
+    overflow: hidden;
 }
 
 .pgp-contact-entry-commands\3A  a:hover {
-    box-shadow: 0 0 2em #00F;
+    box-shadow: 0 0 2em #00F;;
+    max-width: 10em;
 }

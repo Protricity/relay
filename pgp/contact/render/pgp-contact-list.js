@@ -78,7 +78,7 @@ if(typeof module !== 'object')
 
                 renderPGPContactListEntry(
                     contentEntry.user_id,
-                    contentEntry.pgp_id_public + ' - online',
+                    '<span class="online">online</span> - ' + contentEntry.pgp_id_private,
                     'pgp/contact/render/icons/user_icon_default.png',
                     'public-key',
                     html_commands,
@@ -113,7 +113,7 @@ if(typeof module !== 'object')
 
                         renderPGPContactListEntry(
                             contentEntry.user_id,
-                            contentEntry.pgp_id_private + ' - private key',
+                            '<span class="offline">offline</span> - ' + contentEntry.pgp_id_private,
                             'pgp/contact/render/icons/user_icon_default.png',
                             'private-key',
                             html_commands,
@@ -147,7 +147,7 @@ if(typeof module !== 'object')
                                 if(channelSettings.auto_join === 1) {
                                     renderPGPContactListEntry(
                                         channelSettings.name_original_case,
-                                        '0-25 users',
+                                        '<span class="status">0-25 users</span>',
                                         'pgp/contact/render/icons/channel_icon_default.png',
                                         'channel',
                                         html_commands,
