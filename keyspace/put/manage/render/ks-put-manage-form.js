@@ -244,7 +244,7 @@ if(typeof module === 'object') (function() {
             var new_html_file_list = '';
 
             new_html_file_list += '\n\t<tr>';
-            new_html_file_list += "\n\t\t<td><a href='#PUT.MANAGE " + dirURL + "/'>.</a></td>";
+            new_html_file_list += "\n\t\t<td><a href='javascript:Client.execute(\"PUT.MANAGE " + dirURL + "/\");'>.</a></td>";
             new_html_file_list += '\n\t</tr>';
 
             if(dirPath) {
@@ -253,7 +253,7 @@ if(typeof module === 'object') (function() {
                     .replace(/\/[^\/]*$/, '');
                 var parentDirURL = dirHost + parentDirPath;
                 new_html_file_list += '\n\t<tr>';
-                new_html_file_list += "\n\t\t<td><a href='#PUT.MANAGE " + parentDirURL + "/'>..</a></td>";
+                new_html_file_list += "\n\t\t<td><a href='javascript:Client.execute(\"PUT.MANAGE " + parentDirURL + "/\");'>..</a></td>";
                 new_html_file_list += '\n\t</tr>';
             }
 
@@ -266,7 +266,7 @@ if(typeof module === 'object') (function() {
                     var requestURL = "http://" + contentEntry.pgp_id_public + ".ks/" + contentEntry.path;
                     if(unique.indexOf(requestURL) === -1) {
                         new_html_file_list += '\n\t<tr>';
-                        new_html_file_list += "\n\t\t<td><a href='#PUT.MANAGE " + requestURL + "'>" + contentEntry.path + "</a></td>";
+                        new_html_file_list += "\n\t\t<td><a href='javascript:Client.execute(\"PUT.MANAGE " + requestURL + "\");'>" + contentEntry.path + "</a></td>";
                         new_html_file_list += '\n\t</tr>';
                         unique.push(requestURL);
                     }
@@ -293,7 +293,7 @@ if(typeof module === 'object') (function() {
                 if (contentEntry) {
                     var requestURL = "http://" + contentEntry.pgp_id_public + ".ks/?t=" + contentEntry.timestamp;
                     new_html_entry_list += '\n\t<tr>';
-                    new_html_entry_list += "\n\t\t<td><a href='#PUT.MANAGE " + requestURL + "'>" + contentEntry.timestamp + "</a></td>";
+                    new_html_entry_list += "\n\t\t<td><a href='javascript:Client.execute(\"PUT.MANAGE " + requestURL + "\");'>" + contentEntry.timestamp + "</a></td>";
                     new_html_entry_list += '\n\t</tr>';
 
                 } else {

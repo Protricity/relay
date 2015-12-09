@@ -3,7 +3,7 @@
     <link rel='stylesheet' href='pgp/contact/render/pgp-contact-list.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {nav:header-buttons pgp-contact:}
-        <a href='#MINIMIZE pgp-contact:'>
+        <a href='javascript:Client.execute("MINIMIZE pgp-contact:");'>
             Contact List
         </a>
     </header>
@@ -15,7 +15,7 @@
         </select>
         <hr />
         <input type='hidden' placeholder="Change Username" value="{$nick_value}" />
-        <button class="pgp-contact-section-header:" onclick="this.classList.toggle('closed'); this.blur(); return false;">Your Identities</button>
+        <button class="pgp-contact-section-header:" onclick="this.classList.toggle('closed'); this.blur(); return false;">Identities</button>
         <ul class="pgp-contact-section:">
             {$html_private_key_entries}
         </ul>

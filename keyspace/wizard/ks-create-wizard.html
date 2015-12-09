@@ -31,7 +31,7 @@
     </style>
     <header class='header-bar show-on-minimized'>
         {nav:header-buttons ks-create-wizard:}
-        <a href='#MINIMIZE ks-create-wizard:'>
+        <a href='javascript:Client.execute("MINIMIZE ks-create-wizard:");'>
             KeySpace Article Wizard
         </a>
     </header>
@@ -136,6 +136,8 @@
     <section class="ks-create-wizard-source-output:"></section>
 
     <footer>
-        <a href='#PUT.SCRIPT'>use a different content script</a>...
+        <a href='javascript:Client.execute("PUT.SCRIPT")'>
+            use a different content script
+        </a>...
     </footer>
 </article>

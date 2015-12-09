@@ -3,7 +3,7 @@
     <link rel='stylesheet' href='channel/message/render/message-window.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {nav:header-buttons message:{$username}}
-        <a href='#MINIMIZE message:{$username}'>
+        <a href='javascript:Client.execute("MINIMIZE message:{$username}");'>
             <span class="command">Message</span> {$username}
         </a>
     </header>

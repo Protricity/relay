@@ -28,7 +28,9 @@
 
     <header class='header-bar show-on-minimized'>
         {nav:header-buttons ks-create-vote-window:}
-        <a href='#MINIMIZE ks-create-vote-window:'>Secret Ballot Wizard (WIP)</a>
+        <a href='javascript:Client.execute("MINIMIZE ks-create-vote-window:");'>
+            Secret Ballot Wizard (WIP)
+        </a>
     </header>
 
     <form name='ks-create-vote-edit-choice-form' id='ks-create-vote-edit-choice-form' action='#'>
@@ -171,6 +173,6 @@
 
 
     <footer>
-        <a href='#PUT.SCRIPT'>or use a different content script</a>...
+        <a href='javascript:Client.execute("PUT.SCRIPT");'>or use a different content script</a>...
     </footer>
 </article>

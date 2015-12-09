@@ -5,7 +5,7 @@
     <link rel='stylesheet' href='keyspace/put/form/render/ks-put-form.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {nav:header-buttons ks-put:}
-        <a href='#MINIMIZE ks-put:'>
+        <a href='javascript:Client.execute("MINIMIZE ks-put:");'>
             <span class="command">Put</span> content in your <strong>Key Space</strong>
         </a>
     </header>
@@ -102,12 +102,14 @@
         <!--</form>-->
     <!--</section>-->
     <section class="show-on-compact hide-on-minimize">
-        <a href='#PUT.SCRIPT'>
+        <a href='javascript:Client.execute("PUT.SCRIPT");'>
             You can also use a <strong>Content Script</strong> to generate <br/>
             <strong class="key-space">Key Space</strong> content quickly and easily...
        </a>
     </section>
     <footer class='hide-on-minimize'>
-        <a href='#PUT.SCRIPT'>content script</a>s...
+        <a href='javascript:Client.execute("PUT.SCRIPT");'>
+            content script
+        </a>s...
     </footer>
 </article>
