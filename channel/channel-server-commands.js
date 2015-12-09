@@ -208,7 +208,7 @@ function leaveChannel(commandString, client) {
         throw new Error("Client not in channel: " + channelLowerCase);
 
     clients.splice(pos, 1);
-    channelUsers[channelLowerCase] = client;
+    channelUsers[channelLowerCase] = clients;
     for(var ci=0; ci<clientInfo.channels.length; ci++) {
         var userChannel = clientInfo.channels[ci];
         if(userChannel.toLowerCase() === channelLowerCase) {

@@ -126,12 +126,16 @@ form[name=pgp-contact-list-form] .pgp-contact-entry-checkbox\3A:checked
 }
 
 /** Hide Contact Command Buttons **/
- .pgp-contact-entry-commands\3A {
+.pgp-contact-entry-commands\3A {
     max-height: 0;
     opacity: 0;
     transition: padding 1s, max-height 1s, opacity 1s;
+    text-align: center;
+    margin: auto;
+}
+
+.layout-horizontal .pgp-contact-entry-commands\3A {
     max-width: 18em;
-     text-align: right;
 }
 
 form[name=pgp-contact-list-form] .pgp-contact-entry-checkbox\3A:checked
@@ -143,13 +147,14 @@ form[name=pgp-contact-list-form] .pgp-contact-entry-checkbox\3A:checked
 
 .pgp-contact-entry-commands\3A  a:visited,
 .pgp-contact-entry-commands\3A  a {
+    border: 1px outset #FFF;
     border-radius: 0.5em;
     background-color: #DDD;
     text-decoration: none;
-    font: menu;
+    /* font: menu; */
     display: inline-block;
-    padding: 0.2em 0.5em;
-    margin: 0 0.1em;
+    padding: 0.3em 0.5em;
+    margin: 0.1em 0.1em;
     transition: box-shadow 0.3s;
 }
 

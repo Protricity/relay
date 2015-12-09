@@ -63,6 +63,12 @@ if(typeof module !== 'object')
                     "<a href='#MESSAGE " + contentEntry.pgp_id_public + "'>" +
                         "<span class='command'>Message</span> " + // contentEntry.user_id +
                     "</a>" +
+                    "<a href='#GET " + contentEntry.pgp_id_public + "'>" +
+                        "<span class='command'>Get</span>" +
+                    "</a>" +
+                    "<a href='#GET " + contentEntry.pgp_id_public + "/public/profile'>" +
+                        "<span class='command'>Profile</span>" +
+                    "</a>" +
                     "<a href='#PGP.DELETE " + contentEntry.pgp_id_public + "'>" +
                         "<span class='command'>Delete</span>" +
                     "</a>" +
@@ -89,11 +95,20 @@ if(typeof module !== 'object')
 
                     if(contentEntry) {
                         var html_commands =
+                            "<a href='#ONLINE " + contentEntry.pgp_id_public + "'>" +
+                                "<span class='command online'>Online</span>" +
+                            "</a>" +
+                            "<a href='#GET " + contentEntry.pgp_id_public + "'>" +
+                                "<span class='command'>Get</span>" +
+                            "</a>" +
                             "<a href='#PUT --with " + contentEntry.pgp_id_public + "'>" +
                                 "<span class='command'>Put</span>" + // to your KeySpace" +
                             "</a>" +
                             "<a href='#PGP.EXPORT --with " + contentEntry.pgp_id_public + "'>" +
                                 "<span class='command'>Export</span>" + // Key" +
+                            "</a>" +
+                            "<a href='#PGP.DELETE " + contentEntry.pgp_id_public + "'>" +
+                                "<span class='command'>Delete</span>" +
                             "</a>";
 
                         renderPGPContactListEntry(
@@ -214,6 +229,8 @@ if(typeof document === 'object')
         function onKeySpaceEvent(e) {
             var commandString = e.detail;
             console.log(commandString, e);
+            // TODO: filter by command
+            Client.execute("PGP.CONTACT"); // TODO: refresh instead of render
         }
 
         function onFormEvent(e, formElm) {

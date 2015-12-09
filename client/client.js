@@ -157,6 +157,8 @@ function Client() {
 
         var targetElement = targetElements[0];
         var hasClass = targetElement.classList.contains(command + 'd');
+        if(command === 'close')
+            hasClass = false;
 
         //switch(command) {
         //    case 'minimize':

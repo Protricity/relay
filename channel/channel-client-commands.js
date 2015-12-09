@@ -103,6 +103,7 @@ if(typeof module === 'object') (function() {
                 SettingsDB.updateSettings(channelSettings);
             });
 
+            renderChatWindow(channelPath, true);
             ClientWorker.sendWithSocket(commandString);
             return true;
         }
@@ -308,10 +309,10 @@ if(typeof module === 'object') (function() {
         }
 
         var activeChannels = [];
-        function renderChatWindow(channelPath) {
+        function renderChatWindow(channelPath, force) {
             var channelPathLowerCase = channelPath.toLowerCase();
 
-            if (activeChannels.indexOf(channelPathLowerCase) === -1) {
+            if (force || activeChannels.indexOf(channelPathLowerCase) === -1) {
                 getChatExports().renderChatWindow(channelPath, function (html) {
                     ClientWorker.render(html);
                     activeChannels.push(channelPathLowerCase);

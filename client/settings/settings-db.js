@@ -123,6 +123,7 @@ function SettingsDB(dbReadyCallback) {
             throw new Error("Invalid Settings Data");
         if(!settingsData.name)
             throw new Error("Settings Data must include a name property");
+        settingsData.name = settingsData.name.toLowerCase();
 
         SettingsDB(function(err, db) {
             if(err)
