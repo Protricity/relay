@@ -59,8 +59,8 @@
     transition: box-shadow 0.4s ease-out;
 }
 
-.pgp-contact-entry-name\3A {font-weight: bold;
-/* display: block; */font-style: italic;}
+.pgp-contact-entry-name\3A {/* font-weight: bold; */
+/* display: block; *//* font-style: italic; */font-size: 1.3em;}
 
 .pgp-contact-entry\3A:hover .pgp-contact-entry-name\3A {
     font-weight: bold;
@@ -117,7 +117,7 @@ form[name=pgp-contact-list-form] .pgp-contact-entry-label\3A {
 
 form[name=pgp-contact-list-form] .pgp-contact-entry-checkbox\3A:checked
  + .pgp-contact-entry-label\3A {
-    background-color: #EFB;
+    background-color: #CFB;
     padding:  0.5em;
     font-weight: bold;
     /* padding: 1em 0.5em; */
@@ -157,8 +157,9 @@ form[name=pgp-contact-list-form] .pgp-contact-entry-checkbox\3A:checked
     padding: 0.3em 0.5em;
     margin: 0.1em 0.1em;
     transition: max-width 0.2s, box-shadow 0.3s;
-    max-width: 2em;
+    /* max-width: 2em; */
     overflow: hidden;
+    text-align: center;
 }
 
 .pgp-contact-entry-commands\3A  a:hover {

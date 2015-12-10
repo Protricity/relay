@@ -2,12 +2,12 @@
 
 body.theme-minimal {
     font-family: monospace;
-    font-size: small;
+    font-size: 1em; 
 }
 
 select,
 input {
-    font-size: inherit;
+    font-size: 1em; 
 }
 
 body.theme-minimal header{
@@ -287,12 +287,16 @@ li {
     opacity: 0.6;
 }
 
+.theme-minimal.layout-horizontal > article.maximized input,
+.theme-minimal.layout-horizontal > article.maximized select {
+/*     font-size: 1em; */
+}
 .theme-minimal.layout-horizontal > article.maximized {
     position: absolute;
     top: 2%;
     left: 2%;
     z-index: 2;
-    font-size: x-large;
+    font-size: 1.5em;
 }
 
 .theme-minimal.layout-horizontal > article:hover {

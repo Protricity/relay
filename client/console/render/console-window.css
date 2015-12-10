@@ -23,6 +23,7 @@ article.console\3A > section {
 }
 
 .console-entry {
+    font-family: monospace;
     max-width: 40em;
 }
 

@@ -22,6 +22,24 @@ function SocketServer() {
     var server = null;
     SocketServer.getServerInstance = function() { return server; };
 
+    var version = null;
+    //SocketServer.getGitRevision = function(callback) {
+    //    if(version) {
+    //        callback(version);
+    //        return;
+    //    }
+    //
+    //    var exec = require('child_process').exec;
+    //    var cmd = 'git rev-parse HEAD -C ' + __dirname;
+    //
+    //    exec(cmd, function(error, stdout, stderr) {
+    //        console.log(error, stdout, stderr);
+    //        version = stdout;
+    //        callback(version);
+    //        // command output is in stdout
+    //    });
+    //};
+
     SocketServer.startServer = function(port) {
         if(server)
             throw new Error("Socket Server already started");
@@ -33,6 +51,10 @@ function SocketServer() {
 
         server = new WebSocketServer({port: port});
         server.on('connection', function (client) {
+            //SocketServer.getGitRevision(function(revision) {
+            //    client.send("GIT.REVISION " + revision);
+            //    console.info("O GIT.REVISION " + revision);
+            //});
             for(var i=0; i<clientEvents.length; i++)
                 client.on(clientEvents[i][0], clientEvents[i][1]);
 
@@ -119,7 +141,6 @@ function SocketServer() {
         console.error(err);
         return false;
     };
-
 
 })();
 
