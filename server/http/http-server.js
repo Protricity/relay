@@ -7,6 +7,8 @@ if (!module.exports) module.exports = {};
 module.exports.HTTPServer = HTTPServer;
 
 HTTPServer.DEFAULT_PORTS = '8080,80,7315';
+HTTPServer.VERSION = 1;
+HTTPServer.VERSION_STRING = '0.1a';
 
 function HTTPServer() {
 

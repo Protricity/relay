@@ -60,25 +60,30 @@ if(typeof module !== 'object')
             if(contentEntry) {
                 // TODO: get socket user name
                 var html_commands =
-                    "<a href='#MESSAGE " + contentEntry.pgp_id_public + "'>" +
+                    "<a href='javascript:Client.execute(\"MESSAGE " + contentEntry.pgp_id_public + "\");'>" +
                         "<span class='command'>Message</span> " + // contentEntry.user_id +
                     "</a>" +
-                    "<a href='#GET " + contentEntry.pgp_id_public + "'>" +
+                    "<a href='javascript:Client.execute(\"CHANLIST " + contentEntry.pgp_id_public + "\");'>" +
+                        "<span class='command'>ChanList</span>" +
+                    "</a>" +
+                    "<br/>" +
+                    "<a href='javascript:Client.execute(\"GET " + contentEntry.pgp_id_public + "\");'>" +
                         "<span class='command'>Get</span>" +
                     "</a>" +
-                    "<a href='#GET " + contentEntry.pgp_id_public + "/public/profile'>" +
+                    "<a href='javascript:Client.execute(\"GET " + contentEntry.pgp_id_public + "/public/profile\");'>" +
                         "<span class='command'>Profile</span>" +
                     "</a>" +
-                    "<a href='#PGP.DELETE " + contentEntry.pgp_id_public + "'>" +
-                        "<span class='command'>Delete</span>" +
+                    "<br/>" +
+                    "<a href='javascript:Client.execute(\"PGP.EXPORT --with " + contentEntry.pgp_id_public + "\");'>" +
+                        "<span class='command'>Export</span>" + // Key" +
                     "</a>" +
-                    "<a href='#CHANLIST " + contentEntry.pgp_id_public + "'>" +
-                        "<span class='command'>ChanList</span>" +
+                    "<a href='javascript:Client.execute(\"PGP.DELETE " + contentEntry.pgp_id_public + "\");'>" +
+                        "<span class='command'>Delete</span>" +
                     "</a>";
 
                 renderPGPContactListEntry(
                     contentEntry.user_id,
-                    '<span class="online">online</span> - ' + contentEntry.pgp_id_private,
+                    '<span class="online">online</span> ' + contentEntry.pgp_id_private,
                     'pgp/contact/render/icons/user_icon_default.png',
                     'public-key',
                     html_commands,
@@ -95,31 +100,31 @@ if(typeof module !== 'object')
 
                     if(contentEntry) {
                         var html_commands =
-                            "<a href='#ONLINE " + contentEntry.pgp_id_public + "'>" +
+                            "<a href='javascript:Client.execute(\"KEYSPACE.HOST " + contentEntry.pgp_id_public + "\");'>" +
                                 "<span>Go</span>" +
                                 "<br />" +
                                 "<span class='command online'>Online</span>" +
                             "</a>" +
-                            "<a href='#GET " + contentEntry.pgp_id_public + "'>" +
+                            "<br/>" +
+                            "<a href='javascript:Client.execute(\"KEYSPACE.GET " + contentEntry.pgp_id_public + "\");'>" +
                                 "<span class='command'>Get</span>" +
-                                //"<br />" +
-                                //"<span>from KeySpace</span>" +
                             "</a>" +
-                            "<a href='#PUT --with " + contentEntry.pgp_id_public + "'>" +
+                            "<a href='javascript:Client.execute(\"KEYSPACE.PUT --with " + contentEntry.pgp_id_public + "\");'>" +
                                 "<span class='command'>Put</span>" + // to your KeySpace" +
                                 //"<br />" +
                                 //"<span>to KeySpace</span>" +
                             "</a>" +
-                            "<a href='#PGP.EXPORT --with " + contentEntry.pgp_id_public + "'>" +
+                            "<br/>" +
+                            "<a href='javascript:Client.execute(\"PGP.EXPORT --with " + contentEntry.pgp_id_public + "\");'>" +
                                 "<span class='command'>Export</span>" + // Key" +
                             "</a>" +
-                            "<a href='#PGP.DELETE " + contentEntry.pgp_id_public + "'>" +
+                            "<a href='javascript:Client.execute(\"PGP.DELETE " + contentEntry.pgp_id_public + "\");'>" +
                                 "<span class='command'>Delete</span>" +
                             "</a>";
 
                         renderPGPContactListEntry(
                             contentEntry.user_id,
-                            '<span class="offline">offline</span> - ' + contentEntry.pgp_id_private,
+                            '<span class="offline">offline</span> ' + contentEntry.pgp_id_private,
                             'pgp/contact/render/icons/user_icon_default.png',
                             'private-key',
                             html_commands,
@@ -143,10 +148,10 @@ if(typeof module !== 'object')
                             if(channelSettings) {
 
                                 var html_commands =
-                                    "<a href='#JOIN " + channelSettings.name_original_case + "'>" +
-                                    "<span class='command'>Join</span> " + // channelSettings.name_original_case +
+                                    "<a href='javascript:Client.execute(\"JOIN " + channelSettings.name_original_case + "\");'>" +
+                                        "<span class='command'>Join</span> " + // channelSettings.name_original_case +
                                     "</a>" +
-                                    "<a href='#LEAVE " + channelSettings.name_original_case + "'>" +
+                                    "<a href='javascript:Client.execute(\"LEAVE " + channelSettings.name_original_case + "\");'>" +
                                         "<span class='command'>Leave</span> " + // channelSettings.name_original_case +
                                     "</a>";
 
@@ -229,13 +234,25 @@ if(typeof document === 'object')
         document.addEventListener('submit', onFormEvent, false);
         document.addEventListener('change', onFormEvent);
         document.addEventListener('response:keyspace', onKeySpaceEvent);
-        document.addEventListener('response:settings', onKeySpaceEvent);
+        //document.addEventListener('response:settings', onKeySpaceEvent);
 //         document.addEventListener('input', onFormEvent, false);
 
         function onKeySpaceEvent(e) {
-            var commandString = e.detail;
-            console.log(commandString, e);
-            // TODO: filter by command
+            var responseString = e.detail;
+            var args = /^\w+/.exec(responseString);
+            if(!args)
+                throw new Error("Invalid Command: " + responseString);
+
+            var command = args[0].toLowerCase();
+            switch(command) {
+                // TODO: ignore responses from server?
+                case 'keyspace.insert':
+                case 'settings.update':
+                    break;
+                default:
+                    return false;
+            }
+            console.log(command, e);
             Client.execute("PGP.CONTACT"); // TODO: refresh instead of render
         }
 

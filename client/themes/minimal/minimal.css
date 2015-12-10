@@ -1,13 +1,10 @@
 /** BODY **/
 
-body.theme-minimal {
+.theme-minimal form select,
+.theme-minimal form input,
+.theme-minimal {
     font-family: monospace;
-    font-size: 1em; 
-}
-
-select,
-input {
-    font-size: 1em; 
+    /* font-size: 1em; */
 }
 
 body.theme-minimal header{
@@ -235,6 +232,9 @@ li {
 }
 
 
+.theme-minimal > article.focused {
+    font-size: 1.1em;
+}
 
 
 /** Layout - Browser **/
@@ -288,9 +288,7 @@ li {
 }
 
 .theme-minimal.layout-horizontal > article.maximized input,
-.theme-minimal.layout-horizontal > article.maximized select {
-/*     font-size: 1em; */
-}
+.theme-minimal.layout-horizontal > article.maximized select {font-size: 1em;}
 .theme-minimal.layout-horizontal > article.maximized {
     position: absolute;
     top: 2%;

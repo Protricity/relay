@@ -2,34 +2,56 @@
  * Created by ari.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initSocketServerAuthCommands = function (SocketServer) {
-        SocketServer.addCommand(ksAuthCommandSocket);
+    module.exports.initSocketServerHostCommands = function (SocketServer) {
+        SocketServer.addCommand(ksHostCommandSocket);
         SocketServer.addCommand(ksValidateCommandSocket);
+        SocketServer.addCommand(ksHandleHTTPSocketResponse);
     };
 })();
 
 var keySpaceClients = {};
 var keySpaceChallenges = {};
-function ksAuthCommandSocket(commandString, client) {
-    var match = /^auth\s+(.*)$/i.exec(commandString);
+function ksHostCommandSocket(commandString, client) {
+    var match = /^keyspace\.host\s+([a-f0-9]{16})$/i.exec(commandString);
     if(!match)
         return false;
 
-    var ids = match[1].split(/\W+/);
-    for(var i=0; i<ids.length; i++) {
-        var id = ids[i];
-        if(id.length < 16) {
-            client.send("ERROR PGP ID must be at least 16 characters: " + id);
+    var pgp_id_public = match[1].substr(match[1].length - 8).toUpperCase();
 
-        } else {
-            sendKeySpaceAuth(id, client);
-        }
-    }
+    if(client.readyState !== client.OPEN)
+        throw new Error("Client is not open");
+    if(typeof keySpaceClients[pgp_id_public] === 'undefined')
+        keySpaceClients[pgp_id_public] = [];
+
+    var clientEntries = keySpaceClients[pgp_id_public];
+    if(clientEntries.indexOf(client) >= 0)
+        throw new Error("Already hosting key space " + pgp_id_public);
+
+    // Generate new challenge
+    var hostCode = generateUID('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx');
+    keySpaceChallenges[hostCode] = pgp_id_public;
+
+    requestClientPublicKey(pgp_id_public, client, function(err, publicKey) {
+        if(err)
+            return client.send("ERROR " + err);
+
+        if(typeof openpgp === 'undefined')
+            var openpgp = require('openpgp');
+
+        openpgp.encryptMessage(publicKey, hostCode)
+            .then(function(encryptedMessage) {
+                client.send("KEYSPACE.HOST.CHALLENGE " + encryptedMessage);
+
+            }).catch(function(error) {
+                client.send("ERROR " + error);
+            });
+    });
+
     return true;
 }
 
 function ksValidateCommandSocket(commandString, client) {
-    var match = /^auth.validate\s+(.*)?$/i.exec(commandString);
+    var match = /^keyspace\.host.validate\s+(.*)?$/i.exec(commandString);
     if(!match)
         return false;
 
@@ -53,46 +75,17 @@ function ksValidateCommandSocket(commandString, client) {
     return true;
 }
 
-function sendKeySpaceAuth(pgp_id_public, client) {
-    if(client.readyState !== client.OPEN)
-        throw new Error("Client is not open");
-    if(typeof keySpaceClients[pgp_id_public] === 'undefined')
-        keySpaceClients[pgp_id_public] = [];
-
-    var clientEntries = keySpaceClients[pgp_id_public];
-    if(clientEntries.indexOf(client) >= 0)
-        throw new Error("Already hosting key space " + pgp_id_public);
-
-    // Generate new challenge
-    var authCode = generateUID('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx');
-    keySpaceChallenges[authCode] = pgp_id_public;
-
-    requestClientPublicKey(pgp_id_public, client, function(err, publicKey) {
-        if(err)
-            return client.send("ERROR " + err);
-
-        if(typeof openpgp === 'undefined')
-            var openpgp = require('openpgp');
-
-        openpgp.encryptMessage(publicKey, authCode)
-            .then(function(encryptedMessage) {
-                client.send("AUTH.CHALLENGE " + encryptedMessage);
-
-            }).catch(function(error) {
-                client.send("ERROR " + error);
-            });
-    });
-}
-
+// TODO: allow without database installed
 function requestClientPublicKey(pgp_id_public, client, callback) {
-    if(pgp_id_public.length < 16)
-        throw new Error("Invalid PGP Key ID (16): " + pgp_id_public);
 
     var requestPath = "public/id";
     var requestURL = "http://" + pgp_id_public + ".ks/" + requestPath;
     var loaded = false;
 
     var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
+
+    if(pgp_id_public.length < KeySpaceDB.DB_PGP_KEY_LENGTH)
+        throw new Error("Invalid PGP Key ID Length (" + KeySpaceDB.DB_PGP_KEY_LENGTH + "): " + pgp_id_public);
 
     KeySpaceDB.queryOne(requestURL, function (err, contentData) {
         if (err)
@@ -107,6 +100,7 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
             var publicKey = openpgp.key.readArmored(contentData.content).keys[0];
             var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
             //var privateKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
+            publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
             if(publicKeyID !== pgp_id_public)
                 throw new Error("Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
 
@@ -124,6 +118,7 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
                 var publicKeyCreateDate = publicKey.subKeys[0].subKey.created;
                 //var privateKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
                 var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+                publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
                 if(publicKeyID !== pgp_id_public)
                     throw new Error("Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
 
@@ -142,6 +137,44 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
             });
         }
     });
+}
+
+var pendingGETRequests = [];
+function ksHandleHTTPSocketResponse(responseString, client) {
+    var match = /^http\/1.1\s+(\d+)\s+(\w+)\s+/im.exec(responseString);
+    if(!match)
+        return false;
+
+    var responseCode = match[1];
+    var responseMessage = match[2];
+
+    var lines = responseString.split("\n\n", 2)[0].split(/\n/g);
+    lines.shift();
+    var responseHeaders = lines.join("\n");
+    var responseBody = responseString.split("\n\n", 2)[1];
+
+    match = /^Request-ID:\s+(\w+)/im.exec(responseHeaders);
+    if(!match)
+        return false;
+
+    var requestID = match[1];
+
+    if(typeof pendingGETRequests[requestID] === 'undefined')
+        return false;
+    //throw new Error("Request ID not found: " + responseString);
+
+    var pendingGETRequest = pendingGETRequests[requestID];
+
+    var pendingClient = pendingGETRequest[1];
+    var pendingCallback = pendingGETRequest[2];
+    if(pendingClient !== client)
+        throw new Error("Invalid request ID: Client mismatch");
+
+    delete pendingGETRequests[requestID];
+
+    if(pendingCallback)
+        pendingCallback(responseBody, responseCode, responseMessage, responseHeaders, client);
+    return true;
 }
 
 function sendClientRequest(commandString, client, callback) {

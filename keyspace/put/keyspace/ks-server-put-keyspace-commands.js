@@ -12,7 +12,6 @@ if(typeof module === 'object') (function() {
 })();
 
 var pendingGETRequests = [];
-
 function handleHTTPSocketResponse(responseString, client) {
     var match = /^http\/1.1\s+(\d+)\s+(\w+)\s+/im.exec(responseString);
     if(!match)
@@ -37,7 +36,8 @@ function handleHTTPSocketResponse(responseString, client) {
         if(pendingGETRequests[i][0] === requestID)
             requestIndex = i;
     if(requestIndex === -1)
-        throw new Error("Request ID not found: " + responseString);
+        return false;
+    //throw new Error("Request ID not found: " + responseString);
 
     var pendingGETRequest = pendingGETRequests[requestIndex];
     pendingGETRequests.splice(requestIndex, 1);
@@ -50,6 +50,7 @@ function handleHTTPSocketResponse(responseString, client) {
         pendingCallback(responseBody, responseCode, responseMessage, responseHeaders, client);
     return true;
 }
+
 /**
  *
  * @param commandString PUT [pgp public id] [content]

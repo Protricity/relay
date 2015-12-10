@@ -14,6 +14,9 @@ module.exports.SocketServer = SocketServer;
 
 SocketServer.DEFAULT_PORTS = 7314;
 
+SocketServer.VERSION = 1;
+SocketServer.VERSION_STRING = '0.1a';
+
 function SocketServer() {
 
 }
@@ -22,7 +25,7 @@ function SocketServer() {
     var server = null;
     SocketServer.getServerInstance = function() { return server; };
 
-    var version = null;
+    //var version = null;
     //SocketServer.getGitRevision = function(callback) {
     //    if(version) {
     //        callback(version);
@@ -51,9 +54,9 @@ function SocketServer() {
 
         server = new WebSocketServer({port: port});
         server.on('connection', function (client) {
+            client.send("SERVER.VERSION " + SocketServer.VERSION + ' ' + SocketServer.VERSION_STRING);
             //SocketServer.getGitRevision(function(revision) {
-            //    client.send("GIT.REVISION " + revision);
-            //    console.info("O GIT.REVISION " + revision);
+                //console.info("O GIT.REVISION " + revision);
             //});
             for(var i=0; i<clientEvents.length; i++)
                 client.on(clientEvents[i][0], clientEvents[i][1]);

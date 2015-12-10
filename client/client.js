@@ -54,6 +54,10 @@ function Client() {
                 renderWindowCommand(responseString);
                 break;
 
+            case 'focus':
+                focusWindowCommand(responseString);
+                break;
+
             default:
                 // some responses aren't used by the client, but should be passed through the client anyway
                 //console.error("Unhandled client-side command: " + responseString);
@@ -141,19 +145,39 @@ function Client() {
         Client.execute(hashCommand);
     }
 
-
-
-
-    function renderWindowCommand(commandString) {
-        var args = /^(minimize|maximize|close)\s+(\S+)$/mi.exec(commandString);
+    function focusWindowCommand(responseString) {
+        var args = /^(focus)\s+(\S+)$/mi.exec(responseString);
         if(!args)
-            throw new Error("Invalid Command: " + commandString);
+            throw new Error("Invalid Command: " + responseString);
+
+        var targetClass = args[2];
+        var targetElements = document.getElementsByClassName(targetClass);
+        if(targetElements.length === 0)
+            throw new Error("Class not found: " + targetClass + " - " + responseString);
+
+        var focusedElms = document.getElementsByClassName('focused');
+        while(focusedElms.length > 0)
+            focusedElms[0].classList.remove('focused');
+
+        var targetElement = targetElements[0];
+        targetElement.classList.add("focused");
+
+        var offsetHeight = targetElement.offsetTop;
+        //console.log(offsetHeight);
+        document.body.scrollTop = offsetHeight;
+    }
+
+
+    function renderWindowCommand(responseString) {
+        var args = /^(minimize|maximize|close)\s+(\S+)$/mi.exec(responseString);
+        if(!args)
+            throw new Error("Invalid Command: " + responseString);
 
         var command = args[1].toLowerCase();
         var targetClass = args[2];
         var targetElements = document.getElementsByClassName(targetClass);
         if(targetElements.length === 0)
-            throw new Error("Class not found: " + targetClass + " - " + commandString);
+            throw new Error("Class not found: " + targetClass + " - " + responseString);
 
         var targetElement = targetElements[0];
         var hasClass = targetElement.classList.contains(command + 'd');
@@ -314,7 +338,7 @@ function Client() {
                     break;
                 }
 
-            if(insertBefore)
+            if(insertBefore && contentElement.classList.contains('prepend-on-render'))
                 bodyElm.insertBefore(contentElement, insertBefore);
             else
                 bodyElm.appendChild(contentElement);

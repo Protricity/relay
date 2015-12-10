@@ -57,8 +57,8 @@
 .navigation-commands header button {
     border: 1px inset;
     /*padding: 0.3em 0.8em;*/
-    width: 3em;
-    height: 2em;
+    width: 2em;
+    height: 1.6em;
     padding: 0;
     margin: 0;
     background-color: #DDD;

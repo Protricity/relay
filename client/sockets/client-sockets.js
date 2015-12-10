@@ -55,7 +55,7 @@ function ClientSockets(socketURL) {
             //}, 500);
             //newSocket.send("AUTH AEA00E8FAA7CF1D1");
             //newSocket.send("AUTH AEA00E8FAA7CF1D1");
-            renderClientSocketsWindow();
+            ClientSockets.refreshSocketsWindow();
         }
 
         function onClose(e) {
@@ -89,7 +89,7 @@ function ClientSockets(socketURL) {
                 newSocket.url
             );
 
-            renderClientSocketsWindow();
+            ClientSockets.refreshSocketsWindow();
         }
 
         function onSocketMessage(e) {
@@ -112,7 +112,7 @@ function ClientSockets(socketURL) {
         newSocket.addEventListener('open', ClientSockets.callEventListeners);
         newSocket.addEventListener('close', ClientSockets.callEventListeners);
 
-        renderClientSocketsWindow();
+        ClientSockets.refreshSocketsWindow();
 
         return newSocket;
     };
@@ -223,7 +223,7 @@ function ClientSockets(socketURL) {
         //}
     };
 
-    function renderClientSocketsWindow() {
+    ClientSockets.refreshSocketsWindow = function() {
         self.module = {exports: {}};
         importScripts('client/sockets/render/sockets-window.js');
 
@@ -231,6 +231,6 @@ function ClientSockets(socketURL) {
         self.module.exports.renderClientSocketsWindow(socketURLList, activeSockets, function(html) {
             ClientWorker.render(html);
         });
-    }
+    };
 
 })();

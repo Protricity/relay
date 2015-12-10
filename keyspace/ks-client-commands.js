@@ -8,7 +8,7 @@ if(typeof module === 'object') (function() {
         ClientWorker.addCommand(importGETCommand);
         ClientWorker.addResponse(importGETCommand);
         function importGETCommand(commandString, e) {
-            if (!/^(get|http)/i.test(commandString))
+            if (!/^(?:keyspace\.)?(get|http)/i.test(commandString))
                 return false;
             ClientWorker.removeCommand(importGETCommand);
             ClientWorker.removeResponse(importGETCommand);
@@ -23,7 +23,7 @@ if(typeof module === 'object') (function() {
         ClientWorker.addCommand(importPUTCommand);
         ClientWorker.addResponse(importPUTCommand);
         function importPUTCommand(commandString, e) {
-            if (!/^put/i.test(commandString))
+            if (!/^(?:keyspace\.)?put/i.test(commandString))
                 return false;
             ClientWorker.removeCommand(importPUTCommand);
             ClientWorker.removeResponse(importPUTCommand);
@@ -34,15 +34,18 @@ if(typeof module === 'object') (function() {
         }
 
 
-        // HTTP Response
-        ClientWorker.addResponse(importAUTHCommand);
-        function importAUTHCommand(commandString, e) {
-            if (!/^auth/i.test(commandString))
+        // Keyspace Hosting Host
+        ClientWorker.addCommand(importHostCommand);
+        ClientWorker.addResponse(importHostCommand);
+        function importHostCommand(commandString, e) {
+            if (!/^(?:keyspace\.)?host/i.test(commandString))
                 return false;
-            ClientWorker.removeResponse(importAUTHCommand);
+
+            ClientWorker.removeCommand(importHostCommand);
+            ClientWorker.removeResponse(importHostCommand);
             self.module = {exports: {}};
-            importScripts('keyspace/auth/ks-client-auth-command.js');
-            module.exports.initClientKSAuthCommands(ClientWorker);
+            importScripts('keyspace/host/ks-client-host-commands.js');
+            module.exports.initClientKSHostCommands(ClientWorker);
             //console.info("Loaded: keyspace/auth/ks-client-auth-command.js");
             return false;
         }
@@ -51,19 +54,7 @@ if(typeof module === 'object') (function() {
         // Feed Commands
         ClientWorker.addCommand(importFeedCommands);
         function importFeedCommands(commandString, e) {
-            if (!/^feed/i.test(commandString))
-                return false;
-            ClientWorker.removeCommand(importFeedCommands);
-            importScripts('keyspace/feed/ks-client-feed-commands.js');
-            module.exports.initClientKSFeedCommands(ClientWorker);
-            return false;
-        }
-
-
-        // Feed Commands
-        ClientWorker.addCommand(importOnlineCommand);
-        function importOnlineCommand(commandString, e) {
-            if (!/^online/i.test(commandString))
+            if (!/^(?:keyspace\.)?feed/i.test(commandString))
                 return false;
             ClientWorker.removeCommand(importFeedCommands);
             importScripts('keyspace/feed/ks-client-feed-commands.js');

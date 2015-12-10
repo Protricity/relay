@@ -113,7 +113,7 @@ if(typeof module === 'object') (function() {
             if (!match)
                 return false;
 
-            var args = responseString.split(/\s/);
+            //var args = responseString.split(/\s/);
             var channelPath = match[1];
             var username = match[2];
             renderChatWindow(channelPath);
@@ -134,6 +134,8 @@ if(typeof module === 'object') (function() {
                     ClientWorker.replace('channel-users:' + channelPath.toLowerCase(), html);
                 });
             }
+
+            ClientWorker.postResponseToClient("FOCUS chat:" + channelPath.toLowerCase());
             return true;
         }
 
@@ -309,10 +311,10 @@ if(typeof module === 'object') (function() {
         }
 
         var activeChannels = [];
-        function renderChatWindow(channelPath, force) {
+        function renderChatWindow(channelPath) {
             var channelPathLowerCase = channelPath.toLowerCase();
 
-            if (force || activeChannels.indexOf(channelPathLowerCase) === -1) {
+            if (activeChannels.indexOf(channelPathLowerCase) === -1) {
                 getChatExports().renderChatWindow(channelPath, function (html) {
                     ClientWorker.render(html);
                     activeChannels.push(channelPathLowerCase);

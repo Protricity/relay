@@ -7,7 +7,7 @@ if(typeof module === 'object') (function() {
         // HTTP GET Command
         SocketServer.addCommand(importGETCommand);
         function importGETCommand(commandString, e) {
-            if (!/^(get|http)/i.test(commandString))
+            if (!/^(?:keyspace\.)?(get|http)/i.test(commandString))
                 return false;
             SocketServer.removeCommand(importGETCommand);
             require('./get/ks-server-get-commands.js')
@@ -19,7 +19,7 @@ if(typeof module === 'object') (function() {
         // HTTP PUT Command
         SocketServer.addCommand(importPUTCommand);
         function importPUTCommand(commandString, e) {
-            if (!/^put/i.test(commandString))
+            if (!/^(?:keyspace\.)?put/i.test(commandString))
                 return false;
             SocketServer.removeCommand(importPUTCommand);
             require('./put/ks-server-put-commands.js')
@@ -31,11 +31,11 @@ if(typeof module === 'object') (function() {
         // AUTH Command
         SocketServer.addCommand(importAUTHCommand);
         function importAUTHCommand(commandString, e) {
-            if (!/^auth/i.test(commandString))
+            if (!/^(?:keyspace\.)?host/i.test(commandString))
                 return false;
             SocketServer.removeCommand(importAUTHCommand);
-            require('./auth/ks-server-auth-commands.js')
-                .initSocketServerAuthCommands(SocketServer);
+            require('./host/ks-server-host-commands.js')
+                .initSocketServerHostCommands(SocketServer);
             return false;
         }
 

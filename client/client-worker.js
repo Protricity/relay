@@ -45,6 +45,7 @@ function ClientWorker() {
             throw new Error("Response Callback already added: " + responseCallback);
         responseHandlers[prepend ? 'unshift' : 'push'](responseCallback);
         handlerCounter++;
+        return responseHandlers;
     };
 
     ClientWorker.removeResponse = function (responseCallback) {
@@ -211,12 +212,23 @@ function ClientWorker() {
     // Socket Client
     ClientWorker.addResponse(consoleResponse);
     function consoleResponse(commandResponse, e) {
-        var match = /^(info|error|assert|warn)/i.exec(commandResponse);
+        var match = /^(server|info|error|assert|warn)/i.exec(commandResponse);
         if(!match)
             return false;
 
         var command = match[1].toLowerCase();
-        console[command](commandResponse);
+        switch(command) {
+            case 'server':
+                var versionSplit = commandResponse.split(' ', 3);
+                e.target.VERSION = versionSplit[1];
+                e.target.VERSION_STRING = versionSplit[2];
+                console.info("Server Version: " + versionSplit[2], e.target);
+                ClientSockets.refreshSocketsWindow();
+                break;
+            default:
+                console[command](commandResponse);
+                break;
+        }
         return true;
     }
 

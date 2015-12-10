@@ -20,28 +20,30 @@ if(typeof module === 'object') (function() {
     module.exports.renderClientSocketsWindow = function(socketURLList, activeSockets, callback) {
 // TODO all sockets
         var html_content =
-            "<table class='sockets-window-list'>" +
+            "<table class='sockets-window-list' style='width:100%'>" +
                 "<tbody>" +
                     "<tr>" +
                         "<th>URL</th>" +
                         "<th>Status</th>" +
-                        //"<th>Attempts</th>" +
+                        "<th>Version</th>" +
                     "</tr>";
 
         var activeURLs = [];
         for(var i=0; i<activeSockets.length; i++) {
-            var activeSocketURL = activeSockets[i].url;
+            var activeSocket = activeSockets[i];
+            var activeSocketURL = activeSocket.url;
             var activeMatch = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(activeSocketURL);
             var activeSocketHost = activeMatch[4];
             var activeStatus =
                 ['Connecting','Open','Closing','Closed']
-                [activeSockets[i].readyState];
+                [activeSocket.readyState];
             activeURLs.push(activeSocketURL);
 
             html_content +=
                 "<tr>" +
                     "<td><a href='" + activeSocketURL + "'>" + activeSocketHost + "</a></td>" +
                     "<td class='" + activeStatus.toLowerCase() + "'>" + activeStatus + "</td>" +
+                    "<td class='version'>" + activeSocket.VERSION_STRING + "</td>" +
                 "</tr>";
         }
 
@@ -58,6 +60,7 @@ if(typeof module === 'object') (function() {
                 "<tr>" +
                     "<td><a href='" + socketURL + "'>" + socketHost + "</a></td>" +
                     "<td class='" + inactiveStatus.toLowerCase() + "'>" + inactiveStatus + "</td>" +
+                    "<td class='version'>N/A</td>" +
                 "</tr>";
         }
 

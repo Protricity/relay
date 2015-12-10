@@ -81,8 +81,8 @@ function getCommandHTTP(request, response) {
 
 function executeServerGetRequest(requestString, callback) {
     var browserID = getContentHeader(requestString, 'Browser-ID');
-    if(!browserID)
-        requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
+    //if(!browserID)
+    //    requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
 
     //// TODO: Query all client hosts
     //var requestID = 'S' + requestIDCount++;
@@ -108,7 +108,7 @@ function executeServerGetRequest(requestString, callback) {
                     requestURL,
                     200,
                     "OK",
-                    "Browser-ID: " + browserID,
+                    (browserID ? "Browser-ID: " + browserID : ''),
                     callback
                 );
         }
