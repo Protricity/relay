@@ -11,11 +11,9 @@ if(typeof module !== 'object')
     module.exports.renderPGPContactList = renderPGPContactList;
     function renderPGPContactList(callback) {
 
-        if(typeof KeySpaceDB === 'undefined') {
-            self.module = {exports: {}};
-            importScripts('keyspace/ks-db.js');
-            var KeySpaceDB = self.module.exports.KeySpaceDB;
-        }
+        self.module = {exports: {}};
+        importScripts('keyspace/ks-db.js');
+        var KeySpaceDB = self.module.exports.KeySpaceDB;
 
         if(typeof SettingsDB === 'undefined') {
             self.module = {exports: {}};
@@ -99,11 +97,16 @@ if(typeof module !== 'object')
                         throw new Error(err);
 
                     if(contentEntry) {
+                        var socketHost = KeySpaceDB.getSocketHost(contentEntry.pgp_id_public);
+                        var hostingStatus = socketHost !== null ? 'online' : 'offline' ;
+                        var hostingCommand = socketHost !== null ? 'offline' : 'online';
+//                         console.log(socketHost, hostingStatus, hostingCommand);
+
                         var html_commands =
                             "<a href='javascript:Client.execute(\"KEYSPACE.HOST " + contentEntry.pgp_id_public + "\");'>" +
                                 "<span>Go</span>" +
                                 "<br />" +
-                                "<span class='command online'>Online</span>" +
+                                "<span class='command " + hostingCommand.toLowerCase() + "'>" + hostingCommand + "</span>" +
                             "</a>" +
                             "<br/>" +
                             "<a href='javascript:Client.execute(\"KEYSPACE.GET " + contentEntry.pgp_id_public + "\");'>" +
@@ -124,7 +127,7 @@ if(typeof module !== 'object')
 
                         renderPGPContactListEntry(
                             contentEntry.user_id,
-                            '<span class="offline">offline</span> ' + contentEntry.pgp_id_private,
+                            '<span class="' + hostingStatus.toLowerCase() + '">' + hostingStatus + '</span> ' + contentEntry.pgp_id_private,
                             'pgp/contact/render/icons/user_icon_default.png',
                             'private-key',
                             html_commands,
@@ -233,19 +236,20 @@ if(typeof document === 'object')
 
         document.addEventListener('submit', onFormEvent, false);
         document.addEventListener('change', onFormEvent);
-        document.addEventListener('response:keyspace', onKeySpaceEvent);
+        document.addEventListener('event', onKeySpaceEvent);
         //document.addEventListener('response:settings', onKeySpaceEvent);
 //         document.addEventListener('input', onFormEvent, false);
 
         function onKeySpaceEvent(e) {
             var responseString = e.detail;
-            var args = /^\w+/.exec(responseString);
-            if(!args)
+            var match = /^event ([\w\.]+)/i.exec(responseString);
+            if(!match)
                 throw new Error("Invalid Command: " + responseString);
 
-            var command = args[0].toLowerCase();
+            var command = match[1].toLowerCase();
             switch(command) {
                 // TODO: ignore responses from server?
+                case 'keyspace.host':
                 case 'keyspace.insert':
                 case 'settings.update':
                     break;
@@ -345,7 +349,7 @@ if(typeof document === 'object')
                     "</optgroup>";
 
 
-
+            formElm.classList[checkedContactEntries.length > 0 ? 'add' : 'remove']('selected-contacts');
             formElm.command.innerHTML = html_command_options;
         }
 

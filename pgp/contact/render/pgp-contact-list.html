@@ -9,10 +9,11 @@
     </header>
     <form name='pgp-contact-list-form' action='#' class="hide-on-minimize">
         <code class='status-box'>{$status_box}</code>
-        <select name='command'>
+        <select name='command' class="show-on-selected-contacts">
             <option value=''>Select Contact(s)</option>
             {$html_command_options}
         </select>
+        <input type="text" name="search" class="hide-on-selected-contacts" placeholder="Search Contacts or Channels" />
         <input type='hidden' placeholder="Change Username" value="{$nick_value}" />
         <button class="pgp-contact-section-header:" onclick="this.classList.toggle('closed'); this.blur(); return false;">Identities</button>
         <ul class="pgp-contact-section:">

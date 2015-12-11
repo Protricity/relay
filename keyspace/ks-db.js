@@ -3,34 +3,36 @@
  */
 "use strict";
 if (!module) var module = {exports: {}};
-module.exports.KeySpaceDB = KeySpaceDB;
-
-
-KeySpaceDB.DB_VERSION               = 4;
-KeySpaceDB.DB_NAME                  = 'keyspace';
-KeySpaceDB.DB_TABLE_HTTP_CONTENT    = 'content';
-KeySpaceDB.DB_TABLE_HTTP_MESSAGE    = 'message';
-//KeySpaceDB.DB_TABLE_HTTP_URL        = 'url';
-
-KeySpaceDB.DB_INDEX_PATH            = 'path';
-KeySpaceDB.DB_INDEX_ID_PATH         = 'id_path';
-KeySpaceDB.DB_INDEX_TIMESTAMP       = 'timestamp';
-KeySpaceDB.DB_INDEX_PUBLISHED       = 'published';
-
-KeySpaceDB.DB_INDEX_TO_ID           = 'to_id';
-KeySpaceDB.DB_INDEX_FROM_ID         = 'from_id';
-
-KeySpaceDB.DB_INDEX_RE              = 're';
-KeySpaceDB.DB_INDEX_UNPROCESSED     = 'unprocessed';
-
-KeySpaceDB.DB_PGP_KEY_LENGTH        = 8;
-
-// Config Database
-function KeySpaceDB(dbReadyCallback) {
-    return KeySpaceDB.getDBInstance(dbReadyCallback);
-}
+module.exports.KeySpaceDB =
+    typeof self.KeySpaceDB !== 'undefined' ? self.KeySpaceDB :
 
 (function() {
+    // Config Database
+    function KeySpaceDB(dbReadyCallback) {
+        return KeySpaceDB.getDBInstance(dbReadyCallback);
+    }
+    self.KeySpaceDB = KeySpaceDB;
+
+    KeySpaceDB.DB_VERSION               = 4;
+    KeySpaceDB.DB_NAME                  = 'keyspace';
+    KeySpaceDB.DB_TABLE_HTTP_CONTENT    = 'content';
+    KeySpaceDB.DB_TABLE_HTTP_MESSAGE    = 'message';
+//KeySpaceDB.DB_TABLE_HTTP_URL        = 'url';
+
+    KeySpaceDB.DB_INDEX_PATH            = 'path';
+    KeySpaceDB.DB_INDEX_ID_PATH         = 'id_path';
+    KeySpaceDB.DB_INDEX_TIMESTAMP       = 'timestamp';
+    KeySpaceDB.DB_INDEX_PUBLISHED       = 'published';
+
+    KeySpaceDB.DB_INDEX_TO_ID           = 'to_id';
+    KeySpaceDB.DB_INDEX_FROM_ID         = 'from_id';
+
+    KeySpaceDB.DB_INDEX_RE              = 're';
+    KeySpaceDB.DB_INDEX_UNPROCESSED     = 'unprocessed';
+    KeySpaceDB.DB_INDEX_TAGS            = 'tags';
+
+    KeySpaceDB.DB_PGP_KEY_LENGTH        = 8;
+
     if(typeof indexedDB === 'undefined')
         var mongodb     = require('mongodb'),
             MongoClient = mongodb.MongoClient;
@@ -91,7 +93,10 @@ function KeySpaceDB(dbReadyCallback) {
                     contentStore.createIndex(KeySpaceDB.DB_INDEX_TIMESTAMP, "timestamp", { unique: false });
                     contentStore.createIndex(KeySpaceDB.DB_INDEX_PUBLISHED, ["published", "timestamp"], { unique: false });
                     contentStore.createIndex(KeySpaceDB.DB_INDEX_RE, "re", { unique: false });
+                    contentStore.createIndex(KeySpaceDB.DB_INDEX_RE, "re", { unique: false });
+                    contentStore.createIndex(KeySpaceDB.DB_INDEX_TAGS, "tags", { unique: false, multiEntry: true });
 
+                    // TODO: check missing indexes on upgrade
                     console.log('Upgraded Table: ' + KeySpaceDB.DB_NAME + '.' + contentStore.name);
                 }
 
@@ -102,6 +107,7 @@ function KeySpaceDB(dbReadyCallback) {
                     messageStore.createIndex(KeySpaceDB.DB_INDEX_RE, "re", { unique: false });
                     messageStore.createIndex(KeySpaceDB.DB_INDEX_UNPROCESSED, "unprocessed", { unique: false });
 
+                    // TODO: check missing indexes on upgrade
                     console.log('Upgraded Table: ' + KeySpaceDB.DB_NAME + '.' + messageStore.name);
                 }
 
@@ -145,6 +151,71 @@ function KeySpaceDB(dbReadyCallback) {
             });
         }
 
+    };
+
+    var activeHosts = [];
+//     console.log(activeHosts, self);
+    KeySpaceDB.addSocketHost = function(pgp_id_public, webSocket) {
+        if(typeof webSocket.KS_HOST === 'undefined')
+            webSocket.KS_HOST = [];
+        if(webSocket.KS_HOST.indexOf(pgp_id_public))
+            webSocket.KS_HOST.push(pgp_id_public);
+
+        pgp_id_public = pgp_id_public
+            .substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH)
+            .toUpperCase();
+
+        // DB instead of var?
+        activeHosts.push([pgp_id_public, webSocket]);
+        console.log("Hosting: " + pgp_id_public, webSocket);
+
+        var responseString = "EVENT KEYSPACE.HOST " + pgp_id_public;
+        if(typeof Client !== 'undefined')
+            Client.processResponse(responseString);
+        if(typeof ClientWorker !== 'undefined')
+            ClientWorker.processResponse(responseString);
+
+    };
+
+    KeySpaceDB.getSocketHost = function(pgp_id_public) {
+        pgp_id_public = pgp_id_public
+            .substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH)
+            .toUpperCase();
+
+        for(var i=0; i<activeHosts.length; i++) {
+            if(activeHosts[i][0] === pgp_id_public) {
+                return activeHosts[i][1];
+            }
+        }
+
+//         console.error("Could not get socket host for : " + pgp_id_public);
+        return null;
+        //throw new Error("Socket host not found for KeySpace: " + pgp_id_public);
+
+        //var requestURL = "http://" + pgp_id_public + ".ks/.private/id";
+        //KeySpaceDB.queryOne(requestURL, function (err, contentData) {
+        //    if (err)
+        //        throw new Error(err);
+        //
+        //    if (!contentData)
+        //        throw new Error("Could not find Private Key: " + requestURL);
+        //
+        //    if(typeof contentData.tags === 'undefined')
+        //        contentData.tags = [];
+        //
+        //    if(contentData.tags.indexOf('keyspace:hosting') >= 0)
+        //        throw new Error("Keyspace is already being hosted: " + pgp_id_public);
+        //
+        //    contentData.tags.push('keyspace:hosting');
+        //
+        //    KeySpaceDB.update(KeySpaceDB.DB_TABLE_HTTP_CONTENT, contentData,
+        //        function (err, updateData) {
+        //            if(err)
+        //                throw new Error(err);
+        //
+        //            //console.info("Publish Successful:", pgp_id_public, timestamp);
+        //    })
+        //});
     };
 
 
@@ -220,7 +291,7 @@ function KeySpaceDB(dbReadyCallback) {
                 if(callback)
                     callback(err, insertData);
 
-                var responseString = "KEYSPACE.INSERT" +
+                var responseString = "EVENT KEYSPACE.INSERT" +
                     ' ' + insertData.pgp_id_public +
                     ' ' + insertData.timestamp +
                     (path ? ' ' + path : '');
@@ -313,7 +384,7 @@ function KeySpaceDB(dbReadyCallback) {
 
         while(contentPath[0] === '/')
             contentPath = contentPath.substr(1);
-            
+
         var publicKeyID = null;
         if(host && host !== '*') {
             match = /^([^.]*\.)?([a-f0-9]{8,16})\.ks$/i.exec(host);
@@ -456,7 +527,7 @@ function KeySpaceDB(dbReadyCallback) {
         });
     };
 
-    KeySpaceDB.update = function(tableName, updateQuery, updateData, callback) {
+    KeySpaceDB.update = function(tableName, updateData, callback) {
         callback = callback || function(err, updateData) {
             if(err)
                 throw err;
@@ -471,8 +542,8 @@ function KeySpaceDB(dbReadyCallback) {
                     .transaction([tableName], "readwrite")
                     .objectStore(tableName);
 
-                if(updateQuery)
-                    throw new Error("Update query not implemented for indexeddb yet");
+                //if(updateQuery)
+                //    throw new Error("Update query not implemented for indexeddb yet");
 
                 var updateRequest = dbStore.put(updateData);
                 updateRequest.onsuccess = function(e) {
@@ -484,7 +555,7 @@ function KeySpaceDB(dbReadyCallback) {
 
             } else if (typeof mongodb !== 'undefined' && db instanceof mongodb.Db) {
                 var dbCollection = db.collection(tableName);
-                dbCollection.update(updateQuery, updateData);
+                dbCollection.update(null, updateData);
                 //callback(null, insertData);
 
             } else {
@@ -678,4 +749,5 @@ function KeySpaceDB(dbReadyCallback) {
     //    })
     //};
 
+    return KeySpaceDB;
 })();

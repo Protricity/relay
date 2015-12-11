@@ -59,7 +59,12 @@
     transition: box-shadow 0.4s ease-out;
 }
 
-.pgp-contact-entry-name\3A {/* font-weight: bold; */display: block;/* font-style: italic; */font-size: 1.2em;max-width: 12em;/* overflow-x: hidden; */overflow-wrap: break-word;}
+.pgp-contact-entry-name\3A {
+    display: block;
+    font-size: 1.2em;
+    max-width: 12em;
+    overflow-wrap: break-word;
+}
 
 .pgp-contact-entry\3A:hover .pgp-contact-entry-name\3A {
     font-weight: bold;
@@ -86,6 +91,12 @@ form[name=pgp-contact-list-form] {
     position: relative;
 }
 
+
+form[name=pgp-contact-list-form].selected-contacts .hide-on-selected-contacts,
+form[name=pgp-contact-list-form]:not(.selected-contacts) .show-on-selected-contacts {
+    display: none;
+}
+
 form[name=pgp-contact-list-form] .status-box:empty {
     display: none;
 }
@@ -96,7 +107,7 @@ form[name=pgp-contact-list-form] select {
     /* margin: 0.4em 0.2em 0 0.2em; */
     border-radius: 0.6em;
     border-width: 1px;
-    width: 96%;
+    width: 94%;
     margin: 0.5em auto;
     display: block;
 }

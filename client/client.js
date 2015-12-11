@@ -58,19 +58,23 @@ function Client() {
                 focusWindowCommand(responseString);
                 break;
 
+            case 'event':
+                // TODO: response?
+                document.dispatchEvent(new CustomEvent('event', {
+                    detail: responseString
+                }));
+
+                //document.dispatchEvent(new CustomEvent('event:' + command, {
+                //    detail: responseString
+                //}));
+                break;
+
             default:
                 // some responses aren't used by the client, but should be passed through the client anyway
-                //console.error("Unhandled client-side command: " + responseString);
+                //console.error("Unrecognized client-side command: " + responseString);
                 break;
         }
 
-        document.dispatchEvent(new CustomEvent('response', {
-            detail: responseString
-        }));
-
-        document.dispatchEvent(new CustomEvent('response:' + command, {
-            detail: responseString
-        }));
 
         // If host thread exists,
         if(typeof Host === 'object')
@@ -162,9 +166,14 @@ function Client() {
         var targetElement = targetElements[0];
         targetElement.classList.add("focused");
 
-        var offsetHeight = targetElement.offsetTop;
-        //console.log(offsetHeight);
-        document.body.scrollTop = offsetHeight;
+        document.body.scrollTop = targetElement.offsetTop;
+
+        var focusInput = targetElement.querySelector('.focus-input')
+            || targetElement.querySelector('input[type=text]')
+            || targetElement.querySelector('textarea')
+            || targetElement.querySelector('select');
+        if(focusInput)
+            focusInput.focus();
     }
 
 

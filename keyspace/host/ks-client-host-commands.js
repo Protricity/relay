@@ -4,8 +4,9 @@
 if(typeof module === 'object') (function() {
     module.exports.initClientKSHostCommands = function (ClientWorker) {
         ClientWorker.addCommand(ksHostCommand);
+        ClientWorker.addResponse(ksHostResponse);
 
-        ClientWorker.addResponse(ksChallengeResponse, true);
+        ClientWorker.addResponse(ksChallengeResponse);
 
         function ksHostCommand(commandString) {
             var match = /^(?:keyspace\.)?host\s+([a-f0-9]{8,16})$/i.exec(commandString);
@@ -38,6 +39,25 @@ if(typeof module === 'object') (function() {
                 commandString = "KEYSPACE.HOST " + publicKeyID;
                 ClientWorker.sendWithSocket(commandString);
             });
+            return true;
+        }
+
+        function ksHostResponse(responseString, e) {
+            var match = /^(?:keyspace\.)?host\s+([a-f0-9]{8,16})$/i.exec(responseString);
+            if (!match)
+                return false;
+
+            if(typeof KeySpaceDB === 'undefined') {
+                self.module = {exports: {}};
+                importScripts('keyspace/ks-db.js');
+                var KeySpaceDB = self.module.exports.KeySpaceDB;
+            }
+
+            var pgp_id_public = match[1].substr(match[1].length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+
+            var webSocket = e.target;
+            KeySpaceDB.addSocketHost(pgp_id_public, webSocket);
+
             return true;
         }
 

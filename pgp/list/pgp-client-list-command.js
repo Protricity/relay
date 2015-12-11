@@ -13,7 +13,7 @@ if(typeof module === 'object') (function() {
             if (!match)
                 return false;
 
-            var listString = match[0];
+            var listString = match[0] + match[1];
             var listPrivate = match[2] ? true : false;
 
             self.exports = {};

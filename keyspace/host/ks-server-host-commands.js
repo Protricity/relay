@@ -24,8 +24,10 @@ function ksHostCommandSocket(commandString, client) {
         keySpaceClients[pgp_id_public] = [];
 
     var clientEntries = keySpaceClients[pgp_id_public];
-    if(clientEntries.indexOf(client) >= 0)
-        throw new Error("Already hosting key space " + pgp_id_public);
+    if(clientEntries.indexOf(client) >= 0) {
+        client.send("ERROR Already hosting key space: " + pgp_id_public);
+        throw new Error("Already hosting key space: " + pgp_id_public);
+    }
 
     // Generate new challenge
     var hostCode = generateUID('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx');
@@ -62,6 +64,7 @@ function ksValidateCommandSocket(commandString, client) {
     var pgp_id_public = keySpaceChallenges[uid];
     delete keySpaceChallenges[uid];
     console.log("Validation Success: " + pgp_id_public + " => " + uid);
+
     if(typeof keySpaceClients[pgp_id_public] === 'undefined')
         keySpaceClients[pgp_id_public] = [];
     var clientEntries = keySpaceClients[pgp_id_public];
@@ -70,7 +73,7 @@ function ksValidateCommandSocket(commandString, client) {
 
     } else {
         clientEntries.push(client);
-        client.send("INFO Hosting key space " + pgp_id_public);
+        client.send("KEYSPACE.HOST " + pgp_id_public);
     }
     return true;
 }

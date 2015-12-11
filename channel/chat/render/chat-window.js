@@ -207,7 +207,7 @@ if(typeof module === 'object') (function() {
 
 
     module.exports.renderChatUserList = function(channelPath, userList, callback) {
-        var optionHTML = "<optgroup class='channel-users:" + channelPath.toLowerCase() + "' label='Active Users (" + userList.length + ")'>\n";
+        var optionHTML = "<optgroup class='channel-users:" + channelPath.toLowerCase() + "' label='(" + userList.length + ") Users'>\n";
 
         for (var i = 0; i < userList.length; i++) {
             var username = userList[i];

@@ -31,7 +31,7 @@ if(typeof module === 'object') (function() {
                     throw new Error("Entry missing: " + pgp_id_public + ' ' + timestamp);
 
                 entryData.published = 1;
-                KeySpaceDB.update(KeySpaceDB.DB_TABLE_HTTP_CONTENT, null, entryData,
+                KeySpaceDB.update(KeySpaceDB.DB_TABLE_HTTP_CONTENT, entryData,
                     function (err, updateData) {
                         console.info("Publish Successful:", pgp_id_public, timestamp);
 
