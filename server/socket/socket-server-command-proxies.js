@@ -12,7 +12,7 @@ module.exports.initSocketServerCommandProxies = function(SocketServer) {
     //});
     SocketServer.addCommand(httpCommand);
     function httpCommand(commandString, client) {
-        if(!/^(?:keyspace\.)?(get|post|put|delete|patch|head|http|host)/i.test(commandString))
+        if(!/^(?:keyspace\.)?(get|post|put|delete|patch|head|http|host|contacts)/i.test(commandString))
             return false;
         SocketServer.removeCommand(httpCommand);
 
