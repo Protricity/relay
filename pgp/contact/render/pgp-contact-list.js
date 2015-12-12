@@ -56,6 +56,8 @@ if(typeof module !== 'object')
                 throw new Error(err);
 
             if(contentEntry) {
+                var hostingStatus = 'offline' ;
+
                 // TODO: get socket user name
                 var html_commands =
                     "<a href='javascript:Client.execute(\"MESSAGE " + contentEntry.pgp_id_public + "\");'>" +
@@ -81,7 +83,7 @@ if(typeof module !== 'object')
 
                 renderPGPContactListEntry(
                     contentEntry.user_id,
-                    '<span class="online">online</span> ' + contentEntry.pgp_id_private,
+                    '<span class="' + hostingStatus.toLowerCase() + '">' + hostingStatus.toLowerCase() + '</span> ' + contentEntry.pgp_id_private,
                     'pgp/contact/render/icons/user_icon_default.png',
                     'public-key',
                     html_commands,

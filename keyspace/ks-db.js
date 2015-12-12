@@ -2,6 +2,8 @@
  * Created by ari on 7/2/2015.
  */
 "use strict";
+if (typeof self === 'undefined')
+    var self = this;
 if (!module) var module = {exports: {}};
 module.exports.KeySpaceDB =
     typeof self.KeySpaceDB !== 'undefined' ? self.KeySpaceDB :

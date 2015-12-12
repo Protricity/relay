@@ -91,7 +91,7 @@
 
         switch(formElm.getAttribute('name')) {
             case 'console-form':
-                console.log(e);
+                //console.log(e);
                 if(e.type === 'submit')
                     submitConsoleForm(e, formElm);
                 if(e.type.substr(0, 3) === 'key')
