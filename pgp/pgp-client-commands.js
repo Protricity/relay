@@ -42,18 +42,6 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
-        // PGP.CONTACT Command
-        ClientWorker.addCommand(importPGPContactCommand);
-        function importPGPContactCommand(commandString, e) {
-            if (!/^pgp\.contact/i.test(commandString))
-                return false;
-            ClientWorker.removeCommand(importPGPContactCommand);
-            self.module = {exports: {}};
-            importScripts('pgp/contact/pgp-client-contact-command.js');
-            module.exports.initClientPGPContactCommand(ClientWorker);
-            return false;
-        }
-
         // PGP.DELETE Command
         ClientWorker.addCommand(importPGPDeleteCommand);
         function importPGPDeleteCommand(commandString, e) {

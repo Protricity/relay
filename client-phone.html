@@ -12,9 +12,10 @@
         <script>
             // TODO: auto scroll to focus container
 
-            Client.execute("PGP.LIST.PRIVATE");
-            Client.execute("PGP.CONTACT");
+            Client.execute("PGP.LIST");
+            Client.execute("KEYSPACE.CONTACTS");
             Client.execute("AUTOJOIN");
+            Client.execute("KEYSPACE.HOST.AUTO");
 
             function onResize() {
                 document.body.classList.add(window.innerWidth > window.innerHeight / 1.2 ? 'layout-horizontal' : 'layout-vertical');
@@ -22,29 +23,6 @@
             }
             window.onresize = onResize;
             setTimeout(onResize, 500);
-
-//             var scrollTimeout = null;
-//             function onScroll() {
-//                 if(scrollTimeout)
-//                     clearTimeout(scrollTimeout);
-//                 scrollTimeout = setTimeout(function() {
-//                     var closestElm = null;
-//                     var closestOffset = 99999;
-//                     for(var i=0; i<document.body.children.length; i++) {
-//                         var child = document.body.children[i];
-//                         var offset = Math.abs(window.scrollY - child.offsetTop);
-//                         if(offset < closestOffset) {
-//                             closestElm = child;
-//                             closestOffset = offset;
-//                         }
-//                     }
-//                     console.log(window.scrollY, closestOffset);
-//                     if(closestOffset > 2) 
-//                         document.body.scrollTop = closestOffset;
-
-//                 }, 100);
-//             }
-//             window.onscroll = onScroll;
 
         </script>
     </head>

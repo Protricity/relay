@@ -29,13 +29,25 @@ if(typeof module === 'object') (function() {
 
 
         // AUTH Command
-        SocketServer.addCommand(importAUTHCommand);
-        function importAUTHCommand(commandString, e) {
+        SocketServer.addCommand(importHostCommand);
+        function importHostCommand(commandString, e) {
             if (!/^(?:keyspace\.)?host/i.test(commandString))
                 return false;
-            SocketServer.removeCommand(importAUTHCommand);
+            SocketServer.removeCommand(importHostCommand);
             require('./host/ks-server-host-commands.js')
                 .initSocketServerHostCommands(SocketServer);
+            return false;
+        }
+
+
+        // KEYSPACE.CONTACTS Command
+        SocketServer.addCommand(importContactsCommand);
+        function importContactsCommand(commandString, e) {
+            if (!/^(?:keyspace\.)?contacts/i.test(commandString))
+                return false;
+            SocketServer.removeCommand(importContactsCommand);
+            require('./contacts/ks-server-contacts-commands.js')
+                .initSocketServerContactsCommands(SocketServer);
             return false;
         }
 

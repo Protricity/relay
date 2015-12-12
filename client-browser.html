@@ -9,8 +9,9 @@
             // Render Navigation Menu and about box
             setTimeout(function() {
                 Client.execute("render {nav:menu}");
-                Client.execute("PGP.CONTACT");
+                Client.execute("KEYSPACE.CONTACTS");
                 Client.execute("AUTOJOIN");
+                Client.execute("KEYSPACE.HOST.AUTO");
             }, 10);
 
             function onResize() {

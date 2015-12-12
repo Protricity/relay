@@ -23,24 +23,24 @@ if(typeof module !== 'object')
 
         var HTML_COMMAND_DEFAULT = '';
         var HTML_CHANNEL_DEFAULT =
-            "<li class='pgp-contact-default_info'>" +
+            "<li class='keyspace-contact-default_info'>" +
             "No Active Channels. " +
             "<br/><a href='#JOIN'>Join</a> a channel..." +
             "</li>";
 
         var HTML_PRIVATE_KEY_DEFAULT =
-            "<li class='pgp-contact-default_info'>" +
+            "<li class='keyspace-contact-default_info'>" +
             "No Private Keys Found. " +
             "<br/><a href='#PGP.KEYGEN'>KeyGen</a> a new Identity..." +
             "</li>";
 
         var HTML_PUBLIC_KEY_DEFAULT =
-            "<li class='pgp-contact-default_info'>" +
+            "<li class='keyspace-contact-default_info'>" +
             "No Public Keys Found. " +
             "<br/><a href='#PGP.ADD'>Search</a> for Contact..." +
             "</li>";
 
-        var TEMPLATE_URL = "pgp/contact/render/pgp-contact-list.html";
+        var TEMPLATE_URL = "keyspace/contacts/render/ks-contact-list.html";
 
         var nick_value = '';
         var html_private_key_entries = '';
@@ -83,8 +83,11 @@ if(typeof module !== 'object')
 
                 renderPGPContactListEntry(
                     contentEntry.user_id,
-                    '<span class="' + hostingStatus.toLowerCase() + '">' + hostingStatus.toLowerCase() + '</span> ' + contentEntry.pgp_id_private,
-                    'pgp/contact/render/icons/user_icon_default.png',
+                    contentEntry.pgp_id_public +
+                    ' <span class="' + hostingStatus.toLowerCase() + '">' +
+                        hostingStatus.toLowerCase() +
+                    '</span>',
+                    'keyspace/contacts/render/icons/user_icon_default.png',
                     'public-key',
                     html_commands,
                     function(html) {
@@ -129,8 +132,12 @@ if(typeof module !== 'object')
 
                         renderPGPContactListEntry(
                             contentEntry.user_id,
-                            '<span class="' + hostingStatus.toLowerCase() + '">' + hostingStatus + '</span> ' + contentEntry.pgp_id_private,
-                            'pgp/contact/render/icons/user_icon_default.png',
+
+                            contentEntry.pgp_id_private +
+                            ' <span class="' + hostingStatus.toLowerCase() + '">' +
+                                hostingStatus.toLowerCase() +
+                            '</span>',
+                            'keyspace/contacts/render/icons/user_icon_default.png',
                             'private-key',
                             html_commands,
                             function(html) {
@@ -164,7 +171,7 @@ if(typeof module !== 'object')
                                     renderPGPContactListEntry(
                                         channelSettings.name_original_case,
                                         '<span class="status">0-25 users</span>',
-                                        'pgp/contact/render/icons/channel_icon_default.png',
+                                        'keyspace/contacts/render/icons/channel_icon_default.png',
                                         'channel',
                                         html_commands,
                                             function(html) {
@@ -201,7 +208,7 @@ if(typeof module !== 'object')
     var i=0;
     module.exports.renderPGPContactListEntry = renderPGPContactListEntry;
     function renderPGPContactListEntry(name, status, user_icon_path, type, html_commands, callback) {
-        var TEMPLATE_URL = "pgp/contact/render/pgp-contact-list-entry.html";
+        var TEMPLATE_URL = "keyspace/contacts/render/ks-contact-list-entry.html";
 
         var xhr = new XMLHttpRequest();
         xhr.open("GET", TEMPLATE_URL, false);
@@ -212,7 +219,7 @@ if(typeof module !== 'object')
         // TODO: cache xhr
 
         //status = 'online';
-        user_icon_path = user_icon_path || 'pgp/contact/render/icons/user_icon_default.png';
+        user_icon_path = user_icon_path || 'keyspace/contacts/render/icons/user_icon_default.png';
 
 
         // Callback
@@ -238,29 +245,8 @@ if(typeof document === 'object')
 
         document.addEventListener('submit', onFormEvent, false);
         document.addEventListener('change', onFormEvent);
-        document.addEventListener('event', onKeySpaceEvent);
         //document.addEventListener('response:settings', onKeySpaceEvent);
 //         document.addEventListener('input', onFormEvent, false);
-
-        function onKeySpaceEvent(e) {
-            var responseString = e.detail;
-            var match = /^event ([\w\.]+)/i.exec(responseString);
-            if(!match)
-                throw new Error("Invalid Command: " + responseString);
-
-            var command = match[1].toLowerCase();
-            switch(command) {
-                // TODO: ignore responses from server?
-                case 'keyspace.host':
-                case 'keyspace.insert':
-                case 'settings.update':
-                    break;
-                default:
-                    return false;
-            }
-            console.log(command, e);
-            Client.execute("PGP.CONTACT"); // TODO: refresh instead of render
-        }
 
         function onFormEvent(e, formElm) {
             if(!formElm) formElm = e.target.form ? e.target.form : e.target;
@@ -268,7 +254,7 @@ if(typeof document === 'object')
                 return false;
 
             switch(formElm.getAttribute('name')) {
-                case 'pgp-contact-list-form':
+                case 'ks-contact-list-form':
                     updateCommandList(e, formElm);
                     //contactExports.refreshPGPContactList(e, formElm);
                     if(e.type === 'submit')
@@ -283,10 +269,10 @@ if(typeof document === 'object')
 
 
         function updateCommandList(e, formElm) {
-            var checkedContactEntries = formElm.querySelectorAll('input:checked.pgp-contact-entry-checkbox\\:');
-            var channels = formElm.querySelectorAll('input:checked.pgp-contact-entry-checkbox\\:[data-type=channel');
-            var privateKeys = formElm.querySelectorAll('input:checked.pgp-contact-entry-checkbox\\:[data-type=private-key');
-            var publicKeys = formElm.querySelectorAll('input:checked.pgp-contact-entry-checkbox\\:[data-type=public-key');
+            var checkedContactEntries = formElm.querySelectorAll('input:checked.keyspace-contact-entry-checkbox\\:');
+            var channels = formElm.querySelectorAll('input:checked.keyspace-contact-entry-checkbox\\:[data-type=channel');
+            var privateKeys = formElm.querySelectorAll('input:checked.keyspace-contact-entry-checkbox\\:[data-type=private-key');
+            var publicKeys = formElm.querySelectorAll('input:checked.keyspace-contact-entry-checkbox\\:[data-type=public-key');
 
             var html_command_options = '';
             html_command_options +=

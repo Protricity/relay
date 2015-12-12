@@ -31,11 +31,11 @@ form[name=channel-form] input[name=message] {
 form[name=channel-form] input[type=submit] {
 }
 
-form[name=channel-form] select[name=user_list] {
+form[name=channel-form] select[name=users] {
     width: 10em;
 }
 
-form[name=channel-form] select[name=user_list_command] {
+form[name=channel-form] select[name=user_commands] {
     width: 10em;
 }
 

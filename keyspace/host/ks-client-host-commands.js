@@ -3,10 +3,29 @@
  */
 if(typeof module === 'object') (function() {
     module.exports.initClientKSHostCommands = function (ClientWorker) {
+        ClientWorker.addCommand(ksAutoHostCommand);
         ClientWorker.addCommand(ksHostCommand);
         ClientWorker.addResponse(ksHostResponse);
 
         ClientWorker.addResponse(ksChallengeResponse);
+
+        function ksAutoHostCommand(commandString) {
+            var match = /^(?:keyspace\.)?host\.auto$/i.exec(commandString);
+            if (!match)
+                return false;
+
+            var path = '.private/id';
+            KeySpaceDB.queryAll(path, function(err, contentData) {
+                if (err)
+                    throw new Error(err);
+                if (contentData
+                    && typeof contentData.tags !== 'undefined'
+                    && contentData.tags.indexOf("KEYSPACE.HOST.AUTO") >= 0) {
+                    ksHostCommand("KEYSPACE.HOST " + contentData.pgp_id_public);
+                }
+            });
+            return true;
+        }
 
         function ksHostCommand(commandString) {
             var match = /^(?:keyspace\.)?host\s+([a-f0-9]{8,16})$/i.exec(commandString);
@@ -38,6 +57,23 @@ if(typeof module === 'object') (function() {
 
                 commandString = "KEYSPACE.HOST " + publicKeyID;
                 ClientWorker.sendWithSocket(commandString);
+
+                // TODO: flag for auto online or wait for explicit offline instruction?
+
+                // Update Auto Online Flag
+                if(typeof contentData.tags === 'undefined')
+                    contentData.tags = [];
+                if(contentData.tags.indexOf("KEYSPACE.HOST.AUTO") === -1) {
+                    contentData.tags.push('KEYSPACE.HOST.AUTO');
+                    // Remove duplicate tags
+                    contentData.tags = contentData.tags.filter(function(el,i,a){
+                        return(i==a.indexOf(el));
+                    });
+                    KeySpaceDB.update(KeySpaceDB.DB_TABLE_HTTP_CONTENT, contentData, function(err, contentData) {
+                        console.log("Auto-online enabled for", contentData);
+                    });
+                }
+
             });
             return true;
         }

@@ -2,9 +2,9 @@
  * Created by ari on 7/2/2015.
  */
 "use strict";
+if (!module) var module = {exports: {}};
 if (typeof self === 'undefined')
     var self = this;
-if (!module) var module = {exports: {}};
 module.exports.KeySpaceDB =
     typeof self.KeySpaceDB !== 'undefined' ? self.KeySpaceDB :
 
@@ -95,7 +95,6 @@ module.exports.KeySpaceDB =
                     contentStore.createIndex(KeySpaceDB.DB_INDEX_TIMESTAMP, "timestamp", { unique: false });
                     contentStore.createIndex(KeySpaceDB.DB_INDEX_PUBLISHED, ["published", "timestamp"], { unique: false });
                     contentStore.createIndex(KeySpaceDB.DB_INDEX_RE, "re", { unique: false });
-                    contentStore.createIndex(KeySpaceDB.DB_INDEX_RE, "re", { unique: false });
                     contentStore.createIndex(KeySpaceDB.DB_INDEX_TAGS, "tags", { unique: false, multiEntry: true });
 
                     // TODO: check missing indexes on upgrade
@@ -169,7 +168,7 @@ module.exports.KeySpaceDB =
 
         // DB instead of var?
         activeHosts.push([pgp_id_public, webSocket]);
-        console.log("Hosting: " + pgp_id_public, webSocket);
+        console.log("KeySpace Online: " + pgp_id_public);
 
         var responseString = "EVENT KEYSPACE.HOST " + pgp_id_public;
         if(typeof Client !== 'undefined')

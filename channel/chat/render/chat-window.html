@@ -14,11 +14,10 @@
                 <tbody class="hide-on-minimize">
                     <tr>
                         <td style='vertical-align: top; width:1px;'>
-                            <select multiple='multiple' name='user_list' size='5'>
-                                <optgroup class='channel-users:{$channel_lowercase}' label='Channel Users (0)'></optgroup>
+                            <select multiple='multiple' name='users' size='5' class='channel-users:{$channel_lowercase}'>
                             </select>
-                            <select name="user_list_command">
-                                <option value="">Select a Command</option>
+                            <select name="user_commands">
+                                <option value="">Commands</option>
                                 <optgroup label="Channel Commands">
                                     <option value="LEAVE [$channel]">Leave Channel</option>
                                     <option value="MESSAGE [$username]">Private Message User</option>

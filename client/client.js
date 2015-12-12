@@ -162,6 +162,9 @@ function Client() {
         var focusedElms = document.getElementsByClassName('focused');
         while(focusedElms.length > 0)
             focusedElms[0].classList.remove('focused');
+        var maximizedElms = document.getElementsByClassName('maximized');
+        while(maximizedElms.length > 0)
+            maximizedElms[0].classList.remove('maximized');
 
         var targetElement = targetElements[0];
         targetElement.classList.add("focused");
@@ -193,19 +196,9 @@ function Client() {
         if(command === 'close')
             hasClass = false;
 
-        //switch(command) {
-        //    case 'minimize':
-        //    case 'maximize':
-        //    case 'close':
-
         var maximizedElms = document.getElementsByClassName('maximized');
         while(maximizedElms.length > 0)
             maximizedElms[0].classList.remove('maximized');
-
-                //break;
-            //default:
-            //    break;
-        //}
 
         for(var i=0; i<targetElements.length; i++) {
             targetElement = targetElements[i];
@@ -251,13 +244,12 @@ function Client() {
                     throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
 
                 targetElement = replaceElements[0];
-                //targetElement.innerHTML = '';
-
-                targetElement.parentNode.insertBefore(contentElement, targetElement);
-
-                // Remove existing element
-                targetElement.parentNode.removeChild(targetElement);
-                targetElement = contentElement;
+                if(targetElement.outerHTML.split("\n")[0]
+                    === targetElement.outerHTML.split("\n")[0]) {
+                    targetElement.innerHTML = contentElement.innerHTML;
+                } else {
+                    targetElement.outerHTML = contentElement.outerHTML;
+                }
 
                 break;
 
@@ -361,11 +353,15 @@ function Client() {
 
             // Existing window with same name
             targetElement = targetElements[0];
-            //replaceHTMLContent(targetElement, contentElement);
-
-            targetElement.parentNode.insertBefore(contentElement, targetElement);
-            targetElement.parentNode.removeChild(targetElement);
-            targetElement = contentElement;
+            if(targetElement.outerHTML.split("\n")[0]
+                === contentElement.outerHTML.split("\n")[0]) {
+                targetElement.innerHTML = contentElement.innerHTML;
+                //targetElement.parentNode.insertBefore(contentElement, targetElement);
+                //targetElement.parentNode.removeChild(targetElement);
+                //targetElement = contentElement;
+            } else {
+                contentElement.outerHTML = targetElement.outerHTML;
+            }
         }
 
         targetElement.scrollIntoView();

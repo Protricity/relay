@@ -24,17 +24,17 @@ if(typeof document === 'object') (function() {
                 } else if(e.type === 'change') {
 
                     var selectedUsers = [];
-                    for(var i=0; i<formElm.user_list.options.length; i++)
-                        if(formElm.user_list.options[i].selected)
-                            selectedUsers.push(formElm.user_list.options[i].value);
+                    for(var i=0; i<formElm.users.options.length; i++)
+                        if(formElm.users.options[i].selected)
+                            selectedUsers.push(formElm.users.options[i].value);
 
                     switch(e.target.name) {
-                        case 'user_list':
+                        case 'users':
                             console.log("Users Selected: " + selectedUsers.join(', '));
                             break;
 
-                        case 'user_list_command':
-                            var commandString = formElm.user_list_command.value;
+                        case 'user_commands':
+                            var commandString = formElm.user_commands.value;
                             var formattedCommandString = commandString;
                             e.target.value = '';
 
@@ -207,13 +207,25 @@ if(typeof module === 'object') (function() {
 
 
     module.exports.renderChatUserList = function(channelPath, userList, callback) {
-        var optionHTML = "<optgroup class='channel-users:" + channelPath.toLowerCase() + "' label='(" + userList.length + ") Users'>\n";
+        var size = 5;
+        if(size < userList.length / 2)
+            size = parseInt(userList.length);
+        if(size > 20)
+            size = 20;
 
-        for (var i = 0; i < userList.length; i++) {
-            var username = userList[i];
-            optionHTML += "\n\t<option>" + username + "</option>"
-        }
-        optionHTML += "\n</optgroup>";
+        var optionHTML = "<select" +
+            " multiple='multiple'" +
+            " name='users'" +
+            " size='" + size + "'" +
+            " class='channel-users:" + channelPath.toLowerCase() + "'" +
+            ">\n";
+
+        optionHTML += "\n\t<option disabled='disabled' value=''>(" + userList.length + ") Users</option>";
+
+        for (var i = 0; i < userList.length; i++)
+            optionHTML += "\n\t<option>" + userList[i] + "</option>";
+
+        optionHTML += "\n</select>";
         callback(optionHTML);
     };
 })();

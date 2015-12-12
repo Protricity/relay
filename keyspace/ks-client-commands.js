@@ -33,6 +33,17 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
+        // KEYSPACE.CONTACTS Command
+        ClientWorker.addCommand(importPGPContactCommand);
+        function importPGPContactCommand(commandString, e) {
+            if (!/^(?:keyspace\.)?contacts/i.test(commandString))
+                return false;
+            ClientWorker.removeCommand(importPGPContactCommand);
+            self.module = {exports: {}};
+            importScripts('keyspace/contacts/ks-client-contacts-command.js');
+            module.exports.initClientPGPContactCommand(ClientWorker);
+            return false;
+        }
 
         // Keyspace Hosting Host
         ClientWorker.addCommand(importHostCommand);

@@ -1,4 +1,4 @@
-.layout-horizontal .pgp-contact\3A {
+.layout-horizontal .keyspace-contact\3A {
     min-width: 20em;
     float: right;
     clear: right;
@@ -6,17 +6,17 @@
 
 /** Contact List**/
 
-.pgp-contact-section\3A {
+.keyspace-contact-section\3A {
     margin: 0;
     padding: 0;
     list-style-type: none;
 }
 
-.pgp-contact-section-header\3A {
+.keyspace-contact-section-header\3A {
 /*     display: block; */padding: 0.4em 1em 0.3em 1em;
     border-radius: 0.5em 0.5em 0 0;width: 100%;border-width: 1px;font-size: 1em;font-weight:  bold;}
 
-.pgp-contact-section-header\3A.closed {
+.keyspace-contact-section-header\3A.closed {
     cursor: pointer;
     border: 1px outset;
     font-weight: bold;
@@ -26,7 +26,7 @@
     transition: padding 1s, border-radius 1s, max-height 1s;
 }
 
-.pgp-contact-section\3A {
+.keyspace-contact-section\3A {
     padding: 0 0 1em 0;
     /* border-radius: 0 0 1.5em 1.5em; */
     max-height: 100em;
@@ -35,7 +35,7 @@
 }
 
 /** Hide Contact List Section **/
-.pgp-contact-section-header\3A.closed + .pgp-contact-section\3A {
+.keyspace-contact-section-header\3A.closed + .keyspace-contact-section\3A {
     padding: 0 1em 0.3em 1em;
     overflow-y: hidden;
     max-height: 1em;
@@ -45,7 +45,7 @@
 
 /** Contact Entry **/
 
-.pgp-contact-entry\3A {
+.keyspace-contact-entry\3A {
     cursor: pointer;
     /* padding: 0.2em 0.5em; */
     border: 1px outset;
@@ -53,30 +53,30 @@
     transition: box-shadow 1s ease-in;
 }
 
-.pgp-contact-entry\3A:hover {
+.keyspace-contact-entry\3A:hover {
     box-shadow: 0 0 2em #558;
 
     transition: box-shadow 0.4s ease-out;
 }
 
-.pgp-contact-entry-name\3A {
+.keyspace-contact-entry-name\3A {
     display: block;
     font-size: 1.2em;
     max-width: 12em;
     overflow-wrap: break-word;
 }
 
-.pgp-contact-entry\3A:hover .pgp-contact-entry-name\3A {
+.keyspace-contact-entry\3A:hover .keyspace-contact-entry-name\3A {
     font-weight: bold;
 }
 
 
-.pgp-contact-entry-status\3A {
+.keyspace-contact-entry-status\3A {
     /* display: block; */
     color: #AAA;
 }
 
-.pgp-contact-entry-icon\3A {
+.keyspace-contact-entry-icon\3A {
     width: 2em;
     height: 2em;
     float: right;
@@ -85,38 +85,37 @@
 
 /** Form **/
 
-form[name=pgp-contact-list-form] {
+form[name=ks-contact-list-form] {
     padding: 2px;
     border: 1px inset;
     position: relative;
 }
 
 
-form[name=pgp-contact-list-form].selected-contacts .hide-on-selected-contacts,
-form[name=pgp-contact-list-form]:not(.selected-contacts) .show-on-selected-contacts {
+form[name=ks-contact-list-form].selected-contacts .hide-on-selected-contacts,
+form[name=ks-contact-list-form]:not(.selected-contacts) .show-on-selected-contacts {
     display: none;
 }
 
-form[name=pgp-contact-list-form] .status-box:empty {
+form[name=ks-contact-list-form] .status-box:empty {
     display: none;
 }
 
-form[name=pgp-contact-list-form] input,
-form[name=pgp-contact-list-form] select {
+form[name=ks-contact-list-form] input,
+form[name=ks-contact-list-form] select {
     padding: 0.2em 0.5em;
-    /* margin: 0.4em 0.2em 0 0.2em; */
     border-radius: 0.6em;
     border-width: 1px;
-    width: 94%;
-    margin: 0.5em auto;
+    width: 90%;
+    margin: 0.5em;
     display: block;
 }
 
-form[name=pgp-contact-list-form] input[type=checkbox].pgp-contact-entry-checkbox\3A {
+form[name=ks-contact-list-form] input[type=checkbox].keyspace-contact-entry-checkbox\3A {
     display: none;
 }
 
-form[name=pgp-contact-list-form] .pgp-contact-entry-label\3A {
+form[name=ks-contact-list-form] .keyspace-contact-entry-label\3A {
     cursor: pointer;
     display: block;
     padding: 0.2em 0.5em;
@@ -125,16 +124,16 @@ form[name=pgp-contact-list-form] .pgp-contact-entry-label\3A {
     background-color: #FFF;
 }
 
-form[name=pgp-contact-list-form] .pgp-contact-entry-checkbox\3A:checked
- + .pgp-contact-entry-label\3A {
-    background-color: #CFB;
-    padding:  0.5em;
+form[name=ks-contact-list-form] .keyspace-contact-entry-checkbox\3A:checked
+ + .keyspace-contact-entry-label\3A {
+    background-color: #BDF;
+    /* padding:  0.5em; */
     font-weight: bold;
     /* padding: 1em 0.5em; */
 }
 
 /** Hide Contact Command Buttons **/
-.pgp-contact-entry-commands\3A {
+.keyspace-contact-entry-commands\3A {
     max-height: 0;
     opacity: 0;
     transition: padding 1s, max-height 1s, opacity 1s;
@@ -143,21 +142,21 @@ form[name=pgp-contact-list-form] .pgp-contact-entry-checkbox\3A:checked
     /* display: none; */
 }
 
-.layout-horizontal .pgp-contact-entry-commands\3A {
+.layout-horizontal .keyspace-contact-entry-commands\3A {
     /* max-width: 20em; */
 }
 
-.pgp-contact-entry-label\3A:hover  .pgp-contact-entry-commands\3A,
-form[name=pgp-contact-list-form] .pgp-contact-entry-checkbox\3A:checked
-+ .pgp-contact-entry-label\3A  .pgp-contact-entry-commands\3A {
+.keyspace-contact-entry-label\3A:hover  .keyspace-contact-entry-commands\3A,
+form[name=ks-contact-list-form] .keyspace-contact-entry-checkbox\3A:checked
++ .keyspace-contact-entry-label\3A  .keyspace-contact-entry-commands\3A {
     max-height: 100em;
     opacity: 1;
     /* display: block; */
 }
 
 
-.pgp-contact-entry-commands\3A  a:visited,
-.pgp-contact-entry-commands\3A  a {
+.keyspace-contact-entry-commands\3A  a:visited,
+.keyspace-contact-entry-commands\3A  a {
     border: 1px outset #FFF;
     border-radius: 0.5em;
     background-color: #DDD;
@@ -172,11 +171,11 @@ form[name=pgp-contact-list-form] .pgp-contact-entry-checkbox\3A:checked
     text-align: center;
 }
 
-.pgp-contact-entry-commands\3A  a:hover {
+.keyspace-contact-entry-commands\3A  a:hover {
     box-shadow: 0 0 2em #00F;;
     max-width: 10em;
 }
 
-.pgp-contact-entry-commands\3A  a:not(:hover) > :not(.command) {
+.keyspace-contact-entry-commands\3A  a:not(:hover) > :not(.command) {
     display: none;
 }

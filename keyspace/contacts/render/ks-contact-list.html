@@ -1,0 +1,35 @@
+<article class='keyspace-contact: prepend-on-render'>
+    <script src='keyspace/contacts/render/ks-contact-list.js'></script>
+    <link rel='stylesheet' href='keyspace/contacts/render/ks-contact-list.css' type='text/css' property="stylesheet">
+    <header class='header-bar show-on-minimized'>
+        {nav:header-buttons keyspace-contact:}
+        <a href='javascript:Client.execute("MINIMIZE keyspace-contact:");'>
+            Contact List
+        </a>
+    </header>
+    <form name='ks-contact-list-form' action='#' class="hide-on-minimize">
+        <code class='status-box'>{$status_box}</code>
+        <select name='command' class="show-on-selected-contacts">
+            <option value=''>Select Contact(s)</option>
+            {$html_command_options}
+        </select>
+        <input type="text" name="search" class="hide-on-selected-contacts" placeholder="Search Contacts or Channels" />
+        <input type='hidden' placeholder="Change Username" value="{$nick_value}" />
+        <button class="keyspace-contact-section-header:" onclick="this.classList.toggle('closed'); this.blur(); return false;">Identities</button>
+        <ul class="keyspace-contact-section:">
+            {$html_private_key_entries}
+        </ul>
+        <button class="keyspace-contact-section-header:" onclick="this.classList.toggle('closed'); this.blur();return false;">Contacts</button>
+        <ul class="keyspace-contact-section:">
+            {$html_public_key_entries}
+        </ul>
+        <button class="keyspace-contact-section-header:" onclick="this.classList.toggle('closed'); this.blur();return false;">Channels</button>
+        <ul class="keyspace-contact-section:">
+            {$html_channel_entries}
+        </ul>
+    </form>
+    <main class="hide-on-minimize">
+
+    </main>
+    <footer></footer>
+</article>
