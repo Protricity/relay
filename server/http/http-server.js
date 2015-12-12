@@ -2,8 +2,7 @@
  * Created by ari on 9/22/2015.
  */
 
-if (!module) var module = {};
-if (!module.exports) module.exports = {};
+if (!module) var module = {exports:{}};
 module.exports.HTTPServer = HTTPServer;
 
 HTTPServer.DEFAULT_PORTS = '8080,80,7315';

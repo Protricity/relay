@@ -3,8 +3,9 @@
  */
 
 //http://www.chovy.com/web-development/self-signed-certs-with-secure-websockets-in-node-js/
-require('./server/http/http-server.js')
-    .HTTPServer.startServer('7315, 80');
+var defaults = require('./config.js');
 
+require('./server/http/http-server.js')
+    .HTTPServer.startServer(defaults.HTTP_SERVER_DEFAULT_PORT);
 require('./server/socket/socket-server.js')
-    .SocketServer.startServer(7314);
+    .SocketServer.startServer(defaults.SOCKET_SERVER_DEFAULT_PORT);
