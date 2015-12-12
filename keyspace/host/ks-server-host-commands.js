@@ -6,11 +6,47 @@ if(typeof module === 'object') (function() {
         SocketServer.addCommand(ksHostCommandSocket);
         SocketServer.addCommand(ksValidateCommandSocket);
         SocketServer.addCommand(ksHandleHTTPSocketResponse);
+        SocketServer.addCommand(ksHostStatusCommandSocket);
     };
 })();
 
 var keySpaceClients = {};
 var keySpaceChallenges = {};
+var keySpaceSubscribers = [];
+
+function ksHostStatusCommandSocket(commandString, client) {
+    var match = /^keyspace\.host\.(un)?subscribe\s*([a-f0-9 ]{8,})?$/i.exec(commandString);
+    if(!match)
+        return false;
+
+    var unsubscribe = match[1] ? true : false;
+    var uids = match[2].split(' ');
+
+    for(var i=0; i<uids.length; i++) {
+        var uid = uids[i].toUpperCase();
+
+        var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
+
+        uid = uid.substr(uid.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+        if(uid < KeySpaceDB.DB_PGP_KEY_LENGTH)
+            throw new Error("Invalid PGP Key ID Length (" + KeySpaceDB.DB_PGP_KEY_LENGTH + "): " + uid);
+
+        if(typeof keySpaceSubscribers[uid] === 'undefined')
+            keySpaceSubscribers[uid] = [];
+
+        var pos = keySpaceSubscribers[uid].indexOf(client);
+        if(pos === -1 && !unsubscribe) {
+            client.send("INFO Subscribed to KeySpace: " + uid);
+            keySpaceSubscribers[uid].push(client);
+        } else if(pos >= 0 && unsubscribe) {
+            client.send("INFO Unsubscribed to KeySpace: " + uid);
+            keySpaceSubscribers[uid] = keySpaceSubscribers[uid].splice(pos, 1);
+        }
+    }
+    return true;
+}
+
+
 function ksHostCommandSocket(commandString, client) {
     var match = /^keyspace\.host\s+([a-f0-9]{16})$/i.exec(commandString);
     if(!match)
@@ -58,6 +94,7 @@ function ksValidateCommandSocket(commandString, client) {
         return false;
 
     var uid = match[1];
+
     if(!keySpaceChallenges[uid])
         throw new Error("Invalid Validation Key");
 
@@ -73,7 +110,19 @@ function ksValidateCommandSocket(commandString, client) {
 
     } else {
         clientEntries.push(client);
-        client.send("KEYSPACE.HOST " + pgp_id_public);
+        var clientSent = false;
+        if(typeof keySpaceSubscribers[pgp_id_public] !== 'undefined') {
+            var subscribers = keySpaceSubscribers[pgp_id_public];
+            for(var i=0; i<subscribers.length; i++) {
+                // Send KeySpace Status Update to all subscribers
+                subscribers[i].send("KEYSPACE.HOST " + pgp_id_public);
+                if(subscribers[i] === client)
+                    clientSent = true;
+            }
+        }
+        // Send status update to client if client wasn't one of the subscribers
+        if(!clientSent)
+            client.send("KEYSPACE.HOST " + pgp_id_public);
     }
     return true;
 }

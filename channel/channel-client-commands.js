@@ -103,8 +103,10 @@ if(typeof module === 'object') (function() {
                 SettingsDB.updateSettings(channelSettings);
             });
 
-            renderChatWindow(channelPath, true);
             ClientWorker.sendWithSocket(commandString);
+
+            renderChatWindow(channelPath, true);
+            ClientWorker.postResponseToClient("FOCUS chat:" + channelPath.toLowerCase());
             return true;
         }
 

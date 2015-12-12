@@ -168,8 +168,8 @@ function joinChannel(commandString, client) {
     var clients = channelUsers[channelLowerCase];
     var pos = clients.indexOf(client);
     if(pos >= 0) {
-        send(client, "JOIN " + channel + " " + clientInfo.username + " " + Date.now());
-        throw new Error("Client already in channel: " + pos + channelLowerCase);
+        send(client, "INFO Client already in channel: " + channel);
+        return true;
     }
 
     clients.push(client);
