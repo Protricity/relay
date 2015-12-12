@@ -79,7 +79,7 @@ if(typeof module === 'object') (function() {
         }
 
         function ksHostResponse(responseString, e) {
-            var match = /^(?:keyspace\.)?host\s+([a-f0-9]{8,16})$/i.exec(responseString);
+            var match = /^(?:keyspace\.)?host(?:\.online|\.offline)?\s+([a-f0-9]{8,16})$/i.exec(responseString);
             if (!match)
                 return false;
 

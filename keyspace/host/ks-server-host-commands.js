@@ -7,12 +7,47 @@ if(typeof module === 'object') (function() {
         SocketServer.addCommand(ksValidateCommandSocket);
         SocketServer.addCommand(ksHandleHTTPSocketResponse);
         SocketServer.addCommand(ksHostStatusCommandSocket);
+
+        SocketServer.addClientEventListener('close', ksSocketClientCloseListener);
     };
 })();
 
 var keySpaceClients = {};
 var keySpaceChallenges = {};
 var keySpaceSubscribers = [];
+
+function ksSocketClientCloseListener() {
+    var client = this;
+
+    for(var pgp_public_id in keySpaceClients) {
+        if(keySpaceClients.hasOwnProperty(pgp_public_id)) {
+            var clients = keySpaceClients[pgp_public_id];
+            for(var i=0; i<clients.length; i++) {
+                if(clients[i].readyState !== client.OPEN
+                    || clients[i] === client) {
+                    clients.splice(i--, 1);
+                }
+            }
+
+            if(clients.length === 0) {
+                delete keySpaceClients[pgp_public_id];
+                if(typeof keySpaceSubscribers[pgp_public_id] !== 'undefined') {
+                    var subscribers = keySpaceSubscribers[pgp_public_id];
+                    for(var j=0; j<subscribers.length; j++) {
+                        if(subscribers[j].readyState !== client.OPEN) {
+                            subscribers.splice(j--, 1);
+                            continue;
+                        }
+                        subscribers[j].send("KEYSPACE.HOST.OFFLINE " + pgp_id_public);
+                    }
+                }
+            }
+        }
+    }
+    //SocketServer.addEventListener('connection', function(client) {
+    //    httpCommand("GET", client);
+    //});
+}
 
 function ksHostStatusCommandSocket(commandString, client) {
     var match = /^keyspace\.host\.(un)?subscribe\s*([a-f0-9 ]{8,})?$/i.exec(commandString);
@@ -40,7 +75,7 @@ function ksHostStatusCommandSocket(commandString, client) {
             keySpaceSubscribers[uid].push(client);
         } else if(pos >= 0 && unsubscribe) {
             client.send("INFO Unsubscribed to KeySpace: " + uid);
-            keySpaceSubscribers[uid] = keySpaceSubscribers[uid].splice(pos, 1);
+            keySpaceSubscribers[uid].splice(pos, 1);
         }
     }
     return true;
@@ -70,8 +105,10 @@ function ksHostCommandSocket(commandString, client) {
     keySpaceChallenges[hostCode] = pgp_id_public;
 
     requestClientPublicKey(pgp_id_public, client, function(err, publicKey) {
-        if(err)
+        if(err) {
+            console.error(err);
             return client.send("ERROR " + err);
+        }
 
         if(typeof openpgp === 'undefined')
             var openpgp = require('openpgp');
@@ -115,14 +152,18 @@ function ksValidateCommandSocket(commandString, client) {
             var subscribers = keySpaceSubscribers[pgp_id_public];
             for(var i=0; i<subscribers.length; i++) {
                 // Send KeySpace Status Update to all subscribers
-                subscribers[i].send("KEYSPACE.HOST " + pgp_id_public);
+                if(subscribers[i].readyState !== client.OPEN) {
+                    subscribers.splice(i--, 1);
+                    continue;
+                }
+                subscribers[i].send("KEYSPACE.HOST.ONLINE " + pgp_id_public);
                 if(subscribers[i] === client)
                     clientSent = true;
             }
         }
         // Send status update to client if client wasn't one of the subscribers
         if(!clientSent)
-            client.send("KEYSPACE.HOST " + pgp_id_public);
+            client.send("KEYSPACE.HOST.ONLINE " + pgp_id_public);
     }
     return true;
 }

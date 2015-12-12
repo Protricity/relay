@@ -77,7 +77,7 @@ function SocketServer() {
     //var proxyList = [];
     //var requestHandlers = [];
 
-    clientEvents.push(['message', function(message) {
+    clientEvents.push(['message', function(message, flags) {
         //console.log("I " + message);
         try {
             SocketServer.execute(message, this);

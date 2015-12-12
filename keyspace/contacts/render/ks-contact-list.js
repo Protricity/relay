@@ -56,7 +56,9 @@ if(typeof module !== 'object')
                 throw new Error(err);
 
             if(contentEntry) {
-                var hostingStatus = 'offline' ;
+                var socketHost = KeySpaceDB.getSocketHost(contentEntry.pgp_id_public);
+                var hostingStatus = socketHost !== null ? 'online' : 'offline' ;
+                //var hostingCommand = socketHost !== null ? 'offline' : 'online';
 
                 // TODO: get socket user name
                 var html_commands =
