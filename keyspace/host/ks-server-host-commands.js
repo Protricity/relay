@@ -173,57 +173,61 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
 
     var requestPath = "public/id";
     var requestURL = "http://" + pgp_id_public + ".ks/" + requestPath;
-    var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
 
-    if(pgp_id_public.length < KeySpaceDB.DB_PGP_KEY_LENGTH)
-        throw new Error("Invalid PGP Key ID Length (" + KeySpaceDB.DB_PGP_KEY_LENGTH + "): " + pgp_id_public);
+    // TODO: review
+    console.info("Requesting Public Key from Client: " + requestURL);
+    sendClientRequest("GET " + requestURL, client,
+        function(responseBody, responseCode, responseMessage, responseHeaders) {
 
-    KeySpaceDB.queryOne(requestURL, function (err, contentData) {
-        //if (err)
-        //    return callback(err);
-
-        if (!err && contentData) {
+            var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
             if(typeof openpgp === 'undefined')
                 var openpgp = require('openpgp');
-            var publicKey = openpgp.key.readArmored(contentData.content).keys[0];
-            var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+
+            var publicKey = openpgp.key.readArmored(responseBody).keys[0];
+            //var publicKeyCreateDate = publicKey.subKeys[0].subKey.created;
             //var privateKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
+            var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
             publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
             if(publicKeyID !== pgp_id_public)
                 throw new Error("Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
 
-            callback(null, publicKey, contentData.content);
+            callback(null, publicKey, responseBody);
+        });
+
+    // TODO: check if KeySpace DB is active and cache request
+    //if(pgp_id_public.length < KeySpaceDB.DB_PGP_KEY_LENGTH)
+    //    throw new Error("Invalid PGP Key ID Length (" + KeySpaceDB.DB_PGP_KEY_LENGTH + "): " + pgp_id_public);
+
+    //KeySpaceDB.queryOne(requestURL, function (err, contentData) {
+        //if (err)
+        //    return callback(err);
+
+        //if (!err && contentData) {
+        //    if(typeof openpgp === 'undefined')
+        //        var openpgp = require('openpgp');
+        //    var publicKey = openpgp.key.readArmored(contentData.content).keys[0];
+        //    var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+        //    var privateKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
+            //publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+            //if(publicKeyID !== pgp_id_public)
+            //    throw new Error("Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
+
+            //callback(null, publicKey, contentData.content);
             //console.info("Loaded Public Key from Cache: " + requestURL);
-            loaded = true;
 
-        } else {
-            // TODO: review
-            console.info("Requesting Public Key from Client: " + requestURL);
-            sendClientRequest("GET " + requestURL, client, function(responseBody, responseCode, responseMessage, responseHeaders) {
-                if(typeof openpgp === 'undefined')
-                    var openpgp = require('openpgp');
-                var publicKey = openpgp.key.readArmored(responseBody).keys[0];
-                var publicKeyCreateDate = publicKey.subKeys[0].subKey.created;
-                //var privateKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
-                var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
-                publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
-                if(publicKeyID !== pgp_id_public)
-                    throw new Error("Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
-
-                callback(null, publicKey, responseBody);
+        //} else {
 
                 // TODO: client config cache settings
                 // Cache Public Key
-                KeySpaceDB.addVerifiedContentToDB(publicKey.armor(), pgp_id_public, publicKeyCreateDate.getTime(), requestPath, {},
-                    function(err, insertData) {
-                        if(err)
-                            throw new Error(err);
-
-                        console.info("Storing Public Key Cache: " + requestURL);
-                    });
-            });
-        }
-    });
+                //KeySpaceDB.addVerifiedContentToDB(publicKey.armor(), pgp_id_public, publicKeyCreateDate.getTime(), requestPath, {},
+                //    function(err, insertData) {
+                //        if(err)
+                //            throw new Error(err);
+                //
+                //        console.info("Storing Public Key Cache: " + requestURL);
+                //    });
+            //});
+        //}
 }
 
 var pendingGETRequests = [];
