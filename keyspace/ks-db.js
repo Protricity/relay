@@ -81,6 +81,7 @@ module.exports.KeySpaceDB =
                 for (var i = 0; i < onDBCallbacks.length; i++)
                     onDBCallbacks[i](err, null);
                 onDBCallbacks = [];
+                dbInst = null;
                 throw new Error(err);
             };
 
@@ -133,6 +134,7 @@ module.exports.KeySpaceDB =
                     for (var j = 0; j < onDBCallbacks.length; j++)
                         onDBCallbacks[j](err, db);
                     onDBCallbacks = [];
+                    dbInst = null;
                     return;
                 }
 

@@ -173,21 +173,16 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
 
     var requestPath = "public/id";
     var requestURL = "http://" + pgp_id_public + ".ks/" + requestPath;
-    var loaded = false;
-
     var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
 
     if(pgp_id_public.length < KeySpaceDB.DB_PGP_KEY_LENGTH)
         throw new Error("Invalid PGP Key ID Length (" + KeySpaceDB.DB_PGP_KEY_LENGTH + "): " + pgp_id_public);
 
     KeySpaceDB.queryOne(requestURL, function (err, contentData) {
-        if (err)
-            return callback(err);
+        //if (err)
+        //    return callback(err);
 
-        if(loaded)
-            return;
-
-        if (contentData) {
+        if (!err && contentData) {
             if(typeof openpgp === 'undefined')
                 var openpgp = require('openpgp');
             var publicKey = openpgp.key.readArmored(contentData.content).keys[0];
@@ -224,7 +219,6 @@ function requestClientPublicKey(pgp_id_public, client, callback) {
                         if(err)
                             throw new Error(err);
 
-                        loaded = true;
                         console.info("Storing Public Key Cache: " + requestURL);
                     });
             });
