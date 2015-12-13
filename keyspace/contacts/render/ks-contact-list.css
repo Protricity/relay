@@ -13,8 +13,14 @@
 }
 
 .keyspace-contact-section-header\3A {
-/*     display: block; */padding: 0.4em 1em 0.3em 1em;
-    border-radius: 0.5em 0.5em 0 0;width: 100%;border-width: 1px;font-size: 1em;font-weight:  bold;}
+/*     display: block; */
+    padding: 0.4em 1em 0.3em 1em;
+    border-radius: 0.5em 0.5em 0 0;
+    width: 100%;
+    border-width: 1px;
+    font-size: 1em;
+    font-weight: bold;
+}
 
 .keyspace-contact-section-header\3A.closed {
     cursor: pointer;
@@ -46,7 +52,7 @@
 /** Contact Entry **/
 
 .keyspace-contact-entry\3A {
-    cursor: pointer;
+    /* cursor: pointer; */
     /* padding: 0.2em 0.5em; */
     border: 1px outset;
     overflow: hidden;
@@ -124,10 +130,10 @@ form[name=ks-contact-list-form] .keyspace-contact-entry-label\3A {
     background-color: #FFF;
 }
 
-form[name=ks-contact-list-form] .keyspace-contact-entry-checkbox\3A:checked
- + .keyspace-contact-entry-label\3A {
+form[name=ks-contact-list-form] .keyspace-contact-entry-checkbox\3A:checked + .keyspace-contact-entry-label\3A,
+form[name=ks-contact-list-form] .keyspace-contact-entry-checkbox\3A:checked + .keyspace-contact-entry-label\3A + .keyspace-contact-entry-commands\3A{
     background-color: #BDF;
-    /* padding:  0.5em; */
+    padding: 0 0.5em;
     font-weight: bold;
     /* padding: 1em 0.5em; */
 }
@@ -146,9 +152,9 @@ form[name=ks-contact-list-form] .keyspace-contact-entry-checkbox\3A:checked
     /* max-width: 20em; */
 }
 
-.keyspace-contact-entry-label\3A:hover  .keyspace-contact-entry-commands\3A,
+/*.keyspace-contact-entry-label\3A:hover + .keyspace-contact-entry-commands\3A,*/
 form[name=ks-contact-list-form] .keyspace-contact-entry-checkbox\3A:checked
-+ .keyspace-contact-entry-label\3A  .keyspace-contact-entry-commands\3A {
++ .keyspace-contact-entry-label\3A + .keyspace-contact-entry-commands\3A {
     max-height: 100em;
     opacity: 1;
     /* display: block; */
@@ -178,4 +184,11 @@ form[name=ks-contact-list-form] .keyspace-contact-entry-checkbox\3A:checked
 
 .keyspace-contact-entry-commands\3A  a:not(:hover) > :not(.command) {
     display: none;
+}
+
+.keyspace-contact-default-info\3A {
+    border-radius: 0 0 0.5em 0.5em;
+    background-color: #DDD;
+    padding: 0.3em 0.5em;
+
 }

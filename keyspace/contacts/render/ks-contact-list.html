@@ -18,14 +18,23 @@
         <button class="keyspace-contact-section-header:" onclick="this.classList.toggle('closed'); this.blur(); return false;">Identities</button>
         <ul class="keyspace-contact-section:">
             {$html_private_key_entries}
+            <li class='keyspace-contact-default-info:'>
+                <a href='#PGP.KEYGEN'>KeyGen</a> a new Identity...
+            </li>
         </ul>
         <button class="keyspace-contact-section-header:" onclick="this.classList.toggle('closed'); this.blur();return false;">Contacts</button>
         <ul class="keyspace-contact-section:">
             {$html_public_key_entries}
+            <li class='keyspace-contact-default-info:'>
+                <a href='#PGP.ADD'>Search</a> for Contact...
+            </li>
         </ul>
         <button class="keyspace-contact-section-header:" onclick="this.classList.toggle('closed'); this.blur();return false;">Channels</button>
         <ul class="keyspace-contact-section:">
             {$html_channel_entries}
+            <li class='keyspace-contact-default-info:'>
+                <a href='#JOIN'>Join</a> a channel...
+            </li>
         </ul>
     </form>
     <main class="hide-on-minimize">

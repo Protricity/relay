@@ -17,13 +17,6 @@
             Client.execute("AUTOJOIN");
             Client.execute("KEYSPACE.HOST.AUTO");
 
-            function onResize() {
-                document.body.classList.add(window.innerWidth > window.innerHeight / 1.2 ? 'layout-horizontal' : 'layout-vertical');
-                document.body.classList.remove(window.innerWidth > window.innerHeight / 1.2 ? 'layout-vertical' : 'layout-horizontal');
-            }
-            window.onresize = onResize;
-            setTimeout(onResize, 500);
-
         </script>
     </head>
     <body class='theme-minimal layout-vertical'></body>

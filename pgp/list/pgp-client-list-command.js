@@ -9,11 +9,11 @@ if(typeof module === 'object') (function() {
          * @param commandString
          */
         function pgpListCommand(commandString, e) {
-            var match = /^(pgp\.list)(\.private)?/i.exec(commandString);
+            var match = /^(pgp\.list(\.private)?)/i.exec(commandString);
             if (!match)
                 return false;
 
-            var listString = match[0] + match[1];
+            var listString = match[0]; // + match[1];
             var listPrivate = match[2] ? true : false;
 
             self.exports = {};

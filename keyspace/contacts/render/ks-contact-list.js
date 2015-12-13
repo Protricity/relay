@@ -21,25 +21,6 @@ if(typeof module !== 'object')
             var SettingsDB = self.module.exports.SettingsDB;
         }
 
-        var HTML_COMMAND_DEFAULT = '';
-        var HTML_CHANNEL_DEFAULT =
-            "<li class='keyspace-contact-default_info'>" +
-            "No Active Channels. " +
-            "<br/><a href='#JOIN'>Join</a> a channel..." +
-            "</li>";
-
-        var HTML_PRIVATE_KEY_DEFAULT =
-            "<li class='keyspace-contact-default_info'>" +
-            "No Private Keys Found. " +
-            "<br/><a href='#PGP.KEYGEN'>KeyGen</a> a new Identity..." +
-            "</li>";
-
-        var HTML_PUBLIC_KEY_DEFAULT =
-            "<li class='keyspace-contact-default_info'>" +
-            "No Public Keys Found. " +
-            "<br/><a href='#PGP.ADD'>Search</a> for Contact..." +
-            "</li>";
-
         var TEMPLATE_URL = "keyspace/contacts/render/ks-contact-list.html";
 
         var nick_value = '';
@@ -68,14 +49,13 @@ if(typeof module !== 'object')
                     "<a href='javascript:Client.execute(\"CHANLIST " + contentEntry.pgp_id_public + "\");'>" +
                         "<span class='command'>ChanList</span>" +
                     "</a>" +
-                    "<br/>" +
                     "<a href='javascript:Client.execute(\"GET " + contentEntry.pgp_id_public + "\");'>" +
                         "<span class='command'>Get</span>" +
                     "</a>" +
+                    "<br/>" +
                     "<a href='javascript:Client.execute(\"GET " + contentEntry.pgp_id_public + "/public/profile\");'>" +
                         "<span class='command'>Profile</span>" +
                     "</a>" +
-                    "<br/>" +
                     "<a href='javascript:Client.execute(\"PGP.EXPORT --with " + contentEntry.pgp_id_public + "\");'>" +
                         "<span class='command'>Export</span>" + // Key" +
                     "</a>" +
@@ -115,7 +95,7 @@ if(typeof module !== 'object')
                                 "<br />" +
                                 "<span class='command " + hostingCommand.toLowerCase() + "'>" + hostingCommand + "</span>" +
                             "</a>" +
-                            "<br/>" +
+                            //"<br/>" +
                             "<a href='javascript:Client.execute(\"KEYSPACE.GET " + contentEntry.pgp_id_public + "\");'>" +
                                 "<span class='command'>Get</span>" +
                             "</a>" +
@@ -191,10 +171,10 @@ if(typeof module !== 'object')
                                         .replace(/{\$status_box}/gi, status_box || '')
                                         .replace(/{\$nick_value}/gi, nick_value || '')
                                         //.replace(/{\$html_contact_list_sections}/gi, html_contact_list_sections)
-                                        .replace(/{\$html_private_key_entries}/gi, html_private_key_entries || HTML_PRIVATE_KEY_DEFAULT)
-                                        .replace(/{\$html_public_key_entries}/gi, html_public_key_entries || HTML_PUBLIC_KEY_DEFAULT)
-                                        .replace(/{\$html_channel_entries}/gi, html_channel_entries || HTML_CHANNEL_DEFAULT)
-                                        .replace(/{\$html_command_options}/gi, html_command_options || HTML_COMMAND_DEFAULT)
+                                        .replace(/{\$html_private_key_entries}/gi, html_private_key_entries)
+                                        .replace(/{\$html_public_key_entries}/gi, html_public_key_entries)
+                                        .replace(/{\$html_channel_entries}/gi, html_channel_entries)
+                                        .replace(/{\$html_command_options}/gi, html_command_options)
                                 );
                             }
                         });
