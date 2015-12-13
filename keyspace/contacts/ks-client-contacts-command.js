@@ -23,7 +23,7 @@ if(typeof module === 'object') (function() {
 
         var activeContactList = null;
         function contactCommand(commandString) {
-            var match = /^keyspace\.contact(\.refresh)?/i.exec(commandString);
+            var match = /^(?:keyspace\.)?contacts(\.refresh)?/i.exec(commandString);
             if (!match)
                 return false;
 
