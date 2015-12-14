@@ -90,7 +90,10 @@ if(typeof document === 'object')
                 if (!publicKeyBlock)
                     throw new Error("Vote Public key not found: " + user_pgp_id_public);
 
-                var publicKeysForEncryption = openpgp.key.readArmored(publicKeyBlock.content).keys;
+                var pgpImport = openpgp.key.readArmored(publicKeyBlock.content);
+                if(pgpImport.err && pgpImport.err.length > 0)
+                    throw new Error(pgpImport.err[0]);
+                var publicKeysForEncryption = pgpImport.keys;
 
 
                 // Query user private key for signing

@@ -31,20 +31,26 @@ if(typeof document === 'object')
         function refreshPGPImportForm(e, formElm) {
             var submitElm = formElm.querySelector('input[type=submit]');
             submitElm.setAttribute('disabled', 'disabled');
-            var privateKeyBlock = formElm.querySelector('textarea[name=private_key]').value;
-            if(privateKeyBlock.indexOf("-----BEGIN PGP PRIVATE KEY BLOCK-----") >= 0) {
+            var pgpKeyBlock = formElm.querySelector('textarea[name=private_key]').value;
+            if(pgpKeyBlock.indexOf("-----BEGIN PGP PRIVATE KEY BLOCK-----") >= 0) {
+                submitElm.removeAttribute('disabled');
+
+            } else if(pgpKeyBlock.indexOf("-----BEGIN PGP PUBLIC KEY BLOCK-----") >= 0) {
                 submitElm.removeAttribute('disabled');
             }
         }
 
         function submitPGPImportForm(e, formElm) {
             e.preventDefault();
-            var privateKeyBlock = formElm.querySelector('textarea[name=private_key]').value;
+            var pgpKeyBlock = formElm.querySelector('textarea[name=private_key]').value;
 
-            if(privateKeyBlock.indexOf("-----BEGIN PGP PRIVATE KEY BLOCK-----") === -1)
-                throw new Error("PGP PRIVATE KEY BLOCK not found");
+            if(
+                pgpKeyBlock.indexOf("-----BEGIN PGP PRIVATE KEY BLOCK-----") === -1
+            && pgpKeyBlock.indexOf("-----BEGIN PGP PUBLIC KEY BLOCK-----") === -1
+            )
+                throw new Error("PGP PUBLIC/PRIVATE KEY BLOCK not found");
 
-            var commandString = "PGP.IMPORT " + privateKeyBlock;
+            var commandString = "PGP.IMPORT " + pgpKeyBlock;
 
             var messageEvent = new CustomEvent('command', {
                 detail: commandString,
@@ -52,9 +58,9 @@ if(typeof document === 'object')
             });
             document.dispatchEvent(messageEvent);
 
-            // Close Window
-            var windowElm = document.getElementsByClassName('pgp-import:')[0];
-            windowElm.classList.add('closed');
+            // TODO: Close Window
+            //var windowElm = document.getElementsByClassName('pgp-import:')[0];
+            //windowElm.classList.add('closed');
         }
 
     })();

@@ -8,6 +8,7 @@ if(typeof module === 'object') (function() {
         SocketServer.addCommand(ksHandleHTTPSocketResponse);
         SocketServer.addCommand(ksHostStatusCommandSocket);
 
+
         SocketServer.addClientEventListener('close', ksSocketClientCloseListener);
     };
 })();
@@ -18,6 +19,7 @@ var keySpaceSubscribers = [];
 
 function ksSocketClientCloseListener() {
     var client = this;
+    console.info("KeySpace Client Closed: ", typeof client);
 
     for(var pgp_public_id in keySpaceClients) {
         if(keySpaceClients.hasOwnProperty(pgp_public_id)) {
@@ -146,6 +148,12 @@ function ksValidateCommandSocket(commandString, client) {
         client.send("WARN Already hosting key space " + pgp_id_public);
 
     } else {
+        if(typeof client.keyspace === 'undefined')
+            client.keyspace = [];
+
+        if(client.keyspace.indexOf(pgp_id_public) === -1)
+            client.keyspace.push(pgp_id_public);
+
         clientEntries.push(client);
         var clientSent = false;
         if(typeof keySpaceSubscribers[pgp_id_public] !== 'undefined') {

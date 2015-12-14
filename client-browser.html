@@ -12,6 +12,9 @@
                 Client.execute("KEYSPACE.CONTACTS");
                 Client.execute("AUTOJOIN");
                 Client.execute("KEYSPACE.HOST.AUTO");
+                setTimeout(function() {
+                    Client.execute("KEYLIST");
+                }, 2000);
             }, 10);
 
             function onResize() {
