@@ -52,8 +52,9 @@ function uninitClient(client) {
         return;
 
     if(typeof client.chat.channels !== 'undefined') {
-        for(var i=0; i<client.chat.channels.length; i++) {
-            var channel = client.chat.channels[i];
+        var channels = client.chat.channels.slice();
+        for(var i=0; i<channels.length; i++) {
+            var channel = channels[i];
             leaveChannelCommand("LEAVE " + channel, client);
         }
     }

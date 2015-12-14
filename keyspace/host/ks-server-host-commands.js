@@ -21,9 +21,9 @@ function ksSocketClientCloseListener() {
     var client = this;
     console.info("KeySpace Client Closed: ", typeof client);
 
-    for(var pgp_public_id in keySpaceClients) {
-        if(keySpaceClients.hasOwnProperty(pgp_public_id)) {
-            var clients = keySpaceClients[pgp_public_id];
+    for(var pgp_id_public in keySpaceClients) {
+        if(keySpaceClients.hasOwnProperty(pgp_id_public)) {
+            var clients = keySpaceClients[pgp_id_public];
             for(var i=0; i<clients.length; i++) {
                 if(clients[i].readyState !== client.OPEN
                     || clients[i] === client) {
@@ -32,9 +32,9 @@ function ksSocketClientCloseListener() {
             }
 
             if(clients.length === 0) {
-                delete keySpaceClients[pgp_public_id];
-                if(typeof keySpaceSubscribers[pgp_public_id] !== 'undefined') {
-                    var subscribers = keySpaceSubscribers[pgp_public_id];
+                delete keySpaceClients[pgp_id_public];
+                if(typeof keySpaceSubscribers[pgp_id_public] !== 'undefined') {
+                    var subscribers = keySpaceSubscribers[pgp_id_public];
                     for(var j=0; j<subscribers.length; j++) {
                         if(subscribers[j].readyState !== client.OPEN) {
                             subscribers.splice(j--, 1);
