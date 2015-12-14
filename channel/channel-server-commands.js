@@ -200,7 +200,7 @@ function joinChannelCommand(commandString, client) {
         var channelClient = clients[i];
         if(channelClient.readyState === channelClient.OPEN) {
             send(channelClient, "JOIN " + channel + " " + client.chat.username + " " + Date.now());
-            userList.push(client.chat.username);
+            userList.push(channelClient.chat.username);
 
         } else {
             //leaveChannelCommand("LEAVE " + channel, channelClient);
