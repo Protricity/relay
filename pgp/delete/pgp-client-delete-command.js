@@ -24,8 +24,8 @@ if(typeof module === 'object') (function() {
                 (function (publicKeyID) {
                     publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
 
-                    // Query private key(s)
-                    var privateKeyPath = 'http://' + publicKeyID + '.ks/.private/id';
+                    // Query public key(s)
+                    var privateKeyPath = 'http://' + publicKeyID + '.ks/public/id';
                     KeySpaceDB.queryOne(privateKeyPath, function (err, privateKeyData) {
                         if (err)
                             throw new Error(err);
@@ -33,9 +33,9 @@ if(typeof module === 'object') (function() {
                             KeySpaceDB.deleteContent(privateKeyData.pgp_id_public, privateKeyData.timestamp, function (err) {
                                 if (err)
                                     throw new Error(err);
-                                console.info("PGP Identity deleted successfully: " + privateKeyData.user_id);
+                                console.info("PGP Public Key deleted successfully: " + privateKeyData.user_id);
 
-                                var status_box = "<span class='success'>PGP Identity deleted successfully</span>: " + privateKeyData.user_id + "<br/>Public Key ID: " + publicKeyID;
+                                var status_box = "<span class='success'>PGP Public Key <br/>deleted successfully</span>: " + privateKeyData.user_id + "<br/>Public Key ID: " + publicKeyID;
 
                                 self.module = {exports: {}};
                                 importScripts('pgp/manage/render/pgp-manage-form.js');
@@ -43,9 +43,31 @@ if(typeof module === 'object') (function() {
                                     ClientWorker.render(html);
                                 });
                             });
-                        } else {
-                            console.error("Not found: " + publicKeyID);
                         }
+
+                        // Query private key(s)
+                        var privateKeyPath = 'http://' + publicKeyID + '.ks/.private/id';
+                        KeySpaceDB.queryOne(privateKeyPath, function (err, privateKeyData) {
+                            if (err)
+                                throw new Error(err);
+                            if (privateKeyData) {
+                                KeySpaceDB.deleteContent(privateKeyData.pgp_id_public, privateKeyData.timestamp, function (err) {
+                                    if (err)
+                                        throw new Error(err);
+                                    console.info("PGP Public/Private KeyPair deleted successfully: " + privateKeyData.user_id);
+
+                                    var status_box = "<span class='success'>PGP Public/Private KeyPair <br/>deleted successfully</span>: " + privateKeyData.user_id + "<br/>Public Key ID: " + publicKeyID;
+
+                                    self.module = {exports: {}};
+                                    importScripts('pgp/manage/render/pgp-manage-form.js');
+                                    self.module.exports.renderPGPManageForm(status_box, function (html) {
+                                        ClientWorker.render(html);
+                                    });
+                                });
+                            } else {
+                                console.error("Not found: " + publicKeyID);
+                            }
+                        });
                     });
                 })(publicKeyIDs[i]);
             }

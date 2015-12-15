@@ -14,8 +14,16 @@ if(typeof module === 'object') (function() {
                 return false;
 
             self.module = {exports: {}};
+            importScripts('pgp/import/render/pgp-import-form.js');
+            var templateExports = self.module.exports;
+
+            self.module = {exports: {}};
             importScripts('keyspace/ks-db.js');
             var KeySpaceDB = self.module.exports.KeySpaceDB;
+
+            self.module = {exports: {}};
+            importScripts('pgp/lib/openpgpjs/openpgp.js');
+            var openpgp = self.module.exports;
 
             // TODO: require passphrase on register?
             var pgpKeyBlock = (match[2] || '').replace(/(\r\n|\r|\n)/g, '\r\n');
@@ -23,20 +31,24 @@ if(typeof module === 'object') (function() {
 
             var status_box = "Paste a new PGP PRIVATE KEY BLOCK to import a new PGP Identity manually";
 
+            function doErr(message) {
+                status_box = "<span class='error'>" + message + "</span>";
+                templateExports.renderPGPImportForm(pgpKeyBlock, status_box, function (html) {
+                    ClientWorker.render(html);
+                });
+                return false;
+                //return new Error(message);
+            }
 
-            if (!showForm && pgpKeyBlock) {
+            if (pgpKeyBlock) {
                 var publicKeyID, publicKeyBlock;
 
-                self.exports = {};
-                self.module = {exports: {}};
-                importScripts('pgp/lib/openpgpjs/openpgp.js');
-                var openpgp = self.module.exports;
                 var pgpImport = openpgp.key.readArmored(pgpKeyBlock);
                 if(pgpImport.err && pgpImport.err.length > 0)
-                    throw new Error(pgpImport.err[0]);
+                    return doErr(pgpImport.err[0]);
                 var pgpKey = pgpImport.keys[0];
                 if(!pgpKey)
-                    throw new Error("PGP Key block not found in import");
+                    return doErr("PGP Key block not found in import");
                     
                 if(pgpKey.isPrivate()) {
                     var privateKey = pgpKey;
@@ -52,40 +64,55 @@ if(typeof module === 'object') (function() {
 
 
                     var privateKeyUserIDString = privateKey.getUserIds().join('; ');
+                    if(showForm) {
+                        status_box = "\
+                                <span class='success'>PGP Private Key Block read successfully</span><br/><br/>\n\
+                                <span class='info'>You may now <span class='command'>import</span> (register) the following identity:</span><br/>\n\
+                                User ID: <strong>" + privateKeyUserIDString.replace(/</g, '&lt;') + "</strong><br/>\n\
+                                Private Key ID: <strong>" + privateKeyID + "</strong><br/>\n\
+                                Public Key ID: <strong>" + publicKeyID + "</strong><br/>\n\
+                                Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
 
-                    var path = '/.private/id';
-                    KeySpaceDB.addVerifiedContentToDB(privateKey.armor(), publicKeyID, privateKeyTimeStamp, path, {
-                        user_id: privateKeyUserIDString,
-                        pgp_id_private: privateKeyID,
-                        pgp_id_public: publicKeyID,
-                        passphrase_required: privateKey.primaryKey.isDecrypted ? false : true
-                    }, function (err, insertData) {
-                        if (err)
-                            throw new Error(err.message);
+                        templateExports.renderPGPImportForm(pgpKeyBlock, status_box, function (html) {
+                            ClientWorker.render(html);
+                        });
+                        return true;
 
-                        var path = '/public/id';
-                        KeySpaceDB.addVerifiedContentToDB(exportedPublicKey.armor(), publicKeyID, exportedPublicKeyTimeStamp, path, {
+                    } else {
+                        var path = '/.private/id';
+                        KeySpaceDB.addVerifiedContentToDB(privateKey.armor(), publicKeyID, privateKeyTimeStamp, path, {
                             user_id: privateKeyUserIDString,
                             pgp_id_private: privateKeyID,
-                            pgp_id_public: publicKeyID
+                            pgp_id_public: publicKeyID,
+                            passphrase_required: privateKey.primaryKey.isDecrypted ? false : true
                         }, function (err, insertData) {
                             if (err)
-                                throw new Error(err.message);
+                                return doErr(err.message);
 
-                            status_box = "\
-                                <span class='success'>PGP Private Key imported successfully</span><br/><br/>\n\
-                                <span class='info'>You may now make use of your new identity:</span><br/>\n\
-                                User ID: <strong>" + privateKeyUserIDString.replace(/</g, '&lt;') + "</strong><br/>";
+                            var path = '/public/id';
+                            KeySpaceDB.addVerifiedContentToDB(exportedPublicKey.armor(), publicKeyID, exportedPublicKeyTimeStamp, path, {
+                                user_id: privateKeyUserIDString,
+                                pgp_id_private: privateKeyID,
+                                pgp_id_public: publicKeyID
+                            }, function (err, insertData) {
+                                if (err)
+                                    return doErr(err.message);
 
-                            self.module = {exports: {}};
-                            importScripts('pgp/manage/render/pgp-manage-form.js');
-                            self.module.exports.renderPGPManageForm(status_box, function (html) {
-                                ClientWorker.render(html);
+                                status_box = "\
+                                    <span class='success'>PGP Private Key imported successfully</span><br/><br/>\n\
+                                    <span class='info'>You may now make use of your new identity:</span><br/>\n\
+                                    User ID: <strong>" + privateKeyUserIDString.replace(/</g, '&lt;') + "</strong><br/>";
+
+                                self.module = {exports: {}};
+                                importScripts('pgp/manage/render/pgp-manage-form.js');
+                                self.module.exports.renderPGPManageForm(status_box, function (html) {
+                                    ClientWorker.render(html);
+                                });
+
+                                ClientWorker.postResponseToClient("CLOSE pgp-import:");
                             });
-
-                            ClientWorker.postResponseToClient("CLOSE pgp-import:");
                         });
-                    });
+                    }
                 } else {
 
                     var publicKey = pgpKey;
@@ -95,43 +122,46 @@ if(typeof module === 'object') (function() {
 
                     var publicKeyUserIDString = publicKey.getUserIds().join('; ');
 
-                    var publicKeyPath = '/public/id';
-                    KeySpaceDB.addVerifiedContentToDB(publicKey.armor(), publicKeyID, publicKeyTimeStamp, publicKeyPath, {
-                        user_id: publicKeyUserIDString,
-                        pgp_id_public: publicKeyID
-                    }, function (err, insertData) {
-                        if (err)
-                            throw new Error(err.message);
-
+                    if(showForm) {
                         status_box = "\
-                            <span class='success'>PGP Public Key imported successfully</span><br/><br/>\n\
-                            <span class='info'>This PGP Identity and KeySpace now available to your relay client:</span><br/>\n\
-                            User ID: <strong>" + publicKeyUserIDString.replace(/</g, '&lt;') + "</strong><br/>";
+                                <span class='success'>PGP Public Key Block read successfully</span><br/><br/>\n\
+                                <span class='info'>You may now <span class='command'>import</span> (register) the following identity:</span><br/>\n\
+                                User ID: <strong>" + publicKeyUserIDString.replace(/</g, '&lt;') + "</strong><br/>\n\
+                                Public Key ID: <strong>" + publicKeyID + "</strong><br/>";
 
-                        self.module = {exports: {}};
-                        importScripts('pgp/manage/render/pgp-manage-form.js');
-                        self.module.exports.renderPGPManageForm(status_box, function (html) {
+                        templateExports.renderPGPImportForm(pgpKeyBlock, status_box, function (html) {
                             ClientWorker.render(html);
                         });
+                        return true;
 
-                        ClientWorker.postResponseToClient("CLOSE pgp-import:");
-                    });
+                    } else {
+                        var publicKeyPath = '/public/id';
+                        KeySpaceDB.addVerifiedContentToDB(publicKey.armor(), publicKeyID, publicKeyTimeStamp, publicKeyPath, {
+                            user_id: publicKeyUserIDString,
+                            pgp_id_public: publicKeyID
+                        }, function (err, insertData) {
+                            if (err)
+                                return doErr(err.message);
+
+                            status_box = "\
+                                <span class='success'>PGP Public Key imported successfully</span><br/><br/>\n\
+                                <span class='info'>This PGP Identity and KeySpace now available to your relay client:</span><br/>\n\
+                                User ID: <strong>" + publicKeyUserIDString.replace(/</g, '&lt;') + "</strong><br/>";
+
+                            self.module = {exports: {}};
+                            importScripts('pgp/manage/render/pgp-manage-form.js');
+                            self.module.exports.renderPGPManageForm(status_box, function (html) {
+                                ClientWorker.render(html);
+                            });
+
+                            ClientWorker.postResponseToClient("CLOSE pgp-import:");
+                        });
+                    }
                 }
 
                 return true;
 
             } else {
-                status_box = status_box || "\
-                        <span class='success'>PGP Key Pair generated successfully</span><br/><br/>\n\
-                        <span class='info'>You may now import (register) the following identity:</span><br/>\n\
-                        User ID: <strong>" + publicKeyUserIDString.replace(/</g, '&lt;') + "</strong><br/>\n\
-                        Private Key ID: <strong>" + privateKeyID + "</strong><br/>\n\
-                        Public Key ID: <strong>" + publicKeyID + "</strong><br/>\n\
-                        Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
-
-                self.module = {exports: {}};
-                importScripts('pgp/import/render/pgp-import-form.js');
-                var templateExports = self.module.exports;
                 templateExports.renderPGPImportForm(pgpKeyBlock, status_box, function (html) {
                     ClientWorker.render(html);
                 });

@@ -318,15 +318,7 @@ function Client() {
             contentElement.classList.add('__no-class');
         var targetClass = contentElement.classList.item(0);
 
-        if(contentElement.classList.contains('maximize-on-render')) {
-            var maximizedElms = document.getElementsByClassName('maximized');
-            while (maximizedElms.length > 0)
-                maximizedElms[0].classList.remove('maximized');
-
-            contentElement.classList.add('maximized');
-        }
-
-
+            
         var targetElements = document.getElementsByClassName(targetClass);
         var targetElement;
         if(targetElements.length === 0) {
@@ -353,15 +345,32 @@ function Client() {
 
             // Existing window with same name
             targetElement = targetElements[0];
-            if(targetElement.outerHTML.split("\n")[0]
-                === contentElement.outerHTML.split("\n")[0]) {
-                targetElement.innerHTML = contentElement.innerHTML;
+
+
+            targetElement.innerHTML = contentElement.innerHTML;
+            targetElement.setAttribute('class', contentElement.getAttribute('class'));
+
+            console.log(targetElement);
+            //if(targetElement.outerHTML.split("\n")[0]
+            //    === contentElement.outerHTML.split("\n")[0]) {
+            //    targetElement.innerHTML = contentElement.innerHTML;
                 //targetElement.parentNode.insertBefore(contentElement, targetElement);
                 //targetElement.parentNode.removeChild(targetElement);
                 //targetElement = contentElement;
-            } else {
-                contentElement.outerHTML = targetElement.outerHTML;
-            }
+            //} else {
+            //    targetElement.outerHTML = contentElement.outerHTML;
+            //}
+        }
+
+        if(targetElement.classList.contains('closed'))
+            targetElement.classList.remove('closed');
+        
+        if(targetElement.classList.contains('maximize-on-render')) {
+            var maximizedElms = document.getElementsByClassName('maximized');
+            while (maximizedElms.length > 0)
+                maximizedElms[0].classList.remove('maximized');
+
+            targetElement.classList.add('maximized');
         }
 
         targetElement.scrollIntoView();

@@ -25,9 +25,9 @@
                     <option value='pgp.default [$id_private_list]'>Make Default Identity</option>
                     <option value='@pgp.passphrase [$id_private]'>Change Password</option>
                     <option value='pgp.sign [$id_private_list]'>Sign Message</option>
-                    <option value='pgp.verify [$id_private_list]'>Verify Message</option>
+                    <option value='pgp.verify [$id_private_list]'>Verify PGP Signature</option>
                     <option value='pgp.encrypt [$id_private_list]'>Encrypt Message</option>
-                    <option value='pgp.decrypt [$id_private_list]'>Decrypt Message</option>
+                    <option value='pgp.decrypt [$id_private_list]'>Decrypt PGP Encrypted Message</option>
                     <option value='@pgp.export.public [$id_private]'>Export Public Key Block</option>
                     <option value='@pgp.export.private [$id_private]'>Export Private Key Block</option>
                     <option value='@pgp.delete [$id_private]'>Delete Private Key Identity</option>
@@ -43,7 +43,7 @@
         </form>
     </main>
     <footer>
-        <a href="#PGP.KEYGEN">
+        <a href="javascript:Client.execute('PGP.KEYGEN');">
             or <span class="command">Generate</span> a new Identity...
         </a>
     </footer>

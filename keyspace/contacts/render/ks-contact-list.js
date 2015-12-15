@@ -108,6 +108,9 @@ if(typeof module !== 'object')
                             "<a href='javascript:Client.execute(\"PGP.EXPORT --with " + contentEntry.pgp_id_public + "\");'>" +
                                 "<span class='command'>Export</span>" + // Key" +
                             "</a>" +
+                            "<a href='javascript:Client.execute(\"PGP.MANAGE " + contentEntry.pgp_id_public + "\");'>" +
+                                "<span class='command'>Manage</span>" +
+                            "</a>" +
                             "<a href='javascript:Client.execute(\"PGP.DELETE " + contentEntry.pgp_id_public + "\");'>" +
                                 "<span class='command'>Delete</span>" +
                             "</a>";

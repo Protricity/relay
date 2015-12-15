@@ -290,16 +290,16 @@ module.exports.KeySpaceDB =
         KeySpaceDB.insert(
             KeySpaceDB.DB_TABLE_HTTP_CONTENT,
             insertData,
-            function(err, insertData) {
+            function(err, newInsertData) {
                 if(callback)
                     callback(err, insertData);
 
-                var responseString = "EVENT KEYSPACE.INSERT" +
-                    ' ' + insertData.pgp_id_public +
-                    ' ' + insertData.timestamp +
-                    (path ? ' ' + path : '');
 
                 if(typeof Client !== 'undefined' || typeof ClientWorker !== 'undfined') {
+                    var responseString = "EVENT KEYSPACE.INSERT" +
+                        ' ' + insertData.pgp_id_public +
+                        ' ' + insertData.timestamp +
+                        (path ? ' ' + path : '');
                     (typeof Client === 'object' ? Client : ClientWorker)
                         .processResponse(responseString);
                 }
@@ -326,6 +326,15 @@ module.exports.KeySpaceDB =
 
                 deleteRequest.onsuccess = function(e) {
                     callback(null, deleteRequest);
+
+                    if(typeof Client !== 'undefined' || typeof ClientWorker !== 'undfined') {
+                        var responseString = "EVENT KEYSPACE.DELETE" +
+                            ' ' + publicKeyID +
+                            ' ' + timestamp;
+                            //(path ? ' ' + path : '');
+                        (typeof Client === 'object' ? Client : ClientWorker)
+                            .processResponse(responseString);
+                    }
                 };
                 deleteRequest.onerror = function(e) {
                     callback(e.target, deleteRequest);

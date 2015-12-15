@@ -8,7 +8,7 @@ if(typeof module === 'object') (function() {
 
         var refreshTimeout = null;
         function eventListener(responseString) {
-            var match = /^event (keyspace\.host|keyspace\.insert|settings\.update)/i.exec(responseString);
+            var match = /^event (keyspace\.|settings\.)/i.exec(responseString);
             if (match) {
                 if(refreshTimeout)
                     clearTimeout(refreshTimeout);

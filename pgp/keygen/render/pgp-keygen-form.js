@@ -85,8 +85,8 @@ if(typeof document === 'object')
 
         }).then(function(keyPair) {
             var privateKey = keyPair.key;
-            var newPrivateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();
-            var newPublicKeyID = privateKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+            //var newPrivateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();
+            //var newPublicKeyID = privateKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
             //console.log("TODO FORM with New PGP Key Generated: ", newPrivateKeyID, newPublicKeyID);
 
             //registerCommand("REGISTER " + keyPair.privateKeyArmored);
