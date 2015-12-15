@@ -146,9 +146,11 @@ if(typeof module === 'object') (function() {
 
 
         var MESSAGE_TEMPLATE =
-            '<div class="channel-log-entry">' +
-                '<a href="javascript:Client.execute(\'MESSAGE {$username}\');" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
-                ': <span class="message">{$content}</span>' +
+            '<div class="channel-log:' + channelPath.toLowerCase() + ' append-children-on-render">' +
+                '<div class="channel-log-entry:">' +
+                    '<a href="javascript:Client.execute(\'MESSAGE {$username}\');" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
+                    ': <span class="message">{$content}</span>' +
+                '</div>' +
             '</div>';
 
         callback(MESSAGE_TEMPLATE
@@ -173,10 +175,12 @@ if(typeof module === 'object') (function() {
         }
 
         var ACTION_TEMPLATE =
-            '<div class="channel-log-entry">' +
-                '<a href="javascript:Client.execute(\'MESSAGE {$username}\');" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
-                ' has <span class="action">{$action}</span>' +
-                ' <a href="javascript:Client.execute(\'JOIN {$channel}\');" class="path">{$channel}</a>' +
+            '<div class="channel-log:' + channelPath.toLowerCase() + ' append-children-on-render">' +
+                '<div class="channel-log-entry:">' +
+                    '<a href="javascript:Client.execute(\'MESSAGE {$username}\');" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
+                    ' has <span class="action">{$action}</span>' +
+                    ' <a href="javascript:Client.execute(\'JOIN {$channel}\');" class="path">{$channel}</a>' +
+                '</div>' +
             '</div>';
 
         callback(ACTION_TEMPLATE
@@ -186,17 +190,18 @@ if(typeof module === 'object') (function() {
         );
     };
 
-    module.exports.renderChatNickChange = function (commandResponse, callback) {
+    module.exports.renderChatNickChange = function (commandResponse, channelPath, callback) {
         var args = commandResponse.split(/\s/);
         var old_username = args[1];
         var new_username = args[2];
 
         var NICK_TEMPLATE =
-            '<div class="channel-log-entry">' +
-                'Username <span class="username">{$old_username}</span>' +
-                ' has been <span class="action">renamed</span> to' +
-                ' <a href="javascript:Client.execute(\'MESSAGE {$username}\');" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
-
+            '<div class="channel-log:' + channelPath.toLowerCase() + ' append-children-on-render">' +
+                '<div class="channel-log-entry">' +
+                    'Username <span class="username">{$old_username}</span>' +
+                    ' has been <span class="action">renamed</span> to' +
+                    ' <a href="javascript:Client.execute(\'MESSAGE {$username}\');" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
+                '</div>' +
             '</div>';
 
         callback(NICK_TEMPLATE

@@ -90,9 +90,11 @@ if(typeof module === 'object') (function() {
         var content = match[3];
 
         var MESSAGE_TEMPLATE =
-            '<div class="message-log-entry">' +
-                '<span class="username" data-timestamp="{$timestamp}">{$username}</span>' +
-                ': <span class="message">{$content}</span>' +
+            '<div class="message:' + username.toLowerCase() + ' append-children-on-render">' +
+                '<div class="message-log-entry:">' +
+                    '<span class="username" data-timestamp="{$timestamp}">{$username}</span>' +
+                    ': <span class="message">{$content}</span>' +
+                '</div>' +
             '</div>';
 
         callback(MESSAGE_TEMPLATE

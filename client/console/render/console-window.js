@@ -73,9 +73,11 @@
     function renderConsoleEntry(content, callback) {
         // Template
         var SOCKET_TEMPLATE_ACTION_ENTRY =
-            "\n<div class='console-entry'>" +
-            "\n\t{$content}" +
-            "\n</div>";
+            "<main class='console-content: append-children-on-render'>" +
+                "\n\t<div class='console-entry'>" +
+                    "\n\t\t{$content}" +
+                "\n\t</div>" +
+            "</main>";
 
         var consoleEntryHTML = SOCKET_TEMPLATE_ACTION_ENTRY
             .replace(/{\$content}/g, content);

@@ -139,8 +139,10 @@ function SettingsDB(dbReadyCallback) {
                     callback(null, insertData, putRequest);
 
                 var responseString = "EVENT SETTINGS.UPDATE " + settingsData.name;
-                (typeof Client === 'object' ? Client : ClientWorker)
-                    .processResponse(responseString);
+                if(typeof Client !== 'undefined')
+                    Client.processResponse(responseString);
+                if(typeof ClientWorker !== 'undefined')
+                    ClientWorker.processResponse(responseString);
             };
             putRequest.onerror = function(e) {
                 if(callback)

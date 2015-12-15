@@ -45,12 +45,11 @@ if(typeof module === 'object') (function() {
                 return false;
 
             var channelPath = match[1];
-
             renderChatWindow(channelPath);
-
             console.info("Channel has Activity: " + channelPath);
+
             getChatExports().renderChatMessage(responseString, function (html) {
-                ClientWorker.appendChild('channel-log:' + channelPath.toLowerCase(), html);
+                ClientWorker.render(html);
             });
             return true;
         }
@@ -125,7 +124,7 @@ if(typeof module === 'object') (function() {
 
 //             console.info("Joined Channel: " + channelPath);
             getChatExports().renderChatActionEntry(responseString, function (html) {
-                ClientWorker.appendChild('channel-log:' + channelPath.toLowerCase(), html);
+                ClientWorker.render(html);
             });
 
             var userList = channelUsers[channelPath.toLowerCase()];
@@ -136,7 +135,7 @@ if(typeof module === 'object') (function() {
 
                 userList.sort();
                 getChatExports().renderChatUserList(channelPath, userList, function (html) {
-                    ClientWorker.replace('channel-users:' + channelPath.toLowerCase(), html);
+                    ClientWorker.render(html);
                 });
             }
 
@@ -185,11 +184,11 @@ if(typeof module === 'object') (function() {
             userList.splice(pos, 1);
 
             getChatExports().renderChatActionEntry(responseString, function (html) {
-                ClientWorker.appendChild('channel-log:' + channelPath.toLowerCase(), html);
+                ClientWorker.render(html);
             });
 
             getChatExports().renderChatUserList(channelPath, userList, function (html) {
-                ClientWorker.replace('channel-users:' + channelPath.toLowerCase(), html);
+                ClientWorker.render(html);
             });
             return true;
         }
@@ -238,7 +237,7 @@ if(typeof module === 'object') (function() {
             channelUsers[channelPath.toLowerCase()] = userList;
 
             getChatExports().renderChatUserList(channelPath, userList, function (html) {
-                ClientWorker.replace('channel-users:' + channelPath.toLowerCase(), html);
+                ClientWorker.render(html);
             });
             return true;
         }
@@ -285,13 +284,13 @@ if(typeof module === 'object') (function() {
                             userList[pos] = new_username;
 
                             // Render Nick Change Event
-                            getChatExports().renderChatNickChange(responseString, function (html) {
-                                ClientWorker.appendChild('channel-log:' + channelPathLowerCase, html);
+                            getChatExports().renderChatNickChange(responseString, channelPathLowerCase, function (html) {
+                                ClientWorker.render(html);
                             });
 
                             // Render New User List
                             getChatExports().renderChatUserList(channelPathLowerCase, userList, function (html) {
-                                ClientWorker.replace('channel-users:' + channelPathLowerCase, html);
+                                ClientWorker.render(html);
                             });
 
                             // TODO: refresh private message
@@ -341,7 +340,7 @@ if(typeof module === 'object') (function() {
             //var content = fixPGPMessage(match[3]);
             renderMessageWindow(username);
             getMessageExports().renderMessage(responseString, function (html, username) {
-                ClientWorker.appendChild('message-log:' + username, html);
+                ClientWorker.render(html);
             });
             return true;
         }

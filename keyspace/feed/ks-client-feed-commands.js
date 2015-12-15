@@ -12,7 +12,7 @@ if(typeof module === 'object') (function() {
          * @param commandString FEED --id [public key id] --path [path prefix]
          */
         function feedCommand(commandString) {
-            var match = /^feed/im.exec(commandString);
+            var match = /^(?:keyspace\.)?feed/im.exec(commandString);
             if (!match)
                 return false;
 

@@ -42,11 +42,11 @@ function Client() {
                 render(responseString);
                 break;
 
-            case 'replace':
-            case 'append':
-            case 'prepend':
-                renderClass(responseString);
-                break;
+            //case 'replace':
+            //case 'append':
+            //case 'prepend':
+            //    renderClass(responseString);
+            //    break;
 
             case 'minimize':
             case 'maximize':
@@ -180,119 +180,6 @@ function Client() {
     }
 
 
-    function renderWindowCommand(responseString) {
-        var args = /^(minimize|maximize|close)\s+(\S+)$/mi.exec(responseString);
-        if(!args)
-            throw new Error("Invalid Command: " + responseString);
-
-        var command = args[1].toLowerCase();
-        var targetClass = args[2];
-        var targetElements = document.getElementsByClassName(targetClass);
-        if(targetElements.length === 0)
-            throw new Error("Class not found: " + targetClass + " - " + responseString);
-
-        var targetElement = targetElements[0];
-        var hasClass = targetElement.classList.contains(command + 'd');
-        if(command === 'close')
-            hasClass = false;
-
-        var maximizedElms = document.getElementsByClassName('maximized');
-        while(maximizedElms.length > 0)
-            maximizedElms[0].classList.remove('maximized');
-
-        for(var i=0; i<targetElements.length; i++) {
-            targetElement = targetElements[i];
-            if(hasClass) {
-                targetElement.classList.remove(command + 'd');
-
-            } else {
-                targetElement.classList.remove('minimized');
-                targetElement.classList.remove('maximized');
-                targetElement.classList.remove('closed');
-                targetElement.classList.add(command + 'd');
-            }
-        }
-
-    }
-
-    function renderClass(commandString) {
-        var args = /^(replace|append|prepend)\s+(\S+)\s+([\s\S]+)$/mi.exec(commandString);
-        if (!args)
-            throw new Error("Invalid Class Args: " + commandString);
-
-        var command = args[1].toLowerCase();
-        var targetClass = args[2];
-        var content = args[3];
-
-        var includeScripts = [];
-        content = Client.parseScripts(content, includeScripts);
-        content = Client.parseStyleSheets(content, includeScripts);
-
-        var htmlContainer = document.createElement('div');
-        htmlContainer.innerHTML = content;
-        var contentElements = htmlContainer.children;
-        if(contentElements.length === 0)
-            throw new Error("First child missing", console.log(content, htmlContainer));
-
-        var contentElement = htmlContainer.children[0];     // First Child
-
-        var targetElement;
-        switch(command) {
-            case 'replace': // Replaces entire target element
-                var replaceElements = document.getElementsByClassName(targetClass);
-                if(replaceElements.length === 0)
-                    throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
-
-                targetElement = replaceElements[0];
-                if(targetElement.outerHTML.split("\n")[0]
-                    === targetElement.outerHTML.split("\n")[0]) {
-                    targetElement.innerHTML = contentElement.innerHTML;
-                } else {
-                    targetElement.outerHTML = contentElement.outerHTML;
-                }
-
-                break;
-
-            case 'prepend': // Prepends inner content to target element
-                var prependTargets = document.getElementsByClassName(targetClass);
-                if(prependTargets.length === 0)
-                    throw new Error("Invalid prepend content. Missing class='" + targetClass + "'\n" + content);
-                targetElement = prependTargets[0];
-
-                if(targetElement.firstChild) {
-                    while(contentElements.length > 0)
-                        targetElement.insertBefore(contentElements[contentElements.length-1], targetElement.firstChild);
-                } else {
-                    while(contentElements.length > 0)
-                        targetElement.appendChild(contentElements[0]);
-                }
-                targetElement.scrollTop = 0;
-                break;
-
-            case 'append': // Appends inner content to target element
-                var appendTargets = document.getElementsByClassName(targetClass);
-                if(appendTargets.length === 0)
-                    throw new Error("Invalid append content. Missing class='" + targetClass + "'\n" + content);
-                targetElement = appendTargets[0];
-
-                while(contentElements.length > 0)
-                    targetElement.appendChild(contentElements[0]);
-                targetElement.scrollTop = targetElement.scrollHeight;
-                break;
-
-            default:
-                throw new Error("Invalid Command: " + command);
-        }
-
-        // Include scripts after insert:
-        includeScriptsAsync(targetElement, includeScripts, function() {
-            var contentEvent = new CustomEvent('render', {
-                bubbles: true
-            });
-            targetElement.dispatchEvent(contentEvent);
-        });
-    }
-
     function render(commandString) {
         var args = /^render\s+([\s\S]+)$/mi.exec(commandString);
         if (!args)
@@ -322,6 +209,7 @@ function Client() {
         var targetElements = document.getElementsByClassName(targetClass);
         var targetElement;
         if(targetElements.length === 0) {
+            // First Render
             var bodyElm = document.getElementsByTagName('body')[0];
 
             var insertBefore;
@@ -338,42 +226,28 @@ function Client() {
 
 
             if(targetElements.length === 0)
-                throw new Error("Shouldn't Happen. Missing class='" + targetClass + "'\n" + content);
+                throw new Error("Re-render class mismatch: '" + targetClass + "'\n" + content);
             targetElement = targetElements[0];
 
+            targetElement.scrollIntoView();
         } else {
-
             // Existing window with same name
             targetElement = targetElements[0];
+            if(targetElement.classList.contains('closed'))
+                targetElement.classList.remove('closed');
+            if(contentElement.classList.contains('append-children-on-render')
+                || targetElement.classList.contains('append-children-on-render')) {
+                for(var j=0; j<contentElement.children.length; j++)
+                    targetElement.appendChild(contentElement.children[j]);
 
+            } else {
+                targetElement.innerHTML = contentElement.innerHTML;
+            }
 
-            targetElement.innerHTML = contentElement.innerHTML;
-            targetElement.setAttribute('class', contentElement.getAttribute('class'));
-
-            console.log(targetElement);
-            //if(targetElement.outerHTML.split("\n")[0]
-            //    === contentElement.outerHTML.split("\n")[0]) {
-            //    targetElement.innerHTML = contentElement.innerHTML;
-                //targetElement.parentNode.insertBefore(contentElement, targetElement);
-                //targetElement.parentNode.removeChild(targetElement);
-                //targetElement = contentElement;
-            //} else {
-            //    targetElement.outerHTML = contentElement.outerHTML;
-            //}
+            if(contentElement.classList.contains('scroll-into-view-on-render'))
+                targetElement.scrollIntoView();
         }
 
-        if(targetElement.classList.contains('closed'))
-            targetElement.classList.remove('closed');
-        
-        if(targetElement.classList.contains('maximize-on-render')) {
-            var maximizedElms = document.getElementsByClassName('maximized');
-            while (maximizedElms.length > 0)
-                maximizedElms[0].classList.remove('maximized');
-
-            targetElement.classList.add('maximized');
-        }
-
-        targetElement.scrollIntoView();
 
         // Include scripts after insert:
         includeScriptsAsync(targetElement, includeScripts, function() {
@@ -440,6 +314,116 @@ function Client() {
                 callback();
         }
     }
+
+
+
+    function renderWindowCommand(responseString) {
+        var args = /^(minimize|maximize|close)\s+(\S+)$/mi.exec(responseString);
+        if(!args)
+            throw new Error("Invalid Command: " + responseString);
+
+        var command = args[1].toLowerCase();
+        var targetClass = args[2];
+        var targetElements = document.getElementsByClassName(targetClass);
+        if(targetElements.length === 0)
+            throw new Error("Class not found: " + targetClass + " - " + responseString);
+
+        var targetElement = targetElements[0];
+        var hasClass = targetElement.classList.contains(command + 'd');
+        if(command === 'close')
+            hasClass = false;
+
+        var maximizedElms = document.getElementsByClassName('maximized');
+        while(maximizedElms.length > 0)
+            maximizedElms[0].classList.remove('maximized');
+
+        for(var i=0; i<targetElements.length; i++) {
+            targetElement = targetElements[i];
+            if(hasClass) {
+                targetElement.classList.remove(command + 'd');
+
+            } else {
+                targetElement.classList.remove('minimized');
+                targetElement.classList.remove('maximized');
+                targetElement.classList.remove('closed');
+                targetElement.classList.add(command + 'd');
+            }
+        }
+
+    }
+    //
+    //function renderClass(commandString) {
+    //    var args = /^(replace|append|prepend)\s+(\S+)\s+([\s\S]+)$/mi.exec(commandString);
+    //    if (!args)
+    //        throw new Error("Invalid Class Args: " + commandString);
+    //
+    //    var command = args[1].toLowerCase();
+    //    var targetClass = args[2];
+    //    var content = args[3];
+    //
+    //    var includeScripts = [];
+    //    content = Client.parseScripts(content, includeScripts);
+    //    content = Client.parseStyleSheets(content, includeScripts);
+    //
+    //    var htmlContainer = document.createElement('div');
+    //    htmlContainer.innerHTML = content;
+    //    var contentElements = htmlContainer.children;
+    //    if(contentElements.length === 0)
+    //        throw new Error("First child missing", console.log(content, htmlContainer));
+    //
+    //    var contentElement = htmlContainer.children[0];     // First Child
+    //
+    //    var targetElement;
+    //    switch(command) {
+    //        case 'replace': // Replaces entire target element
+    //            var replaceElements = document.getElementsByClassName(targetClass);
+    //            if(replaceElements.length === 0)
+    //                throw new Error("Invalid content. Missing class='" + targetClass + "'\n" + content);
+    //
+    //            targetElement = replaceElements[0];
+    //            targetElement.outerHTML = contentElement.outerHTML;
+    //
+    //            break;
+    //
+    //        case 'prepend': // Prepends inner content to target element
+    //            var prependTargets = document.getElementsByClassName(targetClass);
+    //            if(prependTargets.length === 0)
+    //                throw new Error("Invalid prepend content. Missing class='" + targetClass + "'\n" + content);
+    //            targetElement = prependTargets[0];
+    //
+    //            if(targetElement.firstChild) {
+    //                while(contentElements.length > 0)
+    //                    targetElement.insertBefore(contentElements[contentElements.length-1], targetElement.firstChild);
+    //            } else {
+    //                while(contentElements.length > 0)
+    //                    targetElement.appendChild(contentElements[0]);
+    //            }
+    //            targetElement.scrollTop = 0;
+    //            break;
+    //
+    //        case 'append': // Appends inner content to target element
+    //            var appendTargets = document.getElementsByClassName(targetClass);
+    //            if(appendTargets.length === 0)
+    //                throw new Error("Invalid append content. Missing class='" + targetClass + "'\n" + content);
+    //            targetElement = appendTargets[0];
+    //
+    //            while(contentElements.length > 0)
+    //                targetElement.appendChild(contentElements[0]);
+    //            targetElement.scrollTop = targetElement.scrollHeight;
+    //            break;
+    //
+    //        default:
+    //            throw new Error("Invalid Command: " + command);
+    //    }
+    //
+    //    // Include scripts after insert:
+    //    includeScriptsAsync(targetElement, includeScripts, function() {
+    //        var contentEvent = new CustomEvent('render', {
+    //            bubbles: true
+    //        });
+    //        targetElement.dispatchEvent(contentEvent);
+    //    });
+    //}
 })();
 
 
