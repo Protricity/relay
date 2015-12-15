@@ -2,8 +2,8 @@
  * Created by ari.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientKSPutScriptCommand = function (ClientWorker) {
-        ClientWorker.addCommand(putScriptCommand);
+    module.exports.initClientKSPutScriptCommand = function (ClientWorkerThread) {
+        ClientWorkerThread.addCommand(putScriptCommand);
 
         function putScriptCommand(commandString) {
             var match = /^put\.script\s*([\s\S]*)$/im.exec(commandString);
@@ -47,7 +47,7 @@ if(typeof module === 'object') (function() {
                     self.module = {exports: {}};
                     importScripts(scriptFound[0]);
                     self.module.exports.renderContentScript(commandString, function (html) {
-                        ClientWorker.render(html
+                        Client.render(html
                             .replace(/{\$command_string}/ig, commandString)
                         );
                     });
@@ -62,7 +62,7 @@ if(typeof module === 'object') (function() {
             self.module = {exports: {}};
             importScripts('keyspace/put/script/render/ks-put-script-form.js');
             self.module.exports.renderPutScriptForm(commandString, function (html) {
-                ClientWorker.render(html);
+                Client.render(html);
             });
 
             return true;

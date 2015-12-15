@@ -2,8 +2,8 @@
  * Ari 7/2/2015.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientPGPImportCommands = function (ClientWorker) {
-        ClientWorker.addCommand(importCommand);
+    module.exports.initClientPGPImportCommands = function (ClientWorkerThread) {
+        ClientWorkerThread.addCommand(importCommand);
 
         /**
          * @param commandString PGP.IMPORT
@@ -34,7 +34,7 @@ if(typeof module === 'object') (function() {
             function doErr(message) {
                 status_box = "<span class='error'>" + message + "</span>";
                 templateExports.renderPGPImportForm(pgpKeyBlock, status_box, function (html) {
-                    ClientWorker.render(html);
+                    ClientWorkerThread.render(html);
                 });
                 return false;
                 //return new Error(message);
@@ -74,7 +74,7 @@ if(typeof module === 'object') (function() {
                                 Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
 
                         templateExports.renderPGPImportForm(pgpKeyBlock, status_box, function (html) {
-                            ClientWorker.render(html);
+                            ClientWorkerThread.render(html);
                         });
                         return true;
 
@@ -106,10 +106,10 @@ if(typeof module === 'object') (function() {
                                 self.module = {exports: {}};
                                 importScripts('pgp/manage/render/pgp-manage-form.js');
                                 self.module.exports.renderPGPManageForm(status_box, function (html) {
-                                    ClientWorker.render(html);
+                                    Client.render(html);
                                 });
 
-                                ClientWorker.postResponseToClient("CLOSE pgp-import:");
+                                ClientWorkerThread.postResponseToClient("CLOSE pgp-import:");
                             });
                         });
                     }
@@ -130,7 +130,7 @@ if(typeof module === 'object') (function() {
                                 Public Key ID: <strong>" + publicKeyID + "</strong><br/>";
 
                         templateExports.renderPGPImportForm(pgpKeyBlock, status_box, function (html) {
-                            ClientWorker.render(html);
+                            ClientWorkerThread.render(html);
                         });
                         return true;
 
@@ -151,10 +151,10 @@ if(typeof module === 'object') (function() {
                             self.module = {exports: {}};
                             importScripts('pgp/manage/render/pgp-manage-form.js');
                             self.module.exports.renderPGPManageForm(status_box, function (html) {
-                                ClientWorker.render(html);
+                                Client.render(html);
                             });
 
-                            ClientWorker.postResponseToClient("CLOSE pgp-import:");
+                            ClientWorkerThread.postResponseToClient("CLOSE pgp-import:");
                         });
                     }
                 }
@@ -163,7 +163,7 @@ if(typeof module === 'object') (function() {
 
             } else {
                 templateExports.renderPGPImportForm(pgpKeyBlock, status_box, function (html) {
-                    ClientWorker.render(html);
+                    ClientWorkerThread.render(html);
                 });
                 return true;
 

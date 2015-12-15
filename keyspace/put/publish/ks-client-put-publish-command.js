@@ -2,8 +2,8 @@
  * Created by ari.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientKSPutPublishCommand = function (ClientWorker) {
-        ClientWorker.addCommand(putPublishCommand);
+    module.exports.initClientKSPutPublishCommand = function (ClientWorkerThread) {
+        ClientWorkerThread.addCommand(putPublishCommand);
 
         // TODO: review command
         function putPublishCommand(commandString) {
@@ -26,7 +26,7 @@ if(typeof module === 'object') (function() {
                     throw new Error("Entry missing: " + pgp_id_public + ' ' + timestamp);
 
                 commandString = "PUT " + pgp_id_public + "\n" + entryData.content;
-                ClientWorker.sendWithSocket(commandString);
+                ClientWorkerThread.sendWithSocket(commandString);
             });
 
             return true;

@@ -2,8 +2,8 @@
  * Created by ari.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientKSPutSuccessResponse = function (ClientWorker) {
-        ClientWorker.addResponse(putSuccessResponse);
+    module.exports.initClientKSPutSuccessResponse = function (ClientWorkerThread) {
+        ClientWorkerThread.addResponse(putSuccessResponse);
 
         /**
          * @param responseString PUT.SUCCESS [PGP ID] [timestamp]

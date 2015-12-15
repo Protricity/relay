@@ -2,29 +2,29 @@
  * Created by ari on 7/2/2015.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientChannelCommands = function (ClientWorker) {
+    module.exports.initClientChannelCommands = function (ClientWorkerThread) {
 
-        ClientWorker.addCommand(autoJoinCommand);
+        ClientWorkerThread.addCommand(autoJoinCommand);
 
-        ClientWorker.addCommand(chatCommand);
-        ClientWorker.addResponse(chatResponse);
+        ClientWorkerThread.addCommand(chatCommand);
+        ClientWorkerThread.addResponse(chatResponse);
 
-        ClientWorker.addCommand(joinCommand);
-        ClientWorker.addResponse(joinResponse);
+        ClientWorkerThread.addCommand(joinCommand);
+        ClientWorkerThread.addResponse(joinResponse);
 
-        ClientWorker.addCommand(leaveCommand);
-        ClientWorker.addResponse(leaveResponse);
+        ClientWorkerThread.addCommand(leaveCommand);
+        ClientWorkerThread.addResponse(leaveResponse);
 
-        ClientWorker.addCommand(keyListCommand);
-        ClientWorker.addResponse(keyListResponse);
+        ClientWorkerThread.addCommand(keyListCommand);
+        ClientWorkerThread.addResponse(keyListResponse);
 
-        ClientWorker.addCommand(nickCommand);
-        ClientWorker.addResponse(nickResponse);
+        ClientWorkerThread.addCommand(nickCommand);
+        ClientWorkerThread.addResponse(nickResponse);
 
-        ClientWorker.addCommand(messageCommand);
-        ClientWorker.addResponse(messageResponse);
+        ClientWorkerThread.addCommand(messageCommand);
+        ClientWorkerThread.addResponse(messageResponse);
 
-        ClientWorker.addResponse(userlistResponse);
+        ClientWorkerThread.addResponse(userlistResponse);
 
 
         function chatCommand(commandString) {
@@ -35,7 +35,7 @@ if(typeof module === 'object') (function() {
             var channelPath = match[1];
             var channelMessage = match[2];
             commandString = "CHAT " + channelPath + " " + Date.now() + " " + channelMessage;
-            ClientWorker.sendWithSocket(commandString);
+            ClientWorkerThread.sendWithSocket(commandString);
             return true;
         }
 
@@ -49,7 +49,7 @@ if(typeof module === 'object') (function() {
             console.info("Channel has Activity: " + channelPath);
 
             getChatExports().renderChatMessage(responseString, function (html) {
-                ClientWorker.render(html);
+                Client.render(html);
             });
             return true;
         }
@@ -105,10 +105,10 @@ if(typeof module === 'object') (function() {
                 SettingsDB.updateSettings(channelSettings);
             });
 
-            ClientWorker.sendWithSocket(commandString);
+            ClientWorkerThread.sendWithSocket(commandString);
 
             renderChatWindow(channelPath, true);
-            ClientWorker.postResponseToClient("FOCUS chat:" + channelPath.toLowerCase());
+            ClientWorkerThread.postResponseToClient("FOCUS chat:" + channelPath.toLowerCase());
             return true;
         }
 
@@ -124,7 +124,7 @@ if(typeof module === 'object') (function() {
 
 //             console.info("Joined Channel: " + channelPath);
             getChatExports().renderChatActionEntry(responseString, function (html) {
-                ClientWorker.render(html);
+                Client.render(html);
             });
 
             var userList = channelUsers[channelPath.toLowerCase()];
@@ -135,11 +135,11 @@ if(typeof module === 'object') (function() {
 
                 userList.sort();
                 getChatExports().renderChatUserList(channelPath, userList, function (html) {
-                    ClientWorker.render(html);
+                    Client.render(html);
                 });
             }
 
-            ClientWorker.postResponseToClient("FOCUS chat:" + channelPath.toLowerCase());
+            ClientWorkerThread.postResponseToClient("FOCUS chat:" + channelPath.toLowerCase());
             return true;
         }
 
@@ -160,9 +160,9 @@ if(typeof module === 'object') (function() {
                 SettingsDB.updateSettings(channelSettings);
             });
 
-            ClientWorker.postResponseToClient("CLOSE chat:" + channelPath.toLowerCase());
+            ClientWorkerThread.postResponseToClient("CLOSE chat:" + channelPath.toLowerCase());
 
-            ClientWorker.sendWithSocket(commandString);
+            ClientWorkerThread.sendWithSocket(commandString);
             return true;
         }
 
@@ -184,11 +184,11 @@ if(typeof module === 'object') (function() {
             userList.splice(pos, 1);
 
             getChatExports().renderChatActionEntry(responseString, function (html) {
-                ClientWorker.render(html);
+                Client.render(html);
             });
 
             getChatExports().renderChatUserList(channelPath, userList, function (html) {
-                ClientWorker.render(html);
+                Client.render(html);
             });
             return true;
         }
@@ -201,7 +201,7 @@ if(typeof module === 'object') (function() {
                 return false;
             //var channelPath = match[1];
 
-            ClientWorker.sendWithSocket(commandString);
+            ClientWorkerThread.sendWithSocket(commandString);
             return true;
         }
 
@@ -237,7 +237,7 @@ if(typeof module === 'object') (function() {
             channelUsers[channelPath.toLowerCase()] = userList;
 
             getChatExports().renderChatUserList(channelPath, userList, function (html) {
-                ClientWorker.render(html);
+                Client.render(html);
             });
             return true;
         }
@@ -263,7 +263,7 @@ if(typeof module === 'object') (function() {
             });
 
 //             console.log("Changing Username: " + commandString);
-            ClientWorker.sendWithSocket(commandString);
+            ClientWorkerThread.sendWithSocket(commandString);
             return true;
         }
 
@@ -285,12 +285,12 @@ if(typeof module === 'object') (function() {
 
                             // Render Nick Change Event
                             getChatExports().renderChatNickChange(responseString, channelPathLowerCase, function (html) {
-                                ClientWorker.render(html);
+                                Client.render(html);
                             });
 
                             // Render New User List
                             getChatExports().renderChatUserList(channelPathLowerCase, userList, function (html) {
-                                ClientWorker.render(html);
+                                Client.render(html);
                             });
 
                             // TODO: refresh private message
@@ -322,7 +322,7 @@ if(typeof module === 'object') (function() {
             if(content) {
                 var formattedCommandString = "MESSAGE " + username + 
                     " " + Date.now() + " " + content; 
-                ClientWorker.sendWithSocket(formattedCommandString);
+                ClientWorkerThread.sendWithSocket(formattedCommandString);
             }
             return true;
         }
@@ -340,7 +340,7 @@ if(typeof module === 'object') (function() {
             //var content = fixPGPMessage(match[3]);
             renderMessageWindow(username);
             getMessageExports().renderMessage(responseString, function (html, username) {
-                ClientWorker.render(html);
+                Client.render(html);
             });
             return true;
         }
@@ -351,7 +351,7 @@ if(typeof module === 'object') (function() {
 
             if (activeChannels.indexOf(channelPathLowerCase) === -1) {
                 getChatExports().renderChatWindow(channelPath, function (html) {
-                    ClientWorker.render(html);
+                    Client.render(html);
                     activeChannels.push(channelPathLowerCase);
                 });
             }
@@ -362,7 +362,7 @@ if(typeof module === 'object') (function() {
         function renderMessageWindow(username) {
             if (activeMessages.indexOf(username) === -1) {
                 getMessageExports().renderMessageWindow(username, function (html) {
-                    ClientWorker.render(html);
+                    Client.render(html);
                     activeMessages.push(username);
                 });
             }

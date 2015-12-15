@@ -2,8 +2,8 @@
  * Ari 7/2/2015.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientPGPListCommand = function (ClientWorker) {
-        ClientWorker.addCommand(pgpListCommand);
+    module.exports.initClientPGPListCommand = function (ClientWorkerThread) {
+        ClientWorkerThread.addCommand(pgpListCommand);
 
         /**
          * @param commandString
@@ -42,7 +42,7 @@ if(typeof module === 'object') (function() {
 
                 } else {
 
-                    ClientWorker.postResponseToClient(listString);
+                    ClientWorkerThread.postResponseToClient(listString);
                 }
             });
 

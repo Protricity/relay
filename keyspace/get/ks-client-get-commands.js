@@ -3,10 +3,10 @@
  */
 
 if(typeof module === 'object') (function() {
-    module.exports.initClientKSGetCommands = function (ClientWorker) {
-        ClientWorker.addCommand(getCommand);
-        ClientWorker.addResponse(getResponse);
-        ClientWorker.addResponse(httpResponse); // Not an Alias for GET response. Handles requests sent by the client
+    module.exports.initClientKSGetCommands = function (ClientWorkerThread) {
+        ClientWorkerThread.addCommand(getCommand);
+        ClientWorkerThread.addResponse(getResponse);
+        ClientWorkerThread.addResponse(httpResponse); // Not an Alias for GET response. Handles requests sent by the client
 
         /**
          *
@@ -29,7 +29,7 @@ if(typeof module === 'object') (function() {
                 return false;
 
             executeLocalGETRequest(requestString, function (responseString) {
-                ClientWorker.sendWithSocket(responseString);
+                ClientWorkerThread.sendWithSocket(responseString);
             });
             return true;
         }
@@ -98,7 +98,7 @@ if(typeof module === 'object') (function() {
             var requestID = 'C' + requestIDCount++;
             requestString = addContentHeader(requestString, 'Request-ID', requestID);
             pendingGETRequests[requestID] = callback; // TODO: reuse same callback? should be fine.
-            ClientWorker.sendWithSocket(requestString);
+            ClientWorkerThread.sendWithSocket(requestString);
 
             // Check local cache to see what can be displayed while waiting
             var requestURL = getRequestURL(requestString);
@@ -297,7 +297,7 @@ if(typeof module === 'object') (function() {
             self.module = {exports: {}};
             importScripts('keyspace/get/browser/render/ks-browser.js');
             self.module.exports.renderBrowser(responseString, function (html) {
-                ClientWorker.render(html);
+                Client.render(html);
             });
         }
 
@@ -315,7 +315,7 @@ if(typeof module === 'object') (function() {
             if (!host)
                 throw new Error("Invalid Host: " + requestURL);
 
-            ClientWorker.log(
+            ClientWorkerThread.log(
                 "<span class='direction'>O</span>: " +
                 "<span class='request'><a href='" + requestURL + "'>" + requestURL + "</a></span>: "
             );

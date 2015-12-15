@@ -2,9 +2,9 @@
  * Created by ari.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientKSPutFormCommand = function (ClientWorker) {
-        ClientWorker.addCommand(putFormCommand);
-        ClientWorker.addCommand(putFormAddCommand);
+    module.exports.initClientKSPutFormCommand = function (ClientWorkerThread) {
+        ClientWorkerThread.addCommand(putFormCommand);
+        ClientWorkerThread.addCommand(putFormAddCommand);
 
         /**
          * @param commandString PUT[.FORM] [path] [content]
@@ -22,7 +22,7 @@ if(typeof module === 'object') (function() {
             self.module = {exports: {}};
             importScripts('keyspace/put/form/render/ks-put-form.js');
             self.module.exports.renderPutForm(content, status_box, function (html) {
-                ClientWorker.render(html);
+                ClientWorkerThread.render(html);
             });
 
             return true;
@@ -46,7 +46,7 @@ if(typeof module === 'object') (function() {
             self.module = {exports: {}};
             importScripts('keyspace/put/form/render/ks-put-form.js');
             self.module.exports.renderPutForm('', status_box, function (html) {
-                ClientWorker.render(html);
+                ClientWorkerThread.render(html);
             });
 
             return true;

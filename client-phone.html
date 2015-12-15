@@ -12,10 +12,10 @@
         <script>
             // TODO: auto scroll to focus container
 
-            Client.execute("PGP.LIST");
-            Client.execute("KEYSPACE.CONTACTS");
-            Client.execute("AUTOJOIN");
-            Client.execute("KEYSPACE.HOST.AUTO");
+            ClientMainThread.execute("PGP.LIST");
+            ClientMainThread.execute("KEYSPACE.CONTACTS");
+            ClientMainThread.execute("AUTOJOIN");
+            ClientMainThread.execute("KEYSPACE.HOST.AUTO");
 
         </script>
     </head>

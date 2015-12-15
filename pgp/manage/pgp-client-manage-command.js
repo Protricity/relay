@@ -2,8 +2,8 @@
  * Ari 7/2/2015.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientPGPManageCommand = function (ClientWorker) {
-        ClientWorker.addCommand(manageCommand);
+    module.exports.initClientPGPManageCommand = function (ClientWorkerThread) {
+        ClientWorkerThread.addCommand(manageCommand);
 
         /**
          * @param commandString
@@ -19,7 +19,7 @@ if(typeof module === 'object') (function() {
             var templateExports = self.module.exports;
 
             templateExports.renderPGPManageForm(status_box, function (html) {
-                ClientWorker.render(html);
+                ClientWorkerThread.render(html);
             });
             return true;
         }

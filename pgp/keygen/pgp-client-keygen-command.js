@@ -2,8 +2,8 @@
  * Ari 7/2/2015.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientPGPKeyGenCommand = function (ClientWorker) {
-        ClientWorker.addCommand(keygenCommand);
+    module.exports.initClientPGPKeyGenCommand = function (ClientWorkerThread) {
+        ClientWorkerThread.addCommand(keygenCommand);
 
         /**
          * @param commandString PGP.KEYGEN --bits [2048] --pass [passphrase] --name [user id]
@@ -67,7 +67,7 @@ if(typeof module === 'object') (function() {
                     if(autoImport) {
 
                         var commandString = "PGP.IMPORT " + keyPair.privateKeyArmored;
-                        ClientWorker.execute(commandString);
+                        ClientWorkerThread.execute(commandString);
                         return true;
 
 
@@ -86,7 +86,7 @@ if(typeof module === 'object') (function() {
                             Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
 
                         templateExports.renderPGPImportForm(keyPair.privateKeyArmored, generated_status_box, function (html) {
-                            ClientWorker.render(html);
+                            ClientWorkerThread.render(html);
                         });
                         return true;
                     }
@@ -102,7 +102,7 @@ if(typeof module === 'object') (function() {
                 var templateExports = self.module.exports;
 
                 templateExports.renderPGPKeyGenForm('', function (html) {
-                    ClientWorker.render(html);
+                    ClientWorkerThread.render(html);
                 });
 
                 return true;

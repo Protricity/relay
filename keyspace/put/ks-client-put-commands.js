@@ -2,81 +2,81 @@
  * Created by ari.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientKSPutCommands = function (ClientWorker) {
+    module.exports.initClientKSPutCommands = function (ClientWorkerThread) {
 
         // HTTP PUT Command
-        ClientWorker.addCommand(importPutKeySpaceCommand);
+        ClientWorkerThread.addCommand(importPutKeySpaceCommand);
         function importPutKeySpaceCommand(commandString, e) {
             if (!/^put\s+/im.test(commandString))
                 return false;
-            ClientWorker.removeCommand(importPutKeySpaceCommand);
+            ClientWorkerThread.removeCommand(importPutKeySpaceCommand);
             self.module = {exports: {}};
             importScripts('keyspace/put/keyspace/ks-client-put-keyspace-command.js');
-            module.exports.initClientKSPutKeySpaceCommand(ClientWorker);
+            module.exports.initClientKSPutKeySpaceCommand(ClientWorkerThread);
             return false;
         }
 
         // HTTP PUT.PUBLISH Command
-        ClientWorker.addCommand(importPutPublishCommand);
+        ClientWorkerThread.addCommand(importPutPublishCommand);
         function importPutPublishCommand(commandString, e) {
             if (!/^put\.publish\s+/im.test(commandString))
                 return false;
-            ClientWorker.removeCommand(importPutPublishCommand);
+            ClientWorkerThread.removeCommand(importPutPublishCommand);
             self.module = {exports: {}};
             importScripts('keyspace/put/publish/ks-client-put-publish-command.js');
-            module.exports.initClientKSPutPublishCommand(ClientWorker);
+            module.exports.initClientKSPutPublishCommand(ClientWorkerThread);
             //console.info("Loaded: keyspace/put/publish/ks-client-put-keyspace-command.js");
             return false;
         }
 
         // HTTP PUT.FORM Command
-        ClientWorker.addCommand(importPutFormCommand);
+        ClientWorkerThread.addCommand(importPutFormCommand);
         function importPutFormCommand(commandString, e) {
             if (!/^put\s*$|^put\.form/i.test(commandString))
                 return false;
-            ClientWorker.removeCommand(importPutFormCommand);
+            ClientWorkerThread.removeCommand(importPutFormCommand);
             self.module = {exports: {}};
             importScripts('keyspace/put/form/ks-client-put-form-command.js');
-            module.exports.initClientKSPutFormCommand(ClientWorker);
+            module.exports.initClientKSPutFormCommand(ClientWorkerThread);
             return false;
         }
 
 
         // HTTP PUT.MANAGE Command
-        ClientWorker.addCommand(importPutManageCommand);
+        ClientWorkerThread.addCommand(importPutManageCommand);
         function importPutManageCommand(commandString, e) {
             if (!/^put\.manage/i.test(commandString))
                 return false;
-            ClientWorker.removeCommand(importPutManageCommand);
+            ClientWorkerThread.removeCommand(importPutManageCommand);
             self.module = {exports: {}};
             importScripts('keyspace/put/manage/ks-client-put-manage-command.js');
-            module.exports.initClientKSPutManageCommand(ClientWorker);
+            module.exports.initClientKSPutManageCommand(ClientWorkerThread);
             return false;
         }
 
 
         // HTTP PUT.SCRIPT Command
-        ClientWorker.addCommand(importPutScriptCommand);
+        ClientWorkerThread.addCommand(importPutScriptCommand);
         function importPutScriptCommand(commandString, e) {
             if (!/^put\.script/i.test(commandString))
                 return false;
-            ClientWorker.removeCommand(importPutScriptCommand);
+            ClientWorkerThread.removeCommand(importPutScriptCommand);
             self.module = {exports: {}};
             importScripts('keyspace/put/script/ks-client-put-script-command.js');
-            module.exports.initClientKSPutScriptCommand(ClientWorker);
+            module.exports.initClientKSPutScriptCommand(ClientWorkerThread);
             return false;
         }
 
 
         // HTTP PUT.SUCCESS Response
-        ClientWorker.addResponse(importPutSuccessResponse);
+        ClientWorkerThread.addResponse(importPutSuccessResponse);
         function importPutSuccessResponse(responseString, e) {
             if (!/^put\.success/i.test(responseString))
                 return false;
-            ClientWorker.removeResponse(importPutSuccessResponse);
+            ClientWorkerThread.removeResponse(importPutSuccessResponse);
             self.module = {exports: {}};
             importScripts('keyspace/put/success/ks-client-put-success-response.js');
-            module.exports.initClientKSPutSuccessResponse(ClientWorker);
+            module.exports.initClientKSPutSuccessResponse(ClientWorkerThread);
             return false;
         }
 

@@ -3,7 +3,7 @@
     <link rel='stylesheet' href='pgp/import/render/pgp-import-form.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {nav:header-buttons pgp-import:}
-        <a href='javascript:Client.execute("MINIMIZE pgp-import:");'>
+        <a href='javascript:ClientMainThread.execute("MINIMIZE pgp-import:");'>
             <span class="command">Import</span> a new PGP Identity
         </a> 
     </header>
@@ -18,7 +18,7 @@
         </form>
     </main>
     <footer>
-        <a href="javascript:Client.execute('PGP.KEYGEN');">
+        <a href="javascript:ClientMainThread.execute('PGP.KEYGEN');">
             or <span class="command">KeyGen</span> a new PGP Identity...
         </a>
     </footer>

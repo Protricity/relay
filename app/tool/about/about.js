@@ -5,9 +5,9 @@
  */
 
 if(typeof module === 'object') (function() {
-    module.exports.initClientAppAboutCommands = function (ClientWorker) {
+    module.exports.initClientAppAboutCommands = function (ClientWorkerThread) {
 
-        ClientWorker.addCommand(aboutCommand);
+        ClientWorkerThread.addCommand(aboutCommand);
 
         /**
          *
@@ -24,7 +24,7 @@ if(typeof module === 'object') (function() {
             var renderExports = self.module.exports;
 
             renderExports.renderAboutWindow(commandString, function (html) {
-                ClientWorker.render(html);
+                Client.render(html);
             });
 
             return true;

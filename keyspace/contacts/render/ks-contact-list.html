@@ -3,7 +3,7 @@
     <link rel='stylesheet' href='keyspace/contacts/render/ks-contact-list.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {nav:header-buttons keyspace-contact:}
-        <a href='javascript:Client.execute("MINIMIZE keyspace-contact:");'>
+        <a href='javascript:ClientMainThread.execute("MINIMIZE keyspace-contact:");'>
             Contact List
         </a>
     </header>
@@ -19,21 +19,21 @@
         <ul class="keyspace-contact-section:">
             {$html_private_key_entries}
             <li class='keyspace-contact-default-info:'>
-                <a href='javascript:Client.execute("PGP.KEYGEN")'>KeyGen</a> a new Identity...
+                <a href='javascript:ClientMainThread.execute("PGP.KEYGEN")'>KeyGen</a> a new Identity...
             </li>
         </ul>
         <button class="keyspace-contact-section-header:" onclick="this.classList.toggle('closed'); this.blur();return false;">Contacts</button>
         <ul class="keyspace-contact-section:">
             {$html_public_key_entries}
             <li class='keyspace-contact-default-info:'>
-                <a href='javascript:Client.execute("PGP.IMPORT")'>Import</a> a Contact...
+                <a href='javascript:ClientMainThread.execute("PGP.IMPORT")'>Import</a> a Contact...
             </li>
         </ul>
         <button class="keyspace-contact-section-header:" onclick="this.classList.toggle('closed'); this.blur();return false;">Channels</button>
         <ul class="keyspace-contact-section:">
             {$html_channel_entries}
             <li class='keyspace-contact-default-info:'>
-                <a href='javascript:Client.execute("JOIN")'>Join</a> a channel...
+                <a href='javascript:ClientMainThread.execute("JOIN")'>Join</a> a channel...
             </li>
         </ul>
     </form>

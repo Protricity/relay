@@ -2,12 +2,12 @@
  * Created by ari.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientKSHostCommands = function (ClientWorker) {
-        ClientWorker.addCommand(ksAutoHostCommand);
-        ClientWorker.addCommand(ksHostCommand);
-        ClientWorker.addResponse(ksHostResponse);
+    module.exports.initClientKSHostCommands = function (ClientWorkerThread) {
+        ClientWorkerThread.addCommand(ksAutoHostCommand);
+        ClientWorkerThread.addCommand(ksHostCommand);
+        ClientWorkerThread.addResponse(ksHostResponse);
 
-        ClientWorker.addResponse(ksChallengeResponse);
+        ClientWorkerThread.addResponse(ksChallengeResponse);
 
         function ksAutoHostCommand(commandString) {
             var match = /^(?:keyspace\.)?host\.auto$/i.exec(commandString);
@@ -56,7 +56,7 @@ if(typeof module === 'object') (function() {
                 var publicKeyID = privateKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
 
                 commandString = "KEYSPACE.HOST " + publicKeyID;
-                ClientWorker.sendWithSocket(commandString);
+                ClientWorkerThread.sendWithSocket(commandString);
 
                 // TODO: flag for auto online or wait for explicit offline instruction?
 
@@ -131,7 +131,7 @@ if(typeof module === 'object') (function() {
                 openpgp.decryptMessage(privateKey, pgpEncryptedMessage)
                     .then(function (decryptedChallenge) {
                         //challengeValidations.push([pgp_id_public, decryptedChallenge]);
-                        ClientWorker.sendWithSocket("KEYSPACE.HOST.VALIDATE " + decryptedChallenge);
+                        ClientWorkerThread.sendWithSocket("KEYSPACE.HOST.VALIDATE " + decryptedChallenge);
 
                     }).catch(console.error);
             });

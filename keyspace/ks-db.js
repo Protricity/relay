@@ -172,12 +172,10 @@ module.exports.KeySpaceDB =
         activeHosts.push([pgp_id_public, webSocket]);
         console.log("KeySpace Online: " + pgp_id_public);
 
-        var responseString = "EVENT KEYSPACE.HOST " + pgp_id_public;
-        if(typeof Client !== 'undefined')
+        if(typeof Client !== 'undefined') {
+            var responseString = "EVENT KEYSPACE.HOST " + pgp_id_public;
             Client.processResponse(responseString);
-        if(typeof ClientWorker !== 'undefined')
-            ClientWorker.processResponse(responseString);
-
+        }
     };
 
     KeySpaceDB.getSocketHost = function(pgp_id_public) {
@@ -294,16 +292,13 @@ module.exports.KeySpaceDB =
                 if(callback)
                     callback(err, insertData);
 
-
-                if(typeof Client !== 'undefined' || typeof ClientWorker !== 'undfined') {
+                if(typeof Client !== 'undefined') {
                     var responseString = "EVENT KEYSPACE.INSERT" +
                         ' ' + insertData.pgp_id_public +
                         ' ' + insertData.timestamp +
                         (path ? ' ' + path : '');
-                    (typeof Client === 'object' ? Client : ClientWorker)
-                        .processResponse(responseString);
+                    Client.processResponse(responseString);
                 }
-
                 console.info("Added content to database: http://" + pgp_id_public + '.ks/' + path, insertData);
             }
         );
@@ -327,13 +322,11 @@ module.exports.KeySpaceDB =
                 deleteRequest.onsuccess = function(e) {
                     callback(null, deleteRequest);
 
-                    if(typeof Client !== 'undefined' || typeof ClientWorker !== 'undfined') {
+                    if(typeof Client !== 'undefined') {
                         var responseString = "EVENT KEYSPACE.DELETE" +
                             ' ' + publicKeyID +
                             ' ' + timestamp;
-                            //(path ? ' ' + path : '');
-                        (typeof Client === 'object' ? Client : ClientWorker)
-                            .processResponse(responseString);
+                        Client.processResponse(responseString);
                     }
                 };
                 deleteRequest.onerror = function(e) {

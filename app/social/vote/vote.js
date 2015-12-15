@@ -34,9 +34,9 @@ if(typeof document === 'object')
 
 
 if(typeof module === 'object') (function() {
-    module.exports.initClientAppSocialVoteCommands = function (ClientWorker) {
+    module.exports.initClientAppSocialVoteCommands = function (ClientWorkerThread) {
 
-        ClientWorker.addCommand(voteCommand);
+        ClientWorkerThread.addCommand(voteCommand);
 
         /**
          *
@@ -58,7 +58,7 @@ if(typeof module === 'object') (function() {
             var renderExports = self.module.exports;
 
             renderExports.renderVoteBooth(commandString, function (html) {
-                ClientWorker.render(html);
+                ClientWorkerThread.render(html);
             });
 
             return true;

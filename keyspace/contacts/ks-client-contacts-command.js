@@ -2,9 +2,9 @@
  * Ari 7/2/2015.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientPGPContactCommand = function (ClientWorker) {
-        ClientWorker.addCommand(contactCommand);
-        ClientWorker.addResponse(eventListener, true);
+    module.exports.initClientPGPContactCommand = function (ClientWorkerThread) {
+        ClientWorkerThread.addCommand(contactCommand);
+        ClientWorkerThread.addResponse(eventListener, true);
 
         var refreshTimeout = null;
         function eventListener(responseString) {
@@ -32,7 +32,7 @@ if(typeof module === 'object') (function() {
             var templateExports = self.module.exports;
 
             templateExports.renderPGPContactList(function (html) {
-                ClientWorker.render(html);
+                Client.render(html);
             });
 
             if(activeContactList === null) {
@@ -48,7 +48,7 @@ if(typeof module === 'object') (function() {
                         activeContactList.push(contentEntry.pgp_id_public);
 
                     } else {
-                        ClientWorker.sendWithSocket("KEYSPACE.HOST.SUBSCRIBE " + activeContactList.join(" "));
+                        ClientWorkerThread.sendWithSocket("KEYSPACE.HOST.SUBSCRIBE " + activeContactList.join(" "));
                     }
                 });
             }
