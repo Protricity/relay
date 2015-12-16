@@ -298,7 +298,7 @@ li {
 }
 
 .theme-minimal.layout-horizontal > article:hover {
-    box-shadow: 0 0 3em #558;
+    box-shadow: 0.1em 0.2em 2em #999;
     opacity: 1;
 }
 

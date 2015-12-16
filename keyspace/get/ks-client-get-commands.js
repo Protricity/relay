@@ -183,8 +183,9 @@ if(typeof module === 'object') (function() {
 
                 } else {
 
+                    self.module = {exports: {}};
                     importScripts('keyspace/get/response/pages/404.js');
-                    get404IndexTemplate(requestString, function (defaultResponseBody, responseCode, responseText, responseHeaders) {
+                    self.module.exports.set404IndexTemplate(requestString, function (defaultResponseBody, responseCode, responseText, responseHeaders) {
                         responseHeaders += passedResponseHeaders;
 
                         self.module = {exports: {}};

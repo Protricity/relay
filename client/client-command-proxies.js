@@ -56,7 +56,7 @@ module.exports.initClientCommands = function(ClientWorkerThread) {
     // App Commands
 
     self.module = {exports: {}};
-    importScripts('../app/client-app-command-proxies.js');
+    importScripts('app/client-app-command-proxies.js');
     self.module.exports.initClientAppCommands(ClientWorkerThread);
 
 };

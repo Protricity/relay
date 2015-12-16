@@ -7,23 +7,6 @@ function Client() {
 }
 
 
-var consoleExports = false;
-Client.log = function(message) {
-    if(!consoleExports) {
-        self.module = {exports: {}};
-        importScripts('client/console/render/console-window.js');
-        consoleExports = self.module.exports;
-
-        // Render log window
-        consoleExports.renderConsoleWindow(function(html) {
-            Client.render(html);
-        });
-    }
-    consoleExports.renderConsoleEntry(message, function(html) {
-        Client.render(html);
-    });
-//         console.log(message);
-};
 
 
 Client.parseStyleSheets = function(content, includeScripts) {
@@ -85,6 +68,25 @@ if(typeof importScripts !== 'undefined') {
         var handlerCounter = 0;
         var responseHandlers = [];
         var commandHandlers = [];
+
+        var consoleExports = false;
+        Client.log =
+        ClientWorkerThread.log = function(message) {
+            if(!consoleExports) {
+                self.module = {exports: {}};
+                importScripts('client/console/render/console-window.js');
+                consoleExports = self.module.exports;
+
+                // Render log window
+                consoleExports.renderConsoleWindow(function(html) {
+                    Client.render(html);
+                });
+            }
+            consoleExports.renderConsoleEntry(message, function(html) {
+                Client.render(html);
+            });
+//         console.log(message);
+        };
 
         Client.postResponseToClient =
         ClientWorkerThread.postResponseToClient = function(responseString) {
@@ -183,7 +185,7 @@ if(typeof importScripts !== 'undefined') {
 
             var err = "Client Response Handlers could not handle: " + responseString;
             Client.log('<span class="error">' + err + '</span>');
-            console.error(err, commandHandlers);
+            console.error(err, responseHandlers);
 
             //Client.postResponseToClient("ERROR " + err);
             return false;
@@ -226,7 +228,7 @@ if(typeof importScripts !== 'undefined') {
             var tagString = match[0];
 
             self.module = {exports: {}};
-            importScripts('../client/tags/client-tag-list.js');
+            importScripts('client/tags/client-tag-list.js');
             var tags = self.module.exports.tags;
 
             for (var i = 0; i < tags.length; i++) {
@@ -254,7 +256,7 @@ if(typeof importScripts !== 'undefined') {
         };
 
         self.module = {exports: {}};
-        importScripts('../client/client-command-proxies.js');
+        importScripts('client/client-command-proxies.js');
         self.module.exports.initClientCommands(ClientWorkerThread);
 
         // Socket Client

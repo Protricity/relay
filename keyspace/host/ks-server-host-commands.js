@@ -33,22 +33,28 @@ function ksSocketClientCloseListener() {
 
             if(clients.length === 0) {
                 delete keySpaceClients[pgp_id_public];
-                if(typeof keySpaceSubscribers[pgp_id_public] !== 'undefined') {
-                    var subscribers = keySpaceSubscribers[pgp_id_public];
-                    for(var j=0; j<subscribers.length; j++) {
-                        if(subscribers[j].readyState !== client.OPEN) {
-                            subscribers.splice(j--, 1);
-                            continue;
-                        }
-                        subscribers[j].send("KEYSPACE.HOST.OFFLINE " + pgp_id_public);
-                    }
-                }
+                sendToKeySpaceSubscribers(pgp_id_public, "KEYSPACE.HOST.OFFLINE " + pgp_id_public);
             }
         }
     }
     //SocketServer.addEventListener('connection', function(client) {
     //    httpCommand("GET", client);
     //});
+}
+
+function sendToKeySpaceSubscribers(pgp_id_public, commandString) {
+    if(typeof keySpaceSubscribers[pgp_id_public] !== 'undefined') {
+        var subscribers = keySpaceSubscribers[pgp_id_public];
+        for(var j=0; j<subscribers.length; j++) {
+            if(subscribers[j].readyState !== subscribers[j].OPEN) {
+                subscribers.splice(j--, 1);
+                continue;
+            }
+            subscribers[j].send(commandString);
+        }
+
+        console.info("O" + subscribers.length + " " + commandString);
+    }
 }
 
 function ksHostStatusCommandSocket(commandString, client) {
@@ -85,45 +91,62 @@ function ksHostStatusCommandSocket(commandString, client) {
 
 
 function ksHostCommandSocket(commandString, client) {
-    var match = /^keyspace\.host\s+([a-f0-9]{16})$/i.exec(commandString);
+    var match = /^keyspace\.host(\.online|\.offline)?\s+([a-f0-9]{16})$/i.exec(commandString);
     if(!match)
         return false;
 
-    var pgp_id_public = match[1].substr(match[1].length - 8).toUpperCase();
-
     if(client.readyState !== client.OPEN)
         throw new Error("Client is not open");
+
+    var onlineStatus = (match[1] || '').toLowerCase() !== '.offline';
+    var pgp_id_public = match[2];
+    pgp_id_public = pgp_id_public.substr(pgp_id_public.length - 8).toUpperCase();
+
     if(typeof keySpaceClients[pgp_id_public] === 'undefined')
         keySpaceClients[pgp_id_public] = [];
 
     var clientEntries = keySpaceClients[pgp_id_public];
-    if(clientEntries.indexOf(client) >= 0) {
-        client.send("ERROR Already hosting key space: " + pgp_id_public);
-        throw new Error("Already hosting key space: " + pgp_id_public);
-    }
-
-    // Generate new challenge
-    var hostCode = generateUID('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx');
-    keySpaceChallenges[hostCode] = pgp_id_public;
-
-    requestClientPublicKey(pgp_id_public, client, function(err, publicKey) {
-        if(err) {
-            console.error(err);
-            return client.send("ERROR " + err);
+    if(onlineStatus) {
+        if(clientEntries.indexOf(client) >= 0) {
+            client.send("ERROR Already hosting key space: " + pgp_id_public);
+            throw new Error("Already hosting key space: " + pgp_id_public);
         }
 
-        if(typeof openpgp === 'undefined')
-            var openpgp = require('openpgp');
+        // Generate new challenge
+        var hostCode = generateUID('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx');
+        keySpaceChallenges[hostCode] = pgp_id_public;
 
-        openpgp.encryptMessage(publicKey, hostCode)
-            .then(function(encryptedMessage) {
-                client.send("KEYSPACE.HOST.CHALLENGE " + encryptedMessage);
+        requestClientPublicKey(pgp_id_public, client, function(err, publicKey) {
+            if(err) {
+                console.error(err);
+                return client.send("ERROR " + err);
+            }
 
-            }).catch(function(error) {
-                client.send("ERROR " + error);
-            });
-    });
+            if(typeof openpgp === 'undefined')
+                var openpgp = require('openpgp');
 
+            openpgp.encryptMessage(publicKey, hostCode)
+                .then(function(encryptedMessage) {
+                    client.send("KEYSPACE.HOST.CHALLENGE " + encryptedMessage);
+
+                }).catch(function(error) {
+                    client.send("ERROR " + error);
+                });
+        });
+
+    } else {
+        var pos = clientEntries.indexOf(client);
+        if(pos === -1) {
+            client.send("ERROR Not hosting key space: " + pgp_id_public);
+            throw new Error("Not hosting key space: " + pgp_id_public);
+        }
+        clientEntries.splice(pos, 1);
+
+        if(clientEntries.length === 0) {
+            delete keySpaceClients[pgp_id_public];
+            sendToKeySpaceSubscribers(pgp_id_public, "KEYSPACE.HOST.OFFLINE " + pgp_id_public);
+        }
+    }
     return true;
 }
 

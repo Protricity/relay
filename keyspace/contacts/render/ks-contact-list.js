@@ -90,7 +90,7 @@ if(typeof module !== 'object')
 //                         console.log(socketHost, hostingStatus, hostingCommand);
 
                         var html_commands =
-                            "<a href='javascript:Client.execute(\"KEYSPACE.HOST " + contentEntry.pgp_id_public + "\");'>" +
+                            "<a href='javascript:Client.execute(\"KEYSPACE.HOST." + hostingCommand + " " + contentEntry.pgp_id_public + "\");'>" +
                                 "<span>Go</span>" +
                                 "<br />" +
                                 "<span class='command " + hostingCommand.toLowerCase() + "'>" + hostingCommand + "</span>" +

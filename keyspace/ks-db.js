@@ -159,23 +159,47 @@ module.exports.KeySpaceDB =
     var activeHosts = [];
 //     console.log(activeHosts, self);
     KeySpaceDB.addSocketHost = function(pgp_id_public, webSocket) {
-        if(typeof webSocket.KS_HOST === 'undefined')
-            webSocket.KS_HOST = [];
-        if(webSocket.KS_HOST.indexOf(pgp_id_public))
-            webSocket.KS_HOST.push(pgp_id_public);
-
         pgp_id_public = pgp_id_public
             .substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH)
             .toUpperCase();
+
+        if(typeof webSocket.KS_HOST === 'undefined')
+            webSocket.KS_HOST = [];
+        if(webSocket.KS_HOST.indexOf(pgp_id_public) === -1)
+            webSocket.KS_HOST.push(pgp_id_public);
 
         // DB instead of var?
         activeHosts.push([pgp_id_public, webSocket]);
         console.log("KeySpace Online: " + pgp_id_public);
 
         if(typeof Client !== 'undefined') {
-            var responseString = "EVENT KEYSPACE.HOST " + pgp_id_public;
+            var responseString = "EVENT KEYSPACE.HOST.ONLINE " + pgp_id_public;
             Client.processResponse(responseString);
         }
+    };
+
+    KeySpaceDB.removeSocketHost = function(pgp_id_public, webSocket) {
+        pgp_id_public = pgp_id_public
+            .substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH)
+            .toUpperCase();
+
+        var pos = webSocket.KS_HOST.indexOf(pgp_id_public);
+        webSocket.KS_HOST.splice(pos, 1);
+
+        // DB instead of var?
+        for(var i=0; i<activeHosts.length; i++) {
+            if(activeHosts[i][0] === pgp_id_public) {
+                activeHosts.splice(i, 1);
+                console.log("KeySpace Offline: " + pgp_id_public);
+                if(typeof Client !== 'undefined') {
+                    var responseString = "EVENT KEYSPACE.HOST.OFFLINE " + pgp_id_public;
+                    Client.processResponse(responseString);
+                }
+                return true;
+            }
+        }
+
+        throw new Error("KeySpace was not hosted: " + pgp_id_public);
     };
 
     KeySpaceDB.getSocketHost = function(pgp_id_public) {

@@ -75,6 +75,7 @@ function getContentType(filePath) {
             return 'audio/wav';
         case 'ico':
             return 'image/x-icon';
+        case 'map':
         case 'ttf':
             return 'application/octet-stream';
 
