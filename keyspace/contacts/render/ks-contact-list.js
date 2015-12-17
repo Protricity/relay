@@ -15,11 +15,13 @@ if(typeof module !== 'object')
         importScripts('keyspace/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;
 
-        if(typeof SettingsDB === 'undefined') {
-            self.module = {exports: {}};
-            importScripts('client/settings/settings-db.js');
-            var SettingsDB = self.module.exports.SettingsDB;
-        }
+        self.module = {exports: {}};
+        importScripts('client/settings/settings-db.js');
+        var SettingsDB = self.module.exports.SettingsDB;
+
+        self.module = {exports: {}};
+        importScripts('channel/channels.js');
+        var Channels = self.module.exports.Channels;
 
         var TEMPLATE_URL = "keyspace/contacts/render/ks-contact-list.html";
 
@@ -144,12 +146,14 @@ if(typeof module !== 'object')
                         SettingsDB.getAllSettings("channel:*", function(channelSettings) {
                             if(channelSettings) {
 
+                                var subscriptionStatus = true ? 'Subscribe' : 'Unsubscribe' ;
+
                                 var html_commands =
-                                    "<a href='javascript:Client.execute(\"JOIN " + channelSettings.name_original_case + "\");'>" +
-                                        "<span class='command'>Join</span> " + // channelSettings.name_original_case +
+                                    "<a href='javascript:Client.execute(\"" + subscriptionStatus.toUpperCase() + " " + channelSettings.name_original_case + "\");'>" +
+                                        "<span class='command'>" + subscriptionStatus + "</span> " + // channelSettings.name_original_case +
                                     "</a>" +
-                                    "<a href='javascript:Client.execute(\"LEAVE " + channelSettings.name_original_case + "\");'>" +
-                                        "<span class='command'>Leave</span> " + // channelSettings.name_original_case +
+                                    "<a href='javascript:Client.execute(\"CHAT " + channelSettings.name_original_case + "\");'>" +
+                                        "<span class='command'>Chat</span> " + // channelSettings.name_original_case +
                                     "</a>";
 
                                 if(channelSettings.auto_join === 1) {

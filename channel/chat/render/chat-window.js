@@ -179,7 +179,7 @@ if(typeof module === 'object') (function() {
                 '<div class="channel-log-entry:">' +
                     '<a href="javascript:Client.execute(\'MESSAGE {$username}\');" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
                     ' has <span class="action">{$action}</span>' +
-                    ' <a href="javascript:Client.execute(\'JOIN {$channel}\');" class="path">{$channel}</a>' +
+                    ' <a href="javascript:Client.execute(\'CHAT {$channel}\');" class="path">{$channel}</a>' +
                 '</div>' +
             '</div>';
 

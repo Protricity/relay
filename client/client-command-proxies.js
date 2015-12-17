@@ -16,7 +16,7 @@ module.exports.initClientCommands = function(ClientWorkerThread) {
     ClientWorkerThread.addCommand(importHTTPCommands);
     ClientWorkerThread.addResponse(importHTTPCommands);
     function importHTTPCommands(commandString, e) {
-        if(!/^(?:keyspace\.)?(get|put|patch|head|http|host|feed|contacts)/i.test(commandString))
+        if(!/^(keyspace|get|put|patch|head|http|host|feed|contacts)/i.test(commandString))
             return false;
         ClientWorkerThread.removeCommand(importHTTPCommands);
         ClientWorkerThread.removeResponse(importHTTPCommands);
@@ -43,7 +43,7 @@ module.exports.initClientCommands = function(ClientWorkerThread) {
     ClientWorkerThread.addCommand(importChatCommands);
     ClientWorkerThread.addResponse(importChatCommands);
     function importChatCommands(commandString, e) {
-        if(!/^(?:channel\.)?(autojoin|join|leave|message|chat|nick|userlist|keylist)/i.test(commandString))
+        if(!/^(channel|subscribe|unsubscribe|message|chat|nick)/i.test(commandString))
             return false;
         ClientWorkerThread.removeCommand(importChatCommands);
         ClientWorkerThread.removeResponse(importChatCommands);

@@ -119,9 +119,9 @@ if(typeof module === 'object') (function() {
 
         var ACTION_TEMPLATE =
             '<div class="message-log-entry">' +
-                '<span class="username">{$username}</span>' +
+                ' <a href="javascript:Client.execute(\'CHAT {$username}\');" class="username">{$username}</a>' +
                 ' has <span class="action">{$action}</span>' +
-                ' <a href="#JOIN {$message}" class="path">{$message}</a>' +
+                ' <a class="path">{$message}</a>' +
             '</div>';
 
         callback(ACTION_TEMPLATE
@@ -138,8 +138,8 @@ if(typeof module === 'object') (function() {
 
         var NICK_TEMPLATE =
             '<div class="message-log-entry">' +
-                'Username <span class="username">{$old_username}</span>' +
-                ' has been <span class="action">renamed</span> to <span class="username">{$new_username}</span>' +
+            'Username  <span class="username">{$username}</span>' +
+                ' has been <span class="action">renamed</span> to <a href="javascript:Client.execute(\'CHAT {$new_username}\');" class="username">{$new_username}</a>' +
             '</div>';
 
         callback(NICK_TEMPLATE

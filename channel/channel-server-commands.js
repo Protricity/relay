@@ -19,8 +19,10 @@ module.exports.initSocketServerChannelCommands = function(SocketServer) {
 
 //var activeClients = [];
 
-var clientUserNames = {};
-var channelUsers = {};
+//var clientUserNames = {}; // TODO: bad idea. user names are per channel
+var channelUsers = {}; // TODO: subscriptions
+var subscriptions = {};
+subscriptions['channel']['mode'] = []; // + args
 //var clientUIDs = {};
 
 function generateUID(format) {
@@ -44,7 +46,7 @@ function initClient(client) {
         username: "guest-" + uid.substring(uid.length - 4),
         channels: []
     };
-    clientUserNames[client.chat.username] = client;
+    //clientUserNames[client.chat.username] = client;
 }
 
 function uninitClient(client) {
@@ -69,13 +71,13 @@ function channelClientOpenListener(client) {
     initClient(client);
 }
 
-// TODO: not working
 function channelClientCloseListener() {
     var client = this;
     console.info("Channel Client Closed: ", typeof client);
     uninitClient(client);
 }
 
+// TODO: refactor
 function nickClientCommand(commandString, client) {
     var match = /^nick\s+([a-z0-9_-]{2,64})$/im.exec(commandString);
     if(!match)
@@ -158,12 +160,12 @@ function chatChannelCommand(commandString, client) {
     var clients = channelUsers[channelLowerCase];
     var pos = clients.indexOf(client);
     if(pos === -1)
-        joinChannelCommand(client, "JOIN " + channel);
+        joinChannelCommand(client, "SUBSCRIBE " + channel);
 
     for(var i=0; i<clients.length; i++) {
         var channelClient = clients[i];
         if(channelClient.readyState === channelClient.OPEN) {
-            send(channelClient, "CHAT " + channel + " " + client.chat.username + " " + timestamp + " " + message);
+            send(channelClient, "CHANNEL.CHAT " + channel + " " + client.chat.username + " " + timestamp + " " + message);
 
         } else {
             //leaveChannelCommand("LEAVE " + channel, channelClient);
@@ -200,7 +202,7 @@ function joinChannelCommand(commandString, client) {
     for(var i=0; i<clients.length; i++) {
         var channelClient = clients[i];
         if(channelClient.readyState === channelClient.OPEN) {
-            send(channelClient, "JOIN " + channel + " " + client.chat.username + " " + Date.now());
+            send(channelClient, "SUBSCRIBE " + channel + " " + client.chat.username + " " + Date.now());
             userList.push(channelClient.chat.username);
 
         } else {

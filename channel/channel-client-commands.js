@@ -6,6 +6,9 @@ if(typeof module === 'object') (function() {
 
         ClientWorkerThread.addCommand(autoJoinCommand);
 
+        ClientWorkerThread.addCommand(subscribeCommand);
+        ClientWorkerThread.addResponse(subscribeResponse);
+
         ClientWorkerThread.addCommand(chatCommand);
         ClientWorkerThread.addResponse(chatResponse);
 
@@ -49,7 +52,7 @@ if(typeof module === 'object') (function() {
             console.info("Channel has Activity: " + channelPath);
 
             getChatExports().renderChatMessage(responseString, function (html) {
-                Client.render(html);
+                ClientWorkerThread.render(html);
             });
             return true;
         }
@@ -58,6 +61,8 @@ if(typeof module === 'object') (function() {
             var match = /^(?:channel\.)?autojoin/im.exec(commandString);
             if (!match)
                 return false;
+
+            console.log("TODO: finish autojoin");
 
             self.module = {exports: {}};
             importScripts('client/settings/settings-db.js');
@@ -77,7 +82,7 @@ if(typeof module === 'object') (function() {
                 if(channelSettings) {
                     if(channelSettings.auto_join === 1) {
 //                         console.log("Auto Joining: " + channelSettings.name_original_case, channelSettings);
-                        joinCommand("JOIN " + channelSettings.name_original_case);
+                        joinCommand("SUBSCRIBE " + channelSettings.name_original_case);
                     }
                 }
             });
@@ -88,12 +93,73 @@ if(typeof module === 'object') (function() {
 
         var channelUsers = {};
 
-        function joinCommand(commandString) {
-            var match = /^(?:channel\.)?join\s+(\S+)/im.exec(commandString);
+        function subscribeCommand(commandString) {
+            var match = /^(?:channel\.)?(un)?subscribe\s+(\S+)\s*([\S\s]*)$/im.exec(commandString);
             if (!match)
                 return false;
 
-            var channelPath = match[1];
+            ClientWorkerThread.sendWithSocket(commandString);
+            return true;
+        }
+
+        // KEYSPACE.SUBSCRIBE.GET ABCD1234 <-- host GET
+        // KEYSPACE.SUBSCRIBE.PUT ABCD1234 <-- host PUT
+        // KEYSPACE.SUBSCRIBE.STATUS ABCD1234
+        // KEYSPACE.MESSAGE ABCD1234
+
+        // todo: if keyspace subscribed and in a channel, share keyspace contact between how?
+
+        // CHANNEL.SUBSCRIBE /state/az ABCD1234  how to connect to keyspace? or share contacts?
+        // CHANNEL.SUBSCRIBE.CONTACT /state/az ABCD1234 <-- find others by public key? maybe avoid keyspace?
+        // CHANNEL.SUBSCRIBE.CHAT /state/az guest123
+        // CHANNEL.SUBSCRIBE.GET /state/az ABCD1234 <-- host in channel? share contacts? how would that work? k.i.s.s.
+        // CHANNEL.SUBSCRIBE.PUT /state/az ABCD1234 <-- host services in channel?
+        // CHANNEL.UNSUBSCRIBE.CHAT /state/az
+        // CHANNEL.MESSAGE /state/az guest123 sup bro
+
+        // CHANNEL.SUBSCRIBE ABCD1234 /state/az CHAT guest123
+        // CHANNEL.SUBSCRIBE ABCD1234 /state/az AUDIO
+        // CHANNEL.SUBSCRIBE.CHAT ABCD1234 /state/az
+        // CHANNEL.SUBSCRIBE.CHAT /state/az guest123
+        function subscribeResponse(responseString) {
+            var match = /^(?:channel\.)?(un)?subscribe\.(\w+)\s+(\S+)\s*([\S\s]*)$/im.exec(responseString);
+            if (!match)
+                return false;
+
+            var unsubscribe = match[1].toLowerCase() === 'un';
+            var mode = match[2];
+            var channel = match[3];
+            var argString = match[4];
+
+            // Update Channel Database
+            self.module = {exports: {}};
+            importScripts('channel/channel-db.js');
+            var ChannelDB = self.module.exports.ChannelDB;
+
+            // TODO: memory instead of database?
+            // TODO: do we need to know status? yes. for contact list.
+            if(unsubscribe) {
+                ChannelDB.removeSubscription(channel, mode, function(err, subscriptionData) {
+                    if(err)
+                        throw new Error(err);
+                });
+            } else {
+                ChannelDB.addSubscription(channel, mode, function(err, subscriptionData) {
+                    if(err)
+                        throw new Error(err);
+                });
+            }
+
+            return true;
+        }
+
+        function joinCommand(commandString) {
+            var match = /^(?:channel\.)?join(\.public)?\s+(\S+)/im.exec(commandString);
+            if (!match)
+                return false;
+
+            var publicChannel = match[1].length > 0;
+            var channelPath = match[2];
 
             // Update Settings
             self.module = {exports: {}};
@@ -106,6 +172,10 @@ if(typeof module === 'object') (function() {
             });
 
             ClientWorkerThread.sendWithSocket(commandString);
+
+            var subscribeCommandString;
+            // TODO: subscribe command
+
 
             renderChatWindow(channelPath, true);
             ClientWorkerThread.postResponseToClient("FOCUS chat:" + channelPath.toLowerCase());
@@ -124,7 +194,7 @@ if(typeof module === 'object') (function() {
 
 //             console.info("Joined Channel: " + channelPath);
             getChatExports().renderChatActionEntry(responseString, function (html) {
-                Client.render(html);
+                ClientWorkerThread.render(html);
             });
 
             var userList = channelUsers[channelPath.toLowerCase()];
@@ -135,7 +205,7 @@ if(typeof module === 'object') (function() {
 
                 userList.sort();
                 getChatExports().renderChatUserList(channelPath, userList, function (html) {
-                    Client.render(html);
+                    ClientWorkerThread.render(html);
                 });
             }
 
@@ -184,11 +254,11 @@ if(typeof module === 'object') (function() {
             userList.splice(pos, 1);
 
             getChatExports().renderChatActionEntry(responseString, function (html) {
-                Client.render(html);
+                ClientWorkerThread.render(html);
             });
 
             getChatExports().renderChatUserList(channelPath, userList, function (html) {
-                Client.render(html);
+                ClientWorkerThread.render(html);
             });
             return true;
         }
@@ -237,7 +307,7 @@ if(typeof module === 'object') (function() {
             channelUsers[channelPath.toLowerCase()] = userList;
 
             getChatExports().renderChatUserList(channelPath, userList, function (html) {
-                Client.render(html);
+                ClientWorkerThread.render(html);
             });
             return true;
         }
@@ -285,12 +355,12 @@ if(typeof module === 'object') (function() {
 
                             // Render Nick Change Event
                             getChatExports().renderChatNickChange(responseString, channelPathLowerCase, function (html) {
-                                Client.render(html);
+                                ClientWorkerThread.render(html);
                             });
 
                             // Render New User List
                             getChatExports().renderChatUserList(channelPathLowerCase, userList, function (html) {
-                                Client.render(html);
+                                ClientWorkerThread.render(html);
                             });
 
                             // TODO: refresh private message
@@ -340,18 +410,18 @@ if(typeof module === 'object') (function() {
             //var content = fixPGPMessage(match[3]);
             renderMessageWindow(username);
             getMessageExports().renderMessage(responseString, function (html, username) {
-                Client.render(html);
+                ClientWorkerThread.render(html);
             });
             return true;
         }
 
         var activeChannels = [];
-        function renderChatWindow(channelPath) {
+        function renderChatWindow(channelPath, publicChannel) {
             var channelPathLowerCase = channelPath.toLowerCase();
 
             if (activeChannels.indexOf(channelPathLowerCase) === -1) {
                 getChatExports().renderChatWindow(channelPath, function (html) {
-                    Client.render(html);
+                    ClientWorkerThread.render(html);
                     activeChannels.push(channelPathLowerCase);
                 });
             }
@@ -362,7 +432,7 @@ if(typeof module === 'object') (function() {
         function renderMessageWindow(username) {
             if (activeMessages.indexOf(username) === -1) {
                 getMessageExports().renderMessageWindow(username, function (html) {
-                    Client.render(html);
+                    ClientWorkerThread.render(html);
                     activeMessages.push(username);
                 });
             }

@@ -108,6 +108,7 @@ function ksHostCommandSocket(commandString, client) {
     var clientEntries = keySpaceClients[pgp_id_public];
     if(onlineStatus) {
         if(clientEntries.indexOf(client) >= 0) {
+            client.send("KEYSPACE.HOST.ONLINE " + pgp_id_public);
             client.send("ERROR Already hosting key space: " + pgp_id_public);
             throw new Error("Already hosting key space: " + pgp_id_public);
         }
@@ -137,6 +138,7 @@ function ksHostCommandSocket(commandString, client) {
     } else {
         var pos = clientEntries.indexOf(client);
         if(pos === -1) {
+            client.send("KEYSPACE.HOST.OFFLINE " + pgp_id_public);
             client.send("ERROR Not hosting key space: " + pgp_id_public);
             throw new Error("Not hosting key space: " + pgp_id_public);
         }
