@@ -53,6 +53,21 @@ module.exports.initClientCommands = function(ClientWorkerThread) {
         return false;
     }
 
+
+    // Settings Commands
+    ClientWorkerThread.addCommand(importSettingsCommands);
+    ClientWorkerThread.addResponse(importSettingsCommands);
+    function importSettingsCommands(commandString, e) {
+        if(!/^(settings|autorun)/i.test(commandString))
+            return false;
+        ClientWorkerThread.removeCommand(importSettingsCommands);
+        ClientWorkerThread.removeResponse(importSettingsCommands);
+        importScripts('client/settings/settings-client-commands.js');
+        module.exports.initClientSettingsCommands(ClientWorkerThread);
+//         console.info("Loaded: channel/channel-client-commands.js");
+        return false;
+    }
+
     // App Commands
 
     self.module = {exports: {}};

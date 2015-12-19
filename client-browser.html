@@ -10,7 +10,7 @@
             setTimeout(function() {
                 ClientMainThread.execute("render {nav:menu}");
                 ClientMainThread.execute("KEYSPACE.CONTACTS");
-                ClientMainThread.execute("AUTOJOIN");
+                ClientMainThread.execute("SETTINGS.AUTORUN");
                 ClientMainThread.execute("KEYSPACE.HOST.AUTO");
                 setTimeout(function() {
                     ClientMainThread.execute("KEYLIST");

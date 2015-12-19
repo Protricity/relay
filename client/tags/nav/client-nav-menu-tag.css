@@ -6,7 +6,7 @@
     display: inline-block;
     background-color: lightgrey;
     padding: 0.5em;
-    /* margin: 0 1em 1em 0em; */
+    margin: 0 0.5em 0.5em 0em;
     border: 1px outset;
     border-radius: 4px;
     overflow: hidden;
@@ -32,8 +32,7 @@
 }
 
 .navigation-commands:hover {
-    /*     cursor: pointer; */
-    box-shadow: 1px 2px 6px #999;
+    box-shadow: 1px 2px 6px #333;
 }
 
 .navigation-commands.closed {

@@ -47,29 +47,6 @@
         );
     }
 
-    //function renderConsoleEntry(consoleContent, direction, callback) {
-    //    // Template
-    //    var SOCKET_TEMPLATE_CONSOLE_ENTRY =
-    //        "\n<div class='console-entry'>" +
-    //        "\n\t<span class='direction'>{$DIR}:</span>" +
-    //        "\n\t<span class='message'>{$content}</span>" +
-    //        "\n</div>";
-    //
-    //    var consoleContentEscaped = consoleContent
-    //        .replace(/&/g, '&amp;')
-    //        .replace(/</g, '&lt;')
-    //        .replace(/>/g, '&gt;')
-    //        .replace(/"/g, '&quot;');
-    //
-    //    var consoleEntryHTML = SOCKET_TEMPLATE_CONSOLE_ENTRY
-    //        .replace(/{\$DIR}/g, direction)
-    //        .replace(/{\$content}/gi, consoleContentEscaped);
-    //
-    //    // Callback
-    //    return callback(consoleEntryHTML, callback)
-    //}
-
-
     function renderConsoleEntry(content, callback) {
         // Template
         var SOCKET_TEMPLATE_ACTION_ENTRY =
@@ -80,7 +57,8 @@
             "</main>";
 
         var consoleEntryHTML = SOCKET_TEMPLATE_ACTION_ENTRY
-            .replace(/{\$content}/g, content);
+            .replace(/{\$content}/g, content)
+            .replace(/{/g, '&#123;');
 
         // Callback
         return callback(consoleEntryHTML, callback)

@@ -488,6 +488,8 @@ if(typeof importScripts !== 'undefined') {
                 targetElement = targetElements[0];
                 if(targetElement.classList.contains('closed'))
                     targetElement.classList.remove('closed');
+                if(targetElement.classList.contains('minimized'))
+                    targetElement.classList.remove('minimized');
                 if(contentElement.classList.contains('append-children-on-render')
                     || targetElement.classList.contains('append-children-on-render')) {
                     for(var j=0; j<contentElement.children.length; j++)
