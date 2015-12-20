@@ -10,12 +10,13 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addCommand(chatCommand);
         ClientWorkerThread.addResponse(chatResponse);
 
-        ClientWorkerThread.addCommand(nickCommand);
-
         ClientWorkerThread.addCommand(messageCommand);
         ClientWorkerThread.addResponse(messageResponse);
 
         ClientWorkerThread.addResponse(userlistResponse);
+
+        //// NICK Command - No need just resubscribe
+        //ClientWorkerThread.addCommand(nickCommand);
 
         //ClientWorkerThread.addCommand(joinCommand);
         //ClientWorkerThread.addResponse(joinResponse);
@@ -35,7 +36,6 @@ if(typeof module === 'object') (function() {
         })();
 
 
-        var channelUsers = {};
 
         function subscribeCommand(commandString) {
             var match = /^(?:channel\.)?(un)?subscribe\.(\w+)?\s+(\S+)\s*([\S\s]*)$/im.exec(commandString);
@@ -43,7 +43,7 @@ if(typeof module === 'object') (function() {
                 return false;
 
             var unsubscribe = match[1].toLowerCase() === 'un';
-            //var mode = match[2];
+            var mode = match[2].toLowerCase();
             //var channel = match[3];
             //var argString = match[4];
 
@@ -56,13 +56,23 @@ if(typeof module === 'object') (function() {
                 if(typeof subscriptionSettings.commands === 'undefined')
                     subscriptionSettings.commands = [];
                 var commands = subscriptionSettings.commands;
+                var oldSubscriptionPos = -1;
+                for(var i=0; i<commands.length; i++) {
+                    match = /^(?:channel\.)?subscribe\.(\w+)/i.exec(commands[i]);
+                    if(match && match[1].toLowerCase() === mode)
+                        oldSubscriptionPos = i;
+                }
                 if(unsubscribe) {
-                    if(commands.indexOf(commandString) === -1)
+                    if(oldSubscriptionPos >= 0)
+                        commands[oldSubscriptionPos] = commandString;
+                    else
                         commands.push(commandString);
+
                 } else {
-                    var pos = commands.indexOf(commandString);
-                    if(pos >= 0)
-                        commands.splice(pos, 1);
+                    if(oldSubscriptionPos >= 0)
+                        commands.splice(oldSubscriptionPos, 1);
+                    else
+                        console.error("Old subscription not found in settings");
                 }
                 SettingsDB.updateSettings(subscriptionSettings);
             });
@@ -137,31 +147,6 @@ if(typeof module === 'object') (function() {
             getChatExports().renderChatUserList(channel, subscriptionList, function (html) {
                 ClientWorkerThread.render(html);
             });
-            return true;
-        }
-
-        // NICK Command
-        function nickCommand(commandString) {
-            var match = /^(?:channel\.)?nick\s+([a-z0-9_-]{2,64})$/im.exec(commandString);
-            if(!match)
-                return false;
-
-            var newNick = match[1];
-
-            self.module = {exports: {}};
-            importScripts('client/settings/settings-db.js');
-            var SettingsDB = self.module.exports.SettingsDB;
-
-            // Update Settings
-            SettingsDB.getSettings("channel.nick", function(nickSettings) {
-                if(nickSettings.username)
-                    nickSettings.old_username = nickSettings.username;
-                nickSettings.username = newNick;
-                SettingsDB.updateSettings(nickSettings);
-            });
-
-//             console.log("Changing Username: " + commandString);
-            ClientWorkerThread.sendWithSocket(commandString);
             return true;
         }
 
@@ -288,6 +273,32 @@ if(typeof module === 'object') (function() {
 //
 //    return true;
 //    // throw new Error("Nick not found in user list: " + old_username);
+//}
+
+
+//// NICK Command - No need just resubscribe
+//function nickCommand(commandString) {
+//    var match = /^(?:channel\.)?nick\s+([a-z0-9_-]{2,64})$/im.exec(commandString);
+//    if(!match)
+//        return false;
+//
+//    var newNick = match[1];
+//
+//    self.module = {exports: {}};
+//    importScripts('client/settings/settings-db.js');
+//    var SettingsDB = self.module.exports.SettingsDB;
+//
+//    // Update Settings
+//    SettingsDB.getSettings("channel.nick", function(nickSettings) {
+//        if(nickSettings.username)
+//            nickSettings.old_username = nickSettings.username;
+//        nickSettings.username = newNick;
+//        SettingsDB.updateSettings(nickSettings);
+//    });
+//
+////             console.log("Changing Username: " + commandString);
+//    ClientWorkerThread.sendWithSocket(commandString);
+//    return true;
 //}
 
 

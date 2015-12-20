@@ -40,7 +40,7 @@ if(typeof module === 'object') (function() {
         }
 
         // TODO: Search here
-        // KEYSPACE.CONTACTS Command
+        // UI.CONTACTS Command
         SocketServer.addCommand(importContactsCommand);
         function importContactsCommand(commandString, e) {
             if (!/^(?:keyspace\.)?contacts/i.test(commandString))

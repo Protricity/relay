@@ -1,13 +1,13 @@
 <article class='keyspace-contact: prepend-on-render'>
-    <script src='keyspace/contacts/render/ks-contact-list.js'></script>
-    <link rel='stylesheet' href='keyspace/contacts/render/ks-contact-list.css' type='text/css' property="stylesheet">
+    <script src='client/ui/contacts/render/ui-contacts.js'></script>
+    <link rel='stylesheet' href='client/ui/contacts/render/ui-contacts.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
-        {nav:header-buttons keyspace-contact:}
+        {header:buttons keyspace-contact:}
         <a href='javascript:ClientMainThread.execute("MINIMIZE keyspace-contact:");'>
             Contact List
         </a>
     </header>
-    <form name='ks-contact-list-form' action='#' class="hide-on-minimize">
+    <form name='ui-contacts-form' action='#' class="hide-on-minimize">
         <code class='status-box'>{$status_box}</code>
         <select name='command' class="show-on-selected-contacts">
             <option value=''>Select Contact(s)</option>

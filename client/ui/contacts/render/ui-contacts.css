@@ -91,24 +91,24 @@
 
 /** Form **/
 
-form[name=ks-contact-list-form] {
+form[name=ui-contacts-form] {
     padding: 2px;
     border: 1px inset;
     position: relative;
 }
 
 
-form[name=ks-contact-list-form].selected-contacts .hide-on-selected-contacts,
-form[name=ks-contact-list-form]:not(.selected-contacts) .show-on-selected-contacts {
+form[name=ui-contacts-form].selected-contacts .hide-on-selected-contacts,
+form[name=ui-contacts-form]:not(.selected-contacts) .show-on-selected-contacts {
     display: none;
 }
 
-form[name=ks-contact-list-form] .status-box:empty {
+form[name=ui-contacts-form] .status-box:empty {
     display: none;
 }
 
-form[name=ks-contact-list-form] input,
-form[name=ks-contact-list-form] select {
+form[name=ui-contacts-form] input,
+form[name=ui-contacts-form] select {
     padding: 0.2em 0.5em;
     border-radius: 0.6em;
     border-width: 1px;
@@ -117,11 +117,11 @@ form[name=ks-contact-list-form] select {
     display: block;
 }
 
-form[name=ks-contact-list-form] input[type=checkbox].keyspace-contact-entry-checkbox\3A {
+form[name=ui-contacts-form] input[type=checkbox].keyspace-contact-entry-checkbox\3A {
     display: none;
 }
 
-form[name=ks-contact-list-form] .keyspace-contact-entry-label\3A {
+form[name=ui-contacts-form] .keyspace-contact-entry-label\3A {
     cursor: pointer;
     display: block;
     padding: 0.2em 0.5em;
@@ -130,8 +130,8 @@ form[name=ks-contact-list-form] .keyspace-contact-entry-label\3A {
     background-color: #FFF;
 }
 
-form[name=ks-contact-list-form] .keyspace-contact-entry-checkbox\3A:checked + .keyspace-contact-entry-label\3A,
-form[name=ks-contact-list-form] .keyspace-contact-entry-checkbox\3A:checked + .keyspace-contact-entry-label\3A + .keyspace-contact-entry-commands\3A{
+form[name=ui-contacts-form] .keyspace-contact-entry-checkbox\3A:checked + .keyspace-contact-entry-label\3A,
+form[name=ui-contacts-form] .keyspace-contact-entry-checkbox\3A:checked + .keyspace-contact-entry-label\3A + .keyspace-contact-entry-commands\3A{
     background-color: #BDF;
     padding: 0 0.5em;
     font-weight: bold;
@@ -153,7 +153,7 @@ form[name=ks-contact-list-form] .keyspace-contact-entry-checkbox\3A:checked + .k
 }
 
 /*.keyspace-contact-entry-label\3A:hover + .keyspace-contact-entry-commands\3A,*/
-form[name=ks-contact-list-form] .keyspace-contact-entry-checkbox\3A:checked
+form[name=ui-contacts-form] .keyspace-contact-entry-checkbox\3A:checked
 + .keyspace-contact-entry-label\3A + .keyspace-contact-entry-commands\3A {
     max-height: 100em;
     opacity: 1;

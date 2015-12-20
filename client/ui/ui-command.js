@@ -2,7 +2,7 @@
  * Ari 7/2/2015.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initClientPGPContactCommand = function (ClientWorkerThread) {
+    module.exports.initClientUICommands = function (ClientWorkerThread) {
         ClientWorkerThread.addCommand(contactCommand);
         ClientWorkerThread.addResponse(eventListener, true);
 
@@ -14,7 +14,7 @@ if(typeof module === 'object') (function() {
                     clearTimeout(refreshTimeout);
                 refreshTimeout = setTimeout(function() {
 //                     console.info("Refreshing Contact List: " + responseString);
-                    contactCommand("KEYSPACE.CONTACTS.REFRESH");
+                    contactCommand("UI.CONTACTS.REFRESH");
                 }, 500);
             }
 
@@ -23,15 +23,15 @@ if(typeof module === 'object') (function() {
 
         var activeContactList = null;
         function contactCommand(commandString) {
-            var match = /^(?:keyspace\.)?contacts(\.refresh)?/i.exec(commandString);
+            var match = /^(?:ui\.)?contacts(\.refresh)?/i.exec(commandString);
             if (!match)
                 return false;
 
             self.module = {exports: {}};
-            importScripts('keyspace/contacts/render/ks-contact-list.js');
+            importScripts('client/ui/contacts/render/ui-contacts.js');
             var templateExports = self.module.exports;
 
-            templateExports.renderPGPContactList(function (html) {
+            templateExports.renderUIContactList(function (html) {
                 Client.render(html);
             });
 

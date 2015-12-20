@@ -8,8 +8,8 @@ if(typeof module !== 'object')
 
 (function() {
 
-    module.exports.renderPGPContactList = renderPGPContactList;
-    function renderPGPContactList(callback) {
+    module.exports.renderUIContactList = renderUIContactList;
+    function renderUIContactList(callback) {
 
         self.module = {exports: {}};
         importScripts('keyspace/ks-db.js');
@@ -23,7 +23,7 @@ if(typeof module !== 'object')
         importScripts('channel/channels.js');
         var Channels = self.module.exports.Channels;
 
-        var TEMPLATE_URL = "keyspace/contacts/render/ks-contact-list.html";
+        var TEMPLATE_URL = "client/ui/contacts/render/ui-contacts.html";
 
         var nick_value = '';
         var html_private_key_entries = '';
@@ -65,13 +65,13 @@ if(typeof module !== 'object')
                         "<span class='command'>Delete</span>" +
                     "</a>";
 
-                renderPGPContactListEntry(
+                renderUIContactListEntry(
                     contentEntry.user_id,
                     contentEntry.pgp_id_public +
                     ' <span class="' + hostingStatus.toLowerCase() + '">' +
                         hostingStatus.toLowerCase() +
                     '</span>',
-                    'keyspace/contacts/render/icons/user_icon_default.png',
+                    'client/ui/contacts/render/icons/user_icon_default.png',
                     'public-key',
                     html_commands,
                     function(html) {
@@ -117,14 +117,14 @@ if(typeof module !== 'object')
                                 "<span class='command'>Delete</span>" +
                             "</a>";
 
-                        renderPGPContactListEntry(
+                        renderUIContactListEntry(
                             contentEntry.user_id,
 
                             contentEntry.pgp_id_private +
                             ' <span class="' + hostingStatus.toLowerCase() + '">' +
                                 hostingStatus.toLowerCase() +
                             '</span>',
-                            'keyspace/contacts/render/icons/user_icon_default.png',
+                            'client/ui/contacts/render/icons/user_icon_default.png',
                             'private-key',
                             html_commands,
                             function(html) {
@@ -157,10 +157,10 @@ if(typeof module !== 'object')
                                     "</a>";
 
                                 if(channelSettings.auto_join === 1) {
-                                    renderPGPContactListEntry(
+                                    renderUIContactListEntry(
                                         channelSettings.name_original_case,
                                         '<span class="status">0-25 users</span>',
-                                        'keyspace/contacts/render/icons/channel_icon_default.png',
+                                        'client/ui/contacts/render/icons/channel_icon_default.png',
                                         'channel',
                                         html_commands,
                                             function(html) {
@@ -195,9 +195,9 @@ if(typeof module !== 'object')
     }
 
     var i=0;
-    module.exports.renderPGPContactListEntry = renderPGPContactListEntry;
-    function renderPGPContactListEntry(name, status, user_icon_path, type, html_commands, callback) {
-        var TEMPLATE_URL = "keyspace/contacts/render/ks-contact-list-entry.html";
+    module.exports.renderUIContactListEntry = renderUIContactListEntry;
+    function renderUIContactListEntry(name, status, user_icon_path, type, html_commands, callback) {
+        var TEMPLATE_URL = "client/ui/contacts/render/ui-contacts-entry.html";
 
         var xhr = new XMLHttpRequest();
         xhr.open("GET", TEMPLATE_URL, false);
@@ -208,7 +208,7 @@ if(typeof module !== 'object')
         // TODO: cache xhr
 
         //status = 'online';
-        user_icon_path = user_icon_path || 'keyspace/contacts/render/icons/user_icon_default.png';
+        user_icon_path = user_icon_path || 'client/ui/contacts/render/icons/user_icon_default.png';
 
 
         // Callback
@@ -243,12 +243,12 @@ if(typeof document === 'object')
                 return false;
 
             switch(formElm.getAttribute('name')) {
-                case 'ks-contact-list-form':
+                case 'ui-contacts-form':
                     updateCommandList(e, formElm);
-                    //contactExports.refreshPGPContactList(e, formElm);
+                    //contactExports.refreshUIContactList(e, formElm);
                     if(e.type === 'submit')
                         e.preventDefault();
-                        //contactExports.submitPGPContactList(e, formElm);
+                        //contactExports.submitUIContactList(e, formElm);
                     return true;
 
                 default:
