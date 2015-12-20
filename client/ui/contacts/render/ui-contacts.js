@@ -20,8 +20,8 @@ if(typeof module !== 'object')
         var SettingsDB = self.module.exports.SettingsDB;
 
         self.module = {exports: {}};
-        importScripts('channel/channels.js');
-        var Channels = self.module.exports.Channels;
+        importScripts('channel/channel-client-subscriptions.js');
+        var ClientSubscriptions = self.module.exports.ClientSubscriptions;
 
         var TEMPLATE_URL = "client/ui/contacts/render/ui-contacts.html";
 

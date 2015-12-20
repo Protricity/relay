@@ -18,12 +18,12 @@ if(typeof module === 'object') (function() {
 
             var content = (match[3] || '').trim();
 
-            self.module = {exports: {}};
+            self.module = {exports: self.exports = {}};
             importScripts('keyspace/ks-db.js');
             var KeySpaceDB = self.module.exports.KeySpaceDB;
 
             // Only clear-signed or encrypted messages will be accepted
-            self.module = {exports: {}};
+            self.module = {exports: self.exports = {}};
             importScripts('pgp/lib/openpgpjs/openpgp.js');
             var openpgp = self.module.exports;
 

@@ -14,7 +14,7 @@ module.exports.tags = [
     [/^\{header[^}]*}$/i, function(tagHTML, callback, Client) {
         self.module = {exports: {}};
         importScripts('client/tags/header/tag-header.js');
-        self.module.exports.renderNavTag(tagHTML, callback, Client);
+        self.module.exports.renderHeaderTag(tagHTML, callback, Client);
     }],
 
     [/^\{ks::[^}]*}$/i, function(tagHTML, callback, Client) {

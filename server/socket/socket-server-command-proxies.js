@@ -26,7 +26,7 @@ module.exports.initSocketServerCommandProxies = function(SocketServer) {
     // Channel Commands
     SocketServer.addCommand(channelCommand);
     function channelCommand(commandString, client) {
-        if(!/^(?:channel\.)?(join|leave|message|channel|nick|userlist|keylist)/i.test(commandString))
+        if(!/^(?:channel\.)?(join|leave|message|channel|nick|userlist)/i.test(commandString))
             return false;
         SocketServer.removeCommand(channelCommand);
 

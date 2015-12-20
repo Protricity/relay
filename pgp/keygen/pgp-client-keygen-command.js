@@ -39,8 +39,7 @@ if(typeof module === 'object') (function() {
                     return '';
                 });
 
-                self.exports = {};
-                self.module = {exports: {}};
+                self.module = {exports: self.exports = {}};
                 importScripts('pgp/lib/openpgpjs/openpgp.js');
                 var openpgp = self.module.exports;
 

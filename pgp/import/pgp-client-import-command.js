@@ -13,15 +13,15 @@ if(typeof module === 'object') (function() {
             if (!match)
                 return false;
 
-            self.module = {exports: {}};
+            self.module = {exports: self.exports = {}};
             importScripts('pgp/import/render/pgp-import-form.js');
             var templateExports = self.module.exports;
 
-            self.module = {exports: {}};
+            self.module = {exports: self.exports = {}};
             importScripts('keyspace/ks-db.js');
             var KeySpaceDB = self.module.exports.KeySpaceDB;
 
-            self.module = {exports: {}};
+            self.module = {exports: self.exports = {}};
             importScripts('pgp/lib/openpgpjs/openpgp.js');
             var openpgp = self.module.exports;
 

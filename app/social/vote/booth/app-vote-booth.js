@@ -42,7 +42,7 @@ if(typeof module === 'object') (function() {
             if (!voteEntryData)
                 throw new Error("Vote Entry missing: " + pgp_id_public + ' ' + timestamp);
 
-            self.module = {exports: {}};
+            self.module = {exports: self.exports = {}};
             importScripts('pgp/lib/openpgpjs/openpgp.js');
             var openpgp = self.module.exports;
             var pgpEncryptedMessage = openpgp.cleartext.readArmored(voteEntryData.content);

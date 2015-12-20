@@ -23,12 +23,12 @@ if(typeof document === 'object')
                 result.time_zone = result.timezone;
 
             var channelHTML = "<lh>Recent Commands</lh>";
-            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /timezone/" + result.time_zone + "\");'><span class='command'>Join</span> <strong>" + result.time_zone + "</strong></a></li>";
-            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /country/" + result.country_code + "\");'><span class='command'>Join</span> <strong>" + result.country + "</strong></a></li>";
-            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /region/" + result.region_code + "\");'><span class='command'>Join</span> <strong>" + result.region + "</strong></a></li>";
-            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /city/" + result.city + "\");'><span class='command'>Join</span> <strong>" + result.city + "</strong></a></li>";
-            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /zipcode/" + result.postal_code + "\");'><span class='command'>Join</span> <strong>" + result.postal_code + "</strong></a></li>";
-            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /ip/" + result.ip + "\");'><span class='command'>Join</span> <strong>" + result.ip + "</strong></a></li>";
+            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /timezone/" + result.time_zone + "\");'><span class='command'>Subscribe</span> to <strong>" + result.time_zone + "</strong></a></li>";
+            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /country/" + result.country_code + "\");'><span class='command'>Subscribe</span> to <strong>" + result.country + "</strong></a></li>";
+            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /region/" + result.region_code + "\");'><span class='command'>Subscribe</span> to <strong>" + result.region + "</strong></a></li>";
+            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /city/" + result.city + "\");'><span class='command'>Subscribe</span> to <strong>" + result.city + "</strong></a></li>";
+            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /zipcode/" + result.postal_code + "\");'><span class='command'>Subscribe</span> to <strong>" + result.postal_code + "</strong></a></li>";
+            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /ip/" + result.ip + "\");'><span class='command'>Subscribe</span> to <strong>" + result.ip + "</strong></a></li>";
 
             document.getElementsByClassName('command-list-recent')[0].innerHTML = channelHTML;
         };
