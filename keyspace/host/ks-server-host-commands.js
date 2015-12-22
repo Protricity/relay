@@ -58,9 +58,10 @@ function sendToKeySpaceSubscribers(pgp_id_public, commandString) {
 }
 
 function ksHostStatusSocketCommand(commandString, client) {
-    var match = /^keyspace\.host\.(un)?subscribe\s+([a-f0-9 ]{8,})?$/i.exec(commandString);
+    var match = /^keyspace\.host\.(un)?subscribe\s+([a-f0-9 ]{8,})$/i.exec(commandString);
     if(!match)
         return false;
+    console.info("I " + commandString);
 
     var unsubscribe = match[1] ? true : false;
     var uids = match[2].split(' ');

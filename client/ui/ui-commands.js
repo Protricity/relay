@@ -48,7 +48,9 @@ if(typeof module === 'object') (function() {
                         activeContactList.push(contentEntry.pgp_id_public);
 
                     } else {
-                        ClientWorkerThread.sendWithSocket("KEYSPACE.HOST.SUBSCRIBE " + activeContactList.join(" "));
+                        if(activeContactList.length)
+                            ClientWorkerThread.sendWithSocket("KEYSPACE.HOST.SUBSCRIBE " + activeContactList.join(" "));
+                        
                     }
                 });
             }

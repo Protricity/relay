@@ -104,7 +104,7 @@ function putCommandSocket(commandString, client) {
                                 return;
                             }
 
-                            console.info("Cached Signed Content: " + pgp_id_public);
+                            console.info("O PUT.SUCCESS " + insertData.pgp_id_public + ' ' + insertData.timestamp);
                             client.send("PUT.SUCCESS " + insertData.pgp_id_public + ' ' + insertData.timestamp);
                         });
 
@@ -132,7 +132,7 @@ function putCommandSocket(commandString, client) {
                             return;
                         }
 
-                        console.info("Cached Public Key for: " + pgp_id_public);
+                        console.info("O PUT.SUCCESS " + insertData.pgp_id_public + ' ' + insertData.timestamp);
                         client.send("PUT.SUCCESS " + insertData.pgp_id_public + ' ' + insertData.timestamp);
                     });
 
