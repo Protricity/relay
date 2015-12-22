@@ -41,7 +41,7 @@ function unloadClient(client) {
     if(client.readyState === client)
         return false;
     console.info("Socket Client Closed: ", typeof client);
-    var ServerSubscriptions = require('channel/channel-server-subscriptions.js')
+    var ServerSubscriptions = require('./channel-server-subscriptions.js')
         .ServerSubscriptions;
     ServerSubscriptions.getClientSubscriptions(client,
         function(channel, mode, argString) {
@@ -52,7 +52,7 @@ function unloadClient(client) {
 }
 
 function subscribeCommand(commandString, client) {
-    var match = /^(?:channel\.)?subscribe(?:\.(\w+))?\s+(\S+)\s*([\S\s]*)$/im.exec(commandString);
+    var match = /^(?:channel\.)?subscribe(?:\.(\w+))?\s+(\S+)$/im.exec(commandString);
     if (!match)
         return false;
 
@@ -64,7 +64,7 @@ function subscribeCommand(commandString, client) {
     //var username = argString.split(/\s+/)[0] || 'unknown';
 
     var ServerSubscriptions =
-        require('channel/channel-server-subscriptions.js')
+        require('./channel-server-subscriptions.js')
         .ServerSubscriptions;
 
     var oldArgString = ServerSubscriptions.getClientSubscription(client, channel, mode);
@@ -109,7 +109,7 @@ function unsubscribeCommand(commandString, client) {
     var channel = match[2];
 
     var ServerSubscriptions =
-        require('channel/channel-server-subscriptions.js')
+        require('./channel-server-subscriptions.js')
         .ServerSubscriptions;
 
     var oldArgString = ServerSubscriptions.remove(client, channel, mode);
@@ -144,7 +144,7 @@ function messageClientCommand(commandString, client) {
     var message = match[4];
 
     var ServerSubscriptions =
-        require('channel/channel-server-subscriptions.js')
+        require('./channel-server-subscriptions.js')
             .ServerSubscriptions;
 
     var channelClients = ServerSubscriptions.getClients(channel, mode);
@@ -171,7 +171,7 @@ function chatChannelCommand(commandString, client) {
     //var clientInfo = getClientInfo(client);
 
     var ServerSubscriptions =
-        require('channel/channel-server-subscriptions.js')
+        require('./channel-server-subscriptions.js')
             .ServerSubscriptions;
 
     var oldArgString = ServerSubscriptions.getClientSubscription(client, channel, mode);

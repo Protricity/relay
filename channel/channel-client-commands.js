@@ -38,12 +38,12 @@ if(typeof module === 'object') (function() {
 
 
         function subscribeCommand(commandString) {
-            var match = /^(?:channel\.)?(un)?subscribe\.(\w+)?\s+(\S+)\s*([\S\s]*)$/im.exec(commandString);
+            var match = /^(?:channel\.)?(un)?subscribe(?:\.(\w+))?\s+(\S+)$/im.exec(commandString);
             if (!match)
                 return false;
 
-            var unsubscribe = match[1].toLowerCase() === 'un';
-            var mode = match[2].toLowerCase();
+            var unsubscribe = (match[1]||'').toLowerCase() === 'un';
+            var mode = (match[2] || '').toLowerCase();
             //var channel = match[3];
             //var argString = match[4];
 
@@ -52,7 +52,7 @@ if(typeof module === 'object') (function() {
             importScripts('client/settings/settings-db.js');
             var SettingsDB = self.module.exports.SettingsDB;
 
-            SettingsDB.getSettings("autorun:subscriptions", function(subscriptionSettings) {
+            SettingsDB.getSettings("onconnect:subscriptions", function(subscriptionSettings) {
                 if(typeof subscriptionSettings.commands === 'undefined')
                     subscriptionSettings.commands = [];
                 var commands = subscriptionSettings.commands;
@@ -64,15 +64,15 @@ if(typeof module === 'object') (function() {
                 }
                 if(unsubscribe) {
                     if(oldSubscriptionPos >= 0)
-                        commands[oldSubscriptionPos] = commandString;
-                    else
-                        commands.push(commandString);
-
-                } else {
-                    if(oldSubscriptionPos >= 0)
                         commands.splice(oldSubscriptionPos, 1);
                     else
                         console.error("Old subscription not found in settings");
+
+                } else {
+                    if(oldSubscriptionPos >= 0)
+                        commands[oldSubscriptionPos] = commandString;
+                    else
+                        commands.push(commandString);
                 }
                 SettingsDB.updateSettings(subscriptionSettings);
             });
@@ -91,7 +91,7 @@ if(typeof module === 'object') (function() {
             if (!match)
                 return false;
 
-            var unsubscribe = match[1].toLowerCase() === 'un';
+            var unsubscribe = (match[1]||'').toLowerCase() === 'un';
             var mode = match[2];
             var channel = match[3];
             var argString = match[4];

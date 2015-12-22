@@ -6,8 +6,8 @@
 if (!module) var module = {exports: {}};
 if (typeof self === 'undefined')
     var self = this;
-module.exports.ClientSubscriptions =
-    typeof self.ClientSubscriptions !== 'undefined' ? self.ClientSubscriptions :
+module.exports.ServerSubscriptions =
+    typeof self.ServerSubscriptions !== 'undefined' ? self.ServerSubscriptions :
 
 (function() {
     function ServerSubscriptions() {

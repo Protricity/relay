@@ -22,13 +22,26 @@ if(typeof document === 'object')
             if (result.timezone)
                 result.time_zone = result.timezone;
 
+            var channelValues = [
+                ["/timezone/" + result.time_zone, result.time_zone],
+                ["/country/" + result.country_code, result.country],
+                ["/region/" + result.region_code, result.region],
+                ["/city/" + result.city, result.city],
+                ["/zipcode/" + result.postal_code, result.postal_code],
+                ["/ip/" + result.ip, result.ip]
+            ];
+
             var channelHTML = "<lh>Recent Commands</lh>";
-            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /timezone/" + result.time_zone + "\");'><span class='command'>Subscribe</span> to <strong>" + result.time_zone + "</strong></a></li>";
-            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /country/" + result.country_code + "\");'><span class='command'>Subscribe</span> to <strong>" + result.country + "</strong></a></li>";
-            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /region/" + result.region_code + "\");'><span class='command'>Subscribe</span> to <strong>" + result.region + "</strong></a></li>";
-            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /city/" + result.city + "\");'><span class='command'>Subscribe</span> to <strong>" + result.city + "</strong></a></li>";
-            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /zipcode/" + result.postal_code + "\");'><span class='command'>Subscribe</span> to <strong>" + result.postal_code + "</strong></a></li>";
-            channelHTML += "<li><a href='javascript:Client.execute(\"SUBSCRIBE /ip/" + result.ip + "\");'><span class='command'>Subscribe</span> to <strong>" + result.ip + "</strong></a></li>";
+            for(var i=0; i<channelValues.length; i++)
+                channelHTML +=
+                    "<li>" +
+                        "<a href='javascript:Client.execute(\"SUBSCRIBE " + channelValues[i][0] + "\");'>" +
+                            "<span class='command'>Subscribe</span> " +
+                            "<strong>" +
+                                channelValues[i][1] +
+                            "</strong>" +
+                        "</a>" +
+                    "</li>";
 
             document.getElementsByClassName('command-list-recent')[0].innerHTML = channelHTML;
         };

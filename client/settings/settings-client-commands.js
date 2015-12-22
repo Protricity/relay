@@ -7,24 +7,25 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addCommand(settingsAutoStartCommand);
 
         function settingsAutoStartCommand(commandString) {
-            var match = /^(?:settings\.)?autorun/im.exec(commandString);
+            var match = /^(?:settings\.)?(autorun|onconnect)/im.exec(commandString);
             if (!match)
                 return false;
 
-            console.log("TODO: finish autojoin");
+            var subCommand = match[1].toLowerCase();
 
             self.module = {exports: {}};
             importScripts('client/settings/settings-db.js');
             var SettingsDB = self.module.exports.SettingsDB;
 
+            // TODO: on connect? or on client start?
             // Query Settings for Auto Run Scripts
-            SettingsDB.getAllSettings("autorun:*", function(autorunSettings) {
+            SettingsDB.getAllSettings(subCommand + ":*", function(eventSettings) {
 //                 console.log("Settings: ", settingsSettings);
-                if(autorunSettings
-                    && typeof autorunSettings.commands !== 'undefined') {
-                    var commands = autorunSettings.commands;
+                if(eventSettings
+                    && typeof eventSettings.commands !== 'undefined') {
+                    var commands = eventSettings.commands;
                     for(var i=0; i<commands.length; i++) {
-                        console.info("AUTORUN: " + commands[i]);
+                        console.info(subCommand.toUpperCase + ": " + commands[i]);
                         ClientWorkerThread.execute(commands[i]);
                     }
                 }

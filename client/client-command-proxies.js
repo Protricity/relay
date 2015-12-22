@@ -40,13 +40,13 @@ module.exports.initClientCommands = function(ClientWorkerThread) {
     }
 
     // Chat/Channel Commands
-    ClientWorkerThread.addCommand(importChatCommands);
-    ClientWorkerThread.addResponse(importChatCommands);
-    function importChatCommands(commandString, e) {
+    ClientWorkerThread.addCommand(importChannelCommands);
+    ClientWorkerThread.addResponse(importChannelCommands);
+    function importChannelCommands(commandString, e) {
         if(!/^(channel|subscribe|unsubscribe|message|chat|userlist)/i.test(commandString))
             return false;
-        ClientWorkerThread.removeCommand(importChatCommands);
-        ClientWorkerThread.removeResponse(importChatCommands);
+        ClientWorkerThread.removeCommand(importChannelCommands);
+        ClientWorkerThread.removeResponse(importChannelCommands);
         importScripts('channel/channel-client-commands.js');
         module.exports.initClientChannelCommands(ClientWorkerThread);
 //         console.info("Loaded: channel/channel-client-commands.js");
@@ -59,8 +59,8 @@ module.exports.initClientCommands = function(ClientWorkerThread) {
     function importClientUICommands(commandString, e) {
         if(!/^(ui|contacts)/i.test(commandString))
             return false;
-        ClientWorkerThread.removeCommand(importChatCommands);
-        ClientWorkerThread.removeResponse(importChatCommands);
+        ClientWorkerThread.removeCommand(importClientUICommands);
+        ClientWorkerThread.removeResponse(importClientUICommands);
         importScripts('client/ui/ui-commands.js');
         module.exports.initClientUICommands(ClientWorkerThread);
 //         console.info("Loaded: channel/channel-client-commands.js");

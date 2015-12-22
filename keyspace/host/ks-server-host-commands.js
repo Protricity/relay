@@ -3,10 +3,10 @@
  */
 if(typeof module === 'object') (function() {
     module.exports.initSocketServerHostCommands = function (SocketServer) {
-        SocketServer.addCommand(ksHostCommandSocket);
-        SocketServer.addCommand(ksValidateCommandSocket);
+        SocketServer.addCommand(ksHostSocketCommand);
+        SocketServer.addCommand(ksValidateSocketCommand);
         SocketServer.addCommand(ksHandleHTTPSocketResponse);
-        SocketServer.addCommand(ksHostStatusCommandSocket);
+        SocketServer.addCommand(ksHostStatusSocketCommand);
 
 
         SocketServer.addClientEventListener('close', ksSocketClientCloseListener);
@@ -57,8 +57,8 @@ function sendToKeySpaceSubscribers(pgp_id_public, commandString) {
     }
 }
 
-function ksHostStatusCommandSocket(commandString, client) {
-    var match = /^keyspace\.host\.(un)?subscribe\s*([a-f0-9 ]{8,})?$/i.exec(commandString);
+function ksHostStatusSocketCommand(commandString, client) {
+    var match = /^keyspace\.host\.(un)?subscribe\s+([a-f0-9 ]{8,})?$/i.exec(commandString);
     if(!match)
         return false;
 
@@ -90,7 +90,7 @@ function ksHostStatusCommandSocket(commandString, client) {
 }
 
 
-function ksHostCommandSocket(commandString, client) {
+function ksHostSocketCommand(commandString, client) {
     var match = /^keyspace\.host(\.online|\.offline)?\s+([a-f0-9]{16})$/i.exec(commandString);
     if(!match)
         return false;
@@ -152,7 +152,7 @@ function ksHostCommandSocket(commandString, client) {
     return true;
 }
 
-function ksValidateCommandSocket(commandString, client) {
+function ksValidateSocketCommand(commandString, client) {
     var match = /^keyspace\.host.validate\s+(.*)?$/i.exec(commandString);
     if(!match)
         return false;
