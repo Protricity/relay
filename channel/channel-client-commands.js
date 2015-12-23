@@ -29,50 +29,64 @@ if(typeof module === 'object') (function() {
 
         //ClientWorkerThread.addResponse(nickResponse);
 
-        var ClientSubscriptions = self.ClientSubscriptions || (function() {
+        var ChannelClientSubscriptions = self.ChannelClientSubscriptions || (function() {
             self.module = {exports: {}};
             importScripts('channel/channel-client-subscriptions.js');
-            return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
+            return self.ChannelClientSubscriptions = self.module.exports.ChannelClientSubscriptions;
         })();
 
 
 
         function subscribeCommand(commandString) {
-            var match = /^(?:channel\.)?(un)?subscribe(?:\.(\w+))?\s+(\S+)$/im.exec(commandString);
+            var match = /^(?:channel\.)?(un)?subscribe(?:\.(\w+))?\s+(\S+)\s*([\s\S]+)?$/im.exec(commandString);
             if (!match)
                 return false;
 
             var unsubscribe = (match[1]||'').toLowerCase() === 'un';
             var mode = (match[2] || '').toLowerCase();
-            //var channel = match[3];
-            //var argString = match[4];
+            var channel = match[3];
+            var argString = match[4];
+//             console.log(match);
 
             // Update Settings
             self.module = {exports: {}};
             importScripts('client/settings/settings-db.js');
             var SettingsDB = self.module.exports.SettingsDB;
 
+            var settingsCommandStringPrefix = "CHANNEL.SUBSCRIBE" + (mode ? '.' + mode.toUpperCase() : '') + ' ' + channel;
+            var settingsCommandString = settingsCommandStringPrefix + (argString ? ' ' + argString : "");
             SettingsDB.getSettings("onconnect:subscriptions", function(subscriptionSettings) {
                 if(typeof subscriptionSettings.commands === 'undefined')
                     subscriptionSettings.commands = [];
                 var commands = subscriptionSettings.commands;
                 var oldSubscriptionPos = -1;
                 for(var i=0; i<commands.length; i++) {
-                    match = /^(?:channel\.)?subscribe\.(\w+)/i.exec(commands[i]);
-                    if(match && match[1].toLowerCase() === mode)
+                    if(commands[i].indexOf(settingsCommandStringPrefix) === 0)
                         oldSubscriptionPos = i;
+                    //match = /^(?:channel\.)?subscribe(?:\.(\w+))?/i.exec(commands[i]);
+                    //if(match && (match[1] || '').toLowerCase() === mode)
+                    //    oldSubscriptionPos = i;
                 }
                 if(unsubscribe) {
-                    if(oldSubscriptionPos >= 0)
+                    if(oldSubscriptionPos >= 0) {
+                        console.log("Removing Auto-Subscription: ", settingsCommandStringPrefix);
                         commands.splice(oldSubscriptionPos, 1);
-                    else
+                    } else {
                         console.error("Old subscription not found in settings");
+                    }
 
                 } else {
-                    if(oldSubscriptionPos >= 0)
-                        commands[oldSubscriptionPos] = commandString;
-                    else
-                        commands.push(commandString);
+                    if(oldSubscriptionPos >= 0) {
+                        if(commands[oldSubscriptionPos] !== settingsCommandStringPrefix) {
+                            console.log("Replacing Auto-Subscription (" + oldSubscriptionPos + "): ", settingsCommandStringPrefix);
+                            commands[oldSubscriptionPos] = settingsCommandStringPrefix;
+                        } else {
+                            //console.log("Ignoring unchanged Auto-Subscription (" + oldSubscriptionPos + "): ", settingsCommandStringPrefix);
+                        }
+                    } else {
+                        console.log("Adding Auto-Subscription: ", settingsCommandStringPrefix);
+                        commands.push(settingsCommandStringPrefix);
+                    }
                 }
                 SettingsDB.updateSettings(subscriptionSettings);
             });
@@ -87,20 +101,28 @@ if(typeof module === 'object') (function() {
         // CHANNEL.CHAT /state/az omg u guiez
         // CHAT /state/az omg u guiez
         function subscribeResponse(responseString) {
-            var match = /^channel\.(un)?subscribe\.(\w+)?\s+(\S+)\s*([\S\s]*)$/im.exec(responseString);
+            var match = /^channel\.(un|re)?subscribe\.(\w+)?\s+(\S+)\s*([\S\s]*)$/im.exec(responseString);
             if (!match)
                 return false;
 
-            var unsubscribe = (match[1]||'').toLowerCase() === 'un';
+            var prefix = (match[1]||'').toLowerCase();
             var mode = match[2];
             var channel = match[3];
             var argString = match[4];
 
-            if(!unsubscribe) {
-                ClientSubscriptions.add(channel, mode, argString);
+            if(prefix === 'un') {
+                if(ChannelClientSubscriptions.remove(channel, mode, argString))
+                    console.log("Channel subscription removed: ", responseString);
+
+            } else if(prefix === 're') {
+                if(ChannelClientSubscriptions.replace(channel, mode, argString))
+                    console.log("Channel subscription replaced: ", responseString);
+                else
+                    console.error("Failed to replace channel subscription: ", responseString);
 
             } else {
-                ClientSubscriptions.remove(channel, mode, argString);
+                if(ChannelClientSubscriptions.add(channel, mode, argString))
+                    console.log("Channel subscription: ", responseString);
             }
 
             ClientWorkerThread.processResponse("EVENT CHANNEL.SUBSCRIPTION.UPDATE " + channel + " " + mode + " " + argString);
@@ -122,8 +144,8 @@ if(typeof module === 'object') (function() {
             if (!match)
                 return false;
 
-            var channelPath = match[1];
-            renderChatWindow(channelPath);
+            var channel = match[1];
+            renderChatWindow(channel);
             //console.info("Channel has Activity: " + channelPath);
 
             getChatExports().renderChatMessage(responseString, function (html) {
@@ -140,13 +162,17 @@ if(typeof module === 'object') (function() {
             var mode = match[1];
             var channel = match[2];
             var subscriptionList = match[3].split(/\s+/img);
-            //renderChatWindow(channelPath);
 
-            ClientSubscriptions.setChannelSubscriptionList(channel, mode, subscriptionList);
+            ChannelClientSubscriptions.setChannelSubscriptionList(channel, mode, subscriptionList);
 
-            getChatExports().renderChatUserList(channel, subscriptionList, function (html) {
-                ClientWorkerThread.render(html);
-            });
+            switch(mode.toLowerCase()) {
+                case 'chat':
+                    renderChatWindow(channel);
+                    getChatExports().renderChatUserList(channel, subscriptionList, function (html) {
+                        ClientWorkerThread.render(html);
+                    });
+                    break;
+            }
             return true;
         }
 

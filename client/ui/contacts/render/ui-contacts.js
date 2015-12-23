@@ -9,6 +9,98 @@ if(typeof module !== 'object')
 (function() {
 
     module.exports.renderUIContactList = renderUIContactList;
+    module.exports.renderUIContactListIdentities = renderUIContactListIdentities;
+    module.exports.renderUIContactListContacts = renderUIContactListContacts;
+    module.exports.renderUIContactListSubscriptions = renderUIContactListSubscriptions;
+
+
+    function renderUIContactListIdentities(callback) {
+
+        self.module = {exports: {}};
+        importScripts('keyspace/ks-db.js');
+        var KeySpaceDB = self.module.exports.KeySpaceDB;
+
+        self.module = {exports: {}};
+        importScripts('client/settings/settings-db.js');
+        var SettingsDB = self.module.exports.SettingsDB;
+
+        self.module = {exports: {}};
+        importScripts('channel/channel-client-subscriptions.js');
+        var ChannelClientSubscriptions = self.module.exports.ChannelClientSubscriptions;
+
+        var html_public_key_entries = '';
+
+        var subscriptionList = {};
+        ChannelClientSubscriptions.getChannelClientSubscriptions(function(channel, mode, argString) {
+            if(typeof subscriptionList[channel.toLowerCase()] === 'undefined')
+                subscriptionList[channel.toLowerCase()] = {modes:{}};
+            var channelData = subscriptionList[channel.toLowerCase()];
+            channelData.modes[mode.toLowerCase()] = argString;
+        });
+
+        console.log(subscriptionList);
+
+        // Query public keys
+        var path = 'public/id';
+        KeySpaceDB.queryAll(path, function(err, contentEntry) {
+            if(err)
+                throw new Error(err);
+
+            if(contentEntry) {
+                var socketHost = KeySpaceDB.getSocketHost(contentEntry.pgp_id_public);
+                var hostingStatus = socketHost !== null ? 'online' : 'offline' ;
+                //var hostingCommand = socketHost !== null ? 'offline' : 'online';
+
+                // TODO: get socket user name
+                var html_commands =
+                    "<a href='javascript:Client.execute(\"MESSAGE " + contentEntry.pgp_id_public + "\");'>" +
+                        "<span class='command'>Message</span> " + // contentEntry.user_id +
+                    "</a>" +
+                    "<a href='javascript:Client.execute(\"CHANLIST " + contentEntry.pgp_id_public + "\");'>" +
+                        "<span class='command'>ChanList</span>" +
+                    "</a>" +
+                    "<a href='javascript:Client.execute(\"GET " + contentEntry.pgp_id_public + "\");'>" +
+                        "<span class='command'>Get</span>" +
+                    "</a>" +
+                    "<br/>" +
+                    "<a href='javascript:Client.execute(\"GET " + contentEntry.pgp_id_public + "/public/profile\");'>" +
+                        "<span class='command'>Profile</span>" +
+                    "</a>" +
+                    "<a href='javascript:Client.execute(\"PGP.EXPORT --with " + contentEntry.pgp_id_public + "\");'>" +
+                        "<span class='command'>Export</span>" + // Key" +
+                    "</a>" +
+                    "<a href='javascript:Client.execute(\"PGP.DELETE " + contentEntry.pgp_id_public + "\");'>" +
+                        "<span class='command'>Delete</span>" +
+                    "</a>";
+
+                renderUIContactListEntry(
+                    contentEntry.user_id,
+                    contentEntry.pgp_id_public +
+                    ' <span class="' + hostingStatus.toLowerCase() + '">' +
+                    hostingStatus.toLowerCase() +
+                    '</span>',
+                    'client/ui/contacts/render/icons/user_icon_default.png',
+                    'public-key',
+                    html_commands,
+                    function(html) {
+                        html_public_key_entries += html;
+                    });
+
+            } else {
+                callback(html_public_key_entries);
+            }
+        });
+
+    }
+
+    function renderUIContactListContacts(callback) {
+
+    }
+
+    function renderUIContactListSubscriptions(callback) {
+
+    }
+
     function renderUIContactList(callback) {
 
         self.module = {exports: {}};
@@ -21,7 +113,7 @@ if(typeof module !== 'object')
 
         self.module = {exports: {}};
         importScripts('channel/channel-client-subscriptions.js');
-        var ClientSubscriptions = self.module.exports.ClientSubscriptions;
+        var ChannelClientSubscriptions = self.module.exports.ChannelClientSubscriptions;
 
         var TEMPLATE_URL = "client/ui/contacts/render/ui-contacts.html";
 
@@ -31,6 +123,16 @@ if(typeof module !== 'object')
         var html_channel_entries = '';
         var html_command_options = '';
         var status_box = '';
+
+        var subscriptionList = {};
+        ChannelClientSubscriptions.getChannelClientSubscriptions(function(channel, mode, argString) {
+            if(typeof subscriptionList[channel.toLowerCase()] === 'undefined')
+                subscriptionList[channel.toLowerCase()] = {modes:{}};
+            var channelData = subscriptionList[channel.toLowerCase()];
+            channelData.modes[mode.toLowerCase()] = argString;
+        });
+
+        console.log(subscriptionList);
 
         // Query public keys
         var path = 'public/id';
@@ -133,14 +235,15 @@ if(typeof module !== 'object')
 
                     } else {
 
+                        //
+                        //// Check Nick
+                        //SettingsDB.getSettings("channel.nick", function(nickSettings) {
+                        //    if(nickSettings && nickSettings.username) {
+                        //        nick_value = nickSettings.username;
+                        //    }
+                        //
+                        //});
 
-                        // Check Nick
-                        SettingsDB.getSettings("channel.nick", function(nickSettings) {
-                            if(nickSettings && nickSettings.username) {
-                                nick_value = nickSettings.username;
-                            }
-
-                        });
 
                         // Query Auto Join Channels
                         SettingsDB.getAllSettings("channel:*", function(channelSettings) {

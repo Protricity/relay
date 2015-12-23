@@ -14,8 +14,8 @@ module.exports.SocketServer = SocketServer;
 
 SocketServer.DEFAULT_PORTS = 7314;
 
-SocketServer.VERSION = 5;
-SocketServer.VERSION_STRING = '0.5a';
+SocketServer.VERSION = 6;
+SocketServer.VERSION_STRING = '0.6a';
 
 function SocketServer() {
 

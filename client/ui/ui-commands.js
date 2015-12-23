@@ -49,8 +49,8 @@ if(typeof module === 'object') (function() {
 
                     } else {
                         if(activeContactList.length)
-                            ClientWorkerThread.sendWithSocket("KEYSPACE.HOST.SUBSCRIBE " + activeContactList.join(" "));
-                        
+                            ClientWorkerThread.sendWithSocket("SUBSCRIBE.STATUS " + activeContactList.join(" "));
+
                     }
                 });
             }

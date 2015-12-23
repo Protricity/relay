@@ -50,6 +50,9 @@ function ClientSockets(socketURL) {
                 newSocket.url
             );
 
+            // TODO: rename onconnect?
+            ClientWorkerThread.execute("SETTINGS.ONCONNECT " + socketURL);
+
             //setTimeout(function () {
             //    newSocket.send("NICK relay" + Date.now().toString().substr(6));
             //}, 500);
@@ -88,6 +91,9 @@ function ClientSockets(socketURL) {
                 "<span class='action'>SOCKET CLOSED</span>: " +
                 newSocket.url
             );
+
+            // TODO: rename onconnect?
+            ClientWorkerThread.execute("SETTINGS.ONDISCONNECT " + socketURL);
 
             ClientSockets.refreshSocketsWindow();
         }

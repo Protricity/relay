@@ -6,18 +6,18 @@
 if (!module) var module = {exports: {}};
 if (typeof self === 'undefined')
     var self = this;
-module.exports.ClientSubscriptions =
-    typeof self.ClientSubscriptions !== 'undefined' ? self.ClientSubscriptions :
+module.exports.ChannelClientSubscriptions =
+    typeof self.ChannelClientSubscriptions !== 'undefined' ? self.ChannelClientSubscriptions :
 
 (function() {
 
-    function ClientSubscriptions() {
+    function ChannelClientSubscriptions() {
 
     }
 
     var channels = {};
 
-    ClientSubscriptions.setChannelSubscriptionList = function(channel, mode, subscriptionList) {
+    ChannelClientSubscriptions.setChannelSubscriptionList = function(channel, mode, subscriptionList) {
         //subscriptionList = subscriptionList.filter(function (value, index, self) {
         //    return self.indexOf(value) === index;
         //}); // TODO: unique necessary?
@@ -31,20 +31,38 @@ module.exports.ClientSubscriptions =
         channelSubscriptions[mode.toLowerCase()] = subscriptionList;
     };
 
-    ClientSubscriptions.add = function(channel, mode, argString) {
+    ChannelClientSubscriptions.add = function(channel, mode, argString) {
         if(typeof channels[channel.toLowerCase()] === 'undefined')
             channels[channel.toLowerCase()] = {};
         var channelSubscriptions = channels[channel.toLowerCase()];
         if(typeof channelSubscriptions[mode.toLowerCase()] === 'undefined')
             channelSubscriptions[mode.toLowerCase()] = [];
         var channelModeSubscriptions = channelSubscriptions[mode.toLowerCase()];
-        if(channelModeSubscriptions.indexOf(argString) >= 0)
+        if(channelModeSubscriptions.indexOf(argString) === 0)
             return false;
         channelModeSubscriptions.push(argString);
         return true;
     };
 
-    ClientSubscriptions.remove = function(channel, mode, argString) {
+    ChannelClientSubscriptions.replace = function(channel, mode, argString) {
+        var split = argString.split(' ');
+        var oldArgStringPrefix = split.shift();
+        argString = split.join(' ');
+
+        if(typeof channels[channel.toLowerCase()] === 'undefined')
+            throw new Error("Failed to replace. No such channel: " + channel);
+        var channelSubscriptions = channels[channel.toLowerCase()];
+        if(typeof channelSubscriptions[mode.toLowerCase()] === 'undefined')
+            throw new Error("Failed to replace. No such channel/mode: " + channel + " " + mode);
+        var channelModeSubscriptions = channelSubscriptions[mode.toLowerCase()];
+        var pos = channelModeSubscriptions.indexOf(oldArgStringPrefix);
+        if(pos === -1)
+            throw new Error("Failed to replace. Old subscription prefix not found: " + oldArgStringPrefix);
+        channelModeSubscriptions[pos] = argString;
+        return true;
+    };
+
+    ChannelClientSubscriptions.remove = function(channel, mode, argString) {
         if(typeof channels[channel.toLowerCase()] === 'undefined')
             return false;
         var channelSubscriptions = channels[channel.toLowerCase()];
@@ -58,7 +76,7 @@ module.exports.ClientSubscriptions =
         return true;
     };
 
-    ClientSubscriptions.getClients = function(channel, mode) {
+    ChannelClientSubscriptions.getClients = function(channel, mode) {
         if(typeof channels[channel.toLowerCase()] === 'undefined')
             return [];
         var channelSubscriptions = channels[channel.toLowerCase()];
@@ -68,7 +86,7 @@ module.exports.ClientSubscriptions =
         return channelModeSubscriptions.slice();
     };
 
-    ClientSubscriptions.getClientSubscription = function(channel, mode, argPrefix) {
+    ChannelClientSubscriptions.getChannelClientSubscription = function(channel, mode, argPrefix) {
         if(typeof channels[channel.toLowerCase()] === 'undefined')
             return null;
         var channelSubscriptions = channels[channel.toLowerCase()];
@@ -83,7 +101,7 @@ module.exports.ClientSubscriptions =
         return null;
     };
 
-    ClientSubscriptions.getClientSubscriptions = function(callback) {
+    ChannelClientSubscriptions.getChannelClientSubscriptions = function(callback) {
         // TODO: inefficient?
         var count = 0;
         for(var channelName in channels) {
@@ -102,5 +120,5 @@ module.exports.ClientSubscriptions =
         return count;
     };
 
-    return ClientSubscriptions;
+    return ChannelClientSubscriptions;
 })();

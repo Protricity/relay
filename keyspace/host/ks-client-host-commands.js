@@ -9,6 +9,13 @@ if(typeof module === 'object') (function() {
 
         ClientWorkerThread.addResponse(ksChallengeResponse);
 
+
+        var KeySpaceClientSubscriptions = self.KeySpaceClientSubscriptions || (function() {
+            self.module = {exports: {}};
+            importScripts('keyspace/ks-client-subscriptions.js');
+            return self.KeySpaceClientSubscriptions = self.module.exports.KeySpaceClientSubscriptions;
+        })();
+
         function ksAutoHostCommand(commandString) {
             var match = /^(?:keyspace\.)?host\.auto$/i.exec(commandString);
             if (!match)
@@ -77,6 +84,42 @@ if(typeof module === 'object') (function() {
                 }
 
             });
+            return true;
+        }
+
+
+        // CHANNEL.SUBSCRIBE.CHAT /state/az guest123
+        // CHANNEL.SUBSCRIBE.CHAT /state/az guest123
+        // CHANNEL.CHAT /state/az omg u guiez
+        // CHAT /state/az omg u guiez
+        function ksHostResponse(responseString) {
+            var match = /^keyspace\.(un|re)?subscribe\.(\w+)?\s+([a-f0-9]{8,16})$/im.exec(responseString);
+            if (!match)
+                return false;
+
+            var prefix = (match[1] || '').toLowerCase();
+            var mode = match[2];
+            var pgp_id_public = match[3];
+            pgp_id_public = pgp_id_public.substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+
+            var webSocket = e.target;
+            if(prefix === 'un') {
+                if(KeySpaceClientSubscriptions.remove(pgp_id_public, mode, webSocket))
+                    console.log("KeySpace subscription removed: ", responseString);
+
+            } else if(prefix === 're') {
+                if(KeySpaceClientSubscriptions.replace(pgp_id_public, mode, webSocket))
+                    console.log("KeySpace subscription replaced: ", responseString);
+                else
+                    console.error("Failed to replace KeySpace subscription: ", responseString);
+
+            } else {
+                if(KeySpaceClientSubscriptions.add(pgp_id_public, mode, webSocket))
+                    console.log("KeySpace subscription: ", responseString);
+            }
+
+            ClientWorkerThread.processResponse("EVENT KEYSPACE.SUBSCRIPTION.UPDATE " + pgp_id_public + " " + mode + " " + argString);
+
             return true;
         }
 

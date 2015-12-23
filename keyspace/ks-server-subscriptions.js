@@ -6,16 +6,16 @@
 if (!module) var module = {exports: {}};
 if (typeof self === 'undefined')
     var self = this;
-module.exports.ChannelServerSubscriptions =
-    typeof self.ChannelServerSubscriptions !== 'undefined' ? self.ChannelServerSubscriptions :
+module.exports.KeySpaceServerSubscriptions =
+    typeof self.KeySpaceServerSubscriptions !== 'undefined' ? self.KeySpaceServerSubscriptions :
 
 (function() {
-    function ChannelServerSubscriptions() {
+    function KeySpaceServerSubscriptions() {
 
     }
 
     var channels = {};
-    ChannelServerSubscriptions.add = function(client, channel, mode, argString) {
+    KeySpaceServerSubscriptions.add = function(client, channel, mode, argString) {
         if(typeof channels[channel.toLowerCase()] === 'undefined')
             channels[channel.toLowerCase()] = {};
         var channelSubscriptions = channels[channel.toLowerCase()];
@@ -35,7 +35,7 @@ module.exports.ChannelServerSubscriptions =
         return true;
     };
 
-    ChannelServerSubscriptions.remove = function(client, channel, mode) {
+    KeySpaceServerSubscriptions.remove = function(client, channel, mode) {
         if(typeof channels[channel.toLowerCase()] === 'undefined')
             return false;
         var channelSubscriptions = channels[channel.toLowerCase()];
@@ -53,7 +53,7 @@ module.exports.ChannelServerSubscriptions =
         return false;
     };
 
-    ChannelServerSubscriptions.getClients = function(channel, mode) {
+    KeySpaceServerSubscriptions.getClients = function(channel, mode) {
         if(typeof channels[channel.toLowerCase()] === 'undefined')
             return [];
         var channelSubscriptions = channels[channel.toLowerCase()];
@@ -64,7 +64,7 @@ module.exports.ChannelServerSubscriptions =
         return channelModeSubscriptions.slice();
     };
 
-    ChannelServerSubscriptions.getChannelClientSubscription = function(client, channel, mode) {
+    KeySpaceServerSubscriptions.getChannelClientSubscription = function(client, channel, mode) {
         if(typeof channels[channel.toLowerCase()] === 'undefined')
             return null;
         var channelSubscriptions = channels[channel.toLowerCase()];
@@ -80,7 +80,7 @@ module.exports.ChannelServerSubscriptions =
         return null;
     };
 
-    ChannelServerSubscriptions.getChannelClientSubscriptions = function(client, callback) {
+    KeySpaceServerSubscriptions.getChannelClientSubscriptions = function(client, callback) {
         // TODO: inefficient?
         var count = 0;
         for(var channelName in channels) {
@@ -101,5 +101,5 @@ module.exports.ChannelServerSubscriptions =
         return count;
     };
 
-    return ChannelServerSubscriptions;
+    return KeySpaceServerSubscriptions;
 })();

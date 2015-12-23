@@ -25,7 +25,7 @@ if(typeof module === 'object') (function() {
                     && typeof eventSettings.commands !== 'undefined') {
                     var commands = eventSettings.commands;
                     for(var i=0; i<commands.length; i++) {
-                        console.info(subCommand.toUpperCase + ": " + commands[i]);
+//                         console.info(subCommand.toUpperCase() + ": " + commands[i]);
                         ClientWorkerThread.execute(commands[i]);
                     }
                 }

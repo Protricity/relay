@@ -6,41 +6,16 @@ if(typeof module === 'object') (function() {
         SocketServer.addCommand(ksHostSocketCommand);
         SocketServer.addCommand(ksValidateSocketCommand);
         SocketServer.addCommand(ksHandleHTTPSocketResponse);
-        SocketServer.addCommand(ksHostStatusSocketCommand);
+        //SocketServer.addCommand(ksHostStatusSocketCommand);
 
 
-        SocketServer.addClientEventListener('close', ksSocketClientCloseListener);
+        //SocketServer.addClientEventListener('close', ksSocketClientCloseListener);
     };
 })();
 
 var keySpaceClients = {};
 var keySpaceChallenges = {};
 var keySpaceSubscribers = [];
-
-function ksSocketClientCloseListener() {
-    var client = this;
-    console.info("KeySpace Client Closed: ", typeof client);
-
-    for(var pgp_id_public in keySpaceClients) {
-        if(keySpaceClients.hasOwnProperty(pgp_id_public)) {
-            var clients = keySpaceClients[pgp_id_public];
-            for(var i=0; i<clients.length; i++) {
-                if(clients[i].readyState !== client.OPEN
-                    || clients[i] === client) {
-                    clients.splice(i--, 1);
-                }
-            }
-
-            if(clients.length === 0) {
-                delete keySpaceClients[pgp_id_public];
-                sendToKeySpaceSubscribers(pgp_id_public, "KEYSPACE.HOST.OFFLINE " + pgp_id_public);
-            }
-        }
-    }
-    //SocketServer.addEventListener('connection', function(client) {
-    //    httpCommand("GET", client);
-    //});
-}
 
 function sendToKeySpaceSubscribers(pgp_id_public, commandString) {
     if(typeof keySpaceSubscribers[pgp_id_public] !== 'undefined') {
@@ -56,40 +31,6 @@ function sendToKeySpaceSubscribers(pgp_id_public, commandString) {
         console.info("O" + subscribers.length + " " + commandString);
     }
 }
-
-function ksHostStatusSocketCommand(commandString, client) {
-    var match = /^keyspace\.host\.(un)?subscribe\s+([a-f0-9 ]{8,})$/i.exec(commandString);
-    if(!match)
-        return false;
-    console.info("I " + commandString);
-
-    var unsubscribe = match[1] ? true : false;
-    var uids = match[2].split(' ');
-
-    for(var i=0; i<uids.length; i++) {
-        var uid = uids[i].toUpperCase();
-
-        var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
-
-        uid = uid.substr(uid.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
-        if(uid < KeySpaceDB.DB_PGP_KEY_LENGTH)
-            throw new Error("Invalid PGP Key ID Length (" + KeySpaceDB.DB_PGP_KEY_LENGTH + "): " + uid);
-
-        if(typeof keySpaceSubscribers[uid] === 'undefined')
-            keySpaceSubscribers[uid] = [];
-
-        var pos = keySpaceSubscribers[uid].indexOf(client);
-        if(pos === -1 && !unsubscribe) {
-            client.send("INFO Subscribed to KeySpace: " + uid);
-            keySpaceSubscribers[uid].push(client);
-        } else if(pos >= 0 && unsubscribe) {
-            client.send("INFO Unsubscribed to KeySpace: " + uid);
-            keySpaceSubscribers[uid].splice(pos, 1);
-        }
-    }
-    return true;
-}
-
 
 function ksHostSocketCommand(commandString, client) {
     var match = /^keyspace\.host(\.online|\.offline)?\s+([a-f0-9]{16})$/i.exec(commandString);
@@ -336,3 +277,63 @@ function generateUID(format) {
         return v.toString(16);
     });
 }
+
+//function ksSocketClientCloseListener() {
+//    var client = this;
+//    console.info("KeySpace Client Closed: ", typeof client);
+//
+//    for(var pgp_id_public in keySpaceClients) {
+//        if(keySpaceClients.hasOwnProperty(pgp_id_public)) {
+//            var clients = keySpaceClients[pgp_id_public];
+//            for(var i=0; i<clients.length; i++) {
+//                if(clients[i].readyState !== client.OPEN
+//                    || clients[i] === client) {
+//                    clients.splice(i--, 1);
+//                }
+//            }
+//
+//            if(clients.length === 0) {
+//                delete keySpaceClients[pgp_id_public];
+//                sendToKeySpaceSubscribers(pgp_id_public, "KEYSPACE.HOST.OFFLINE " + pgp_id_public);
+//            }
+//        }
+//    }
+//    //SocketServer.addEventListener('connection', function(client) {
+//    //    httpCommand("GET", client);
+//    //});
+//}
+
+
+//function ksHostStatusSocketCommand(commandString, client) {
+//    var match = /^keyspace\.host\.(un)?subscribe\s+([a-f0-9 ]{8,})$/i.exec(commandString);
+//    if(!match)
+//        return false;
+//    console.info("I " + commandString);
+//
+//    var unsubscribe = match[1] ? true : false;
+//    var uids = match[2].split(' ');
+//
+//    for(var i=0; i<uids.length; i++) {
+//        var uid = uids[i].toUpperCase();
+//
+//        var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
+//
+//        uid = uid.substr(uid.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+//        if(uid < KeySpaceDB.DB_PGP_KEY_LENGTH)
+//            throw new Error("Invalid PGP Key ID Length (" + KeySpaceDB.DB_PGP_KEY_LENGTH + "): " + uid);
+//
+//        if(typeof keySpaceSubscribers[uid] === 'undefined')
+//            keySpaceSubscribers[uid] = [];
+//
+//        var pos = keySpaceSubscribers[uid].indexOf(client);
+//        if(pos === -1 && !unsubscribe) {
+//            client.send("INFO Subscribed to KeySpace: " + uid);
+//            keySpaceSubscribers[uid].push(client);
+//        } else if(pos >= 0 && unsubscribe) {
+//            client.send("INFO Unsubscribed to KeySpace: " + uid);
+//            keySpaceSubscribers[uid].splice(pos, 1);
+//        }
+//    }
+//    return true;
+//}
+
