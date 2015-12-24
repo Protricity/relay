@@ -21,7 +21,7 @@ module.exports.ClientSubscriptions =
     // CHANNEL.SUBSCRIBE.CHAT /state/az guest123
     // KEYSPACE.SUBSCRIBE.GET ABCD1234 <-- host keyspace content
     // KEYSPACE.SUBSCRIBE.PUT ABCD1234 <-- host keyspace service
-    ClientSubscriptions.add = function(subscriptionString) {
+    ClientSubscriptions.handleSubscription = function(subscriptionString) {
         var match = /^(\w+)\.(|un|re)subscribe\.(\w+)\s+(\S+)/im.exec(subscriptionString);
         if (!match)
             throw new Error("Invalid Subscription: " + subscriptionString);

@@ -104,7 +104,7 @@ if(typeof module === 'object') (function() {
             if (!match)
                 return false;
 
-            ClientSubscriptions.add(responseString);
+            ClientSubscriptions.handleSubscription(responseString);
             ClientWorkerThread.processResponse("EVENT " + responseString); // CHANNEL.SUBSCRIPTION.UPDATE " + channel + " " + mode + " " + argString);
 
             return true;

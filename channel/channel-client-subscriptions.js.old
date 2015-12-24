@@ -31,7 +31,7 @@ module.exports.ChannelClientSubscriptions =
         channelSubscriptions[mode.toLowerCase()] = subscriptionList;
     };
 
-    ChannelClientSubscriptions.add = function(channel, mode, argString) {
+    ChannelClientSubscriptions.handleSubscription = function(channel, mode, argString) {
         if(typeof channels[channel.toLowerCase()] === 'undefined')
             channels[channel.toLowerCase()] = {};
         var channelSubscriptions = channels[channel.toLowerCase()];
