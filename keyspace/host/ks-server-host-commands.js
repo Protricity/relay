@@ -33,31 +33,31 @@ function sendToKeySpaceSubscribers(pgp_id_public, commandString) {
 }
 
 function ksHostSocketCommand(commandString, client) {
-    var match = /^keyspace\.host(\.online|\.offline)?\s+([a-f0-9]{16})$/i.exec(commandString);
+    var match = /^keyspace\.(un)?host\.(get|put|post|status)?\s+([a-f0-9]{8,})$/i.exec(commandString);
     if(!match)
         return false;
 
     if(client.readyState !== client.OPEN)
         throw new Error("Client is not open");
 
-    var onlineStatus = (match[1] || '').toLowerCase() !== '.offline';
-    var pgp_id_public = match[2];
-    pgp_id_public = pgp_id_public.substr(pgp_id_public.length - 8).toUpperCase();
+    var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
+
+    var prefix = (match[1] || '').toLowerCase();
+    var hostMode = (match[2] || '').toLowerCase();
+    var pgp_id_public = match[3];
+    pgp_id_public = pgp_id_public.substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH).toUpperCase();
+
 
     if(typeof keySpaceClients[pgp_id_public] === 'undefined')
         keySpaceClients[pgp_id_public] = [];
 
     var clientEntries = keySpaceClients[pgp_id_public];
-    if(onlineStatus) {
+    if(prefix !== 'un') {
         if(clientEntries.indexOf(client) >= 0) {
             client.send("KEYSPACE.HOST.ONLINE " + pgp_id_public);
             client.send("ERROR Already hosting key space: " + pgp_id_public);
             throw new Error("Already hosting key space: " + pgp_id_public);
         }
-
-        // Generate new challenge
-        var hostCode = generateUID('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx');
-        keySpaceChallenges[hostCode] = pgp_id_public;
 
         requestClientPublicKey(pgp_id_public, client, function(err, publicKey) {
             if(err) {
@@ -67,6 +67,10 @@ function ksHostSocketCommand(commandString, client) {
 
             if(typeof openpgp === 'undefined')
                 var openpgp = require('openpgp');
+
+            // Generate new challenge
+            var hostCode = generateUID('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx');
+            keySpaceChallenges[hostCode] = pgp_id_public;
 
             openpgp.encryptMessage(publicKey, hostCode)
                 .then(function(encryptedMessage) {

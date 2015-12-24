@@ -24,14 +24,21 @@ if(typeof module !== 'object')
         importScripts('client/settings/settings-db.js');
         var SettingsDB = self.module.exports.SettingsDB;
 
-        self.module = {exports: {}};
-        importScripts('channel/channel-client-subscriptions.js');
-        var ChannelClientSubscriptions = self.module.exports.ChannelClientSubscriptions;
+
+        var ClientSubscriptions = self.ClientSubscriptions || (function() {
+            self.module = {exports: {}};
+            importScripts('client/subscriptions/client-subscriptions.js');
+            return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
+        })();
 
         var html_public_key_entries = '';
 
+
+
         var subscriptionList = {};
-        ChannelClientSubscriptions.getChannelClientSubscriptions(function(channel, mode, argString) {
+        // CHANNEL.SUBSCRIBE.CHAT /channel guest1234 <-- chat
+        // CHANNEL.SUBSCRIBE.IDENTIFY /channel ABCD1234 <-- list pgp contact publicly? auth required
+        ClientSubscriptions.getChannelSubscriptions(function(channel, mode, argString, subscriptionString) {
             if(typeof subscriptionList[channel.toLowerCase()] === 'undefined')
                 subscriptionList[channel.toLowerCase()] = {modes:{}};
             var channelData = subscriptionList[channel.toLowerCase()];
@@ -39,6 +46,21 @@ if(typeof module !== 'object')
         });
 
         console.log(subscriptionList);
+
+        var keyspaceList = {};
+        // KEYSPACE.SUBSCRIBE.GET ABCD1234 ABCD1234 ABCD1234 <-- host keyspace, no auth required?
+        // KEYSPACE.SUBSCRIBE.PUT ABCD1234 ABCD1234 ABCD1234 <-- host keyspace service, auth required
+        // KEYSPACE.SUBSCRIBE.STATUS DEFC4321 DEFC4321 DEFC4321 <-- get status list
+        ClientSubscriptions.getKeySpaceSubscriptions(function(pgp_id_public, mode, subscriptionString) {
+            if(typeof keyspaceList[pgp_id_public.toLowerCase()] === 'undefined')
+                keyspaceList[pgp_id_public.toLowerCase()] = {modes:{}};
+            var keyspaceData = keyspaceList[pgp_id_public.toLowerCase()];
+            keyspaceData.modes.push(mode);
+        });
+
+        console.log(keyspaceList);
+
+
 
         // Query public keys
         var path = 'public/id';
@@ -125,7 +147,7 @@ if(typeof module !== 'object')
         var status_box = '';
 
         var subscriptionList = {};
-        ChannelClientSubscriptions.getChannelClientSubscriptions(function(channel, mode, argString) {
+        ChannelClientSubscriptions.getChannelSubscriptions(function(channel, mode, argString) {
             if(typeof subscriptionList[channel.toLowerCase()] === 'undefined')
                 subscriptionList[channel.toLowerCase()] = {modes:{}};
             var channelData = subscriptionList[channel.toLowerCase()];

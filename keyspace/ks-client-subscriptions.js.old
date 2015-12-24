@@ -17,6 +17,34 @@ module.exports.KeySpaceClientSubscriptions =
 
     var keyspaces = {};
 
+    KeySpaceClientSubscriptions.handleResponse = function(responseString) {
+        var match = /^keyspace\.(un|re)?subscribe\.(\w+)?\s+(\S+)\s*([\S\s]*)$/im.exec(responseString);
+        if (!match)
+            throw new Error("Invalid Keyspace subscription response: " + responseString);
+
+        var prefix = (match[1] || '').toLowerCase();
+        var command = (match[2] || '').toLowerCase();
+        var mode = (match[3] || '').toLowerCase();
+        var pgp_id_public = match[4];
+        pgp_id_public = pgp_id_public.substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+
+        var webSocket = e.target;
+        if(prefix === 'un') {
+            if(KeySpaceClientSubscriptions.remove(pgp_id_public, mode, webSocket))
+                console.log("KeySpace subscription removed: ", responseString);
+
+        } else if(prefix === 're') {
+            if(KeySpaceClientSubscriptions.replace(pgp_id_public, mode, webSocket))
+                console.log("KeySpace subscription replaced: ", responseString);
+            else
+                console.error("Failed to replace KeySpace subscription: ", responseString);
+
+        } else {
+            if(KeySpaceClientSubscriptions.add(pgp_id_public, mode, webSocket))
+                console.log("KeySpace subscription: ", responseString);
+        }
+    };
+
     KeySpaceClientSubscriptions.add = function(pgp_id_public, mode, webSocket) {
         mode = mode.toLowerCase();
         if(typeof keyspaces[pgp_id_public.toLowerCase()] === 'undefined')

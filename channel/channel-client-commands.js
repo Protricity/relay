@@ -29,16 +29,15 @@ if(typeof module === 'object') (function() {
 
         //ClientWorkerThread.addResponse(nickResponse);
 
-        var ChannelClientSubscriptions = self.ChannelClientSubscriptions || (function() {
+        var ClientSubscriptions = self.ClientSubscriptions || (function() {
             self.module = {exports: {}};
-            importScripts('channel/channel-client-subscriptions.js');
-            return self.ChannelClientSubscriptions = self.module.exports.ChannelClientSubscriptions;
+            importScripts('client/subscriptions/client-subscriptions.js');
+            return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
         })();
 
 
-
         function subscribeCommand(commandString) {
-            var match = /^(?:channel\.)?(un)?subscribe(?:\.(\w+))?\s+(\S+)\s*([\s\S]+)?$/im.exec(commandString);
+            var match = /^channel\.(un)?subscribe(?:\.(\w+))?\s+(\S+)\s*([\s\S]+)?$/im.exec(commandString);
             if (!match)
                 return false;
 
@@ -69,7 +68,7 @@ if(typeof module === 'object') (function() {
                 }
                 if(unsubscribe) {
                     if(oldSubscriptionPos >= 0) {
-                        console.log("Removing Auto-Subscription: ", settingsCommandStringPrefix);
+                        console.log("Removing Auto-Subscription: ", settingsCommandString);
                         commands.splice(oldSubscriptionPos, 1);
                     } else {
                         console.error("Old subscription not found in settings");
@@ -77,15 +76,15 @@ if(typeof module === 'object') (function() {
 
                 } else {
                     if(oldSubscriptionPos >= 0) {
-                        if(commands[oldSubscriptionPos] !== settingsCommandStringPrefix) {
-                            console.log("Replacing Auto-Subscription (" + oldSubscriptionPos + "): ", settingsCommandStringPrefix);
-                            commands[oldSubscriptionPos] = settingsCommandStringPrefix;
+                        if(commands[oldSubscriptionPos] !== settingsCommandString) {
+                            console.log("Replacing Auto-Subscription (" + oldSubscriptionPos + "): ", settingsCommandString);
+                            commands[oldSubscriptionPos] = settingsCommandString;
                         } else {
                             //console.log("Ignoring unchanged Auto-Subscription (" + oldSubscriptionPos + "): ", settingsCommandStringPrefix);
                         }
                     } else {
-                        console.log("Adding Auto-Subscription: ", settingsCommandStringPrefix);
-                        commands.push(settingsCommandStringPrefix);
+                        console.log("Adding Auto-Subscription: ", settingsCommandString);
+                        commands.push(settingsCommandString);
                     }
                 }
                 SettingsDB.updateSettings(subscriptionSettings);
@@ -105,27 +104,8 @@ if(typeof module === 'object') (function() {
             if (!match)
                 return false;
 
-            var prefix = (match[1]||'').toLowerCase();
-            var mode = match[2];
-            var channel = match[3];
-            var argString = match[4];
-
-            if(prefix === 'un') {
-                if(ChannelClientSubscriptions.remove(channel, mode, argString))
-                    console.log("Channel subscription removed: ", responseString);
-
-            } else if(prefix === 're') {
-                if(ChannelClientSubscriptions.replace(channel, mode, argString))
-                    console.log("Channel subscription replaced: ", responseString);
-                else
-                    console.error("Failed to replace channel subscription: ", responseString);
-
-            } else {
-                if(ChannelClientSubscriptions.add(channel, mode, argString))
-                    console.log("Channel subscription: ", responseString);
-            }
-
-            ClientWorkerThread.processResponse("EVENT CHANNEL.SUBSCRIPTION.UPDATE " + channel + " " + mode + " " + argString);
+            ClientSubscriptions.add(responseString);
+            ClientWorkerThread.processResponse("EVENT " + responseString); // CHANNEL.SUBSCRIPTION.UPDATE " + channel + " " + mode + " " + argString);
 
             return true;
         }
@@ -163,6 +143,7 @@ if(typeof module === 'object') (function() {
             var channel = match[2];
             var subscriptionList = match[3].split(/\s+/img);
 
+            // TODO: store local and remote subscriptions together? nah, need to tell appart
             ChannelClientSubscriptions.setChannelSubscriptionList(channel, mode, subscriptionList);
 
             switch(mode.toLowerCase()) {

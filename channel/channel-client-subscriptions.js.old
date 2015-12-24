@@ -101,7 +101,7 @@ module.exports.ChannelClientSubscriptions =
         return null;
     };
 
-    ChannelClientSubscriptions.getChannelClientSubscriptions = function(callback) {
+    ChannelClientSubscriptions.getChannelSubscriptions = function(callback) {
         // TODO: inefficient?
         var count = 0;
         for(var channelName in channels) {
