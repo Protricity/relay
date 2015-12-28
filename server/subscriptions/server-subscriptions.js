@@ -58,8 +58,18 @@ module.exports.ServerSubscriptions =
             case 'keyspace':
                 // This is a keyspace subscription, so the first arg is the PGP Public Key ID
                 var pgp_id_public = match[4].toUpperCase();
-                if(!/[a-f0-9]{8,}/.exec(pgp_id_public))
+                var id_match = /^(?:([A-F0-9]{8,})\s*)+$/i.exec(pgp_id_public);
+                if(!id_match)
                     throw new Error("Invalid PGP Public ID Key: " + pgp_id_public);
+                var pgp_ids = pgp_id_public.split(' ');
+                if(pgp_ids.length > 0) {
+                    var oldSubscriptionStrings = [];
+                    for(var ii=0; ii<pgp_ids.length; ii++) {
+                        var ret = ServerSubscriptions.handleSubscription(type + " " + prefix + "subscribe." + mode + " " + argString);
+                        if(ret) oldSubscriptionStrings.push(ret);
+                    }
+                    return oldSubscriptionStrings.join("\n");
+                }
                 if(typeof keyspaceSubscriptions[pgp_id_public] === 'undefined')
                     keyspaceSubscriptions[pgp_id_public] = {};
                 modeList = keyspaceSubscriptions[pgp_id_public];

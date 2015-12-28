@@ -72,8 +72,8 @@ function subscribeCommand(commandString, client) {
 
         if(oldArgString) {
             console.log("Resubscribing from old: " + oldArgString);
-            var oldArgStringPrefix = oldArgString.split(/\s+/)[0];
-            relayCommandString = "CHANNEL.RESUBSCRIBE." + mode.toUpperCase() + " " + channel + " " + oldArgStringPrefix + " " + argString;
+            //var oldArgStringPrefix = oldArgString.split(/\s+/)[0];
+            relayCommandString = "CHANNEL.RESUBSCRIBE." + mode.toUpperCase() + " " + channel + " " + argString;
         }
 
         var clients = ServerSubscriptions.getChannelSubscriptions(channel, mode);

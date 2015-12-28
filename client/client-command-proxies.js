@@ -16,7 +16,7 @@ module.exports.initClientCommands = function(ClientWorkerThread) {
     ClientWorkerThread.addCommand(importHTTPCommands);
     ClientWorkerThread.addResponse(importHTTPCommands);
     function importHTTPCommands(commandString, e) {
-        if(!/^(keyspace|get|put|patch|head|http|host|feed|contacts)/i.test(commandString))
+        if(!/^(keyspace|get|put|patch|head|http|host|feed)/i.test(commandString))
             return false;
         ClientWorkerThread.removeCommand(importHTTPCommands);
         ClientWorkerThread.removeResponse(importHTTPCommands);
@@ -43,7 +43,7 @@ module.exports.initClientCommands = function(ClientWorkerThread) {
     ClientWorkerThread.addCommand(importChannelCommands);
     ClientWorkerThread.addResponse(importChannelCommands);
     function importChannelCommands(commandString, e) {
-        if(!/^(channel|subscribe|unsubscribe|message|chat|userlist)/i.test(commandString))
+        if(!/^(channel|message|chat|audio|video)/i.test(commandString))
             return false;
         ClientWorkerThread.removeCommand(importChannelCommands);
         ClientWorkerThread.removeResponse(importChannelCommands);
@@ -61,7 +61,7 @@ module.exports.initClientCommands = function(ClientWorkerThread) {
             return false;
         ClientWorkerThread.removeCommand(importClientUICommands);
         ClientWorkerThread.removeResponse(importClientUICommands);
-        importScripts('client/ui/ui-commands.js');
+        importScripts('render/ui/ui-commands.js');
         module.exports.initClientUICommands(ClientWorkerThread);
 //         console.info("Loaded: channel/channel-client-commands.js");
         return false;

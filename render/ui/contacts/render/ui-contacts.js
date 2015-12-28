@@ -16,105 +16,6 @@ if(typeof module !== 'object')
 
     function renderUIContactListIdentities(callback) {
 
-        self.module = {exports: {}};
-        importScripts('keyspace/ks-db.js');
-        var KeySpaceDB = self.module.exports.KeySpaceDB;
-
-        self.module = {exports: {}};
-        importScripts('client/settings/settings-db.js');
-        var SettingsDB = self.module.exports.SettingsDB;
-
-
-        var ClientSubscriptions = self.ClientSubscriptions || (function() {
-            self.module = {exports: {}};
-            importScripts('client/subscriptions/client-subscriptions.js');
-            return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
-        })();
-
-        var html_public_key_entries = '';
-
-
-
-        var subscriptionList = {};
-        // CHANNEL.SUBSCRIBE.CHAT /channel guest1234 <-- chat
-        // CHANNEL.SUBSCRIBE.IDENTIFY /channel ABCD1234 <-- list pgp contact publicly? auth required
-        ClientSubscriptions.searchChannelSubscriptions(null, null,
-            function(channel, mode, argString, subscriptionString) {
-                if(typeof subscriptionList[channel.toLowerCase()] === 'undefined')
-                    subscriptionList[channel.toLowerCase()] = {modes:{}};
-                var channelData = subscriptionList[channel.toLowerCase()];
-                channelData.modes[mode.toLowerCase()] = argString;
-            });
-
-        console.log(subscriptionList);
-
-        var keyspaceList = {};
-        // KEYSPACE.SUBSCRIBE.GET ABCD1234 ABCD1234 ABCD1234 <-- host keyspace, no auth required?
-        // KEYSPACE.SUBSCRIBE.PUT ABCD1234 ABCD1234 ABCD1234 <-- host keyspace service, auth required
-        // KEYSPACE.SUBSCRIBE.STATUS DEFC4321 DEFC4321 DEFC4321 <-- get status list
-        ClientSubscriptions.searchKeySpaceSubscriptions(null, null,
-            function(pgp_id_public, mode, subscriptionString) {
-                if(typeof keyspaceList[pgp_id_public.toLowerCase()] === 'undefined')
-                    keyspaceList[pgp_id_public.toLowerCase()] = {modes:{}};
-                var keyspaceData = keyspaceList[pgp_id_public.toLowerCase()];
-                keyspaceData.modes.push(mode);
-            });
-
-        console.log(keyspaceList);
-
-
-
-        // Query public keys
-        var path = 'public/id';
-        KeySpaceDB.queryAll(path, function(err, contentEntry) {
-            if(err)
-                throw new Error(err);
-
-            if(contentEntry) {
-                var socketHost = KeySpaceDB.getSocketHost(contentEntry.pgp_id_public);
-                var hostingStatus = socketHost !== null ? 'online' : 'offline' ;
-                //var hostingCommand = socketHost !== null ? 'offline' : 'online';
-
-                // TODO: get socket user name
-                var html_commands =
-                    "<a href='javascript:Client.execute(\"MESSAGE " + contentEntry.pgp_id_public + "\");'>" +
-                        "<span class='command'>Message</span> " + // contentEntry.user_id +
-                    "</a>" +
-                    "<a href='javascript:Client.execute(\"CHANLIST " + contentEntry.pgp_id_public + "\");'>" +
-                        "<span class='command'>ChanList</span>" +
-                    "</a>" +
-                    "<a href='javascript:Client.execute(\"GET " + contentEntry.pgp_id_public + "\");'>" +
-                        "<span class='command'>Get</span>" +
-                    "</a>" +
-                    "<br/>" +
-                    "<a href='javascript:Client.execute(\"GET " + contentEntry.pgp_id_public + "/public/profile\");'>" +
-                        "<span class='command'>Profile</span>" +
-                    "</a>" +
-                    "<a href='javascript:Client.execute(\"PGP.EXPORT --with " + contentEntry.pgp_id_public + "\");'>" +
-                        "<span class='command'>Export</span>" + // Key" +
-                    "</a>" +
-                    "<a href='javascript:Client.execute(\"PGP.DELETE " + contentEntry.pgp_id_public + "\");'>" +
-                        "<span class='command'>Delete</span>" +
-                    "</a>";
-
-                renderUIContactListEntry(
-                    contentEntry.user_id,
-                    contentEntry.pgp_id_public +
-                    ' <span class="' + hostingStatus.toLowerCase() + '">' +
-                    hostingStatus.toLowerCase() +
-                    '</span>',
-                    'client/ui/contacts/render/icons/user_icon_default.png',
-                    'public-key',
-                    html_commands,
-                    function(html) {
-                        html_public_key_entries += html;
-                    });
-
-            } else {
-                callback(html_public_key_entries);
-            }
-        });
-
     }
 
     function renderUIContactListContacts(callback) {
@@ -139,7 +40,7 @@ if(typeof module !== 'object')
         importScripts('client/subscriptions/client-subscriptions.js');
         var ClientSubscriptions = self.module.exports.ClientSubscriptions;
 
-        var TEMPLATE_URL = "client/ui/contacts/render/ui-contacts.html";
+        var TEMPLATE_URL = "render/ui/contacts/render/ui-contacts.html";
 
         var nick_value = '';
         var html_private_key_entries = '';
@@ -158,6 +59,7 @@ if(typeof module !== 'object')
                 subscriptionList.push(Array.prototype.slice.call(arguments));
             });
 
+        // TODO: query only subscribed keyspace ids and channels duh
         console.log(subscriptionList);
 
         // Query public keys
@@ -199,7 +101,7 @@ if(typeof module !== 'object')
                     ' <span class="' + hostingStatus.toLowerCase() + '">' +
                         hostingStatus.toLowerCase() +
                     '</span>',
-                    'client/ui/contacts/render/icons/user_icon_default.png',
+                    'render/ui/contacts/render/icons/user_icon_default.png',
                     'public-key',
                     html_commands,
                     function(html) {
@@ -252,7 +154,7 @@ if(typeof module !== 'object')
                             ' <span class="' + hostingStatus.toLowerCase() + '">' +
                                 hostingStatus.toLowerCase() +
                             '</span>',
-                            'client/ui/contacts/render/icons/user_icon_default.png',
+                            'render/ui/contacts/render/icons/user_icon_default.png',
                             'private-key',
                             html_commands,
                             function(html) {
@@ -289,7 +191,7 @@ if(typeof module !== 'object')
                                     renderUIContactListEntry(
                                         channelSettings.name_original_case,
                                         '<span class="status">0-25 users</span>',
-                                        'client/ui/contacts/render/icons/channel_icon_default.png',
+                                        'render/ui/contacts/render/icons/channel_icon_default.png',
                                         'channel',
                                         html_commands,
                                             function(html) {
@@ -326,7 +228,7 @@ if(typeof module !== 'object')
     var i=0;
     module.exports.renderUIContactListEntry = renderUIContactListEntry;
     function renderUIContactListEntry(name, status, user_icon_path, type, html_commands, callback) {
-        var TEMPLATE_URL = "client/ui/contacts/render/ui-contacts-entry.html";
+        var TEMPLATE_URL = "render/ui/contacts/render/ui-contacts-entry.html";
 
         var xhr = new XMLHttpRequest();
         xhr.open("GET", TEMPLATE_URL, false);
@@ -337,7 +239,7 @@ if(typeof module !== 'object')
         // TODO: cache xhr
 
         //status = 'online';
-        user_icon_path = user_icon_path || 'client/ui/contacts/render/icons/user_icon_default.png';
+        user_icon_path = user_icon_path || 'render/ui/contacts/render/icons/user_icon_default.png';
 
 
         // Callback

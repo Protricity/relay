@@ -73,7 +73,7 @@ module.exports.ClientSubscriptions =
     // KEYSPACE.SUBSCRIBE.GET ABCD1234 <-- host keyspace content
     // KEYSPACE.SUBSCRIBE.PUT ABCD1234 <-- host keyspace service
     ClientSubscriptions.handleSubscription = function(subscriptionString) {
-        var match = /^(\w+)\.(|un|re)subscribe\.(\w+)\s+(\S+)/im.exec(subscriptionString);
+        var match = /^(\w+)\.(|un|re)subscribe(?:\.(\w+))?\s+(\S+)\s*([\s\S]*)$/im.exec(subscriptionString);
         if (!match)
             throw new Error("Invalid Subscription: " + subscriptionString);
 
@@ -83,7 +83,6 @@ module.exports.ClientSubscriptions =
         var argString = match[5];
 
         var modeList;
-        var oldSubscriptionString = null;
         switch(type) {
             case 'keyspace':
                 var pgp_id_public = match[4].toUpperCase();
@@ -105,10 +104,13 @@ module.exports.ClientSubscriptions =
                 break;
 
             case 'channel':
-                var channel = match[4].toLowerCase();
+                var channelOriginalCase = match[4];
+                var channel = channelOriginalCase.toLowerCase();
                 if(typeof channelSubscriptions[channel] === 'undefined')
                     channelSubscriptions[channel] = {};
                 modeList = channelSubscriptions[channel];
+                if(typeof modeList._channel_original_case === 'undefined')
+                    modeList._channel_original_case = channelOriginalCase;
                 switch (mode) {
                     case 'event':
                     case 'chat':
@@ -124,18 +126,24 @@ module.exports.ClientSubscriptions =
                 throw new Error("Invalid Subscription Type: " + subscriptionString);
         }
 
-        if(typeof modeList[mode] !== 'undefined')
-            oldSubscriptionString = modeList[mode];
+
+        var existingSubscriptionString = null;
+        // Look for existing subscription for this mode
+        if(typeof modeList[mode] !== 'undefined') {
+            // Existing Subscription found
+            existingSubscriptionString = modeList[mode];
+            //console.log("Existing Subscription Found: " + oldSubscriptionString);
+        }
 
         if(prefix === 'un') {
-            if(!oldSubscriptionString)
+            if(!existingSubscriptionString)
                 throw new Error("Old Subscription not found: " + subscriptionString);
             delete modeList[mode];
             console.log(type + " subscription removed: ", subscriptionString);
 
         } else if(prefix === 're') {
             modeList[mode] = argString;
-            if(!oldSubscriptionString) {
+            if(!existingSubscriptionString) {
                 console.warn("Old Subscription not found: " + subscriptionString);
 
             } else {
@@ -144,14 +152,14 @@ module.exports.ClientSubscriptions =
 
         } else {
             modeList[mode] = argString;
-            if(!oldSubscriptionString) {
+            if(!existingSubscriptionString) {
                 console.log(type + " subscription: ", subscriptionString);
             } else {
                 console.warn(type + " subscription replaced: ", subscriptionString);
             }
         }
 
-        return oldSubscriptionString;
+        return existingSubscriptionString;
     };
 
 
@@ -171,12 +179,12 @@ module.exports.ClientSubscriptions =
         if(searchPublicKeyID) searchPublicKeyID = searchPublicKeyID.toUpperCase();
         var count = 0;
         for(var pgp_id_public in keyspaceSubscriptions) {
-            if(keyspaceSubscriptions.hasOwnProperty(pgp_id_public)) {
+            if(pgp_id_public[0] !== '_' && keyspaceSubscriptions.hasOwnProperty(pgp_id_public)) {
                 if(searchPublicKeyID && pgp_id_public === searchPublicKeyID)
                     return;
                 var modeList = keyspaceSubscriptions[pgp_id_public];
                 for(var mode in modeList) {
-                    if(modeList.hasOwnProperty(mode)) {
+                    if(mode[0] !== '_' && modeList.hasOwnProperty(mode)) {
                         if(searchMode && searchMode !== mode)
                             continue;
                         var argString = modeList[mode];
@@ -209,16 +217,17 @@ module.exports.ClientSubscriptions =
         if(searchChannelPrefix) searchChannelPrefix = searchChannelPrefix.toLowerCase();
         var count = 0;
         for(var channel in channelSubscriptions) {
-            if(channelSubscriptions.hasOwnProperty(channel)) {
+            if(channel[0] !== '_' && channelSubscriptions.hasOwnProperty(channel)) {
                 if(searchChannelPrefix && channel.indexOf(searchChannelPrefix) !== 0)
                     return;
                 var modeList = channelSubscriptions[channel];
+                var channelOriginalCase = modeList._channel_original_case || channel;
                 for(var mode in modeList) {
-                    if(modeList.hasOwnProperty(mode)) {
+                    if(mode[0] !== '_' && modeList.hasOwnProperty(mode)) {
                         if(searchMode && searchMode !== mode)
                             continue;
                         var argString = modeList[mode];
-                        var ret = callback(channel, mode, argString);
+                        var ret = callback(channelOriginalCase, mode, argString);
                         count++;
                         if(ret === true)
                             return count;

@@ -228,7 +228,7 @@ if(typeof importScripts !== 'undefined') {
             var tagString = match[0];
 
             self.module = {exports: {}};
-            importScripts('client/tags/client-tag-list.js');
+            importScripts('render/tags/client-tag-list.js');
             var tags = self.module.exports.tags;
 
             for (var i = 0; i < tags.length; i++) {

@@ -8,7 +8,7 @@ if(typeof module === 'object') (function() {
 
         var refreshTimeout = null;
         function eventListener(responseString) {
-            var match = /^event (keyspace\.|settings\.)/i.exec(responseString);
+            var match = /^event (keyspace\.|channel\.)/i.exec(responseString);
             if (match) {
                 if(refreshTimeout)
                     clearTimeout(refreshTimeout);
@@ -28,7 +28,7 @@ if(typeof module === 'object') (function() {
                 return false;
 
             self.module = {exports: {}};
-            importScripts('client/ui/contacts/render/ui-contacts.js');
+            importScripts('render/ui/contacts/render/ui-contacts.js');
             var templateExports = self.module.exports;
 
             templateExports.renderUIContactList(function (html) {
@@ -45,11 +45,12 @@ if(typeof module === 'object') (function() {
                         throw new Error(err);
 
                     if (contentEntry) {
+                        // TODO: subscribe to all in database? No other way to get status.
                         activeContactList.push(contentEntry.pgp_id_public);
 
                     } else {
                         if(activeContactList.length)
-                            ClientWorkerThread.sendWithSocket("SUBSCRIBE.EVENT " + activeContactList.join(" "));
+                            ClientWorkerThread.sendWithSocket("KEYSPACE.SUBSCRIBE.EVENT " + activeContactList.join(" "));
 
                     }
                 });

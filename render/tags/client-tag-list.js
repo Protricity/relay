@@ -7,13 +7,13 @@ if (!module.exports) module.exports = {};
 module.exports.tags = [
     [/^\{nav[^}]*}$/i, function(tagHTML, callback, Client) {
         self.module = {exports: {}};
-        importScripts('client/tags/nav/tag-nav.js');
+        importScripts('render/tags/nav/tag-nav.js');
         self.module.exports.renderNavTag(tagHTML, callback, Client);
     }],
 
     [/^\{header[^}]*}$/i, function(tagHTML, callback, Client) {
         self.module = {exports: {}};
-        importScripts('client/tags/header/tag-header.js');
+        importScripts('render/tags/header/tag-header.js');
         self.module.exports.renderHeaderTag(tagHTML, callback, Client);
     }],
 

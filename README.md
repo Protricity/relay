@@ -251,7 +251,7 @@ Directory structure:
 
 /client - Client features and UI
 
-/client/themes - Client Themes and theme resources
+/render/themes - Client Themes and theme resources
 
 /keyspace - KeySpace features and database
 
