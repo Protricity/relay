@@ -15,6 +15,8 @@ module.exports.ClientSubscriptions =
 
     }
 
+    var DEFAULT_MODE = 'EVENT';
+
     var keyspaceSubscriptions = {};
     var channelSubscriptions = {};
     var channelUserLists = {};
@@ -60,24 +62,27 @@ module.exports.ClientSubscriptions =
         if (!match)
             throw new Error("Invalid Subscription: " + subscriptionString);
 
-        var matchString = match[0];
         var type = match[1].toLowerCase();
         var prefix = match[2].toLowerCase();
-        var mode = match[3].toLowerCase();
-        //var argString = match[5];
+        var mode = (match[3] || DEFAULT_MODE).toLowerCase();
+        var argString = match[5];
 
-        var formattedSubscription = subscriptionString;
-        var list;
+        var modeList;
+        var oldSubscriptionString = null;
         switch(type) {
             case 'keyspace':
+                var pgp_id_public = match[4].toUpperCase();
+                if(!/[a-f0-9]{8,}/.exec(pgp_id_public))
+                    throw new Error("Invalid PGP Public ID Key: " + pgp_id_public);
+                if(typeof keyspaceSubscriptions[pgp_id_public] === 'undefined')
+                    keyspaceSubscriptions[pgp_id_public] = {};
+                modeList = keyspaceSubscriptions[pgp_id_public];
+
                 switch (mode) {
                     case 'get':
                     case 'post':
                     case 'put':
                     case 'status':
-                        if(typeof keyspaceSubscriptions[mode] === 'undefined')
-                            keyspaceSubscriptions[mode] = [];
-                        list = keyspaceSubscriptions[mode];
                         break;
                     default:
                         throw new Error("Invalid KeySpace Mode: " + subscriptionString);
@@ -85,57 +90,49 @@ module.exports.ClientSubscriptions =
                 break;
 
             case 'channel':
+                var channel = match[4].toLowerCase();
+                if(typeof channelSubscriptions[channel] === 'undefined')
+                    channelSubscriptions[channel] = {};
+                modeList = channelSubscriptions[channel];
                 switch (mode) {
                     case 'event':
                     case 'chat':
                     case 'audio':
                     case 'video':
-                        if(typeof channelSubscriptions[mode] === 'undefined')
-                            channelSubscriptions[mode] = [];
-                        list = channelSubscriptions[mode];
                         break;
                     default:
                         throw new Error("Invalid Channel Mode: " + subscriptionString);
                 }
                 break;
+
             default:
                 throw new Error("Invalid Subscription Type: " + subscriptionString);
         }
 
-        var oldPos = -1;
-        var oldSubscriptionString = null;
-        for(var i=0; i<list.length; i++) {
-            if(list[i].toLowerCase().indexOf(matchString) === 0){
-                oldPos = i;
-                oldSubscriptionString = list[i];
-                break;
-            }
-        }
+        if(typeof modeList[mode] !== 'undefined')
+            oldSubscriptionString = modeList[mode];
 
         if(prefix === 'un') {
-            if(oldPos === -1)
-                throw new Error("Old Subscription not found: " + formattedSubscription);
-            list[oldPos] = formattedSubscription;
-            console.log(type + " subscription removed: ", formattedSubscription);
+            if(!oldSubscriptionString)
+                throw new Error("Old Subscription not found: " + subscriptionString);
+            delete modeList[mode];
+            console.log(type + " subscription removed: ", subscriptionString);
 
         } else if(prefix === 're') {
-            if(oldPos === -1) {
-                list.push(formattedSubscription);
-                console.warn("Old Subscription not found: " + formattedSubscription);
+            modeList[mode] = argString;
+            if(!oldSubscriptionString) {
+                console.warn("Old Subscription not found: " + subscriptionString);
 
             } else {
-                list[oldPos] = formattedSubscription;
-                console.log(type + " subscription replaced: ", formattedSubscription);
+                console.log(type + " subscription replaced: ", subscriptionString);
             }
 
         } else {
-            if(oldPos === -1) {
-                list.push(formattedSubscription);
-                console.log(type + " subscription: ", formattedSubscription);
-
+            modeList[mode] = argString;
+            if(!oldSubscriptionString) {
+                console.log(type + " subscription: ", subscriptionString);
             } else {
-                list[oldPos] = formattedSubscription;
-                console.warn(type + " subscription replaced: ", formattedSubscription);
+                console.warn(type + " subscription replaced: ", subscriptionString);
             }
         }
 
@@ -143,50 +140,80 @@ module.exports.ClientSubscriptions =
     };
 
 
-    ClientSubscriptions.getKeySpaceSubscriptions = function(searchMode, callback) {
-        searchMode = searchMode.toLowerCase();
-        if(typeof keyspaceSubscriptions[searchMode] === 'undefined')
-            return;
-        iterateList(keyspaceSubscriptions[searchMode],
-            function(subscriptionString, type, mode, argString) {
-                var pgp_id_public = argString.split(' ', 2)[0];
-                return callback(pgp_id_public, mode, subscriptionString);
-            }
-        );
+    ClientSubscriptions.getKeySpaceSubscription = function(pgp_id_public, mode) {
+        if(mode)          mode = mode.toLowerCase();
+        if(pgp_id_public) pgp_id_public = pgp_id_public.toUpperCase();
+        if(typeof keyspaceSubscriptions[pgp_id_public] === 'undefined')
+            return [];
+        var modeList = keyspaceSubscriptions[pgp_id_public];
+        if(typeof modeList[mode] === 'undefined')
+            return null;
+        return modeList[mode];
     };
 
-    ClientSubscriptions.getChannelSubscriptions = function(searchMode, callback) {
-        searchMode = searchMode.toLowerCase();
-        if(typeof channelSubscriptions[searchMode] === 'undefined')
-            return;
-        iterateList(channelSubscriptions[searchMode],
-            function(subscriptionString, type, mode, argString) {
-                argString = argString.split(' ', 2);
-                var channel = argString[0];
-                argString = argString[1];
-                return callback(channel, mode, argString, subscriptionString);
+    ClientSubscriptions.searchKeySpaceSubscriptions = function(searchMode, searchPublicKeyID, callback) {
+        if(searchMode)          searchMode = searchMode.toLowerCase();
+        if(searchPublicKeyID) searchPublicKeyID = searchPublicKeyID.toUpperCase();
+        var count = 0;
+        for(var pgp_id_public in keyspaceSubscriptions) {
+            if(keyspaceSubscriptions.hasOwnProperty(pgp_id_public)) {
+                if(searchPublicKeyID && pgp_id_public === searchPublicKeyID)
+                    return;
+                var modeList = keyspaceSubscriptions[pgp_id_public];
+                for(var mode in modeList) {
+                    if(modeList.hasOwnProperty(mode)) {
+                        if(searchMode && searchMode !== mode)
+                            continue;
+                        var argString = modeList[mode];
+                        var ret = callback(mode, pgp_id_public, argString);
+                        count++;
+                        if(ret === true)
+                            return count;
+                    }
+                }
             }
-        );
-    };
-
-
-    function iterateList(list, callback) {
-        for(var i=0; i<list.length; i++)  {
-
-            var match = /^(\w+)\.subscribe\.(\w+)\s+([\s\S]+)$/im.exec(list[i]);
-            if (!match) {
-                console.warn("Invalid Subscription: " + list[i]);
-                continue;
-            }
-
-            var type = match[1];
-            var mode = match[2];
-            var argString = match[3];
-
-            if(callback(list[i], type, mode, argString) === true)
-                return;
         }
-    }
+
+        return count;
+    };
+
+
+    ClientSubscriptions.getChannelSubscription = function(channel, mode) {
+        if(mode)          mode = mode.toLowerCase();
+        if(channel) channel = channel.toLowerCase();
+        if(typeof channelSubscriptions[channel] === 'undefined')
+            return [];
+        var modeList = channelSubscriptions[channel];
+        if(typeof modeList[mode] === 'undefined')
+            return null;
+        return modeList[mode];
+    };
+
+    ClientSubscriptions.searchChannelSubscriptions = function(searchChannelPrefix, searchMode, callback) {
+        if(searchMode)          searchMode = searchMode.toLowerCase();
+        if(searchChannelPrefix) searchChannelPrefix = searchChannelPrefix.toLowerCase();
+        var count = 0;
+        for(var channel in channelSubscriptions) {
+            if(channelSubscriptions.hasOwnProperty(channel)) {
+                if(searchChannelPrefix && channel.indexOf(searchChannelPrefix) !== 0)
+                    return;
+                var modeList = channelSubscriptions[channel];
+                for(var mode in modeList) {
+                    if(modeList.hasOwnProperty(mode)) {
+                        if(searchMode && searchMode !== mode)
+                            continue;
+                        var argString = modeList[mode];
+                        var ret = callback(mode, channel, argString);
+                        count++;
+                        if(ret === true)
+                            return count;
+                    }
+                }
+            }
+        }
+
+        return count;
+    };
 
     return ClientSubscriptions;
 })();

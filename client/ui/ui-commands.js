@@ -49,7 +49,7 @@ if(typeof module === 'object') (function() {
 
                     } else {
                         if(activeContactList.length)
-                            ClientWorkerThread.sendWithSocket("SUBSCRIBE.STATUS " + activeContactList.join(" "));
+                            ClientWorkerThread.sendWithSocket("SUBSCRIBE.EVENT " + activeContactList.join(" "));
 
                     }
                 });

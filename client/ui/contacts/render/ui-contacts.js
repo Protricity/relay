@@ -38,12 +38,13 @@ if(typeof module !== 'object')
         var subscriptionList = {};
         // CHANNEL.SUBSCRIBE.CHAT /channel guest1234 <-- chat
         // CHANNEL.SUBSCRIBE.IDENTIFY /channel ABCD1234 <-- list pgp contact publicly? auth required
-        ClientSubscriptions.getChannelSubscriptions(function(channel, mode, argString, subscriptionString) {
-            if(typeof subscriptionList[channel.toLowerCase()] === 'undefined')
-                subscriptionList[channel.toLowerCase()] = {modes:{}};
-            var channelData = subscriptionList[channel.toLowerCase()];
-            channelData.modes[mode.toLowerCase()] = argString;
-        });
+        ClientSubscriptions.searchChannelSubscriptions(null, null,
+            function(channel, mode, argString, subscriptionString) {
+                if(typeof subscriptionList[channel.toLowerCase()] === 'undefined')
+                    subscriptionList[channel.toLowerCase()] = {modes:{}};
+                var channelData = subscriptionList[channel.toLowerCase()];
+                channelData.modes[mode.toLowerCase()] = argString;
+            });
 
         console.log(subscriptionList);
 
@@ -51,12 +52,13 @@ if(typeof module !== 'object')
         // KEYSPACE.SUBSCRIBE.GET ABCD1234 ABCD1234 ABCD1234 <-- host keyspace, no auth required?
         // KEYSPACE.SUBSCRIBE.PUT ABCD1234 ABCD1234 ABCD1234 <-- host keyspace service, auth required
         // KEYSPACE.SUBSCRIBE.STATUS DEFC4321 DEFC4321 DEFC4321 <-- get status list
-        ClientSubscriptions.getKeySpaceSubscriptions(function(pgp_id_public, mode, subscriptionString) {
-            if(typeof keyspaceList[pgp_id_public.toLowerCase()] === 'undefined')
-                keyspaceList[pgp_id_public.toLowerCase()] = {modes:{}};
-            var keyspaceData = keyspaceList[pgp_id_public.toLowerCase()];
-            keyspaceData.modes.push(mode);
-        });
+        ClientSubscriptions.searchKeySpaceSubscriptions(null, null,
+            function(pgp_id_public, mode, subscriptionString) {
+                if(typeof keyspaceList[pgp_id_public.toLowerCase()] === 'undefined')
+                    keyspaceList[pgp_id_public.toLowerCase()] = {modes:{}};
+                var keyspaceData = keyspaceList[pgp_id_public.toLowerCase()];
+                keyspaceData.modes.push(mode);
+            });
 
         console.log(keyspaceList);
 
@@ -147,14 +149,13 @@ if(typeof module !== 'object')
         var status_box = '';
 
         var subscriptionList = {};
-        var searchMode = null;
-        ChannelClientSubscriptions.getChannelSubscriptions(searchMode,
+        ChannelClientSubscriptions.searchChannelSubscriptions(null, null,
             function(channel, mode, argString) {
-            if(typeof subscriptionList[channel.toLowerCase()] === 'undefined')
-                subscriptionList[channel.toLowerCase()] = {modes:{}};
-            var channelData = subscriptionList[channel.toLowerCase()];
-            channelData.modes[mode.toLowerCase()] = argString;
-        });
+                if(typeof subscriptionList[channel.toLowerCase()] === 'undefined')
+                    subscriptionList[channel.toLowerCase()] = {modes:{}};
+                var channelData = subscriptionList[channel.toLowerCase()];
+                channelData.modes[mode.toLowerCase()] = argString;
+            });
 
         console.log(subscriptionList);
 
