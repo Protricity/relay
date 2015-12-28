@@ -111,7 +111,7 @@ if(typeof module === 'object') (function() {
         }
 
         function chatCommand(commandString) {
-            var match = /^(?:channel\.)?chat\s+([^\s]+)\s*([\s\S]*)$/im.exec(commandString);
+            var match = /^(?:channel\.)?chat/im.exec(commandString);
             if (!match)
                 return false;
 
@@ -136,16 +136,16 @@ if(typeof module === 'object') (function() {
 
         // USERLIST Response
         function userlistResponse(commandResponse) {
-            var match = /^(?:channel\.)?userlist\.(\w+)\s+(\S+)\s+([\s\S]+)$/im.exec(commandResponse);
+            var match = /^(?:channel\.)?userlist\.(\w+)(?:\s(\S+))?\n([\s\S]+)$/im.exec(commandResponse);
             if (!match)
                 return false;
             var mode = match[1];
-            var channel = match[2];
-            var subscriptionList = match[3].split(/\s+/img);
+            var channel = match[2] || null;
+            var subscriptionList = match[3].split(/\n+/img);
 
-            // TODO: store local and remote subscriptions together? nah, need to tell appart
-            ChannelClientSubscriptions.setChannelSubscriptionList(channel, mode, subscriptionList);
+            ClientSubscriptions.handleChannelUserList(commandResponse);
 
+            // TODO: Use event instead?
             switch(mode.toLowerCase()) {
                 case 'chat':
                     renderChatWindow(channel);

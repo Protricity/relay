@@ -18,7 +18,7 @@ module.exports.initSocketServerChannelCommands = function(SocketServer) {
     //SocketServer.addCommand(keyListCommand);
 };
 
-var DEFAULT_MODE = 'default';
+var DEFAULT_MODE = 'event';
 
 var ServerSubscriptions =
     require('../server/subscriptions/server-subscriptions.js')
@@ -45,8 +45,11 @@ function unloadClient(client) {
     if(client.readyState === client)
         return false;
     //console.info("Socket Client Closed: ", typeof client);
-    ServerSubscriptions.getChannelClientSubscriptions(client,
+    var searchMode = null;
+    var searchChannelPrefix = null;
+    ServerSubscriptions.getClientChannelSubscriptions(client, searchMode, searchChannelPrefix,
         function(channel, mode, argString) {
+            console.log("TODO: unsubscribe - ", channel, mode, argString);
             unsubscribeCommand("CHANNEL.UNSUBSCRIBE." + mode.toUpperCase() + " " + channel, client);
         }
     );
@@ -65,10 +68,8 @@ function subscribeCommand(commandString, client) {
         argString = "guest-" + generateUID('xxxx');
     //var username = argString.split(/\s+/)[0] || 'unknown';
 
-    var oldArgString = ServerSubscriptions.getChannelClientSubscription(client, channel, mode);
-
-    var added = ServerSubscriptions.add(client, channel,  mode, argString);
-    if(added) {
+    try {
+        var oldArgString = ServerSubscriptions.handleSubscription(commandString, client);
         var relayCommandString = "CHANNEL.SUBSCRIBE." + mode.toUpperCase() + " " + channel + " " + argString;
 
         if(oldArgString) {
@@ -77,7 +78,7 @@ function subscribeCommand(commandString, client) {
             relayCommandString = "CHANNEL.RESUBSCRIBE." + mode.toUpperCase() + " " + channel + " " + oldArgStringPrefix + " " + argString;
         }
 
-        var clients = ServerSubscriptions.getClients(channel, mode);
+        var clients = ServerSubscriptions.getChannelClients(mode, channel);
         var channelClientUserList = [];
         for(var i=0; i<clients.length; i++) {
             var channelClient = clients[i][0];
@@ -95,9 +96,10 @@ function subscribeCommand(commandString, client) {
 
         send(client, "CHANNEL.USERLIST." + mode.toUpperCase() + " " + channel + "\n" + channelClientUserList.join("\n"));
 
-    } else {
-        send(client, "ERROR Subscription did not change");
+    } catch (e) {
+        send(client, "ERROR " + e.message);
     }
+
     return true;
 }
 
@@ -163,11 +165,11 @@ function chatChannelCommand(commandString, client) {
     var message = match[2];
     //var clientInfo = getClientInfo(client);
 
-    var oldArgString = ServerSubscriptions.getChannelClientSubscription(client, channel, mode);
+    var oldArgString = ServerSubscriptions.getClientChannelSubscriptions(client, channel, mode)[0];
     if(!oldArgString) {
         // TODO: auto subscribe? nick?
         subscribeCommand("CHANNEL.SUBSCRIBE.CHAT " + channel);
-        oldArgString = ServerSubscriptions.getChannelClientSubscription(client, channel, mode);
+        oldArgString = ServerSubscriptions.getClientChannelSubscriptions(client, channel, mode)[0];
         if(!oldArgString)
             throw new Error("Failed to autosubscribe");
     }

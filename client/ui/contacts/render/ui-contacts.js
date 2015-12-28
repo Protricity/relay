@@ -134,8 +134,8 @@ if(typeof module !== 'object')
         var SettingsDB = self.module.exports.SettingsDB;
 
         self.module = {exports: {}};
-        importScripts('channel/channel-client-subscriptions.js');
-        var ChannelClientSubscriptions = self.module.exports.ChannelClientSubscriptions;
+        importScripts('client/subscriptions/client-subscriptions.js');
+        var ChannelClientSubscriptions = self.module.exports.ClientSubscriptions;
 
         var TEMPLATE_URL = "client/ui/contacts/render/ui-contacts.html";
 
@@ -147,7 +147,9 @@ if(typeof module !== 'object')
         var status_box = '';
 
         var subscriptionList = {};
-        ChannelClientSubscriptions.getChannelSubscriptions(function(channel, mode, argString) {
+        var searchMode = null;
+        ChannelClientSubscriptions.getChannelSubscriptions(searchMode,
+            function(channel, mode, argString) {
             if(typeof subscriptionList[channel.toLowerCase()] === 'undefined')
                 subscriptionList[channel.toLowerCase()] = {modes:{}};
             var channelData = subscriptionList[channel.toLowerCase()];

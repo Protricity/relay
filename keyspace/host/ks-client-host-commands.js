@@ -10,10 +10,10 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addResponse(ksChallengeResponse);
 
 
-        var ClientSubscriptions = self.KeySpaceClientSubscriptions || (function() {
+        var ClientSubscriptions = self.ClientSubscriptions || (function() {
             self.module = {exports: {}};
-            importScripts('keyspace/ks-client-subscriptions.js');
-            return self.KeySpaceClientSubscriptions = self.module.exports.KeySpaceClientSubscriptions;
+            importScripts('client/subscriptions/client-subscriptions.js');
+            return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
         })();
 
         function ksAutoHostCommand(commandString) {
