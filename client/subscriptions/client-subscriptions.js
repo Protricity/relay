@@ -2,10 +2,17 @@
  * Created by ari on 12/17/2015.
  */
 
+// Enable Strict mode
 "use strict";
+
+// Declare export module, if not found
 if (!module) var module = {exports: {}};
+
+// Declare self as a variable if it doesn't already exist
 if (typeof self === 'undefined')
     var self = this;
+
+// Export ClientSubscriptions Class. Define it if it hasn't
 module.exports.ClientSubscriptions =
     typeof self.ClientSubscriptions !== 'undefined' ? self.ClientSubscriptions :
 
@@ -15,15 +22,21 @@ module.exports.ClientSubscriptions =
 
     }
 
-    var DEFAULT_MODE = 'EVENT';
+    // Default Subscription Mode
+    var DEFAULT_MODE = 'event';
 
+    // KeySpace Subscription Object
     var keyspaceSubscriptions = {};
+
+    // Channel Subscription Object
     var channelSubscriptions = {};
+
+    // Channel User List Object
     var channelUserLists = {};
 
 
 
-    // USERLIST Response
+    // TODO: needs comments
     ClientSubscriptions.handleChannelUserList = function(responseString) {
         var match = /^(?:channel\.)?userlist\.(\w+)\s(\S+)\n([\s\S]+)$/im.exec(responseString);
         if (!match)
@@ -43,6 +56,7 @@ module.exports.ClientSubscriptions =
         return oldUserList;
     };
 
+    // TODO: needs comments
     ClientSubscriptions.getChannelUserList = function(mode, channel) {
         mode = mode.toLowerCase();
         channel = channel.toLowerCase();
@@ -54,6 +68,7 @@ module.exports.ClientSubscriptions =
         return channelModes[channel];
     };
 
+    // TODO: needs comments. These are examples for usage:
     // CHANNEL.SUBSCRIBE.CHAT /state/az guest123
     // KEYSPACE.SUBSCRIBE.GET ABCD1234 <-- host keyspace content
     // KEYSPACE.SUBSCRIBE.PUT ABCD1234 <-- host keyspace service
