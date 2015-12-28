@@ -72,7 +72,7 @@ module.exports.ClientSubscriptions =
     // CHANNEL.SUBSCRIBE.CHAT /state/az guest123
     // KEYSPACE.SUBSCRIBE.GET ABCD1234 <-- host keyspace content
     // KEYSPACE.SUBSCRIBE.PUT ABCD1234 <-- host keyspace service
-    ClientSubscriptions.handleSubscription = function(subscriptionString) {
+    ClientSubscriptions.handleSubscription = function(subscriptionString, webSocket) {
         var match = /^(\w+)\.(|un|re)subscribe(?:\.(\w+))?\s+(\S+)\s*([\s\S]*)$/im.exec(subscriptionString);
         if (!match)
             throw new Error("Invalid Subscription: " + subscriptionString);
@@ -142,7 +142,7 @@ module.exports.ClientSubscriptions =
             console.log(type + " subscription removed: ", subscriptionString);
 
         } else if(prefix === 're') {
-            modeList[mode] = argString;
+            modeList[mode] = argString; // TODO: add websockets?
             if(!existingSubscriptionString) {
                 console.warn("Old Subscription not found: " + subscriptionString);
 
@@ -151,7 +151,7 @@ module.exports.ClientSubscriptions =
             }
 
         } else {
-            modeList[mode] = argString;
+            modeList[mode] = argString; // TODO: add websockets?
             if(!existingSubscriptionString) {
                 console.log(type + " subscription: ", subscriptionString);
             } else {
