@@ -203,7 +203,7 @@ module.exports.ClientSubscriptions =
                         if(searchMode && searchMode !== mode)
                             continue;
                         var argString = modeList[mode];
-                        var ret = callback(mode, channel, argString);
+                        var ret = callback(channel, mode, argString);
                         count++;
                         if(ret === true)
                             return count;

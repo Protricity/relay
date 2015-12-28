@@ -137,7 +137,7 @@ if(typeof module !== 'object')
 
         self.module = {exports: {}};
         importScripts('client/subscriptions/client-subscriptions.js');
-        var ChannelClientSubscriptions = self.module.exports.ClientSubscriptions;
+        var ClientSubscriptions = self.module.exports.ClientSubscriptions;
 
         var TEMPLATE_URL = "client/ui/contacts/render/ui-contacts.html";
 
@@ -148,13 +148,14 @@ if(typeof module !== 'object')
         var html_command_options = '';
         var status_box = '';
 
-        var subscriptionList = {};
-        ChannelClientSubscriptions.searchChannelSubscriptions(null, null,
+        var subscriptionList = [];
+        ClientSubscriptions.searchChannelSubscriptions(null, null,
             function(channel, mode, argString) {
-                if(typeof subscriptionList[channel.toLowerCase()] === 'undefined')
-                    subscriptionList[channel.toLowerCase()] = {modes:{}};
-                var channelData = subscriptionList[channel.toLowerCase()];
-                channelData.modes[mode.toLowerCase()] = argString;
+                subscriptionList.push(Array.prototype.slice.call(arguments));
+            });
+        ClientSubscriptions.searchKeySpaceSubscriptions(null, null,
+            function(pgp_id_public, mode, argString) {
+                subscriptionList.push(Array.prototype.slice.call(arguments));
             });
 
         console.log(subscriptionList);
