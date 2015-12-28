@@ -35,7 +35,7 @@ if(typeof document === 'object')
             for(var i=0; i<channelValues.length; i++)
                 channelHTML +=
                     "<li>" +
-                        "<a href='javascript:Client.execute(\"SUBSCRIBE " + channelValues[i][0] + "\");'>" +
+                        "<a href='javascript:Client.execute(\"CHANNEL.SUBSCRIBE " + channelValues[i][0] + "\");'>" +
                             "<span class='command'>Subscribe</span> " +
                             "<strong>" +
                                 channelValues[i][1] +
@@ -53,7 +53,7 @@ if(typeof document === 'object')
         //newScript.setAttribute('src', self.location.protocol + '//www.telize.com/geoip?callback=_geoipcallback');
         //head.appendChild(newScript);
 
-        newScript = document.createElement('script');
+        var newScript = document.createElement('script');
         newScript.setAttribute('async', 'async');
         newScript.setAttribute('src', 'https://freegeoip.net/json/?callback=_geoipcallback');
         head.appendChild(newScript);
