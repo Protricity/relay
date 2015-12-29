@@ -79,6 +79,7 @@ if(typeof module !== 'object')
         callback(html_public_key_entries, html_command_options);
     }
 
+
     function renderUIContactListChannelSubscriptions(callback) {
         var html_command_options = '';
         var html_channel_entries = '';
@@ -105,8 +106,9 @@ if(typeof module !== 'object')
                 var html_commands =
                     getCommandHTML("CHANNEL." + subscriptionStatus.toUpperCase() + " " + channelName, subscriptionStatus);
 
-                for(var j=0; j<modes.length; modes++)
-                    html_commands += getCommandHTML("CHANNEL." + modes[j].toUpperCase() + ' ' + channelNameLowerCase, modes[j]);
+                html_commands += getCommandHTML("CHANNEL.CHAT " + channelNameLowerCase, 'Chat', modes.indexOf('chat') === -1 ? '' : 'subscribed');
+                html_commands += getCommandHTML("CHANNEL.AUDIO " + channelNameLowerCase, 'Audio', 'disabled');
+                html_commands += getCommandHTML("CHANNEL.VIDEO " + channelNameLowerCase, 'Video', 'disabled');
 
                 renderUIContactListEntry(
                     channelName,
@@ -339,10 +341,10 @@ if(typeof module !== 'object')
         );
     }
 
-    function getCommandHTML(commandString, commandTitle) {
+    function getCommandHTML(commandString, commandTitle, commandClasses) {
         commandTitle = commandTitle || commandString;
         return "" +
-            "<a href='javascript:Client.execute(\"" + commandString + "\");'>" +
+            "<a href='javascript:Client.execute(\"" + commandString + "\");'" + (commandClasses ? " class='" + commandClasses + "'" : '') + ">" +
                 "<span>" + commandTitle + "</span>" +
             "</a>";
     }
