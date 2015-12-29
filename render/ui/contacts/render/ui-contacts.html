@@ -15,24 +15,17 @@
         </select>
         <input type="text" name="search" class="hide-on-selected-contacts" placeholder="Search Contacts or Channels" />
         <input type='hidden' placeholder="Change Username" value="{$nick_value}" />
-        <button class="keyspace-contact-section-header:"
-                onclick="this.classList.toggle('closed'); this.blur(); return false;"
-                >Your Identities</button>
-        <ul class="keyspace-contact-section:">
-            {$html_private_key_entries}
-            <li class='keyspace-contact-default-info:'>
-                <a href='javascript:ClientMainThread.execute("PGP.KEYGEN")'>KeyGen</a> a new Identity...
-            </li>
-        </ul>
+
         <button class="keyspace-contact-section-header:"
                 onclick="this.classList.toggle('closed'); this.blur();return false;"
                 >Contacts</button>
         <ul class="keyspace-contact-section:">
-            {$html_public_key_entries}
+            {$html_keyspace_entries}
             <li class='keyspace-contact-default-info:'>
                 <a href='javascript:ClientMainThread.execute("PGP.IMPORT")'>Import</a> a Contact...
             </li>
         </ul>
+
         <button class="keyspace-contact-section-header:"
                 onclick="this.classList.toggle('closed'); this.blur();return false;"
                 >Channel Subscriptions</button>
@@ -42,6 +35,7 @@
                 <a href='javascript:ClientMainThread.execute("SUBSCRIBE")'>Join</a> a channel...
             </li>
         </ul>
+
     </form>
     <main class="hide-on-minimize">
 

@@ -7,7 +7,7 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addCommand(settingsAutoStartCommand);
 
         function settingsAutoStartCommand(commandString) {
-            var match = /^(?:settings\.)?(autorun|onconnect)/im.exec(commandString);
+            var match = /^(?:settings\.)?(autorun|onconnect|ondisconnect)/im.exec(commandString);
             if (!match)
                 return false;
 

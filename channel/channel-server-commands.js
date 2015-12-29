@@ -55,29 +55,30 @@ function unloadClient(client) {
 }
 
 function subscribeCommand(commandString, client) {
-    var match = /^(?:channel\.)?subscribe(?:\.(\w+))?\s+(\S+)$/im.exec(commandString);
+    var match = /^(?:channel\.)?subscribe(?:\.(\w+))?\s+(\S+)\s*(\S*)\s*([\S\s]*)$/im.exec(commandString);
     if (!match)
         return false;
 
     var mode = match[1] || DEFAULT_MODE;
     var channel = match[2];
-    var argString = match[3];
-    if(!argString)
-        argString = "guest-" + generateUID('xxxx');
+    var firstArgString = match[3];
+    if(!firstArgString)
+        firstArgString = "guest-" + generateUID('xxxx');
+    var argString = match[4];
     //var username = argString.split(/\s+/)[0] || 'unknown';
 
     try {
-        var oldArgString = ServerSubscriptions.handleSubscription(commandString, client);
-        var relayCommandString = "CHANNEL.SUBSCRIBE." + mode.toUpperCase() + " " + channel + " " + argString;
+        var oldArgString = ServerSubscriptions.handleClientSubscription(commandString, client);
+        var relayCommandString = "CHANNEL.SUBSCRIBE." + mode.toUpperCase() + " " + channel + " " + firstArgString;
 
         if(oldArgString) {
             console.log("Resubscribing from old: " + oldArgString);
             //var oldArgStringPrefix = oldArgString.split(/\s+/)[0];
-            relayCommandString = "CHANNEL.RESUBSCRIBE." + mode.toUpperCase() + " " + channel + " " + argString;
+            relayCommandString = "CHANNEL.RESUBSCRIBE." + mode.toUpperCase() + " " + channel + " " + firstArgString;
         }
 
         var clients = ServerSubscriptions.getChannelSubscriptions(channel, mode);
-        var channelClientUserList = [];
+        var channelClientUserList = [firstArgString + (argString ? ' ' + argString : '')];
         for(var i=0; i<clients.length; i++) {
             var channelClient = clients[i][0];
             var channelClientArgString = clients[i][1];
@@ -86,7 +87,8 @@ function subscribeCommand(commandString, client) {
                 // Relay to other subscribers
                 send(channelClient, relayCommandString);
                 // Add to user list
-                channelClientUserList.push(channelClientArgString);
+                if(channelClientUserList.indexOf(channelClientArgString) === -1)
+                    channelClientUserList.push(channelClientArgString);
             } else {
                 // TODO: invalid client?
             }
@@ -109,7 +111,7 @@ function unsubscribeCommand(commandString, client) {
     var mode = match[1] || DEFAULT_MODE;
     var channel = match[2];
 
-    var oldArgString = ServerSubscriptions.handleSubscription(commandString, client);
+    var oldArgString = ServerSubscriptions.handleClientSubscription(commandString, client);
     if(oldArgString) {
         var oldUserName = oldArgString.split(/\s+/)[0];
         var relayCommandString = "CHANNEL.UNSUBSCRIBE." + mode.toUpperCase() + " " + channel + " " + oldUserName;
@@ -153,26 +155,30 @@ function messageClientCommand(commandString, client) {
 }
 
 function chatChannelCommand(commandString, client) {
-    var match = /^(?:channel\.)?chat\s+([^\s]+)\s+([\s\S]+)$/im.exec(commandString);
+    var match = /^(?:channel\.)?chat\s+([^\s]+)\s*([\s\S]*)$/im.exec(commandString);
     if(!match)
         return false;
 
-    var timestamp = Date.now();
     var channel = match[1];
     var mode = "CHAT";
     var message = match[2];
     //var clientInfo = getClientInfo(client);
 
-    var oldArgString = ServerSubscriptions.getClientChannelArgString(client, channel, mode)[0];
-    if(!oldArgString) {
-        // TODO: auto subscribe? nick?
-        subscribeCommand("CHANNEL.SUBSCRIBE.CHAT " + channel);
-        oldArgString = ServerSubscriptions.getClientChannelArgString(client, channel, mode)[0];
+    var username = null;
+    var oldArgString = ServerSubscriptions.getClientChannelArgString(client, channel, mode);
+    if(oldArgString) {
+        username = oldArgString.split(' ')[0];
+
+    } else {
+        username = "guest-" + generateUID('xxxx');
+        subscribeCommand("CHANNEL.SUBSCRIBE.CHAT " + channel + " " + username, client);
+        //ServerSubscriptions.handleClientSubscription("CHANNEL.SUBSCRIBE.CHAT " + channel + " " + username, client);
+        oldArgString = ServerSubscriptions.getClientChannelArgString(client, channel, mode);
         if(!oldArgString)
-            throw new Error("Failed to autosubscribe");
+            throw new Error("Failed to auto-subscribe");
     }
 
-    var relayCommandString = "CHANNEL.CHAT " + channel + " " + timestamp + " " + message;
+    var relayCommandString = "CHANNEL.CHAT " + channel + " " + username + (message ? " " + message : "");
     var clients = ServerSubscriptions.getChannelSubscriptions(channel, mode);
     for(var i=0; i<clients.length; i++) {
         var channelClient = clients[i][0];

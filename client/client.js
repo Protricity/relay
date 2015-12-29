@@ -494,7 +494,7 @@ if(typeof importScripts !== 'undefined') {
                     || targetElement.classList.contains('append-children-on-render')) {
                     for(var j=0; j<contentElement.children.length; j++)
                         targetElement.appendChild(contentElement.children[j]);
-
+                    targetElement.children[targetElement.children.length-1].scrollIntoView();
                 } else {
                     targetElement.innerHTML = contentElement.innerHTML;
                 }

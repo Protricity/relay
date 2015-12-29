@@ -99,22 +99,23 @@ if(typeof module === 'object') (function() {
         // CHANNEL.SUBSCRIBE.CHAT /state/az guest123
         // CHANNEL.CHAT /state/az omg u guiez
         // CHAT /state/az omg u guiez
-        function subscribeResponse(responseString) {
+        function subscribeResponse(responseString, e) {
             var match = /^channel\.(un|re)?subscribe\.(\w+)?\s+(\S+)\s*([\S\s]*)$/im.exec(responseString);
             if (!match)
                 return false;
 
-            ClientSubscriptions.handleSubscription(responseString);
+            ClientSubscriptions.handleServerSubscription(responseString, e);
             ClientWorkerThread.processResponse("EVENT " + responseString); // CHANNEL.SUBSCRIPTION.UPDATE " + channel + " " + mode + " " + argString);
 
             return true;
         }
 
         function chatCommand(commandString) {
-            var match = /^(?:channel\.)?chat/im.exec(commandString);
+            var match = /^(?:channel\.)?chat\s*([\s\S]*)$/im.exec(commandString);
             if (!match)
                 return false;
 
+            commandString = "CHANNEL.CHAT " + match[1];
             ClientWorkerThread.sendWithSocket(commandString);
             return true;
         }
@@ -143,7 +144,7 @@ if(typeof module === 'object') (function() {
             var channel = match[2] || null;
             var subscriptionList = match[3].split(/\n+/img);
 
-            ClientSubscriptions.handleChannelUserList(commandResponse);
+            ClientSubscriptions.handleClientUserList(commandResponse);
 
             // TODO: Use event instead?
             switch(mode.toLowerCase()) {

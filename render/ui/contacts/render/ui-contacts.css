@@ -183,7 +183,8 @@ form[name=ui-contacts-form] .keyspace-contact-entry-checkbox\3A:checked
 }
 
 .keyspace-contact-entry-commands\3A  a:not(:hover) > :not(.command) {
-    display: none;
+    /* display: none; */
+    /* text-transform: capitalize; */
 }
 
 .keyspace-contact-default-info\3A {

@@ -136,13 +136,13 @@ if(typeof module === 'object') (function() {
     };
 
     module.exports.renderChatMessage = function(responseString, callback) {
-        var match = /^(chat)\s+(\S+)\s+(\S+)\s+(\d+)\s+([\s\S]+)$/im.exec(responseString);
+        var match = /^(?:channel\.)chat\s+(\S+)\s+(\S+)\s*([\s\S]*)$/im.exec(responseString);
         if (!match)
             throw new Error("Invalid Chat Response: " + responseString);
-        var channelPath = match[2];
-        var username = match[3];
-        var timestamp = parseInt(match[4]);
-        var content = (match[5]); // fixPGPMessage
+        var channelPath = match[1];
+        var username = match[2];
+        var content = (match[3]); // fixPGPMessage
+        var timestamp = Date.now();
 
 
         var MESSAGE_TEMPLATE =

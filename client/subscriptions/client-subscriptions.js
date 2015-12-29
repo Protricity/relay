@@ -37,7 +37,7 @@ module.exports.ClientSubscriptions =
 
 
     // TODO: needs comments
-    ClientSubscriptions.handleChannelUserList = function(responseString) {
+    ClientSubscriptions.handleClientUserList = function(responseString) {
         var match = /^(?:channel\.)?userlist\.(\w+)\s(\S+)\n([\s\S]+)$/im.exec(responseString);
         if (!match)
             throw new Error("Invalid UserList: " + responseString);
@@ -72,10 +72,12 @@ module.exports.ClientSubscriptions =
     // CHANNEL.SUBSCRIBE.CHAT /state/az guest123
     // KEYSPACE.SUBSCRIBE.GET ABCD1234 <-- host keyspace content
     // KEYSPACE.SUBSCRIBE.PUT ABCD1234 <-- host keyspace service
-    ClientSubscriptions.handleSubscription = function(subscriptionString, webSocket) {
+    ClientSubscriptions.handleServerSubscription = function(subscriptionString, e) {
         var match = /^(\w+)\.(|un|re)subscribe(?:\.(\w+))?\s+(\S+)\s*([\s\S]*)$/im.exec(subscriptionString);
         if (!match)
             throw new Error("Invalid Subscription: " + subscriptionString);
+
+        var webSocket = e.target || null;
 
         var type = match[1].toLowerCase();
         var prefix = match[2].toLowerCase();
@@ -131,7 +133,7 @@ module.exports.ClientSubscriptions =
         // Look for existing subscription for this mode
         if(typeof modeList[mode] !== 'undefined') {
             // Existing Subscription found
-            existingSubscriptionString = modeList[mode];
+            existingSubscriptionString = modeList[mode][0];
             //console.log("Existing Subscription Found: " + oldSubscriptionString);
         }
 
@@ -142,7 +144,7 @@ module.exports.ClientSubscriptions =
             console.log(type + " subscription removed: ", subscriptionString);
 
         } else if(prefix === 're') {
-            modeList[mode] = argString; // TODO: add websockets?
+            modeList[mode] = [argString, webSocket];
             if(!existingSubscriptionString) {
                 console.warn("Old Subscription not found: " + subscriptionString);
 
@@ -151,7 +153,7 @@ module.exports.ClientSubscriptions =
             }
 
         } else {
-            modeList[mode] = argString; // TODO: add websockets?
+            modeList[mode] = [argString, webSocket];
             if(!existingSubscriptionString) {
                 console.log(type + " subscription: ", subscriptionString);
             } else {
@@ -160,18 +162,6 @@ module.exports.ClientSubscriptions =
         }
 
         return existingSubscriptionString;
-    };
-
-
-    ClientSubscriptions.getKeySpaceSubscription = function(pgp_id_public, mode) {
-        if(mode)          mode = mode.toLowerCase();
-        if(pgp_id_public) pgp_id_public = pgp_id_public.toUpperCase();
-        if(typeof keyspaceSubscriptions[pgp_id_public] === 'undefined')
-            return [];
-        var modeList = keyspaceSubscriptions[pgp_id_public];
-        if(typeof modeList[mode] === 'undefined')
-            return null;
-        return modeList[mode];
     };
 
     ClientSubscriptions.searchKeySpaceSubscriptions = function(searchMode, searchPublicKeyID, callback) {
@@ -187,8 +177,9 @@ module.exports.ClientSubscriptions =
                     if(mode[0] !== '_' && modeList.hasOwnProperty(mode)) {
                         if(searchMode && searchMode !== mode)
                             continue;
-                        var argString = modeList[mode];
-                        var ret = callback(mode, pgp_id_public, argString);
+                        var argString = modeList[mode][0];
+                        var webSocket = modeList[mode][1];
+                        var ret = callback(mode, pgp_id_public, argString, webSocket);
                         count++;
                         if(ret === true)
                             return count;

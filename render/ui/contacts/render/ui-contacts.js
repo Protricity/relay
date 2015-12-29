@@ -25,9 +25,9 @@ if(typeof module !== 'object')
         var html_command_options = '';
         var html_public_key_entries = '';
 
-        self.module = {exports: {}};
-        importScripts('keyspace/ks-db.js');
-        var KeySpaceDB = self.module.exports.KeySpaceDB;
+        //self.module = {exports: {}};
+        //importScripts('keyspace/ks-db.js');
+        //var KeySpaceDB = self.module.exports.KeySpaceDB;
 
         var publicKeys = {};
         getClientSubscriptions().searchKeySpaceSubscriptions(null, null,
@@ -38,7 +38,10 @@ if(typeof module !== 'object')
                 var modes = publicKeys[pgp_id_public].modes;
                 if(modes.indexOf(mode) === -1)
                     modes.push(mode);
-            });
+            }
+        );
+
+        console.log("KeySpace Contacts: ", publicKeys);
 
         for(var pgp_id_public in publicKeys) {
             if(publicKeys.hasOwnProperty(pgp_id_public)) {
@@ -90,6 +93,8 @@ if(typeof module !== 'object')
                 if(modes.indexOf(mode) === -1)
                     modes.push(mode);
             });
+
+        console.log("Channels: ", channels);
 
         for(var channelNameLowerCase in channels) {
             if(channels.hasOwnProperty(channelNameLowerCase)) {

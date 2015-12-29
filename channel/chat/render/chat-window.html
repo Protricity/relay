@@ -4,7 +4,7 @@
     <header class='header-bar show-on-minimized'>
         {header:buttons chat:{$channel_lowercase}}
         <a href='javascript:ClientMainThread.execute("MINIMIZE chat:{$channel_lowercase}");'>
-            <span class="command">Join</span> {$channel}
+            <span class="command">Chat</span> {$channel}
         </a>
     </header>
     <form name='channel-form'>
@@ -17,11 +17,6 @@
                             <select multiple='multiple' name='users' size='5' class='channel-users:{$channel_lowercase}'>
                             </select>
                             <select name="user_commands">
-                                <optgroup label="Channel Subscription Options">
-                                    <option value="CHANNEL.SUBSCRIBE [$channel] all">All - View ALL channel activity</option>
-                                    <option value="CHANNEL.SUBSCRIBE [$channel] keyspace">Contacts Only - Only view channel activity from Contacts</option>
-                                    <option value="CHANNEL.SUBSCRIBE [$channel] keyspace">Contacts +1 - Only view channel activity involving interactions with Contacts</option>
-                                </optgroup>
                                 <optgroup label="Channel Commands">
                                     <option value="LEAVE [$channel]">Leave Channel</option>
                                     <option value="MESSAGE [$username]">Private Message User</option>

@@ -99,7 +99,7 @@ if(typeof module === 'object') (function() {
             if (!match)
                 return false;
 
-            ClientSubscriptions.handleSubscription(responseString);
+            ClientSubscriptions.handleServerSubscription(responseString);
 
             ClientWorkerThread.processResponse("EVENT " + responseString);
 

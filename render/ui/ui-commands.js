@@ -37,6 +37,11 @@ if(typeof module === 'object') (function() {
 
             if(activeContactList === null) {
                 console.log("Requesting contact list status");
+
+                self.module = {exports: {}};
+                importScripts('keyspace/ks-db.js');
+                var KeySpaceDB = self.module.exports.KeySpaceDB;
+
                 activeContactList = [];
                 // Query public keys
                 var path = 'public/id';

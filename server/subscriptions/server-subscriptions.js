@@ -41,8 +41,8 @@ module.exports.ServerSubscriptions =
      * @example KEYSPACE.SUBSCRIBE.GET ABCD1234 ABCD1234 <-- host keyspace content
      * @example KEYSPACE.SUBSCRIBE.PUT ABCD1234 ABCD1234 <-- host keyspace service
      */
-    ServerSubscriptions.handleSubscription = function(subscriptionString, client) {
-        var match = /^(\w+)\.(|un|re)subscribe(?:\.(\w+))?\s+((\S+)[\s\S]*)$/im.exec(subscriptionString);
+    ServerSubscriptions.handleClientSubscription = function(subscriptionString, client) {
+        var match = /^(\w+)\.(|un|re)subscribe(?:\.(\w+))?\s+(\S+)\s*([\s\S]*)$/im.exec(subscriptionString);
         if (!match)
             throw new Error("Invalid Subscription: " + subscriptionString);
 
@@ -65,7 +65,7 @@ module.exports.ServerSubscriptions =
                 if(pgp_ids.length > 0) {
                     var oldSubscriptionStrings = [];
                     for(var ii=0; ii<pgp_ids.length; ii++) {
-                        var ret = ServerSubscriptions.handleSubscription(type + " " + prefix + "subscribe." + mode + " " + argString);
+                        var ret = ServerSubscriptions.handleClientSubscription(type + " " + prefix + "subscribe." + mode + " " + argString);
                         if(ret) oldSubscriptionStrings.push(ret);
                     }
                     return oldSubscriptionStrings.join("\n");
@@ -164,29 +164,6 @@ module.exports.ServerSubscriptions =
     };
 
     /**
-     * Get KeySpace Subscriptions in a specific channel/mode
-     * @param pgp_id_public
-     * @param mode
-     * @returns {*}
-     */
-    ServerSubscriptions.getKeySpaceSubscriptions = function(pgp_id_public, mode) {
-        if(mode)          mode = mode.toLowerCase();
-        if(pgp_id_public) pgp_id_public = pgp_id_public.toUpperCase();
-
-        // If the ID wasn't found, return an empty array
-        if(typeof keyspaceSubscriptions[pgp_id_public] === 'undefined')
-            return [];
-        var modeList = keyspaceSubscriptions[pgp_id_public];
-
-        // If the KeySpace mode was not found, return an empty array.
-        if(typeof modeList[mode] === 'undefined')
-            return [];
-
-        // Return the KeySpace Subscriptions Array
-        return modeList[mode];
-    };
-
-    /**
      * Search through all KeySpace subscriptions
      * @param searchClient optionally match subscriptions by client
      * @param searchMode optionally match subscriptions by mode
@@ -253,6 +230,7 @@ module.exports.ServerSubscriptions =
                 return clientList[i][1];        // Return the Subscription ArgString
             }
         }
+        return null;
     };
 
     /**
