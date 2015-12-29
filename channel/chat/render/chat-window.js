@@ -144,10 +144,13 @@ if(typeof module === 'object') (function() {
         var content = (match[3]); // fixPGPMessage
         var timestamp = Date.now();
 
+        var classList = [];
+        if(!content || content.length === 0)
+            classList.push('empty-log-entry');
 
         var MESSAGE_TEMPLATE =
             '<div class="channel-log:' + channelPath.toLowerCase() + ' append-children-on-render">' +
-                '<div class="channel-log-entry:">' +
+                '<div class="channel-log-entry: ' + classList.join(' ') + '">' +
                     '<a href="javascript:Client.execute(\'MESSAGE {$username}\');" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
                     ': <span class="message">{$content}</span>' +
                 '</div>' +

@@ -66,15 +66,19 @@ form[name=channel-form] .channel-log\3A {
     background-color: white;
 }
 
-form[name=channel-form] .channel-log\3A .channel-log-entry {
+form[name=channel-form] .channel-log\3A  .channel-log-entry\3A  {
     border: 1px solid transparent;
     overflow: hidden;
     max-height: 5em;
 }
 
-form[name=channel-form] .channel-log\3A .channel-log-entry:hover {
+form[name=channel-form] .channel-log\3A  .channel-log-entry\3A:hover {
     border-radius: 0.2em;
     border: 1px solid lightgrey;
     overflow: hidden;
     max-height: inherit;
+}
+
+form[name=channel-form] .channel-log\3A  .channel-log-entry\3A.empty-log-entry {
+    display: none;
 }
