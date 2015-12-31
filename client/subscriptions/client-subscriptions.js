@@ -199,6 +199,7 @@ module.exports.ClientSubscriptions =
         return existingSubscriptionString;
     };
 
+
     ClientSubscriptions.searchKeySpaceSubscriptions = function(searchMode, searchPublicKeyID, callback) {
         if(searchMode)          searchMode = searchMode.toLowerCase();
         if(searchPublicKeyID) searchPublicKeyID = searchPublicKeyID.toUpperCase();
@@ -214,7 +215,7 @@ module.exports.ClientSubscriptions =
                             continue;
                         var argString = modeList[mode][0];
                         var webSocket = modeList[mode][1];
-                        var ret = callback(mode, pgp_id_public, argString, webSocket);
+                        var ret = callback(pgp_id_public, mode, argString, webSocket);
                         count++;
                         if(ret === true)
                             return count;

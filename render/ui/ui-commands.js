@@ -46,13 +46,15 @@ if(typeof module === 'object') (function() {
                 // Query public keys. Don't query private keys. Subscribes to status of stored private keys too
                 var path = 'public/id';
                 var publicKeys = [];
-                KeySpaceDB.queryAll(path, function(err, contentEntry) {
+                KeySpaceDB.queryAll(path, function(err, publicKeyContentEntry) {
                     if (err)
                         throw new Error(err);
 
-                    if (contentEntry) {
+                    if (publicKeyContentEntry) {
+                        // todo cache user ids
                         // TODO: subscribe to all in database? No other way to get status.
-                        publicKeys.push(contentEntry.pgp_id_public);
+                        publicKeys.push(publicKeyContentEntry.pgp_id_public);
+                        KeySpaceDB.cachePublicKeyInfo(publicKeyContentEntry);
 
                     } else {
                         if(publicKeys.length)

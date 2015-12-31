@@ -25,9 +25,9 @@ if(typeof module !== 'object')
         var html_command_options = '';
         var html_public_key_entries = '';
 
-        //self.module = {exports: {}};
-        //importScripts('keyspace/ks-db.js');
-        //var KeySpaceDB = self.module.exports.KeySpaceDB;
+        self.module = {exports: {}};
+        importScripts('keyspace/ks-db.js');
+        var KeySpaceDB = self.module.exports.KeySpaceDB;
 
         var publicKeys = {};
         getClientSubscriptions().searchKeySpaceSubscriptions(null, null,
@@ -49,7 +49,8 @@ if(typeof module !== 'object')
                 // TODO: No need to query keyspace
 
                 var subscriptionStatus = false ? 'Subscribe' : 'Unsubscribe' ;
-                var user_id = pgp_id_public; // TODO: query by other means?
+                var cachedPublicKeyInfo = KeySpaceDB.getCachedPublicKeyInfo(pgp_id_public) || {};
+                var user_id = cachedPublicKeyInfo.user_id || pgp_id_public; // TODO: query by other means?
                 var hostingStatus = 'offline';
 
                 var html_commands =
