@@ -138,11 +138,14 @@ if(typeof importScripts !== 'undefined') {
                 if(commandHandlers[i](commandString, e))
                     return (function() {
 
-                        var parts = commandString.split(' ', 2);
-                        Client.log(
-                            '<span class="direction">$</span> ' +
-                            '<span class="command">' + parts[0] + '</span>' + (parts[1] ? ' ' + parts[1] : '')
-                        );
+                        //var parts = commandString.split(' ');
+                        //var part1 = parts.shift();
+                        //var part2 = parts.join(' ');
+                        //Client.log(
+                        //    '<span class="direction">$</span> ' +
+                        //    '<span class="response">' + part1 + "</span>" + (part2 ? ' ' + part2 : '')
+                        //);
+
                         return true;
                     })();
 
@@ -163,15 +166,17 @@ if(typeof importScripts !== 'undefined') {
             var oldCounter = handlerCounter;
             for(var i=0; i<responseHandlers.length; i++)
                 if(responseHandlers[i](responseString, e)) {
-                    var parts = responseString.split(' ', 2);
 
                     // TODO: only pass if handled?
                     // Pass response event to client thread
                     ClientWorkerThread.postResponseToClient(responseString);
 
+                    var parts = responseString.split(' ');
+                    var part1 = parts.shift();
+                    var part2 = parts.join(' ');
                     Client.log(
                         '<span class="direction">I</span> ' +
-                        '<span class="response">' + parts[0] + '</span>' + (parts[1] ? ' ' + parts[1] : '')
+                        '<span class="response">' + part1 + "</span>" + (part2 ? ' ' + part2 : '')
                     );
 
                     return true;

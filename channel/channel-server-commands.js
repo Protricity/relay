@@ -32,8 +32,13 @@ function generateUID(format) {
 }
 
 function send(client, message) {
-    client.send(message);
-    console.info("O " + message);
+    if(client.readyState === client.OPEN) {
+        client.send(message);
+        console.info("O " + message);
+
+    } else {
+        console.warn("C " + message);
+    }
 }
 
 function channelClientCloseListener() {
@@ -42,8 +47,8 @@ function channelClientCloseListener() {
 }
 
 function unloadClient(client) {
-    if(client.readyState === client)
-        return false;
+    //if(channelClient.readyState === channelClient.OPEN)
+    //    return false;
     //console.info("Socket Client Closed: ", typeof client);
     ServerSubscriptions.searchChannelSubscriptions(client, null, null,
         function(channelClient, channel, mode, argString) {
@@ -117,8 +122,11 @@ function unsubscribeCommand(commandString, client) {
     if(oldArgString) {
         var oldUserName = oldArgString.split(/\s+/)[0];
         var relayCommandString = "CHANNEL.UNSUBSCRIBE." + mode.toUpperCase() + " " + channel + " " + oldUserName;
-        var clients = ServerSubscriptions.getChannelSubscriptions(channel, mode);
+        var clients = ServerSubscriptions.searchChannelSubscriptions(channel, mode);
         for(var i=0; i<clients.length; i++) {
+            if(!clients[i])
+                console.log(clients);
+
             var channelClient = clients[i][0];
             if(channelClient.readyState === channelClient.OPEN) {
                 // Inform other subscribers

@@ -107,11 +107,14 @@ function ksHandleHTTPSocketResponse(responseString, client) {
 
 
 function send(client, message) {
-    client.send(message);
-    console.info("O " + message);
+    if(client.readyState === client.OPEN) {
+        client.send(message);
+        console.info("O " + message);
+
+    } else {
+        console.warn("C " + message);
+    }
 }
-
-
 //function ksSocketClientCloseListener() {
 //    var client = this;
 //    console.info("KeySpace Client Closed: ", typeof client);

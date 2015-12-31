@@ -150,6 +150,11 @@ function getContentHeader(contentString, headerName) {
 }
 
 function send(client, message) {
-    client.send(message);
-    console.info("O " + message);
+    if(client.readyState === client.OPEN) {
+        client.send(message);
+        console.info("O " + message);
+
+    } else {
+        console.warn("C " + message);
+    }
 }

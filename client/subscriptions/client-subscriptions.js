@@ -264,14 +264,15 @@ module.exports.ClientSubscriptions =
                 break;
         }
 
-        var oldStatus = null;
+        var oldStatusArgString = null;
         if(typeof keyspaceStatus[pgp_id_public] !== 'undefined')
-            oldStatus = keyspaceStatus[pgp_id_public];
+            oldStatusArgString = keyspaceStatus[pgp_id_public];
 
         keyspaceStatus[pgp_id_public] = argString;
 
         // TODO: event notify
         ClientWorkerThread.processResponse("EVENT " + responseString);
+        console.info("KeySpace Status Change: " + argString, oldStatusArgString);
 
         return true;
     };
@@ -280,7 +281,7 @@ module.exports.ClientSubscriptions =
         pgp_id_public = pgp_id_public.toUpperCase().substr(pgp_id_public.length - 8);
 
         if(typeof keyspaceStatus[pgp_id_public] === 'undefined')
-            return 'offline';
+            return 'OFFLINE';
 
         return keyspaceStatus[pgp_id_public];
     };

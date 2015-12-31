@@ -53,7 +53,7 @@ if(typeof module !== 'object')
                 var subscriptionStatus = false ? 'Subscribe' : 'Unsubscribe' ;
                 var user_id = ClientSubscriptions.getCachedPublicKeyUserID(pgp_id_public)
                     || pgp_id_public;
-                var hostingStatus = ClientSubscriptions.getCachedPublicKeyUserID(pgp_id_public);
+                var hostingStatus = ClientSubscriptions.getKeySpaceStatus(pgp_id_public);
 
                 var html_commands =
                     getCommandHTML("MESSAGE " + pgp_id_public, "Message") +

@@ -97,11 +97,24 @@ module.exports.ServerSubscriptions =
                         break;
 
                     case 'get':     // No auth required for GET. all GET requests are verified on the client (keyspace)
+                        break;
+
                     case 'event':   // No auth for status subscription
+                        var keyspaceStatusString = ServerSubscriptions
+                            .getKeySpaceStatus(pgp_id_public);
+                        var keyspaceStatus = keyspaceStatusString
+                            .split(' ')[0]
+                            .toLowerCase();
+                        if(keyspaceStatus !== 'offline' && prefix === '') {
+                            // Notify subscriber of keyspace status
+                            send(client, "KEYSPACE.STATUS " + pgp_id_public + " " + keyspaceStatusString);
+                        }
                         break;
                     default:
                         throw new Error("Invalid KeySpace Mode: " + subscriptionString);
                 }
+
+                // TODO: notify client of status content i.e. userlist, online/offline
 
                 // If this mode hasn't been defined yet, lets create the array
                 if(typeof modeList[mode] === 'undefined')
@@ -162,6 +175,8 @@ module.exports.ServerSubscriptions =
         var oldSubscriptionString = null;
         // Find the old subscription matching this client for the specified list
         for(var i=0; i<clientList.length; i++) {
+            if(!clientList[i] || !clientList[i][0])
+                throw new Error("Invalid Client Entry: " + i);
             // If the client matches, grab the old subscription string
             if(clientList[i][0] === client){
                 oldPos = i;
@@ -175,7 +190,8 @@ module.exports.ServerSubscriptions =
             if(oldPos === -1)
                 throw new Error("Old Subscription not found: " + subscriptionString);
             // Delete the subscription
-            delete clientList[oldPos];
+            clientList.splice(oldPos, 1);
+            //delete clientList[oldPos];
             console.log(type + " subscription removed: ", subscriptionString);
 
 
@@ -198,8 +214,6 @@ module.exports.ServerSubscriptions =
                 console.warn(type + " subscription replaced: ", subscriptionString);
             }
         }
-
-        // TODO: notify client of status content i.e. userlist, online/offline
 
         //send(client, subscriptionString);
 
@@ -244,8 +258,12 @@ module.exports.ServerSubscriptions =
 
                         // Loop through all clients in the channel/mode
                         for(var i=0; i<clientList.length; i++) {
-
-                            var ret = callback(clientList[i][0], mode, pgp_id_public, clientList[i][1]);
+                            var subscriberClient = clientList[i][0];
+                            if(subscriberClient.readyState !== subscriberClient.OPEN) {
+                                clientList.splice(i--, 1);
+                                continue;
+                            }
+                            var ret = callback(subscriberClient, mode, pgp_id_public, clientList[i][1]);
                             // Count the matched subscription
                             count++;
 
@@ -292,7 +310,7 @@ module.exports.ServerSubscriptions =
         var modeList = channelSubscriptions[channel];
         if(typeof modeList[mode] === 'undefined')
             return [];
-        return modeList[mode];
+        return modeList[mode].slice();
     };
 
     /**
@@ -332,6 +350,8 @@ module.exports.ServerSubscriptions =
 
                         // Loop through all clients in the channel/mode
                         for(var i=0; i<clientList.length; i++) {
+                            if(!clientList[i] || !clientList[i][0])
+                                throw new Error("Invalid Client Entry: " + i);
                             var ret = callback(clientList[i][0], channel, mode, clientList[i][1]);
 
                             // Count the matched subscription
@@ -542,9 +562,8 @@ module.exports.ServerSubscriptions =
         var count = 0;
         ServerSubscriptions.searchKeySpaceSubscriptions(null, 'event', null,
             function(subscriberClient, mode, pgp_id_public, subscriberArgString) {
-                console.log("Subscriber: ", mode, pgp_id_public);
-                count++;
                 subscriberClient.send(commandString);
+                count++;
             }
         );
 
@@ -616,8 +635,13 @@ module.exports.ServerSubscriptions =
     }
 
     function send(client, message) {
-        client.send(message);
-        console.info("O " + message);
+        if(client.readyState === client.OPEN) {
+            client.send(message);
+            console.info("O " + message);
+
+        } else {
+            console.warn("C " + message);
+        }
     }
 
     // Return newly defined class
