@@ -54,18 +54,20 @@ if(typeof module !== 'object')
                 var user_id = ClientSubscriptions.getCachedPublicKeyUserID(pgp_id_public)
                     || pgp_id_public;
                 var hostingStatus = ClientSubscriptions.getKeySpaceStatus(pgp_id_public);
+                var keyType = 'public-key';
 
                 var html_commands =
                     getCommandHTML("MESSAGE " + pgp_id_public, "Message") +
-                    "<br/>" +
                     getCommandHTML("GET " + pgp_id_public + "/public/profile", "Profile") +
                     getCommandHTML("GET " + pgp_id_public, "Get") +
                     "<br/>" +
                     getCommandHTML("PGP.EXPORT " + pgp_id_public, "Export") +
                     getCommandHTML("PGP.DELETE " + pgp_id_public, "Delete");
 
-                for(var j=0; j<modes.length; modes++)
-                    html_commands += getCommandHTML("KEYSPACE." + modes[j].toUpperCase() + ' ' + pgp_id_public, modes[j]);
+                if(false) {
+                    keyType = 'private-key';
+                }
+
 
                 renderUIContactListEntry(
                     user_id,
@@ -74,7 +76,7 @@ if(typeof module !== 'object')
                     hostingStatus.toLowerCase() +
                     '</span>',
                     'render/ui/contacts/render/icons/user_icon_default.png',
-                    'public-key',
+                    keyType,
                     html_commands,
                     function(html) {
                         html_public_key_entries += html;
@@ -98,6 +100,8 @@ if(typeof module !== 'object')
                 var modes = channels[channelNameLowerCase].modes;
                 if(modes.indexOf(mode) === -1)
                     modes.push(mode);
+
+                // TODO: channel subscriber count
             });
 
 //         console.log("Channels: ", channels);
@@ -107,17 +111,17 @@ if(typeof module !== 'object')
                 var modes = channels[channelNameLowerCase].modes;
                 var channelName = channels[channelNameLowerCase].original_case || channelNameLowerCase;
 
-                var subscriptionStatus = false ? 'Subscribe' : 'Unsubscribe' ;
-                var html_commands =
-                    getCommandHTML("CHANNEL." + subscriptionStatus.toUpperCase() + " " + channelName, subscriptionStatus);
-
-                html_commands += getCommandHTML("CHANNEL.CHAT " + channelNameLowerCase, 'Chat', modes.indexOf('chat') === -1 ? '' : 'subscribed');
+                // TODO: pressed buttons
+                var html_commands = getCommandHTML("CHANNEL.CHAT " + channelNameLowerCase, 'Chat', modes.indexOf('chat') === -1 ? '' : 'subscribed');
                 html_commands += getCommandHTML("CHANNEL.AUDIO " + channelNameLowerCase, 'Audio', 'disabled');
                 html_commands += getCommandHTML("CHANNEL.VIDEO " + channelNameLowerCase, 'Video', 'disabled');
 
+                //html_commands += "<br/>";
+                //html_commands += getCommandHTML("CHANNEL.LEAVE " + channelName, "LEAVE");
+
                 renderUIContactListEntry(
                     channelName,
-                    '<span class="status">0-25 users</span>',
+                    '<span class="status">0-25 subscribers</span>',
                     'render/ui/contacts/render/icons/channel_icon_default.png',
                     'channel',
                     html_commands,
