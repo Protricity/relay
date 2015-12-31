@@ -38,7 +38,7 @@ if(typeof module === 'object') (function() {
 
             if(!activeContactList) {
                 activeContactList = true;
-                console.log("Requesting contact list status");
+                //console.info("Requesting contact list status");
 
                 self.module = {exports: {}};
                 importScripts('keyspace/ks-db.js');

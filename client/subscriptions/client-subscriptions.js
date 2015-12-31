@@ -93,7 +93,7 @@ module.exports.ClientSubscriptions =
                 var kss = [], ksplit = [];
                 argString = match[4] + (argString ? ' ' + argString : '');
                 ksplit = argString.split(/\s+/g);
-                console.log("Multiple subscribe: ", ksplit);
+//                 console.log("Multiple subscribe: ", ksplit);
                 for(var kspliti=0; kspliti<ksplit.length; kspliti++)
                     if(ksplit[kspliti].length > 0)
                         kss.push(
@@ -184,7 +184,7 @@ module.exports.ClientSubscriptions =
             if(!existingSubscriptionString)
                 throw new Error("Old Subscription not found: " + subscriptionString);
             delete modeList[mode];
-            console.log(type + " subscription removed: ", subscriptionString);
+            console.info(type + " subscription removed: ", subscriptionString);
 
         } else if(prefix === 're') {
             modeList[mode] = [argString, webSocket];
@@ -192,13 +192,13 @@ module.exports.ClientSubscriptions =
                 console.warn("Old Subscription not found: " + subscriptionString);
 
             } else {
-                console.log(type + " subscription replaced: ", subscriptionString);
+                console.info(type + " subscription replaced: ", subscriptionString);
             }
 
         } else {
             modeList[mode] = [argString, webSocket];
             if(!existingSubscriptionString) {
-                console.log(type + " subscription: ", subscriptionString);
+                console.info(type + " subscription: ", subscriptionString);
             } else {
                 console.warn(type + " subscription replaced: ", subscriptionString);
             }
@@ -240,10 +240,11 @@ module.exports.ClientSubscriptions =
     ClientSubscriptions.cachePrivateKeyInfo =
     ClientSubscriptions.cachePublicKeyInfo = function(publicKeyContentEntry) {
         var pgp_id_public = publicKeyContentEntry.pgp_id_public.toUpperCase();
-        if(typeof cachedPublicKeyUserIDs[pgp_id_public] === 'undefined')
-            console.warn("Cached Public Key ID already exists: " + pgp_id_public);
+//         if(typeof cachedPublicKeyUserIDs[pgp_id_public] !== 'undefined')
+//             console.warn("Cached Public Key ID already exists: " + pgp_id_public);
 
-        cachedPublicKeyUserIDs[pgp_id_public] = publicKeyContentEntry.user_id;
+        if(typeof cachedPublicKeyUserIDs[pgp_id_public] === 'undefined')
+            cachedPublicKeyUserIDs[pgp_id_public] = publicKeyContentEntry.user_id;
     };
 
 
@@ -272,7 +273,7 @@ module.exports.ClientSubscriptions =
 
         // TODO: event notify
         ClientWorkerThread.processResponse("EVENT " + responseString);
-        console.info("KeySpace Status Change: " + argString, oldStatusArgString);
+        console.info("KeySpace Status Change for " + pgp_id_public + ": " + argString, "Old: ", oldStatusArgString);
 
         return true;
     };

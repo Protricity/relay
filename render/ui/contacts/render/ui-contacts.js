@@ -43,7 +43,7 @@ if(typeof module !== 'object')
             }
         );
 
-        console.log("KeySpace Contacts: ", publicKeys);
+//         console.log("KeySpace Contacts: ", publicKeys);
 
         for(var pgp_id_public in publicKeys) {
             if(publicKeys.hasOwnProperty(pgp_id_public)) {
@@ -100,7 +100,7 @@ if(typeof module !== 'object')
                     modes.push(mode);
             });
 
-        console.log("Channels: ", channels);
+//         console.log("Channels: ", channels);
 
         for(var channelNameLowerCase in channels) {
             if(channels.hasOwnProperty(channelNameLowerCase)) {
