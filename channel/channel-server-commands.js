@@ -54,6 +54,7 @@ function unloadClient(client) {
     return true;
 }
 
+// TODO: multiple
 function subscribeCommand(commandString, client) {
     var match = /^(?:channel\.)?subscribe(?:\.(\w+))?\s+(\S+)\s*(\S*)\s*([\S\s]*)$/im.exec(commandString);
     if (!match)
@@ -68,6 +69,7 @@ function subscribeCommand(commandString, client) {
     //var username = argString.split(/\s+/)[0] || 'unknown';
 
     try {
+        // TODO: Refactor this block into class
         var oldArgString = ServerSubscriptions.handleClientSubscription(commandString, client);
         var relayCommandString = "CHANNEL.SUBSCRIBE." + mode.toUpperCase() + " " + channel + " " + firstArgString;
 

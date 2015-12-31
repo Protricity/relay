@@ -33,18 +33,18 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
-        // Keyspace Hosting Host
-        ClientWorkerThread.addCommand(importHostCommand);
-        ClientWorkerThread.addResponse(importHostCommand);
-        function importHostCommand(commandString, e) {
-            if (!/^(?:keyspace\.)?host/i.test(commandString))
+        // Keyspace Subscribe Command
+        ClientWorkerThread.addCommand(importSubscribeCommand);
+        ClientWorkerThread.addResponse(importSubscribeCommand);
+        function importSubscribeCommand(commandString, e) {
+            if (!/^(?:keyspaces?\.)?((?:un|re)?subscribe|auth)/i.test(commandString))
                 return false;
 
-            ClientWorkerThread.removeCommand(importHostCommand);
-            ClientWorkerThread.removeResponse(importHostCommand);
+            ClientWorkerThread.removeCommand(importSubscribeCommand);
+            ClientWorkerThread.removeResponse(importSubscribeCommand);
             self.module = {exports: {}};
-            importScripts('keyspace/host/ks-client-host-commands.js');
-            module.exports.initClientKSHostCommands(ClientWorkerThread);
+            importScripts('keyspace/subscribe/ks-client-subscribe-commands.js');
+            module.exports.initClientKSSubscribeCommands(ClientWorkerThread);
             //console.info("Loaded: keyspace/auth/ks-client-auth-command.js");
             return false;
         }

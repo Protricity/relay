@@ -21,7 +21,7 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
-        var activeContactList = null;
+        var activeContactList = false;
         function contactCommand(commandString) {
             var match = /^(?:ui\.)?contacts(\.refresh)?/i.exec(commandString);
             if (!match)
@@ -35,30 +35,32 @@ if(typeof module === 'object') (function() {
                 Client.render(html);
             });
 
-            if(activeContactList === null) {
+            if(!activeContactList) {
+                activeContactList = true;
                 console.log("Requesting contact list status");
 
                 self.module = {exports: {}};
                 importScripts('keyspace/ks-db.js');
                 var KeySpaceDB = self.module.exports.KeySpaceDB;
 
-                activeContactList = [];
-                // Query public keys
+                // Query public keys. Don't query private keys. Subscribes to status of stored private keys too
                 var path = 'public/id';
+                var publicKeys = [];
                 KeySpaceDB.queryAll(path, function(err, contentEntry) {
                     if (err)
                         throw new Error(err);
 
                     if (contentEntry) {
                         // TODO: subscribe to all in database? No other way to get status.
-                        activeContactList.push(contentEntry.pgp_id_public);
+                        publicKeys.push(contentEntry.pgp_id_public);
 
                     } else {
-                        if(activeContactList.length)
-                            ClientWorkerThread.sendWithSocket("KEYSPACE.SUBSCRIBE.EVENT " + activeContactList.join(" "));
+                        if(publicKeys.length)
+                            ClientWorkerThread.sendWithSocket("KEYSPACES.SUBSCRIBE.EVENT " + publicKeys.join(" "));
 
                     }
                 });
+
             }
 
             return true;

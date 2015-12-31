@@ -86,9 +86,26 @@ module.exports.ClientSubscriptions =
 
         var modeList;
         switch(type) {
+            case 'keyspaces':
+                var kss = [], ksplit = [];
+                argString = match[4] + (argString ? ' ' + argString : '');
+                ksplit = argString.split(/\s+/g);
+                console.log("Multiple subscribe: ", ksplit);
+                for(var kspliti=0; kspliti<ksplit.length; kspliti++)
+                    if(ksplit[kspliti].length > 0)
+                        kss.push(
+                            ClientSubscriptions.handleServerSubscription(
+                                'KEYSPACE.' + prefix.toUpperCase() + 'SUBSCRIBE.' + mode.toUpperCase() +
+                                ' ' + ksplit[kspliti],
+                                e
+                            )
+                        );
+
+                return ksplit;
+
             case 'keyspace':
                 var pgp_id_public = match[4].toUpperCase();
-                if(!/[a-f0-9]{8,}/.exec(pgp_id_public))
+                if(!/[a-f0-9]{8,}/i.exec(pgp_id_public))
                     throw new Error("Invalid PGP Public ID Key: " + pgp_id_public);
                 if(typeof keyspaceSubscriptions[pgp_id_public] === 'undefined')
                     keyspaceSubscriptions[pgp_id_public] = {};
@@ -98,12 +115,30 @@ module.exports.ClientSubscriptions =
                     case 'get':
                     case 'post':
                     case 'put':
-                    case 'status':
+                    case 'event':
                         break;
                     default:
-                        throw new Error("Invalid KeySpace Mode: " + subscriptionString);
+                        throw new Error("Invalid KeySpace Mode: " + mode);
                 }
                 break;
+
+            case 'channels':
+                // TODO: username for all channels?
+                var css = [], csplit = [];
+                argString = match[4] + (argString ? ' ' + argString : '');
+                csplit = argString.split(/\s+/g);
+                console.log("Multiple subscribe: ", csplit);
+                for(var cspliti=0; cspliti<csplit.length; cspliti++)
+                    if(csplit[cspliti].length > 0)
+                        css.push(
+                            ClientSubscriptions.handleServerSubscription(
+                                'CHANNEL.' + prefix.toUpperCase() + 'SUBSCRIBE.' + mode.toUpperCase() +
+                                ' ' + csplit[cspliti],
+                                e
+                            )
+                        );
+
+                return csplit;
 
             case 'channel':
                 var channelOriginalCase = match[4];

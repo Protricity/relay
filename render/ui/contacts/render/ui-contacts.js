@@ -49,6 +49,8 @@ if(typeof module !== 'object')
                 // TODO: No need to query keyspace
 
                 var subscriptionStatus = false ? 'Subscribe' : 'Unsubscribe' ;
+                var user_id = pgp_id_public; // TODO: query by other means?
+                var hostingStatus = 'offline';
 
                 var html_commands =
                     getCommandHTML("MESSAGE " + pgp_id_public, "Message") +
@@ -63,7 +65,7 @@ if(typeof module !== 'object')
                     html_commands += getCommandHTML("KEYSPACE." + modes[j].toUpperCase() + ' ' + pgp_id_public, modes[j]);
 
                 renderUIContactListEntry(
-                    contentEntry.user_id, // TODO: query by other means?
+                    user_id,
                     pgp_id_public +
                     ' <span class="' + hostingStatus.toLowerCase() + '">' +
                     hostingStatus.toLowerCase() +
@@ -158,156 +160,154 @@ if(typeof module !== 'object')
         });
 
 
-
-        return;
-
-        var subscriptionList = [];
-        ClientSubscriptions.searchChannelSubscriptions(null, null,
-            function(channel, mode, argString) {
-                subscriptionList.push(Array.prototype.slice.call(arguments));
-            });
-        ClientSubscriptions.searchKeySpaceSubscriptions(null, null,
-            function(pgp_id_public, mode, argString) {
-                subscriptionList.push(Array.prototype.slice.call(arguments));
-            });
-
-        // TODO: query only subscribed keyspace ids and channels duh
-        console.log(subscriptionList);
-
-        // Query public keys
-        var path = 'public/id';
-        KeySpaceDB.queryAll(path, function(err, contentEntry) {
-            if(err)
-                throw new Error(err);
-
-            if(contentEntry) {
-                var socketHost = KeySpaceDB.getSocketHost(contentEntry.pgp_id_public);
-                var hostingStatus = socketHost !== null ? 'online' : 'offline' ;
-                //var subscriptionStatus = true ? 'Subscribe' : 'Unsubscribe' ;
-                //var hostingCommand = socketHost !== null ? 'offline' : 'online';
-
-                // TODO: get socket user name
-                var html_commands =
-                    getCommandHTML("MESSAGE " + contentEntry.pgp_id_public, "Message") +
-                    "<br/>" +
-                    getCommandHTML("GET " + contentEntry.pgp_id_public + "/public/profile", "Profile") +
-                    getCommandHTML("GET " + contentEntry.pgp_id_public, "Get") +
-                    "<br/>" +
-                    getCommandHTML("PGP.EXPORT " + contentEntry.pgp_id_public, "Export") +
-                    getCommandHTML("PGP.DELETE " + contentEntry.pgp_id_public, "Delete");
-
-                renderUIContactListEntry(
-                    contentEntry.user_id,
-                    contentEntry.pgp_id_public +
-                    ' <span class="' + hostingStatus.toLowerCase() + '">' +
-                        hostingStatus.toLowerCase() +
-                    '</span>',
-                    'render/ui/contacts/render/icons/user_icon_default.png',
-                    'public-key',
-                    html_commands,
-                    function(html) {
-                        html_public_key_entries += html;
-                    });
-
-            } else {
-
-                var path = '.private/id';
-                KeySpaceDB.queryAll(path, function(err, contentEntry) {
-                    if(err)
-                        throw new Error(err);
-
-                    if(contentEntry) {
-                        var socketHost = KeySpaceDB.getSocketHost(contentEntry.pgp_id_public);
-                        var hostingStatus = socketHost !== null ? 'online' : 'offline' ;
-                        var hostingCommand = socketHost !== null ? 'offline' : 'online';
-//                         console.log(socketHost, hostingStatus, hostingCommand);
-
-                        var html_commands =
-                            getCommandHTML("KEYSPACE.SUBSCRIBE.GET " + contentEntry.pgp_id_public, "Go " + hostingCommand) +
-                            "<br/>" +
-                            getCommandHTML("GET " + contentEntry.pgp_id_public + "/public/profile", "Profile") +
-                            getCommandHTML("GET " + contentEntry.pgp_id_public, "Get") +
-                            getCommandHTML("PUT " + contentEntry.pgp_id_public, "Put") +
-                            "<br/>" +
-                            getCommandHTML("PGP.EXPORT " + contentEntry.pgp_id_public, "Export") +
-                            getCommandHTML("PGP.MANAGE " + contentEntry.pgp_id_public, "Manage") +
-                            getCommandHTML("PGP.DELETE " + contentEntry.pgp_id_public, "Delete");
-
-                        renderUIContactListEntry(
-                            contentEntry.user_id,
-
-                            contentEntry.pgp_id_private +
-                            ' <span class="' + hostingStatus.toLowerCase() + '">' +
-                                hostingStatus.toLowerCase() +
-                            '</span>',
-                            'render/ui/contacts/render/icons/user_icon_default.png',
-                            'private-key',
-                            html_commands,
-                            function(html) {
-                                html_private_key_entries += html;
-                            });
-
-                    } else {
-
-                        //
-                        //// Check Nick
-                        //SettingsDB.getSettings("channel.nick", function(nickSettings) {
-                        //    if(nickSettings && nickSettings.username) {
-                        //        nick_value = nickSettings.username;
-                        //    }
-                        //
-                        //});
-
-
-                        // Query Auto Join Channels
-                        SettingsDB.getAllSettings("channel:*", function(channelSettings) {
-                            if(channelSettings) {
-
-                                var channelName = channelSettings.name_original_case;
-
-                                if(channelSettings.auto_join === 1) {
-
-                                    var subscriptionStatus = true ? 'Subscribe' : 'Unsubscribe' ;
-                                    var html_commands =
-                                        getCommandHTML("CHANNEL." + subscriptionStatus.toUpperCase() + ".GET " + channelName, subscriptionStatus) +
-                                        getCommandHTML("CHAT " + channelName, "Chat") +
-                                        getCommandHTML("AUDIO " + channelName, "Audio") +
-                                        getCommandHTML("VIDEO " + channelName, "Video");
-
-                                    renderUIContactListEntry(
-                                        channelSettings.name_original_case,
-                                        '<span class="status">0-25 users</span>',
-                                        'render/ui/contacts/render/icons/channel_icon_default.png',
-                                        'channel',
-                                        html_commands,
-                                            function(html) {
-                                                html_channel_entries += html;
-                                            });
-                                }
-
-                            } else {
-                                var xhr = new XMLHttpRequest();
-                                xhr.open("GET", TEMPLATE_URL, false);
-                                xhr.send();
-                                if(xhr.status !== 200)
-                                    throw new Error("Error: " + xhr.responseText);
-                                callback(xhr.responseText
-                                        .replace(/{\$status_box}/gi, status_box || '')
-                                        .replace(/{\$nick_value}/gi, nick_value || '')
-                                        //.replace(/{\$html_contact_list_sections}/gi, html_contact_list_sections)
-                                        .replace(/{\$html_private_key_entries}/gi, html_private_key_entries)
-                                        .replace(/{\$html_public_key_entries}/gi, html_public_key_entries)
-                                        .replace(/{\$html_channel_entries}/gi, html_channel_entries)
-                                        .replace(/{\$html_command_options}/gi, html_command_options)
-                                );
-                            }
-                        });
-
-
-                    }
-                });
-            }
-        });
+//
+//        var subscriptionList = [];
+//        ClientSubscriptions.searchChannelSubscriptions(null, null,
+//            function(channel, mode, argString) {
+//                subscriptionList.push(Array.prototype.slice.call(arguments));
+//            });
+//        ClientSubscriptions.searchKeySpaceSubscriptions(null, null,
+//            function(pgp_id_public, mode, argString) {
+//                subscriptionList.push(Array.prototype.slice.call(arguments));
+//            });
+//
+//        // TODO: query only subscribed keyspace ids and channels duh
+//        console.log(subscriptionList);
+//
+//        // Query public keys
+//        var path = 'public/id';
+//        KeySpaceDB.queryAll(path, function(err, contentEntry) {
+//            if(err)
+//                throw new Error(err);
+//
+//            if(contentEntry) {
+//                var socketHost = KeySpaceDB.getSocketHost(contentEntry.pgp_id_public);
+//                var hostingStatus = socketHost !== null ? 'online' : 'offline' ;
+//                //var subscriptionStatus = true ? 'Subscribe' : 'Unsubscribe' ;
+//                //var hostingCommand = socketHost !== null ? 'offline' : 'online';
+//
+//                // TODO: get socket user name
+//                var html_commands =
+//                    getCommandHTML("MESSAGE " + contentEntry.pgp_id_public, "Message") +
+//                    "<br/>" +
+//                    getCommandHTML("GET " + contentEntry.pgp_id_public + "/public/profile", "Profile") +
+//                    getCommandHTML("GET " + contentEntry.pgp_id_public, "Get") +
+//                    "<br/>" +
+//                    getCommandHTML("PGP.EXPORT " + contentEntry.pgp_id_public, "Export") +
+//                    getCommandHTML("PGP.DELETE " + contentEntry.pgp_id_public, "Delete");
+//
+//                renderUIContactListEntry(
+//                    contentEntry.user_id,
+//                    contentEntry.pgp_id_public +
+//                    ' <span class="' + hostingStatus.toLowerCase() + '">' +
+//                        hostingStatus.toLowerCase() +
+//                    '</span>',
+//                    'render/ui/contacts/render/icons/user_icon_default.png',
+//                    'public-key',
+//                    html_commands,
+//                    function(html) {
+//                        html_public_key_entries += html;
+//                    });
+//
+//            } else {
+//
+//                var path = '.private/id';
+//                KeySpaceDB.queryAll(path, function(err, contentEntry) {
+//                    if(err)
+//                        throw new Error(err);
+//
+//                    if(contentEntry) {
+//                        var socketHost = KeySpaceDB.getSocketHost(contentEntry.pgp_id_public);
+//                        var hostingStatus = socketHost !== null ? 'online' : 'offline' ;
+//                        var hostingCommand = socketHost !== null ? 'offline' : 'online';
+////                         console.log(socketHost, hostingStatus, hostingCommand);
+//
+//                        var html_commands =
+//                            getCommandHTML("KEYSPACE.SUBSCRIBE.GET " + contentEntry.pgp_id_public, "Go " + hostingCommand) +
+//                            "<br/>" +
+//                            getCommandHTML("GET " + contentEntry.pgp_id_public + "/public/profile", "Profile") +
+//                            getCommandHTML("GET " + contentEntry.pgp_id_public, "Get") +
+//                            getCommandHTML("PUT " + contentEntry.pgp_id_public, "Put") +
+//                            "<br/>" +
+//                            getCommandHTML("PGP.EXPORT " + contentEntry.pgp_id_public, "Export") +
+//                            getCommandHTML("PGP.MANAGE " + contentEntry.pgp_id_public, "Manage") +
+//                            getCommandHTML("PGP.DELETE " + contentEntry.pgp_id_public, "Delete");
+//
+//                        renderUIContactListEntry(
+//                            contentEntry.user_id,
+//
+//                            contentEntry.pgp_id_private +
+//                            ' <span class="' + hostingStatus.toLowerCase() + '">' +
+//                                hostingStatus.toLowerCase() +
+//                            '</span>',
+//                            'render/ui/contacts/render/icons/user_icon_default.png',
+//                            'private-key',
+//                            html_commands,
+//                            function(html) {
+//                                html_private_key_entries += html;
+//                            });
+//
+//                    } else {
+//
+//                        //
+//                        //// Check Nick
+//                        //SettingsDB.getSettings("channel.nick", function(nickSettings) {
+//                        //    if(nickSettings && nickSettings.username) {
+//                        //        nick_value = nickSettings.username;
+//                        //    }
+//                        //
+//                        //});
+//
+//
+//                        // Query Auto Join Channels
+//                        SettingsDB.getAllSettings("channel:*", function(channelSettings) {
+//                            if(channelSettings) {
+//
+//                                var channelName = channelSettings.name_original_case;
+//
+//                                if(channelSettings.auto_join === 1) {
+//
+//                                    var subscriptionStatus = true ? 'Subscribe' : 'Unsubscribe' ;
+//                                    var html_commands =
+//                                        getCommandHTML("CHANNEL." + subscriptionStatus.toUpperCase() + ".GET " + channelName, subscriptionStatus) +
+//                                        getCommandHTML("CHAT " + channelName, "Chat") +
+//                                        getCommandHTML("AUDIO " + channelName, "Audio") +
+//                                        getCommandHTML("VIDEO " + channelName, "Video");
+//
+//                                    renderUIContactListEntry(
+//                                        channelSettings.name_original_case,
+//                                        '<span class="status">0-25 users</span>',
+//                                        'render/ui/contacts/render/icons/channel_icon_default.png',
+//                                        'channel',
+//                                        html_commands,
+//                                            function(html) {
+//                                                html_channel_entries += html;
+//                                            });
+//                                }
+//
+//                            } else {
+//                                var xhr = new XMLHttpRequest();
+//                                xhr.open("GET", TEMPLATE_URL, false);
+//                                xhr.send();
+//                                if(xhr.status !== 200)
+//                                    throw new Error("Error: " + xhr.responseText);
+//                                callback(xhr.responseText
+//                                        .replace(/{\$status_box}/gi, status_box || '')
+//                                        .replace(/{\$nick_value}/gi, nick_value || '')
+//                                        //.replace(/{\$html_contact_list_sections}/gi, html_contact_list_sections)
+//                                        .replace(/{\$html_private_key_entries}/gi, html_private_key_entries)
+//                                        .replace(/{\$html_public_key_entries}/gi, html_public_key_entries)
+//                                        .replace(/{\$html_channel_entries}/gi, html_channel_entries)
+//                                        .replace(/{\$html_command_options}/gi, html_command_options)
+//                                );
+//                            }
+//                        });
+//
+//
+//                    }
+//                });
+//            }
+//        });
 
     }
 

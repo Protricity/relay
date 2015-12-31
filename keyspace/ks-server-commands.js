@@ -1,6 +1,7 @@
 /**
  * Created by ari on 9/22/2015.
  */
+
 if(typeof module === 'object') (function() {
     module.exports.initSocketServerKSCommands = function (SocketServer) {
 
@@ -28,28 +29,30 @@ if(typeof module === 'object') (function() {
         }
 
 
-        // AUTH Command
-        SocketServer.addCommand(importHostCommand);
-        function importHostCommand(commandString, e) {
-            if (!/^(?:keyspace\.)?host/i.test(commandString))
+        // KEYSPACE.SUBSCRIBE Command
+        // KEYSPACE.AUTH Command
+        SocketServer.addCommand(importSubscriptionCommand);
+        function importSubscriptionCommand(commandString, e) {
+            if (!/^(?:keyspaces?\.)?((un|re)?subscribe|auth)/i.test(commandString))
                 return false;
-            SocketServer.removeCommand(importHostCommand);
-            require('./host/ks-server-host-commands.js')
-                .initSocketServerHostCommands(SocketServer);
+            SocketServer.removeCommand(importSubscriptionCommand);
+            require('./subscribe/ks-server-subscribe-commands.js')
+                .initSocketServerKSSubscribeCommands(SocketServer);
             return false;
         }
 
-        // TODO: Search here
-        // UI.CONTACTS Command
-        SocketServer.addCommand(importContactsCommand);
-        function importContactsCommand(commandString, e) {
-            if (!/^(?:keyspace\.)?contacts/i.test(commandString))
-                return false;
-            SocketServer.removeCommand(importContactsCommand);
-            require('./contacts/ks-server-contacts-commands.js')
-                .initSocketServerContactsCommands(SocketServer);
-            return false;
-        }
+        //
+        //// TODO: Search here
+        //// UI.CONTACTS Command
+        //SocketServer.addCommand(importContactsCommand);
+        //function importContactsCommand(commandString, e) {
+        //    if (!/^(?:keyspace\.)?contacts/i.test(commandString))
+        //        return false;
+        //    SocketServer.removeCommand(importContactsCommand);
+        //    require('./contacts/ks-server-contacts-commands.js')
+        //        .initSocketServerContactsCommands(SocketServer);
+        //    return false;
+        //}
 
     };
 

@@ -55,41 +55,77 @@ module.exports.ServerSubscriptions =
         var modeList;
         var clientList;
         switch(type) {
+            case 'keyspaces':
+                var kss = [], ksplit = [];
+                argString = match[4] + (argString ? ' ' + argString : '');
+                ksplit = argString.split(/\s+/g);
+                for(var kspliti=0; kspliti<ksplit.length; kspliti++)
+                    if(ksplit[kspliti].length > 0)
+                        kss.push(
+                            ServerSubscriptions.handleClientSubscription(
+                                'KEYSPACE.' +
+                                prefix.toUpperCase() + 'SUBSCRIBE.' + mode.toUpperCase() +
+                                ' ' + ksplit[kspliti],
+                                client
+                            )
+                        );
+
+                return ksplit;
+
             case 'keyspace':
                 // This is a keyspace subscription, so the first arg is the PGP Public Key ID
                 var pgp_id_public = match[4].toUpperCase();
                 var id_match = /^(?:([A-F0-9]{8,})\s*)+$/i.exec(pgp_id_public);
                 if(!id_match)
                     throw new Error("Invalid PGP Public ID Key: " + pgp_id_public);
-                var pgp_ids = pgp_id_public.split(' ');
-                if(pgp_ids.length > 0) {
-                    var oldSubscriptionStrings = [];
-                    for(var ii=0; ii<pgp_ids.length; ii++) {
-                        var ret = ServerSubscriptions.handleClientSubscription(type + " " + prefix + "subscribe." + mode + " " + argString);
-                        if(ret) oldSubscriptionStrings.push(ret);
-                    }
-                    return oldSubscriptionStrings.join("\n");
-                }
+
                 if(typeof keyspaceSubscriptions[pgp_id_public] === 'undefined')
                     keyspaceSubscriptions[pgp_id_public] = {};
                 modeList = keyspaceSubscriptions[pgp_id_public];
 
+                // Authentication may be required for certain (or all) subscriptions. Unauth-ed subscriptions still get
                 switch (mode) {
-                    case 'event':
-                    case 'get':
-                    case 'post':
-                    case 'put':
-                        // If this mode hasn't been defined yet, lets create the array
-                        if(typeof modeList[mode] === 'undefined')
-                            modeList[mode] = [];
+                    case 'post':    // Auth required for handling POST requests from clients
+                    case 'put':     // Auth required for PUT new content? Yes. Nothing should be PUT online without consent.
+                        ServerSubscriptions.requestKeySpaceAuthentication(pgp_id_public, client, function() {
+                            ServerSubscriptions.notifyAllAuthenticatedKeySpaceClients(pgp_id_public, "EVENT " + subscriptionString);
+                        });
+                        break;
 
-                        // Set this mode list as the list to be modified
-                        clientList = modeList[mode];
+                    case 'get':     // No auth required for GET. all GET requests are verified on the client (keyspace)
+                    case 'event':   // No auth for status subscription
                         break;
                     default:
                         throw new Error("Invalid KeySpace Mode: " + subscriptionString);
                 }
+
+                // If this mode hasn't been defined yet, lets create the array
+                if(typeof modeList[mode] === 'undefined')
+                    modeList[mode] = [];
+
+                // Set this mode list as the list to be modified
+                clientList = modeList[mode];
+                
                 break;
+
+
+            case 'channels':
+                // TODO: username for all channels?
+                var css = [], csplit = [];
+                argString = match[4] + (argString ? ' ' + argString : '');
+                csplit = argString.split(/\s+/g);
+                console.log("Multiple subscribe: ", csplit);
+                for(var cspliti=0; cspliti<csplit.length; cspliti++)
+                    if(csplit[cspliti].length > 0)
+                        css.push(
+                            ServerSubscriptions.handleClientSubscription(
+                                'CHANNEL.' + prefix.toUpperCase() + 'SUBSCRIBE.' + type.toUpperCase() +
+                                ' ' + csplit[cspliti],
+                                client
+                            )
+                        );
+
+                return csplit;
 
             case 'channel':
                 // This is a channel subscription, so the first arg is the Channel Name
@@ -150,7 +186,7 @@ module.exports.ServerSubscriptions =
             if(oldPos === -1) {
                 // Add the subscription
                 clientList.push([client, argString]);
-                console.log(type + " subscription: ", subscriptionString);
+                //console.log(type + " subscription: ", subscriptionString);
 
             } else {
                 // Replace the subscription
@@ -158,6 +194,8 @@ module.exports.ServerSubscriptions =
                 console.warn(type + " subscription replaced: ", subscriptionString);
             }
         }
+
+        //send(client, subscriptionString);
 
         // Return the old subscription, if found
         return oldSubscriptionString;
@@ -304,6 +342,229 @@ module.exports.ServerSubscriptions =
         // Return the matched subscriptions
         return count;
     };
+
+
+    /** KeySpace Methods **/
+
+    var keyspaceAuthentications = {};
+    var keyspaceChallenges = {};
+    var keyspaceRequests = {};
+
+    ServerSubscriptions.hasKeySpaceAuthentication = function(pgp_id_public, client) {
+        if(typeof keyspaceAuthentications[pgp_id_public] !== 'undefined') {
+            if(keyspaceAuthentications[pgp_id_public].indexOf(client) >= 0) {
+                return true;
+            }
+        }
+        return false;
+        //var authList = keyspaceAuthentications[pgp_id_public];
+    };
+
+    ServerSubscriptions.notifyAllAuthenticatedKeySpaceClients = function(pgp_id_public, commandString) {
+        if(typeof keyspaceAuthentications[pgp_id_public] !== 'undefined') {
+            var clients = keyspaceAuthentications[pgp_id_public];
+            for(var j=0; j<clients.length; j++) {
+                if(clients[j].readyState !== clients[j].OPEN) {
+                    clients.splice(j--, 1);
+                    continue;
+                }
+                clients[j].send(commandString);
+            }
+
+            console.info("O" + clients.length + " " + commandString);
+        }
+    };
+
+    ServerSubscriptions.handleKeySpaceAuthenticationCommand = function(commandString, client) {
+        var match = /^keyspaces?\.auth\.(validate)\s+([\s\S]+)$/i.exec(commandString);
+        if (!match)
+            throw new Error("Invalid Authentication Command: " + commandString);
+
+        var subCommand = match[1];
+        var hostCodes = match[2].split(/\s+/m);
+
+        for(var i=0; i<hostCodes.length; i++) {
+            var hostCode = hostCodes[i];
+
+            if(typeof keyspaceChallenges[hostCode] === 'undefined') {
+                send(client, "ERROR Host Code not found: " + hostCode);
+                console.warn("Host Code not found: " + hostCode);
+                continue;
+            }
+
+            var pgp_id_public = keyspaceChallenges[hostCode][0];
+            var challengeClient = keyspaceChallenges[hostCode][1];
+            var callback = keyspaceChallenges[hostCode][2];
+
+            if(challengeClient !== client){
+                send(client, "ERROR Client Mismatch: " + hostCode);
+                throw new Error("ERROR Client Mismatch: " + hostCode);
+            }
+            //delete keySpaceChallenges[hostCode];
+
+            if(typeof keyspaceAuthentications[pgp_id_public] !== 'undefined')
+                keyspaceAuthentications[pgp_id_public] = [];
+            var authList = keyspaceAuthentications[pgp_id_public];
+            if(authList.indexOf(client) >= 0) {
+                send(client, "ERROR Client already authenticated: " + pgp_id_public);
+                console.warn("Client already authenticated: " + pgp_id_public);
+                continue;
+            }
+
+            authList.push(client);
+            send(client, "KEYSPACE.AUTH.SUCCESS " + pgp_id_public);
+
+            if(callback)
+                callback(pgp_id_public, client);
+
+            ServerSubscriptions.notifyAllAuthenticatedKeySpaceClients(pgp_id_public,
+                "EVENT KEYSPACE.AUTH.SUCCESS " + pgp_id_public);
+        }
+    };
+
+    ServerSubscriptions.requestKeySpaceAuthentication = function(pgp_id_public, client, callback) {
+        if(typeof keyspaceAuthentications[pgp_id_public] !== 'undefined') {
+            if(keyspaceAuthentications[pgp_id_public].indexOf(client) >= 0) {
+                if(callback)
+                    callback(pgp_id_public, client);
+                return true;
+            }
+        }
+
+        ServerSubscriptions.requestClientPublicKey(pgp_id_public, client,
+            function(err, publicKey) {
+
+                if(err) {
+                    console.error(err);
+                    return send(client, "ERROR " + err);
+                }
+                // Generate new challenge
+                var hostCode = generateUID('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx');
+
+                if(typeof keyspaceChallenges[hostCode] !== 'undefined')
+                    throw new Error("Host Code already exists: " + hostCode);
+
+                keyspaceChallenges[hostCode] = [pgp_id_public, client, callback];
+
+                if(typeof openpgp === 'undefined')
+                    var openpgp = require('openpgp');
+
+                openpgp.encryptMessage(publicKey, hostCode)
+                    .then(function(encryptedMessage) {
+                        send(client, "KEYSPACE.AUTH.CHALLENGE " + encryptedMessage);
+                        ServerSubscriptions.notifyAllAuthenticatedKeySpaceClients(pgp_id_public, "EVENT KEYSPACE.HOST.CHALLENGE " + encryptedMessage);
+
+                    }).catch(function(error) {
+                        send(client, "ERROR " + error);
+                    });
+            }
+        );
+    };
+
+    ServerSubscriptions.requestClientPublicKey = function (pgp_id_public, client, callback) {
+        var requestURL = "http://" + pgp_id_public + ".ks/public/id";
+        console.info("Requesting Public Key from Client: " + requestURL);
+        ServerSubscriptions.requestKeySpaceHTTPResponse(client, requestURL,
+            function(hostClient, responseBody, responseCode, responseMessage, responseHeaders) {
+                if(hostClient !== client) {
+                    callback("Client Mismatch");
+                    return send(client, "ERROR Client Mismatch");
+                }
+
+                if(responseCode !== 200) {
+                    callback(responseCode + " " + responseMessage);
+                    return send(client, "ERROR " + responseCode + " " + responseMessage);
+                }
+
+                var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
+                if(typeof openpgp === 'undefined')
+                    var openpgp = require('openpgp');
+
+                var publicKey = openpgp.key.readArmored(responseBody).keys[0];
+                //var publicKeyCreateDate = publicKey.subKeys[0].subKey.created;
+                //var privateKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
+                var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+                publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+                if(publicKeyID !== pgp_id_public){
+                    callback("Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
+                    return send(client, "ERROR Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
+                }
+
+                callback(null, publicKey);
+            }
+        );
+    };
+
+    ServerSubscriptions.requestKeySpaceHTTPResponse = function(client, requestURL, callback) {
+
+        var requestID = "KA" + Date.now();
+        if(typeof keyspaceRequests[requestID] !== 'undefined')
+            throw new Error("Duplicate Request ID: " + requestID);
+
+        keyspaceRequests[requestID] = callback;
+        var requestString = "GET " + requestURL +
+            "\nRequest-ID: " + requestID;
+
+        send(client, requestString);
+    };
+
+    ServerSubscriptions.handleKeySpaceHTTPResponse = function(responseString, client) {
+        var match = /^http\/1.1 (\d+)\s?([\w ]*)/i.exec(responseString);
+        if(!match)
+            throw new Error("Invalid HTTP Response: " + responseString);
+
+        var responseCode = parseInt(match[1]);
+        var responseMessage = match[2];
+
+        var pos = responseString.indexOf("\n\n");
+        var responseHeaders = responseString;
+        var responseBody = null;
+        if(pos > 0) {
+            responseHeaders = responseString.substr(0, pos);
+            responseBody = responseString.substr(pos+2);
+        }
+
+        var headerLines = responseHeaders.split(/\n/g);
+        var firstLine = headerLines.shift();
+
+
+        var requestID = null;
+        for(var i=0; i<headerLines.length; i++) {
+            var headerName = headerLines[i].split(' ')[0].toLowerCase();
+            switch(headerName) {
+                case 'request-id':
+                    requestID = headerLines[i].split(' ', 2)[1];
+                    break;
+            }
+        }
+
+        if(requestID) {
+            if(typeof keyspaceRequests[requestID] === 'undefined') {
+                //send(client, "Unknown request ID: " + requestID);
+                return false;
+            }
+
+            var callback = keyspaceRequests[requestID];
+            delete keyspaceRequests[requestID];
+            callback(client, responseBody, responseHeaders, responseCode, responseMessage);
+            return true;
+        }
+
+        //send(client, "Unhandled Keyspace HTTP Response");
+        return false;
+    };
+
+    function generateUID(format) {
+        return (format).replace(/[xy]/g, function(c) {
+            var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+            return v.toString(16);
+        });
+    }
+
+    function send(client, message) {
+        client.send(message);
+        console.info("O " + message);
+    }
 
     // Return newly defined class
     return ServerSubscriptions;

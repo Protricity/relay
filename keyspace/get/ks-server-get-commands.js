@@ -5,27 +5,41 @@
 if(typeof module === 'object') (function() {
     module.exports.initSocketServerKSGetCommands = function (SocketServer) {
         SocketServer.addCommand(getCommandSocket);
-        //SocketServer.addCommand(handleHTTPSocketResponse);
+        SocketServer.addCommand(httpCommandSocket);
     };
     module.exports.initHTTPServerKSGetCommands = function (SocketServer) {
         SocketServer.addCommand(getCommandHTTP);
     };
 })();
 
-var httpBrowserID = 1;
+//var httpBrowserID = 1;
+
+function httpCommandSocket(commandString, client) {
+    var match = /^http\s+/i.exec(commandString);
+    if(!match)
+        return false;
+
+    var ret = ServerSubscriptions.handleKeySpaceHTTPResponse(commandString, client);
+    if(ret === true)
+        return true;
+
+    send(client, "Unhandled Keyspace HTTP Response");
+    return false;
+}
 
 function getCommandSocket(commandString, client) {
     var match = /^get\s+/i.exec(commandString);
     if(!match)
         return false;
 
-    executeServerGetRequest(commandString, function(responseBody) {
+    executeServerGetRequest(commandString, function(responseBody, statusCode, statusMessage, headers) {
         client.send(responseBody);
         //client.send('HTTP/1.1 ' + (statusCode || 200) + (statusMessage || 'OK') +
         //    (headers ? "\n" + headers : '') +
         //    "\n\n" + responseBody
         //);
     });
+    return true;
 }
 
 function getCommandHTTP(request, response) {
@@ -38,6 +52,7 @@ function getCommandHTTP(request, response) {
         response.writeHead(statusCode || 200, statusMessage || 'OK', headers);
         response.end(responseBody);
     });
+    return true;
 }
 
 //function handleHTTPSocketResponse(responseString, client) {
@@ -118,33 +133,6 @@ function executeServerGetRequest(requestString, callback) {
 
 // Request/Response methods
 
-//function addURLsToDB(responseContent, referrerURL) {
-//    var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
-//
-//    responseContent.replace(/<a[^>]+href=['"]([^'">]+)['"][^>]*>([^<]+)<\/a>/gi, function(match, url, text, offset, theWholeThing) {
-//        KeySpaceDB.addURLToDB(url, referrerURL);
-//    });
-//}
-
-function getResponseBody(responseString) {
-    getResponseStatus(responseString);
-    return responseString.split("\n\n", 2)[1];
-}
-
-function getResponseHeaders(responseString) {
-    getResponseStatus(responseString);
-    var lines = responseString.split("\n\n", 2)[0].split(/\n/g);
-    lines.shift();
-    return lines.join("\n");
-}
-
-function getResponseStatus(responseString) {
-    var match = /^http\/1.1 (\d+) ?(.*)$/im.exec(responseString);
-    if(!match)
-        throw new Error("Invalid HTTP Response: " + responseString);
-    return [parseInt(match[1]), match[2]];
-}
-
 function getRequestURL(requestString) {
     var firstLine = requestString.split(/\n/)[0];
     var match = /^get\s*(\S*)(\s+HTTP\/1.1)?$/i.exec(firstLine);
@@ -161,18 +149,7 @@ function getContentHeader(contentString, headerName) {
     return match[1];
 }
 
-function addContentHeader(contentString, headerName, headerValue) {
-    if(getContentHeader(contentString, headerName))
-        throw new Error("Content already has Header: " + headerName);
-    var lines = contentString.split(/\n/);
-    lines.splice(lines.length >= 1 ? 1 : 0, 0, headerName + ": " + headerValue);
-    return lines.join("\n");
+function send(client, message) {
+    client.send(message);
+    console.info("O " + message);
 }
-//
-//function generateUID(format) {
-//    return (format).replace(/[xy]/g, function(c) {
-//        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-//        return v.toString(16);
-//    });
-//}
-//
