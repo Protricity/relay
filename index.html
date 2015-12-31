@@ -13,6 +13,7 @@
             setTimeout(function() {
                 ClientMainThread.execute("about");
                 ClientMainThread.execute("minimize about:");
+                ClientMainThread.execute("console");
             }, 500);
             window.onresize = function(evt) {
                 var height = (evt.srcElement || evt.currentTarget).innerHeight;
