@@ -201,10 +201,12 @@ function ClientSockets(socketURL) {
         function send(socket){
             socket.send(commandString);
 
-            var parts = commandString.split(' ', 2);
+            var parts = commandString.split(' ');
+            var part1 = parts.shift();
+            var part2 = parts.join(' ');
             Client.log(
                 "<span class='direction'>O</span> " +
-                "<span class='command'>" + parts[0] + "</span>" + (parts[1] ? ' ' + parts[1] : '')
+                "<span class='command'>" + part1 + "</span>" + (part2 ? ' ' + part2 : '')
             );
         }
         if(withSocket) {

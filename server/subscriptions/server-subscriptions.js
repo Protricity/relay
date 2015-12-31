@@ -30,8 +30,12 @@ module.exports.ServerSubscriptions =
     // KeySpace Subscription Object
     var keyspaceSubscriptions = {};
 
+    // KeySpace Status Object
+    var keyspaceStatus = {};
+
     // Channel Subscription Object
     var channelSubscriptions = {};
+
 
     /**
      * @param subscriptionString
@@ -195,6 +199,8 @@ module.exports.ServerSubscriptions =
             }
         }
 
+        // TODO: notify client of status content i.e. userlist, online/offline
+
         //send(client, subscriptionString);
 
         // Return the old subscription, if found
@@ -237,7 +243,8 @@ module.exports.ServerSubscriptions =
                         var clientList = modeList[mode];
 
                         // Loop through all clients in the channel/mode
-                        for(var i=0; i<clientList; i++) {
+                        for(var i=0; i<clientList.length; i++) {
+
                             var ret = callback(clientList[i][0], mode, pgp_id_public, clientList[i][1]);
                             // Count the matched subscription
                             count++;
@@ -324,7 +331,7 @@ module.exports.ServerSubscriptions =
                         var clientList = modeList[mode];
 
                         // Loop through all clients in the channel/mode
-                        for(var i=0; i<clientList; i++) {
+                        for(var i=0; i<clientList.length; i++) {
                             var ret = callback(clientList[i][0], channel, mode, clientList[i][1]);
 
                             // Count the matched subscription
@@ -506,6 +513,53 @@ module.exports.ServerSubscriptions =
             "\nRequest-ID: " + requestID;
 
         send(client, requestString);
+    };
+
+    ServerSubscriptions.handleKeySpaceStatusCommand = function(commandString, client) {
+        var match = /^keyspace\.status\s+([a-f0-9]{8,})\s+(.{1,256})$/i.exec(commandString);
+        if (!match)
+            throw new Error("Invalid Status Command: " + commandString);
+
+        var pgp_id_public = match[1];
+        pgp_id_public = pgp_id_public.toUpperCase().substr(pgp_id_public.length - 8);
+        var argString = match[2];
+        var statusValue = argString.split(' ')[0].toLowerCase();
+        switch(statusValue) {
+            case 'online':
+            case 'offline':
+            case 'away':
+            default:
+                break;
+        }
+
+        var oldStatus = null;
+        if(typeof keyspaceStatus[pgp_id_public] !== 'undefined')
+            oldStatus = keyspaceStatus[pgp_id_public];
+
+        keyspaceStatus[pgp_id_public] = argString;
+
+        // notify keyspace status subscribers yo{
+        var count = 0;
+        ServerSubscriptions.searchKeySpaceSubscriptions(null, 'event', null,
+            function(subscriberClient, mode, pgp_id_public, subscriberArgString) {
+                console.log("Subscriber: ", mode, pgp_id_public);
+                count++;
+                subscriberClient.send(commandString);
+            }
+        );
+
+        console.info("O" + count + " " + commandString);
+
+        return true;
+    };
+
+    ServerSubscriptions.getKeySpaceStatus = function(pgp_id_public) {
+        pgp_id_public = pgp_id_public.toUpperCase().substr(pgp_id_public.length - 8);
+
+        if(typeof keyspaceStatus[pgp_id_public] === 'undefined')
+            return 'offline';
+
+        return keyspaceStatus[pgp_id_public];
     };
 
     ServerSubscriptions.handleKeySpaceHTTPResponse = function(responseString, client) {

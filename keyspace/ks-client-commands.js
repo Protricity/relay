@@ -33,6 +33,7 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
+
         // Keyspace Subscribe Command
         ClientWorkerThread.addCommand(importSubscribeCommand);
         ClientWorkerThread.addResponse(importSubscribeCommand);
@@ -45,6 +46,22 @@ if(typeof module === 'object') (function() {
             self.module = {exports: {}};
             importScripts('keyspace/subscribe/ks-client-subscribe-commands.js');
             module.exports.initClientKSSubscribeCommands(ClientWorkerThread);
+            //console.info("Loaded: keyspace/auth/ks-client-auth-command.js");
+            return false;
+        }
+
+        // Keyspace Subscribe Command
+        ClientWorkerThread.addCommand(importKSStatusCommand);
+        ClientWorkerThread.addResponse(importKSStatusCommand);
+        function importKSStatusCommand(commandString, e) {
+            if (!/^keyspace\.status/i.test(commandString))
+                return false;
+
+            ClientWorkerThread.removeCommand(importKSStatusCommand);
+            ClientWorkerThread.removeResponse(importKSStatusCommand);
+            self.module = {exports: {}};
+            importScripts('keyspace/status/ks-client-status-commands.js');
+            module.exports.initClientKSStatusCommands(ClientWorkerThread);
             //console.info("Loaded: keyspace/auth/ks-client-auth-command.js");
             return false;
         }

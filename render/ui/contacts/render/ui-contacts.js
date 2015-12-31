@@ -25,12 +25,14 @@ if(typeof module !== 'object')
         var html_command_options = '';
         var html_public_key_entries = '';
 
-        self.module = {exports: {}};
-        importScripts('keyspace/ks-db.js');
-        var KeySpaceDB = self.module.exports.KeySpaceDB;
+        //self.module = {exports: {}};
+        //importScripts('keyspace/ks-db.js');
+        //var KeySpaceDB = self.module.exports.KeySpaceDB;
+
+        var ClientSubscriptions = getClientSubscriptions();
 
         var publicKeys = {};
-        getClientSubscriptions().searchKeySpaceSubscriptions(null, null,
+        ClientSubscriptions.searchKeySpaceSubscriptions(null, null,
             function(pgp_id_public, mode) {
                 pgp_id_public = pgp_id_public.toUpperCase();
                 if(typeof publicKeys[pgp_id_public] === 'undefined')
@@ -49,9 +51,9 @@ if(typeof module !== 'object')
                 // TODO: No need to query keyspace
 
                 var subscriptionStatus = false ? 'Subscribe' : 'Unsubscribe' ;
-                var cachedPublicKeyInfo = KeySpaceDB.getCachedPublicKeyInfo(pgp_id_public) || {};
-                var user_id = cachedPublicKeyInfo.user_id || pgp_id_public; // TODO: query by other means?
-                var hostingStatus = 'offline';
+                var user_id = ClientSubscriptions.getCachedPublicKeyUserID(pgp_id_public)
+                    || pgp_id_public;
+                var hostingStatus = ClientSubscriptions.getCachedPublicKeyUserID(pgp_id_public);
 
                 var html_commands =
                     getCommandHTML("MESSAGE " + pgp_id_public, "Message") +

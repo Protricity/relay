@@ -24,7 +24,7 @@ if(typeof module === 'object') (function() {
             importScripts('client/subscriptions/client-subscriptions.js');
             var ClientSubscriptions = self.module.exports.ClientSubscriptions;
 
-            var oldSubscriptionString = ClientSubscriptions.handleServerSubscription(responseString, e);
+            var oldSubscriptionString = ClientSubscriptions.handleSubscriptionResponse(responseString, e);
 
             ClientWorkerThread.processResponse("EVENT " + responseString);
 

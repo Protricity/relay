@@ -28,6 +28,9 @@ module.exports.ClientSubscriptions =
     // KeySpace Subscription Object
     var keyspaceSubscriptions = {};
 
+    // KeySpace Status Object
+    var keyspaceStatus = {};
+
     // Channel Subscription Object
     var channelSubscriptions = {};
 
@@ -68,11 +71,11 @@ module.exports.ClientSubscriptions =
         return channelModes[channel];
     };
 
-    // TODO: needs comments. These are examples for usage:
+    // TODO: needs comments. These are examples for usage (that could be cleaned up):
     // CHANNEL.SUBSCRIBE.CHAT /state/az guest123
     // KEYSPACE.SUBSCRIBE.GET ABCD1234 <-- host keyspace content
     // KEYSPACE.SUBSCRIBE.PUT ABCD1234 <-- host keyspace service
-    ClientSubscriptions.handleServerSubscription = function(subscriptionString, e) {
+    ClientSubscriptions.handleSubscriptionResponse = function(subscriptionString, e) {
         var match = /^(\w+)\.(|un|re)subscribe(?:\.(\w+))?\s+(\S+)\s*([\s\S]*)$/im.exec(subscriptionString);
         if (!match)
             throw new Error("Invalid Subscription: " + subscriptionString);
@@ -94,7 +97,7 @@ module.exports.ClientSubscriptions =
                 for(var kspliti=0; kspliti<ksplit.length; kspliti++)
                     if(ksplit[kspliti].length > 0)
                         kss.push(
-                            ClientSubscriptions.handleServerSubscription(
+                            ClientSubscriptions.handleSubscriptionResponse(
                                 'KEYSPACE.' + prefix.toUpperCase() + 'SUBSCRIBE.' + mode.toUpperCase() +
                                 ' ' + ksplit[kspliti],
                                 e
@@ -120,6 +123,11 @@ module.exports.ClientSubscriptions =
                     default:
                         throw new Error("Invalid KeySpace Mode: " + mode);
                 }
+
+                ClientSubscriptions.getCachedPublicKeyUserID(pgp_id_public, function(user_id) {
+                    // do nothing on cache found
+                });
+
                 break;
 
             case 'channels':
@@ -131,7 +139,7 @@ module.exports.ClientSubscriptions =
                 for(var cspliti=0; cspliti<csplit.length; cspliti++)
                     if(csplit[cspliti].length > 0)
                         css.push(
-                            ClientSubscriptions.handleServerSubscription(
+                            ClientSubscriptions.handleSubscriptionResponse(
                                 'CHANNEL.' + prefix.toUpperCase() + 'SUBSCRIBE.' + mode.toUpperCase() +
                                 ' ' + csplit[cspliti],
                                 e
@@ -199,6 +207,83 @@ module.exports.ClientSubscriptions =
         return existingSubscriptionString;
     };
 
+    var cachedPublicKeyUserIDs = {};
+    ClientSubscriptions.getCachedPublicKeyUserID = function(pgp_id_public, callback) {
+        pgp_id_public = pgp_id_public.toUpperCase();
+        if(typeof cachedPublicKeyUserIDs[pgp_id_public] !== 'undefined') {
+            if(callback)
+                callback(cachedPublicKeyUserIDs[pgp_id_public]);
+            return cachedPublicKeyUserIDs[pgp_id_public];
+        }
+
+        if(!callback)
+            return null;
+
+        self.module = {exports: {}};
+        importScripts('keyspace/ks-db.js');
+        var KeySpaceDB = self.module.exports.KeySpaceDB;
+
+        var path = 'http://' + pgp_id_public + '/public/id';
+        KeySpaceDB.queryOne(path, function(err, publicKeyContentEntry) {
+            if (err)
+                throw new Error(err);
+
+            if (publicKeyContentEntry) {
+                ClientSubscriptions.cachePublicKeyInfo(publicKeyContentEntry);
+                callback(cachedPublicKeyUserIDs[pgp_id_public]);
+            }
+        });
+
+        return null;
+    };
+
+    ClientSubscriptions.cachePrivateKeyInfo =
+    ClientSubscriptions.cachePublicKeyInfo = function(publicKeyContentEntry) {
+        var pgp_id_public = publicKeyContentEntry.pgp_id_public.toUpperCase();
+        if(typeof cachedPublicKeyUserIDs[pgp_id_public] === 'undefined')
+            console.warn("Cached Public Key ID already exists: " + pgp_id_public);
+
+        cachedPublicKeyUserIDs[pgp_id_public] = publicKeyContentEntry.user_id;
+    };
+
+
+    ClientSubscriptions.handleKeySpaceStatusResponse = function(responseString, e) {
+        var match = /^keyspace\.status\s+([a-f0-9]{8,})\s+(.*)$/i.exec(responseString);
+        if (!match)
+            throw new Error("Invalid Status Response: " + responseString);
+
+        var pgp_id_public = match[1];
+        pgp_id_public = pgp_id_public.toUpperCase().substr(pgp_id_public.length - 8);
+        var argString = match[2];
+        var statusValue = argString.split(' ')[0].toLowerCase();
+        switch(statusValue) {
+            case 'online':
+            case 'offline':
+            case 'away':
+            default:
+                break;
+        }
+
+        var oldStatus = null;
+        if(typeof keyspaceStatus[pgp_id_public] !== 'undefined')
+            oldStatus = keyspaceStatus[pgp_id_public];
+
+        keyspaceStatus[pgp_id_public] = argString;
+
+        // TODO: event notify
+        ClientWorkerThread.processResponse("EVENT " + responseString);
+
+        return true;
+    };
+
+    ClientSubscriptions.getKeySpaceStatus = function(pgp_id_public) {
+        pgp_id_public = pgp_id_public.toUpperCase().substr(pgp_id_public.length - 8);
+
+        if(typeof keyspaceStatus[pgp_id_public] === 'undefined')
+            return 'offline';
+
+        return keyspaceStatus[pgp_id_public];
+    };
 
     ClientSubscriptions.searchKeySpaceSubscriptions = function(searchMode, searchPublicKeyID, callback) {
         if(searchMode)          searchMode = searchMode.toLowerCase();

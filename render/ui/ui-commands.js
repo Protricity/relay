@@ -21,6 +21,7 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
+
         var activeContactList = false;
         function contactCommand(commandString) {
             var match = /^(?:ui\.)?contacts(\.refresh)?/i.exec(commandString);
@@ -43,7 +44,14 @@ if(typeof module === 'object') (function() {
                 importScripts('keyspace/ks-db.js');
                 var KeySpaceDB = self.module.exports.KeySpaceDB;
 
-                // Query public keys. Don't query private keys. Subscribes to status of stored private keys too
+                var ClientSubscriptions = self.ClientSubscriptions || (function() {
+                    self.module = {exports: {}};
+                    importScripts('client/subscriptions/client-subscriptions.js');
+                    return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
+                })();
+
+
+                // Query public keys.
                 var path = 'public/id';
                 var publicKeys = [];
                 KeySpaceDB.queryAll(path, function(err, publicKeyContentEntry) {
@@ -51,14 +59,27 @@ if(typeof module === 'object') (function() {
                         throw new Error(err);
 
                     if (publicKeyContentEntry) {
-                        // todo cache user ids
-                        // TODO: subscribe to all in database? No other way to get status.
                         publicKeys.push(publicKeyContentEntry.pgp_id_public);
-                        KeySpaceDB.cachePublicKeyInfo(publicKeyContentEntry);
+                        ClientSubscriptions.cachePublicKeyInfo(publicKeyContentEntry);
 
                     } else {
                         if(publicKeys.length)
                             ClientWorkerThread.sendWithSocket("KEYSPACES.SUBSCRIBE.EVENT " + publicKeys.join(" "));
+
+                        // Query private keys.
+                        var path = '.private/id';
+                        KeySpaceDB.queryAll(path, function(err, privateKeyContentEntry) {
+                            if (err)
+                                throw new Error(err);
+
+                            if (privateKeyContentEntry) {
+                                var pgp_id_public = privateKeyContentEntry.pgp_id_public;
+                                ClientSubscriptions.cachePrivateKeyInfo(privateKeyContentEntry);
+                                // TODO: check settings for online/offline/away etc
+                                ClientWorkerThread.execute("KEYSPACE.STATUS " + pgp_id_public + " ONLINE");
+
+                            }
+                        });
 
                     }
                 });

@@ -40,12 +40,12 @@ module.exports.KeySpaceClientSubscriptions =
                 console.error("Failed to replace KeySpace subscription: ", responseString);
 
         } else {
-            if(KeySpaceClientSubscriptions.handleServerSubscription(pgp_id_public, mode, webSocket))
+            if(KeySpaceClientSubscriptions.handleSubscriptionResponse(pgp_id_public, mode, webSocket))
                 console.log("KeySpace subscription: ", responseString);
         }
     };
 
-    KeySpaceClientSubscriptions.handleServerSubscription = function(pgp_id_public, mode, webSocket) {
+    KeySpaceClientSubscriptions.handleSubscriptionResponse = function(pgp_id_public, mode, webSocket) {
         mode = mode.toLowerCase();
         if(typeof keyspaces[pgp_id_public.toLowerCase()] === 'undefined')
             keyspaces[pgp_id_public.toLowerCase()] = {modes:[]};

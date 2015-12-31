@@ -479,48 +479,6 @@ module.exports.KeySpaceDB =
     };
 
 
-
-
-    var cachedPublicKeyInfo = {};
-    KeySpaceDB.getCachedPublicKeyInfo = function(pgp_id_public, callback) {
-        pgp_id_public = pgp_id_public.toUpperCase();
-        if(typeof cachedPublicKeyInfo[pgp_id_public] !== 'undefined') {
-            if(callback)
-                callback(cachedPublicKeyInfo[pgp_id_public]);
-            return cachedPublicKeyInfo[pgp_id_public];
-        }
-
-        // Query public keys. Don't query private keys. Subscribes to status of stored private keys too
-        var path = 'http://' + pgp_id_public + '/public/id';
-        KeySpaceDB.queryOne(path, function(err, publicKeyContentEntry) {
-            if (err)
-                throw new Error(err);
-
-            if (publicKeyContentEntry) {
-                var cachedPublicKeyInfo = KeySpaceDB.cachePublicKeyInfo(publicKeyContentEntry);
-                if(callback)
-                    callback(cachedPublicKeyInfo);
-            }
-        });
-
-        return null;
-    };
-
-    KeySpaceDB.cachePublicKeyInfo = function(publicKeyContentEntry) {
-        var pgp_id_public = publicKeyContentEntry.pgp_id_public.toUpperCase();
-        if(typeof cachedPublicKeyInfo[pgp_id_public] === 'undefined')
-            console.warn("Public Key Info already exists: " + pgp_id_public);
-
-        cachedPublicKeyInfo[pgp_id_public] = {
-            user_id: publicKeyContentEntry.user_id
-        };
-
-        //if(publicKeyContentEntry.pgp_id_private)
-        //    cachedPublicKeyInfo[pgp_id_public].pgp_id_private = publicKeyContentEntry.pgp_id_private;
-        return cachedPublicKeyInfo[pgp_id_public];
-    };
-
-
     KeySpaceDB.queryContentFeed = function(feedEndTime, callback) {
         feedEndTime = parseInt(feedEndTime);
         if(!feedEndTime)
