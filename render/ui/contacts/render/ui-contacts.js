@@ -66,6 +66,8 @@ if(typeof module !== 'object')
                         //var user_id = ClientSubscriptions.getCachedPublicKeyUserID(pgp_id_public)
                         //    || pgp_id_public;
                         var hostingStatus = ClientSubscriptions.getKeySpaceStatus(pgp_id_public);
+                        var hostingCommand = hostingStatus.toLowerCase() === 'online' ? 'Offline' : 'Online';
+                        var isKeySpaceAuthorized = ClientSubscriptions.isKeySpaceAuthorized(pgp_id_public);
                         var keyType = 'public-key';
 
                         var html_commands =
@@ -76,8 +78,13 @@ if(typeof module !== 'object')
                             getCommandHTML("PGP.EXPORT " + pgp_id_public, "Export") +
                             getCommandHTML("PGP.DELETE " + pgp_id_public, "Delete");
 
-                        if(false) {
+                        if(isKeySpaceAuthorized) {
                             keyType = 'private-key';
+
+                            html_commands +=
+                                "<br/>" +
+                                getCommandHTML("KEYSPACE.STATUS " + pgp_id_public + " " + hostingCommand.toUpperCase(), hostingCommand)
+                        } else {
                         }
 
 

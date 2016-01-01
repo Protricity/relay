@@ -31,11 +31,15 @@ module.exports.ClientSubscriptions =
     // KeySpace Status Object
     var keyspaceStatus = {};
 
+    // KeySpace Authorizations
+    var authorizedKeyspaces = {};
+
     // Channel Subscription Object
     var channelSubscriptions = {};
 
     // Channel User List Object
     var channelUserLists = {};
+
 
 
 
@@ -247,20 +251,37 @@ module.exports.ClientSubscriptions =
 //            cachedPublicKeyUserIDs[pgp_id_public] = publicKeyContentEntry.user_id;
 //    };
 
+    ClientSubscriptions.isKeySpaceAuthorized = function(pgp_id_public, withSocket) {
+        if(typeof authorizedKeyspaces[pgp_id_public] === 'undefined')
+            return false;
+
+        if(!withSocket)
+            return true;
+
+        return authorizedKeyspaces[pgp_id_public].indexOf(withSocket) >= 0;
+    };
+
     ClientSubscriptions.handleKeySpaceAuthResponse = function(responseString, e) {
         var match = /^(?:keyspace\.)?auth(?:\.(challenge|success))?\s+([\s\S]+)$/im.exec(responseString);
         if (!match)
             throw new Error("Invalid Auth Response: " + responseString);
 
         var mode = match[1].toLowerCase();
-        var encryptedChallengeString = match[2];
 
         if(mode === 'success') {
-            // TODO: next thing to do todo TODODOTODODODODOO
-            console.warn("TODO: " + responseString);
+            var auth_pgp_id_public = match[2];
+            if(typeof authorizedKeyspaces[auth_pgp_id_public] === 'undefined')
+                authorizedKeyspaces[auth_pgp_id_public] = [];
+
+            if(authorizedKeyspaces[auth_pgp_id_public].indexOf(e.target) === -1)
+                authorizedKeyspaces[auth_pgp_id_public].push(e.target);
+            else
+                console.warn("KeySpace already authenticated: " + auth_pgp_id_public);
+
             return;
         }
 
+        var encryptedChallengeString = match[2];
         self.module = {exports: self.exports = {}};
         importScripts('keyspace/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;

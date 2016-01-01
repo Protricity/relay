@@ -517,7 +517,7 @@ module.exports.ServerSubscriptions =
                 openpgp.encryptMessage(publicKey, hostCode)
                     .then(function(encryptedMessage) {
                         send(client, "KEYSPACE.AUTH.CHALLENGE " + encryptedMessage);
-                        ServerSubscriptions.notifyAllAuthenticatedKeySpaceClients(pgp_id_public, "EVENT KEYSPACE.HOST.CHALLENGE " + encryptedMessage);
+                        //ServerSubscriptions.notifyAllAuthenticatedKeySpaceClients(pgp_id_public, "EVENT KEYSPACE.HOST.CHALLENGE " + encryptedMessage);
 
                     }).catch(function(error) {
                         send(client, "ERROR " + error);
