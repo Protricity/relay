@@ -50,7 +50,7 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
-        // Keyspace Subscribe Command
+        // Keyspace Status Command
         ClientWorkerThread.addCommand(importKSStatusCommand);
         ClientWorkerThread.addResponse(importKSStatusCommand);
         function importKSStatusCommand(commandString, e) {
@@ -62,6 +62,23 @@ if(typeof module === 'object') (function() {
             self.module = {exports: {}};
             importScripts('keyspace/status/ks-client-status-commands.js');
             module.exports.initClientKSStatusCommands(ClientWorkerThread);
+            //console.info("Loaded: keyspace/auth/ks-client-auth-command.js");
+            return false;
+        }
+
+
+        // Keyspace Scan Command
+        ClientWorkerThread.addCommand(importKSScanCommand);
+        ClientWorkerThread.addResponse(importKSScanCommand);
+        function importKSScanCommand(commandString, e) {
+            if (!/^(?:keyspace\.)?scan/i.test(commandString))
+                return false;
+
+            ClientWorkerThread.removeCommand(importKSScanCommand);
+            ClientWorkerThread.removeResponse(importKSScanCommand);
+            self.module = {exports: {}};
+            importScripts('keyspace/scan/ks-client-scan-commands.js');
+            module.exports.initClientKSScanCommands(ClientWorkerThread);
             //console.info("Loaded: keyspace/auth/ks-client-auth-command.js");
             return false;
         }

@@ -6,10 +6,11 @@ if (!module.exports) module.exports = {};
 module.exports.initSocketServerChannelCommands = function(SocketServer) {
     //SocketServer.addEventListener('connection', initClient);
     SocketServer.addCommand(messageClientCommand);
+
     SocketServer.addCommand(subscribeCommand);
     SocketServer.addCommand(unsubscribeCommand);
-    SocketServer.addCommand(chatChannelCommand);
 
+    SocketServer.addCommand(chatChannelCommand);
     SocketServer.addClientEventListener('close', channelClientCloseListener);
     //SocketServer.addEventListener('connection', channelClientOpenListener);
 
@@ -163,6 +164,7 @@ function messageClientCommand(commandString, client) {
     send(client, "ERROR User not found: " + userID);
     return true;
 }
+
 
 function chatChannelCommand(commandString, client) {
     var match = /^(?:channel\.)?chat\s+([^\s]+)\s*([\s\S]*)$/im.exec(commandString);

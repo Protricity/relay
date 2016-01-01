@@ -50,11 +50,11 @@ if(typeof module === 'object') (function() {
 
             var encryptedChallengeString = match[1];
 
-            self.module = {exports: {}};
+            self.module = {exports: self.exports = {}};
             importScripts('keyspace/ks-db.js');
             var KeySpaceDB = self.module.exports.KeySpaceDB;
 
-            self.module = {exports: {}};
+            self.module = {exports: self.exports = {}};
             importScripts('pgp/lib/openpgpjs/openpgp.js');
             var openpgp = self.module.exports;
 

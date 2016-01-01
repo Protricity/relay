@@ -12,10 +12,12 @@ if(typeof module === 'object') (function() {
     };
 })();
 
-//var httpBrowserID = 1;
+var ServerSubscriptions =
+    require('../../server/subscriptions/server-subscriptions.js')
+        .ServerSubscriptions;
 
 function httpCommandSocket(commandString, client) {
-    var match = /^http\s+/i.exec(commandString);
+    var match = /^http/i.exec(commandString);
     if(!match)
         return false;
 

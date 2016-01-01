@@ -7,6 +7,7 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addCommand(subscribeCommand);
         ClientWorkerThread.addResponse(subscribeResponse);
 
+
         ClientWorkerThread.addCommand(chatCommand);
         ClientWorkerThread.addResponse(chatResponse);
 
@@ -110,12 +111,17 @@ if(typeof module === 'object') (function() {
             return true;
         }
 
+
+
+
+
         function chatCommand(commandString) {
-            var match = /^(?:channel\.)?chat\s*([\s\S]*)$/im.exec(commandString);
+            var match = /^(channel\.)?chat\s*([\s\S]*)$/im.exec(commandString);
             if (!match)
                 return false;
 
-            commandString = "CHANNEL.CHAT " + match[1];
+            if(!match[1])
+                commandString = "CHANNEL." + commandString;
             ClientWorkerThread.sendWithSocket(commandString);
             return true;
         }

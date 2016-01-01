@@ -20,7 +20,7 @@ var ServerSubscriptions =
         .ServerSubscriptions;
 
 function ksAuthSocketCommand(commandString, client) {
-    var match = /^(?:keyspaces?\.)?auth\s+([\S\s]*)$/im.exec(commandString);
+    var match = /^(?:keyspaces?\.)?auth/im.exec(commandString);
     if (!match)
         return false;
 

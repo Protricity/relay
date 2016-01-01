@@ -53,6 +53,17 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
+        // KEYSPACE.Scan Command
+        SocketServer.addCommand(importScanCommand);
+        function importScanCommand(commandString, e) {
+            if (!/^keyspace\.scan/i.test(commandString))
+                return false;
+            SocketServer.removeCommand(importScanCommand);
+            require('./scan/ks-server-scan-commands.js')
+                .initSocketServerKSScanCommands(SocketServer);
+            return false;
+        }
+
         //
         //// TODO: Search here
         //// UI.CONTACTS Command
