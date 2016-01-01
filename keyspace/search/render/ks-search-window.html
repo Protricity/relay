@@ -1,0 +1,31 @@
+<article class='ks-search-window: maximized' data-sort='z'>
+    <script src='keyspace/search/render/ks-search-window.js'></script>
+    <link rel='stylesheet' href='keyspace/search/render/ks-search-window.css' type='text/css' property="stylesheet">
+    <header class='header-bar show-on-minimized'>
+        {header:buttons ks-search-window:}
+        <a href='javascript:ClientMainThread.execute("MINIMIZE ks-search-window:");'>
+            <span class="command">Search</span>
+        </a>
+    </header>
+    <main>
+        <form name='ks-search-form' class='show-on-minimized'>
+            <table style='width:100%'>
+                <tbody>
+                <tr class='show-on-minimized'>
+                    <td>
+                        <input name='search' type='text' class='reset focus'
+                               placeholder='i.e. Johanna Mockel' style='width: 99%;'/>
+                    </td>
+                    <td style='width:1px'>
+                        <input type='submit' value='Search' name='submit-search' />
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+    </main>
+    <section class='ks-search-results: hide-on-minimize'>
+        {$html_search_results}
+    </section>
+    <footer></footer>
+</article>

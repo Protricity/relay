@@ -1,0 +1,26 @@
+.ks-search-window\3A {
+    /* min-width: 20em; */
+    /* padding: 1em 2em 1em 2em; */
+    /* border: 3px inset; */
+    /* height: 16em; */
+    /* overflow-y: auto; */
+    /* background: #FFF; */
+    /*left: 1em;*/
+    /*bottom: 1em;*/
+    /*position: absolute;*/
+    /*min-width: 31em;*/
+}
+
+article.ks-search-window\3A > main,
+article.ks-search-window\3A > section {
+     background: #FFF;
+}
+.ks-search-results\3A   {
+}
+
+
+.ks-search-results\3A  .ks-search-entry {
+    font-family: monospace;
+    max-width: 40em;
+}
+

@@ -53,14 +53,14 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
-        // KEYSPACE.Scan Command
-        SocketServer.addCommand(importScanCommand);
-        function importScanCommand(commandString, e) {
-            if (!/^keyspace\.scan/i.test(commandString))
+        // KEYSPACE.Search Command
+        SocketServer.addCommand(importSearchCommand);
+        function importSearchCommand(commandString, e) {
+            if (!/^keyspace\.search/i.test(commandString))
                 return false;
-            SocketServer.removeCommand(importScanCommand);
-            require('./scan/ks-server-scan-commands.js')
-                .initSocketServerKSScanCommands(SocketServer);
+            SocketServer.removeCommand(importSearchCommand);
+            require('./search/ks-server-search-commands.js')
+                .initSocketServerKSSearchCommands(SocketServer);
             return false;
         }
 

@@ -83,7 +83,7 @@ if(typeof module !== 'object')
 
                             html_commands +=
                                 "<br/>" +
-                                getCommandHTML("KEYSPACE.STATUS " + pgp_id_public + " " + hostingCommand.toUpperCase(), hostingCommand)
+                                getCommandHTML("KEYSPACE.STATUS " + pgp_id_public + " " + hostingCommand.toUpperCase(), "Go " + hostingCommand)
                         } else {
                         }
 

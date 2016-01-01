@@ -83,18 +83,18 @@ if(typeof module === 'object') (function() {
         }
 
 
-        // Keyspace Scan Command
-        ClientWorkerThread.addCommand(importKSScanCommand);
-        ClientWorkerThread.addResponse(importKSScanCommand);
-        function importKSScanCommand(commandString, e) {
-            if (!/^(?:keyspace\.)?scan/i.test(commandString))
+        // Keyspace Search Command
+        ClientWorkerThread.addCommand(importKSSearchCommand);
+        ClientWorkerThread.addResponse(importKSSearchCommand);
+        function importKSSearchCommand(commandString, e) {
+            if (!/^(?:keyspace\.)?search/i.test(commandString))
                 return false;
 
-            ClientWorkerThread.removeCommand(importKSScanCommand);
-            ClientWorkerThread.removeResponse(importKSScanCommand);
+            ClientWorkerThread.removeCommand(importKSSearchCommand);
+            ClientWorkerThread.removeResponse(importKSSearchCommand);
             self.module = {exports: {}};
-            importScripts('keyspace/scan/ks-client-scan-commands.js');
-            module.exports.initClientKSScanCommands(ClientWorkerThread);
+            importScripts('keyspace/search/ks-client-search-commands.js');
+            module.exports.initClientKSSearchCommands(ClientWorkerThread);
             //console.info("Loaded: keyspace/auth/ks-client-auth-command.js");
             return false;
         }

@@ -2,8 +2,8 @@
  * Created by ari.
  */
 if(typeof module === 'object') (function() {
-    module.exports.initSocketServerKSScanCommands = function (SocketServer) {
-        SocketServer.addCommand(ksScanSocketCommand);
+    module.exports.initSocketServerKSSearchCommands = function (SocketServer) {
+        SocketServer.addCommand(ksSearchSocketCommand);
     };
 })();
 
@@ -13,13 +13,13 @@ var ServerSubscriptions =
 
 var DEFAULT_MODE = 'event';
 
-function ksScanSocketCommand(commandString, client) {
-    var match = /^keyspace\.scan(?:\.(\w+))?/i.exec(commandString);
+function ksSearchSocketCommand(commandString, client) {
+    var match = /^keyspace\.search(?:\.(\w+))?\s*(.*)$/i.exec(commandString);
     if (!match)
         return false;
 
     var mode = (match[1] || DEFAULT_MODE).toLowerCase();
-
+    var search = (match[2] || '').toLowerCase(); // TOD: allow regex
     // Get all clients via subscriptions, get all online keyspaces
 
     var keyspaceList = [];
@@ -50,13 +50,16 @@ function ksScanSocketCommand(commandString, client) {
                             continue;
 
                         var user_id = ServerSubscriptions.getAuthenticatedKeySpaceUserID(pgp_id_public);
+                        if(search && user_id.toLowerCase().indexOf(search) === -1)
+                            continue;
+
                         var keyspaceStatus = ServerSubscriptions.getKeySpaceStatus(pgp_id_public).toLowerCase();
                         switch(keyspaceStatus) {
                             case 'offline':
                                 continue;
                         }
 
-                        var entry = pgp_id_public + (user_id ? ' ' + user_id : '');
+                        var entry = pgp_id_public + (user_id ? ';' + user_id.replace(/;/g, ',') : '');
                         if(keyspaceList.indexOf(entry) === -1)
                             keyspaceList.push(entry);
                     }
@@ -66,7 +69,7 @@ function ksScanSocketCommand(commandString, client) {
         }
     }
 
-    send(client, "KEYSPACE.SCAN.RESULTS "
+    send(client, "KEYSPACE.SEARCH.RESULTS "
         + channelCount + " " + clientCount + " " + keyspaceCount
         + (keyspaceList.length > 0 ? "\n" + keyspaceList.join("\n") : ''));
 
