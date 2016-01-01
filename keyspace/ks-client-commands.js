@@ -38,7 +38,7 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addCommand(importSubscribeCommand);
         ClientWorkerThread.addResponse(importSubscribeCommand);
         function importSubscribeCommand(commandString, e) {
-            if (!/^(?:keyspaces?\.)?((?:un|re)?subscribe|auth)/i.test(commandString))
+            if (!/^(?:keyspaces?\.)?((?:un|re)?subscribe)/i.test(commandString))
                 return false;
 
             ClientWorkerThread.removeCommand(importSubscribeCommand);
@@ -47,6 +47,22 @@ if(typeof module === 'object') (function() {
             importScripts('keyspace/subscribe/ks-client-subscribe-commands.js');
             module.exports.initClientKSSubscribeCommands(ClientWorkerThread);
             //console.info("Loaded: keyspace/auth/ks-client-auth-command.js");
+            return false;
+        }
+
+
+        // Keyspace Auth Command
+        ClientWorkerThread.addCommand(importAuthCommand);
+        ClientWorkerThread.addResponse(importAuthCommand);
+        function importAuthCommand(commandString, e) {
+            if (!/^(?:keyspaces?\.)?auth/i.test(commandString))
+                return false;
+
+            ClientWorkerThread.removeCommand(importAuthCommand);
+            ClientWorkerThread.removeResponse(importAuthCommand);
+            self.module = {exports: {}};
+            importScripts('keyspace/auth/ks-client-auth-commands.js');
+            module.exports.initClientKSAuthCommands(ClientWorkerThread);
             return false;
         }
 

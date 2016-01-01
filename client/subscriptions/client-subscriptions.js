@@ -247,6 +247,53 @@ module.exports.ClientSubscriptions =
 //            cachedPublicKeyUserIDs[pgp_id_public] = publicKeyContentEntry.user_id;
 //    };
 
+    ClientSubscriptions.handleKeySpaceAuthResponse = function(responseString, e) {
+        var match = /^(?:keyspace\.)?auth(?:\.(challenge|success))?\s+([\s\S]+)$/im.exec(responseString);
+        if (!match)
+            throw new Error("Invalid Auth Response: " + responseString);
+
+        var mode = match[1].toLowerCase();
+        var encryptedChallengeString = match[2];
+
+        if(mode === 'success') {
+            // TODO: next thing to do todo TODODOTODODODODOO
+            console.warn("TODO: " + responseString);
+            return;
+        }
+
+        self.module = {exports: self.exports = {}};
+        importScripts('keyspace/ks-db.js');
+        var KeySpaceDB = self.module.exports.KeySpaceDB;
+
+        self.module = {exports: self.exports = {}};
+        importScripts('pgp/lib/openpgpjs/openpgp.js');
+        var openpgp = self.module.exports;
+
+        var pgpEncryptedMessage = openpgp.message.readArmored(encryptedChallengeString);
+        var pgp_id_public = pgpEncryptedMessage.getEncryptionKeyIds()[0].toHex().toUpperCase();
+
+        var requestURL = "http://" + pgp_id_public + ".ks/.private/id";
+        KeySpaceDB.queryOne(requestURL, function (err, contentData) {
+            if (err)
+                throw new Error(err);
+
+            if (!contentData)
+                throw new Error("Could not find Private Key: " + requestURL);
+
+            var privateKey = openpgp.key.readArmored(contentData.content).keys[0];
+
+            // TODO: handle passphrase
+            openpgp.decryptMessage(privateKey, pgpEncryptedMessage)
+                .then(function (decryptedChallenge) {
+                    //challengeValidations.push([pgp_id_public, decryptedChallenge]);
+                    ClientWorkerThread.sendWithSocket("KEYSPACE.AUTH.VALIDATE " + decryptedChallenge);
+
+                }).catch(function(err) {
+
+                    console.error(err);
+                });
+        });
+    };
 
     ClientSubscriptions.handleKeySpaceStatusResponse = function(responseString, e) {
         var match = /^keyspace\.status\s+([a-f0-9]{8,})\s+(.*)$/i.exec(responseString);

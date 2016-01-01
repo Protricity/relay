@@ -3,7 +3,7 @@
  */
 if(typeof module === 'object') (function() {
     module.exports.initClientKSSubscribeCommands = function (ClientWorkerThread) {
-        ClientWorkerThread.addResponse(ksChallengeResponse);
+        //ClientWorkerThread.addResponse(ksChallengeResponse);
 
         ClientWorkerThread.addCommand(ksSubscribeCommand);
         ClientWorkerThread.addResponse(ksSubscribeResponse);
@@ -42,49 +42,49 @@ if(typeof module === 'object') (function() {
         }
 
 
-
-        function ksChallengeResponse(responseString) {
-            var match = /^(?:keyspace\.)?auth\.challenge\s+([\s\S]+)$/im.exec(responseString);
-            if (!match)
-                return false;
-
-            var encryptedChallengeString = match[1];
-
-            self.module = {exports: self.exports = {}};
-            importScripts('keyspace/ks-db.js');
-            var KeySpaceDB = self.module.exports.KeySpaceDB;
-
-            self.module = {exports: self.exports = {}};
-            importScripts('pgp/lib/openpgpjs/openpgp.js');
-            var openpgp = self.module.exports;
-
-            var pgpEncryptedMessage = openpgp.message.readArmored(encryptedChallengeString);
-            var pgp_id_public = pgpEncryptedMessage.getEncryptionKeyIds()[0].toHex().toUpperCase();
-
-            var requestURL = "http://" + pgp_id_public + ".ks/.private/id";
-            KeySpaceDB.queryOne(requestURL, function (err, contentData) {
-                if (err)
-                    throw new Error(err);
-
-                if (!contentData)
-                    throw new Error("Could not find Private Key: " + requestURL);
-
-                var privateKey = openpgp.key.readArmored(contentData.content).keys[0];
-
-                // TODO: handle passphrase
-                openpgp.decryptMessage(privateKey, pgpEncryptedMessage)
-                    .then(function (decryptedChallenge) {
-                        //challengeValidations.push([pgp_id_public, decryptedChallenge]);
-                        ClientWorkerThread.sendWithSocket("KEYSPACE.AUTH.VALIDATE " + decryptedChallenge);
-
-                    }).catch(function(err) {
-
-                        console.error(err);
-                    });
-            });
-
-            return true;
-        }
+        //// TODO: refactor to ClientSubscription
+        //function ksChallengeResponse(responseString) {
+        //    var match = /^(?:keyspace\.)?auth\.challenge\s+([\s\S]+)$/im.exec(responseString);
+        //    if (!match)
+        //        return false;
+        //
+        //    var encryptedChallengeString = match[1];
+        //
+        //    self.module = {exports: self.exports = {}};
+        //    importScripts('keyspace/ks-db.js');
+        //    var KeySpaceDB = self.module.exports.KeySpaceDB;
+        //
+        //    self.module = {exports: self.exports = {}};
+        //    importScripts('pgp/lib/openpgpjs/openpgp.js');
+        //    var openpgp = self.module.exports;
+        //
+        //    var pgpEncryptedMessage = openpgp.message.readArmored(encryptedChallengeString);
+        //    var pgp_id_public = pgpEncryptedMessage.getEncryptionKeyIds()[0].toHex().toUpperCase();
+        //
+        //    var requestURL = "http://" + pgp_id_public + ".ks/.private/id";
+        //    KeySpaceDB.queryOne(requestURL, function (err, contentData) {
+        //        if (err)
+        //            throw new Error(err);
+        //
+        //        if (!contentData)
+        //            throw new Error("Could not find Private Key: " + requestURL);
+        //
+        //        var privateKey = openpgp.key.readArmored(contentData.content).keys[0];
+        //
+        //        // TODO: handle passphrase
+        //        openpgp.decryptMessage(privateKey, pgpEncryptedMessage)
+        //            .then(function (decryptedChallenge) {
+        //                //challengeValidations.push([pgp_id_public, decryptedChallenge]);
+        //                ClientWorkerThread.sendWithSocket("KEYSPACE.AUTH.VALIDATE " + decryptedChallenge);
+        //
+        //            }).catch(function(err) {
+        //
+        //                console.error(err);
+        //            });
+        //    });
+        //
+        //    return true;
+        //}
 
 
 //

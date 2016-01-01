@@ -443,7 +443,7 @@ module.exports.ServerSubscriptions =
         if (!match)
             throw new Error("Invalid Authentication Command: " + commandString);
 
-        var subCommand = match[1];
+        var subCommand = match[1].toLowerCase();
         var hostCodes = match[2].split(/\s+/m);
 
         for(var i=0; i<hostCodes.length; i++) {
