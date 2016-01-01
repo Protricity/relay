@@ -331,32 +331,39 @@ module.exports.KeySpaceDB =
         //KeySpaceDB.addURLToDB(url, null);
     };
 
-    KeySpaceDB.deleteContent = function(publicKeyID, timestamp, callback) {
+    KeySpaceDB.deleteContent = function(pgp_id_public, timestamp, callback) {
         KeySpaceDB(function(err, db) {
-            if(err)
+            if (err)
                 return callback(err);
+            KeySpaceDB.getContent(pgp_id_public, timestamp,
+                function (err, contentToDelete) {
+                    if (err)
+                        return callback(err);
 
-            if (typeof IDBDatabase !== 'undefined' && db instanceof IDBDatabase) {
-                var dbStore = db
-                    .transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readwrite")
-                    .objectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
+                    if (typeof IDBDatabase !== 'undefined' && db instanceof IDBDatabase) {
+                        var dbStore = db
+                            .transaction([KeySpaceDB.DB_TABLE_HTTP_CONTENT], "readwrite")
+                            .objectStore(KeySpaceDB.DB_TABLE_HTTP_CONTENT);
 
-                var deleteRequest = dbStore.delete([publicKeyID, timestamp]);
+                        var deleteRequest = dbStore.delete([pgp_id_public, timestamp]);
 
-                deleteRequest.onsuccess = function(e) {
-                    callback(null, deleteRequest);
+                        deleteRequest.onsuccess = function (e) {
+                            callback(null, deleteRequest);
 
-                    if(typeof Client !== 'undefined') {
-                        var responseString = "EVENT KEYSPACE.DELETE" +
-                            ' ' + publicKeyID +
-                            ' ' + timestamp;
-                        Client.processResponse(responseString);
+                            if (typeof Client !== 'undefined') {
+                                var responseString = "EVENT KEYSPACE.DELETE" +
+                                    ' ' + pgp_id_public +
+                                    ' ' + timestamp +
+                                    ' ' + contentToDelete.path;
+                                Client.processResponse(responseString);
+                            }
+                        };
+                        deleteRequest.onerror = function (e) {
+                            callback(e.target, deleteRequest);
+                        };
                     }
-                };
-                deleteRequest.onerror = function(e) {
-                    callback(e.target, deleteRequest);
-                };
-            }
+                }
+            );
         });
     };
 
@@ -388,6 +395,18 @@ module.exports.KeySpaceDB =
             }
         });
     };
+
+    //// TODO: refactor and use index on user_id?
+    //KeySpaceDB.queryUserID = function(pgp_id_public, callback) {
+    //    var requestURL = 'http://' + pgp_id_public + '.ks/public/id';
+    //    KeySpaceDB.queryOne(requestURL, function(err, content) {
+    //        if (content) {
+    //            callback(err, content.user_id);
+    //        } else {
+    //            callback(err, null);
+    //        }
+    //    })
+    //};
 
     KeySpaceDB.queryOne = function(contentURL, callback) {
         var done = false;

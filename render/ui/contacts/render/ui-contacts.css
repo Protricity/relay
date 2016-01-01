@@ -17,10 +17,8 @@
     padding: 0.4em 1em 0.3em 1em;
     border-radius: 0.5em 0.5em 0 0;
     width: 100%;
-    border-width: 1px;
-    font-size: 1em;
-    font-weight: bold;
-}
+    border-width: 1px;/* font-size: 1em; */
+    font-weight: bold;}
 
 .keyspace-contact-section-header\3A.closed {
     cursor: pointer;

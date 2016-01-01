@@ -64,8 +64,8 @@ if(typeof module === 'object') (function() {
                                         ClientWorkerThread.render(html);
                                     });
                                 });
-                            } else {
-                                console.error("Not found: " + publicKeyID);
+                            //} else {
+                            //    console.error("Not found: " + publicKeyID);
                             }
                         });
                     });

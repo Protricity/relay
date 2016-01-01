@@ -167,8 +167,8 @@ if(typeof module === 'object') (function() {
 
         var html_manage_entries = '';
 
-        // Query private keys
-        var path = '/.private/id';
+        // Query public keys
+        var path = '/public/id';
         var count = 0;
         KeySpaceDB.queryAll(path, function(err, contentEntry) {
             if(err)
@@ -224,10 +224,10 @@ if(typeof module === 'object') (function() {
 
         // Callback
         callback(MANAGE_TEMPLATE_ENTRY
-                .replace(/{\$id_private}/gi, contentEntry.pgp_id_private)
+                .replace(/{\$id_private}/gi, contentEntry.pgp_id_private || 'N/A')
                 .replace(/{\$id_public}/gi, contentEntry.pgp_id_public)
-                .replace(/{\$id_private_short}/gi, contentEntry.pgp_id_private.substr(contentEntry.pgp_id_private.length - 8))
-                .replace(/{\$id_public_short}/gi, contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8))
+                //.replace(/{\$id_private_short}/gi, contentEntry.pgp_id_private.substr(contentEntry.pgp_id_private.length - 8))
+                //.replace(/{\$id_public_short}/gi, contentEntry.pgp_id_public.substr(contentEntry.pgp_id_public.length - 8))
                 //.replace(/{\$block_private}/gi, privateKeyBlock)
                 //.replace(/{\$block_public}/gi, privateKeyData.block_public)
                 .replace(/{\$user_id}/gi, contentEntry.user_id.replace(/</g, '&lt;'))

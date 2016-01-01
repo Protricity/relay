@@ -25,65 +25,79 @@ if(typeof module !== 'object')
         var html_command_options = '';
         var html_public_key_entries = '';
 
-        //self.module = {exports: {}};
-        //importScripts('keyspace/ks-db.js');
-        //var KeySpaceDB = self.module.exports.KeySpaceDB;
+        self.module = {exports: {}};
+        importScripts('keyspace/ks-db.js');
+        var KeySpaceDB = self.module.exports.KeySpaceDB;
 
         var ClientSubscriptions = getClientSubscriptions();
 
-        var publicKeys = {};
+        var publicKeys = [];
         ClientSubscriptions.searchKeySpaceSubscriptions(null, null,
-            function(pgp_id_public, mode) {
+            function(pgp_id_public, mode, argString) {
                 pgp_id_public = pgp_id_public.toUpperCase();
-                if(typeof publicKeys[pgp_id_public] === 'undefined')
-                    publicKeys[pgp_id_public] = {modes:[]};
-                var modes = publicKeys[pgp_id_public].modes;
-                if(modes.indexOf(mode) === -1)
-                    modes.push(mode);
+                for(var i=0; i<publicKeys.length; i++) {
+                    if(publicKeys[i][0] === pgp_id_public) {
+                        publicKeys[i][1].push([mode, argString]);
+                        return;
+                    }
+                }
+                publicKeys.push([pgp_id_public, [[mode, argString]]]);
             }
         );
 
-//         console.log("KeySpace Contacts: ", publicKeys);
+         //console.log("KeySpace Contacts: ", publicKeys);
 
-        for(var pgp_id_public in publicKeys) {
-            if(publicKeys.hasOwnProperty(pgp_id_public)) {
-                var modes = publicKeys[pgp_id_public].modes;
-                // TODO: No need to query keyspace
+        for(i=0; i<publicKeys.length; i++)
+            (function(i, pgp_id_public, modes) {
 
-                var subscriptionStatus = false ? 'Subscribe' : 'Unsubscribe' ;
-                var user_id = ClientSubscriptions.getCachedPublicKeyUserID(pgp_id_public)
-                    || pgp_id_public;
-                var hostingStatus = ClientSubscriptions.getKeySpaceStatus(pgp_id_public);
-                var keyType = 'public-key';
+                var requestURL = 'http://' + pgp_id_public + '.ks/public/id';
+                KeySpaceDB.queryOne(requestURL,
+                    function(err, publicKeyContentEntry) {
+                        if(err || !publicKeyContentEntry) {
+                            if(i >= publicKeys.length-1)
+                                callback(html_public_key_entries, html_command_options);
+                            // TODO: unsubscribe from missing entry? No. That's handled via event listeners
+                            return;
+                        }
 
-                var html_commands =
-                    getCommandHTML("MESSAGE " + pgp_id_public, "Message") +
-                    getCommandHTML("GET " + pgp_id_public + "/public/profile", "Profile") +
-                    getCommandHTML("GET " + pgp_id_public, "Get") +
-                    "<br/>" +
-                    getCommandHTML("PGP.EXPORT " + pgp_id_public, "Export") +
-                    getCommandHTML("PGP.DELETE " + pgp_id_public, "Delete");
+                        var user_id = publicKeyContentEntry.user_id || pgp_id_public;
 
-                if(false) {
-                    keyType = 'private-key';
-                }
+                        var subscriptionStatus = false ? 'Subscribe' : 'Unsubscribe' ;
+                        //var user_id = ClientSubscriptions.getCachedPublicKeyUserID(pgp_id_public)
+                        //    || pgp_id_public;
+                        var hostingStatus = ClientSubscriptions.getKeySpaceStatus(pgp_id_public);
+                        var keyType = 'public-key';
+
+                        var html_commands =
+                            getCommandHTML("MESSAGE " + pgp_id_public, "Message") +
+                            getCommandHTML("GET " + pgp_id_public + "/public/profile", "Profile") +
+                            getCommandHTML("GET " + pgp_id_public, "Get") +
+                            "<br/>" +
+                            getCommandHTML("PGP.EXPORT " + pgp_id_public, "Export") +
+                            getCommandHTML("PGP.DELETE " + pgp_id_public, "Delete");
+
+                        if(false) {
+                            keyType = 'private-key';
+                        }
 
 
-                renderUIContactListEntry(
-                    user_id,
-                    pgp_id_public +
-                    ' <span class="' + hostingStatus.toLowerCase() + '">' +
-                    hostingStatus.toLowerCase() +
-                    '</span>',
-                    'render/ui/contacts/render/icons/user_icon_default.png',
-                    keyType,
-                    html_commands,
-                    function(html) {
-                        html_public_key_entries += html;
-                    });
-            }
-        }
-        callback(html_public_key_entries, html_command_options);
+                        renderUIContactListEntry(
+                            user_id,
+                            pgp_id_public +
+                            ' <span class="' + hostingStatus.toLowerCase() + '">' +
+                            hostingStatus.toLowerCase() +
+                            '</span>',
+                            'render/ui/contacts/render/icons/user_icon_default.png',
+                            keyType,
+                            html_commands,
+                            function(html) {
+                                html_public_key_entries += html;
+                                if(i >= publicKeys.length-1)
+                                    callback(html_public_key_entries, html_command_options);
+                            });
+                    }
+                );
+            })(i, publicKeys[i][0], publicKeys[i][1]);
     }
 
 

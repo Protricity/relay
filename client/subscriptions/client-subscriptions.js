@@ -124,9 +124,9 @@ module.exports.ClientSubscriptions =
                         throw new Error("Invalid KeySpace Mode: " + mode);
                 }
 
-                ClientSubscriptions.getCachedPublicKeyUserID(pgp_id_public, function(user_id) {
-                    // do nothing on cache found
-                });
+                //ClientSubscriptions.getCachedPublicKeyUserID(pgp_id_public, function(user_id) {
+                //    // do nothing on cache found
+                //});
 
                 break;
 
@@ -181,14 +181,14 @@ module.exports.ClientSubscriptions =
         }
 
         if(prefix === 'un') {
-            if(!existingSubscriptionString)
+            if(existingSubscriptionString === null)
                 throw new Error("Old Subscription not found: " + subscriptionString);
             delete modeList[mode];
             console.info(type + " subscription removed: ", subscriptionString);
 
         } else if(prefix === 're') {
             modeList[mode] = [argString, webSocket];
-            if(!existingSubscriptionString) {
+            if(existingSubscriptionString === null) {
                 console.warn("Old Subscription not found: " + subscriptionString);
 
             } else {
@@ -197,7 +197,7 @@ module.exports.ClientSubscriptions =
 
         } else {
             modeList[mode] = [argString, webSocket];
-            if(!existingSubscriptionString) {
+            if(existingSubscriptionString === null) {
                 console.info(type + " subscription: ", subscriptionString);
             } else {
                 console.warn(type + " subscription replaced: ", subscriptionString);
@@ -207,45 +207,45 @@ module.exports.ClientSubscriptions =
         return existingSubscriptionString;
     };
 
-    var cachedPublicKeyUserIDs = {};
-    ClientSubscriptions.getCachedPublicKeyUserID = function(pgp_id_public, callback) {
-        pgp_id_public = pgp_id_public.toUpperCase();
-        if(typeof cachedPublicKeyUserIDs[pgp_id_public] !== 'undefined') {
-            if(callback)
-                callback(cachedPublicKeyUserIDs[pgp_id_public]);
-            return cachedPublicKeyUserIDs[pgp_id_public];
-        }
-
-        if(!callback)
-            return null;
-
-        self.module = {exports: {}};
-        importScripts('keyspace/ks-db.js');
-        var KeySpaceDB = self.module.exports.KeySpaceDB;
-
-        var path = 'http://' + pgp_id_public + '/public/id';
-        KeySpaceDB.queryOne(path, function(err, publicKeyContentEntry) {
-            if (err)
-                throw new Error(err);
-
-            if (publicKeyContentEntry) {
-                ClientSubscriptions.cachePublicKeyInfo(publicKeyContentEntry);
-                callback(cachedPublicKeyUserIDs[pgp_id_public]);
-            }
-        });
-
-        return null;
-    };
-
-    ClientSubscriptions.cachePrivateKeyInfo =
-    ClientSubscriptions.cachePublicKeyInfo = function(publicKeyContentEntry) {
-        var pgp_id_public = publicKeyContentEntry.pgp_id_public.toUpperCase();
-//         if(typeof cachedPublicKeyUserIDs[pgp_id_public] !== 'undefined')
-//             console.warn("Cached Public Key ID already exists: " + pgp_id_public);
-
-        if(typeof cachedPublicKeyUserIDs[pgp_id_public] === 'undefined')
-            cachedPublicKeyUserIDs[pgp_id_public] = publicKeyContentEntry.user_id;
-    };
+//    var cachedPublicKeyUserIDs = {};
+//    ClientSubscriptions.getCachedPublicKeyUserID = function(pgp_id_public, callback) {
+//        pgp_id_public = pgp_id_public.toUpperCase();
+//        if(typeof cachedPublicKeyUserIDs[pgp_id_public] !== 'undefined') {
+//            if(callback)
+//                callback(cachedPublicKeyUserIDs[pgp_id_public]);
+//            return cachedPublicKeyUserIDs[pgp_id_public];
+//        }
+//
+//        if(!callback)
+//            return null;
+//
+//        self.module = {exports: {}};
+//        importScripts('keyspace/ks-db.js');
+//        var KeySpaceDB = self.module.exports.KeySpaceDB;
+//
+//        var path = 'http://' + pgp_id_public + '/public/id';
+//        KeySpaceDB.queryOne(path, function(err, publicKeyContentEntry) {
+//            if (err)
+//                throw new Error(err);
+//
+//            if (publicKeyContentEntry) {
+//                ClientSubscriptions.cachePublicKeyInfo(publicKeyContentEntry);
+//                callback(cachedPublicKeyUserIDs[pgp_id_public]);
+//            }
+//        });
+//
+//        return null;
+//    };
+//
+//    ClientSubscriptions.cachePrivateKeyInfo =
+//    ClientSubscriptions.cachePublicKeyInfo = function(publicKeyContentEntry) {
+//        var pgp_id_public = publicKeyContentEntry.pgp_id_public.toUpperCase();
+////         if(typeof cachedPublicKeyUserIDs[pgp_id_public] !== 'undefined')
+////             console.warn("Cached Public Key ID already exists: " + pgp_id_public);
+//
+//        if(typeof cachedPublicKeyUserIDs[pgp_id_public] === 'undefined')
+//            cachedPublicKeyUserIDs[pgp_id_public] = publicKeyContentEntry.user_id;
+//    };
 
 
     ClientSubscriptions.handleKeySpaceStatusResponse = function(responseString, e) {
