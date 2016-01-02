@@ -1,7 +1,7 @@
 /**
- * KeySpace Auth Commands
+ * KeySpace Auth Client Commands
  * 
- * Provides command and response handling for KEYSPACE.AUTH
+ * Provides client-side command and response handling for KEYSPACE.AUTH
  */
  
 if(typeof module === 'object') (function() {
