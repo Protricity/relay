@@ -1,12 +1,19 @@
 /**
- * Created by ari.
+ * KeySpace Search Socket Commands
+ * 
+ * Provides server-side command handling for KEYSPACE.SEARCH
  */
+ 
 if(typeof module === 'object') (function() {
+   /**
+     * Initiates Server Command Handlers for the server thread
+     **/
     module.exports.initSocketServerKSSearchCommands = function (SocketServer) {
         SocketServer.addCommand(ksSearchSocketCommand);
     };
 })();
 
+// Load ServerSubscriptions instance
 var ServerSubscriptions =
     require('../../server/subscriptions/server-subscriptions.js')
         .ServerSubscriptions;
@@ -15,10 +22,16 @@ var DEFAULT_MODE = 'event';
 
 var MAX_RESULTS = 100;
 
+/**
+ * Handles Command: KEYSPACE.SEARCH [search]
+ * @param {string} commandString The command string to process 
+ * @param {object} client The client sender instance
+ * @return {boolean} true if handled otherwise false
+ **/
 function ksSearchSocketCommand(commandString, client) {
     var match = /^keyspace\.search(?:\.(\w+))?\s*(.*)$/i.exec(commandString);
-    if (!match)
-        return false;
+    if (!match)         // If unmatched, 
+        return false;   // Pass control to next handler
 
     var mode = (match[1] || DEFAULT_MODE).toLowerCase();
     var search = (match[2] || '').toLowerCase(); // TOD: allow regex
