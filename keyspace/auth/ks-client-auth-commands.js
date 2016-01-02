@@ -18,8 +18,9 @@ if(typeof module === 'object') (function() {
 
         /**
          * Handles Command: KEYSPACE.AUTH
-         * @param string commandString The command string to process 
-         * @param object e event The command Event
+         * @param {string} commandString The command string to process 
+         * @param {object} e event The command Event
+         * @return {boolean} true if handled otherwise false
          **/
         function ksAuthCommand(commandString) {
             var match = /^keyspace\.auth/i.exec(commandString);
@@ -36,8 +37,9 @@ if(typeof module === 'object') (function() {
         
         /**
          * Handles Response: KEYSPACE.AUTH
-         * @param string responseString The response string to process 
-         * @param object e event The response Event
+         * @param {string} responseString The response string to process 
+         * @param {object} e event The response Event
+         * @return {boolean} true if handled otherwise false
          **/
         function ksAuthResponse(responseString, e) {
             var match = /^keyspace\.auth/i.exec(responseString);
