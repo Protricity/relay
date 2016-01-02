@@ -35,12 +35,14 @@
             'i.e. Johanna Mockel',
             'i.e. Carl Schurz',
             'i.e. Charles Dickens',
+            'i.e. Karl Marx',
             'i.e. Ralph Wiggum',
             'i.e. My PGP User ID',
             'i.e. first.last@yourmail',
             'i.e. johanna.m@gmail.com',
             'i.e. carl.c.s@gmail.com',
             'i.e. charles.dickens@gmail.com',
+            'i.e. karl.h.marx@gmail.com',
             'i.e. ralph.wiggum@gmail.com'
         ];
         return placeholders[Math.floor(Math.random()*placeholders.length)];

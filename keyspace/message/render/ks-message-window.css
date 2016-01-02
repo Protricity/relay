@@ -20,16 +20,18 @@ form[name=ks-message-form] {
 }
 
 
-form[name=ks-message-form] input[name=message] {
-    font-family: monospace;
+form[name=ks-message-form] [name=message] {
+    width: 99%;
+    height: 3em;
 }
 
 form[name=ks-message-form] input[type=submit] {
+    height: 3em;
 }
 
 form[name=ks-message-form] select[name=message_command],
 form[name=ks-message-form] select[name=message_encryption_options] {
-    width: 7em;
+    width: 99%;
 }
 
 /*form[name=ks-message-form] .pgp-message {*/
@@ -53,21 +55,36 @@ form[name=ks-message-form] select[name=message_encryption_options] {
 form[name=ks-message-form] .ks-message-log\3A {
     overflow: auto;
     max-height: 18em;
-    max-width: 48em;
-    /*min-width: 32em;*/
+    /* max-width: 48em; */
+    /* min-width: 32em; */
     min-height: 4em;
     background-color: white;
 }
 
-form[name=ks-message-form] .ks-message-log\3A .message-log-entry {
+form[name=ks-message-form] .ks-message-log\3A  .message-log-entry {
+    white-space: pre;
+
     border: 1px solid transparent;
-    overflow: hidden;
+    overflow: auto;
     max-height: 5em;
+    max-width: 46em;
+
+    transition: max-height 2s;
 }
 
-form[name=ks-message-form] .ks-message-log\3A .message-log-entry:hover {
+form[name=ks-message-form] .ks-message-log\3A  .message-log-entry:hover {
     border-radius: 0.2em;
     border: 1px solid lightgrey;
-    overflow: hidden;
+/*     overflow: hidden; */
     max-height: inherit;
+
+    transition: max-height 0.5s;
+}
+
+
+form[name=ks-message-form] .pgp-message\3A.unprocessed:not(:hover) .encrypted-content {
+    max-height: 0;
+    overflow: hidden;
+    display: inline-block;
+    max-width: 0;
 }

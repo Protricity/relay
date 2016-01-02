@@ -8,7 +8,7 @@ if(typeof document === 'object') (function() {
     // Events
 
     document.addEventListener('submit', onFormEvent, false);
-    document.addEventListener('change', onFormEvent, false);
+    document.addEventListener('keydown', onFormEvent, false);
 
     function onFormEvent(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
@@ -21,6 +21,9 @@ if(typeof document === 'object') (function() {
                     e.preventDefault();
                     submitMessageForm(e, formElm);
                 }
+                if(e.type.substr(0, 3) === 'key') {
+                    handleMessageFormKeyEvent(e, formElm);
+                }
                 return true;
 
             default:
@@ -28,8 +31,39 @@ if(typeof document === 'object') (function() {
         }
     }
 
-    function submitMessageForm(e) {
-        var formElm = e.target;
+    var history = [];
+    var historyPos = 0;
+    function handleMessageFormKeyEvent(e, formElm) {
+        var messageElm = formElm.querySelector('*[name=message], input[type=text], textarea');
+        switch(e.which) {
+            case 13: // ENTER
+                if(e.ctrlKey) {
+                    e.preventDefault();
+                    submitMessageForm(e, formElm);
+                }
+                break;
+
+            case 38: // UP
+                messageElm.value = nextHistory(-1);
+                break;
+
+            case 40: // Down
+                messageElm.value = nextHistory(1);
+                break;
+        }
+
+        function nextHistory(inc) {
+            historyPos += inc;
+            if(historyPos > history.length-1)
+                historyPos = 0;
+            else if (historyPos < 0)
+                historyPos = history.length-1;
+            return history[historyPos];
+        }
+    }
+
+    function submitMessageForm(e, formElm) {
+        formElm = formElm || e.target;
         if(formElm.nodeName.toLowerCase() !== 'form')
             throw new Error("Invalid Form: " + formElm);
 
@@ -48,7 +82,14 @@ if(typeof document === 'object') (function() {
             return false;
         // if hasn't identified yet, ask to identify now
 
-        var commandString = "MESSAGE " + pgp_id_to + " " + pgp_id_from + " " + messageElm.value;
+        var messageContent = messageElm.value;
+        var command = 'MESSAGE';
+
+        if(formElm.message_encryption_options.value === 'encrypt')
+            command = 'MESSAGE.ENCRYPT';
+
+
+        var commandString = command + " " + pgp_id_to + " " + pgp_id_from + " " + messageContent;
         if(messageElm.value[0] === '/')
             commandString = messageElm.value.substr(1);
 
@@ -58,8 +99,10 @@ if(typeof document === 'object') (function() {
             bubbles:true
         });
         formElm.dispatchEvent(socketEvent);
-        if(socketEvent.defaultPrevented)
+        if(socketEvent.defaultPrevented) {
+            history.push(messageElm.value);
             messageElm.value = '';
+        }
 
         return false;
     }

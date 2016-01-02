@@ -22,18 +22,22 @@
                     <td colspan="2" style='vertical-align: top; width:1px;'>
                         <label>
                             <select name="message_encryption_options">
-                                <option value="">Don't encrypt</option>
-                                <option disabled="disabled" value="">Encrypt for Public Key</option>
-                                <option value="MESSAGE {$pgp_id_to} {$pgp_id_from} !get public/id">Request Public Key (Add to Contact List)</option>
-                                <option value="MESSAGE {$pgp_id_to} {$pgp_id_from} !get public/profile">Request Public Profile</option>
+                                <optgroup label="Message Options">
+                                    <option value="">Send without encryption (unsafe)</option>
+                                    <option value="encrypt">Send with PGP Encryption (safe)</option>
+                                </optgroup>
+                                <optgroup label="Commands">
+                                    <option disabled="disabled" value="MESSAGE {$pgp_id_to} {$pgp_id_from} !get public/id">Request Public Key (Add to Contact List)</option>
+                                    <option disabled="disabled" value="MESSAGE {$pgp_id_to} {$pgp_id_from} !get public/profile">Request Public Profile</option>
+                                </optgroup>
                             </select>
                         </label>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <input name='message' type='text' class='reset focus'
-                               placeholder='Type a private message' style='width: 100%;'/>
+                        <textarea name='message' class='reset focus'
+                               placeholder='Type a private message' rows='2'></textarea>
                     </td>
                     <td style='width:1px'>
                         <input type='submit' value='Send' name='submit-send-chat' />
