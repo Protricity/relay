@@ -1,23 +1,31 @@
 /**
- * Created by ari on 7/2/2015.
+ * Passphrase Prompt Window
+ * 
+ * Provides a Passphrase prompt UI for decrypting partial PGP Private Keys (the ones that require passphrases)
  */
-
-
+ 
 (function() {
 
-    // Client Script
+    // Client Event Listeners
     if(typeof document === 'object')  {
         document.addEventListener('submit', onFormEvent, false);
         //document.addEventListener('keydown', onFormEvent, false);
     }
 
-    // Worker Scripts
+    // Worker Thread Exports
     if(typeof module === 'object') {
         module.exports.renderKeySpacePassphraseWindow = renderKeySpacePassphraseWindow;
     }
 
+    // Passphrase Window Template URL
     var TEMPLATE_URL = 'keyspace/passphrase/render/ks-passphrase-window.html';
 
+    /**
+     * Handles Command: KEYSPACE.PASSPHRASE [passphrase]
+     * @param {string} commandString The command string to process 
+     * @param {object} e The command Event
+     * @param {callback} callback render callback
+     **/
     function renderKeySpacePassphraseWindow(commandString, e, callback) {
         var match = /^(?:keyspace\.)?pass(?:phrase)?\s+([a-f0-9]{8,})/i.exec(commandString);
         if (!match)
@@ -36,7 +44,11 @@
         );
     }
 
-
+    /**
+     * Handles Form Events
+     * @param {object} e The command Event
+     * @param {object} [formElm] The form element  
+     **/
     function onFormEvent(e, formElm) {
         if(!formElm) formElm = e.target.form ? e.target.form : e.target;
         if(formElm.nodeName.toLowerCase() !== 'form')
