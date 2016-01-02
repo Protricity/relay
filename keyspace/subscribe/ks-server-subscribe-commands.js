@@ -1,7 +1,13 @@
 /**
- * Created by ari.
+ * KeySpace Subscription Socket Commands
+ * 
+ * Provides server-side command handling for KEYSPACE.SUBSCRIBE
  */
+ 
 if(typeof module === 'object') (function() {
+   /**
+     * Initiates Server Command Handlers for the server thread
+     **/
     module.exports.initSocketServerKSSubscribeCommands = function (SocketServer) {
         SocketServer.addCommand(ksAuthSocketCommand);
         SocketServer.addCommand(ksHandleHTTPSocketResponse);
@@ -13,36 +19,61 @@ if(typeof module === 'object') (function() {
     };
 })();
 
+// Default mode, if unspecified
 var DEFAULT_MODE = 'EVENT';
 
+// Load ServerSubscriptions instance
 var ServerSubscriptions =
     require('../../server/subscriptions/server-subscriptions.js')
         .ServerSubscriptions;
 
+/**
+ * Handles Command: KEYSPACE.AUTH
+ * @param {string} commandString The command string to process 
+ * @param {object} client The client sender instance
+ * @return {boolean} true if handled otherwise false
+ **/
 function ksAuthSocketCommand(commandString, client) {
     var match = /^(?:keyspaces?\.)?auth/im.exec(commandString);
-    if (!match)
-        return false;
+    if (!match)         // If unmatched, 
+        return false;   // Pass control to next handler
 
     ServerSubscriptions.handleKeySpaceAuthenticationCommand(commandString, client);
     return true;
 }
 
 
+/**
+ * Handles Command: KEYSPACE.SUBSCRIBE[.mode] arg1 arg2...
+ * @param {string} commandString The command string to process 
+ * @param {object} client The client sender instance
+ * @return {boolean} true if handled otherwise false
+ **/
 function ksSubscribeSocketCommand(commandString, client) {
     var match = /^(keyspaces?\.)?(un|re)?subscribe/i.exec(commandString);
-    if (!match)
-        return false;
+    if (!match)         // If unmatched, 
+        return false;   // Pass control to next handler
 
+    // Handle Subscription
     var oldSubscriptionString = ServerSubscriptions.handleClientSubscription(commandString, client);
+    
+    // TODO: should occur in ^
     send(client, commandString);
+    
+    // Command was handled
     return true;
 }
 
+/**
+ * Handles Command: KEYSPACE.UNSUBSCRIBE[.mode] arg1 arg2...
+ * @param {string} commandString The command string to process 
+ * @param {object} client The client sender instance
+ * @return {boolean} true if handled otherwise false
+ **/
 function ksUnsubscribeSocketCommand(commandString, client) {
     var match = /^(?:channel\.)?unsubscribe(?:\.(\w+))?\s+(\S+)$/im.exec(commandString);
-    if (!match)
-        return false;
+    if (!match)         // If unmatched, 
+        return false;   // Pass control to next handler
 
     var mode = match[1] || DEFAULT_MODE;
     var channel = match[2];
@@ -63,49 +94,73 @@ function ksUnsubscribeSocketCommand(commandString, client) {
     } else {
         send(client, "ERROR Failed to unsubscribe: " + commandString);
     }
+
+    // Command was handled
     return true;
 }
 
 var pendingGETRequests = [];
+
+/**
+ * Handles Response: HTTP 1.1 [response code] [response message]
+ * Note: Handles pending requests based on Request-ID
+ * 
+ * @param {string} responseString The response string to process 
+ * @param {object} client The client sender instance
+ * @return {boolean} true if handled otherwise false
+ **/
 function ksHandleHTTPSocketResponse(responseString, client) {
     var match = /^http\/1.1\s+(\d+)\s+(\w+)\s+/im.exec(responseString);
-    if(!match)
-        return false;
+    if (!match)         // If unmatched, 
+        return false;   // Pass control to next handler
 
+    // Match response code and message
     var responseCode = match[1];
     var responseMessage = match[2];
 
+    // Split the response into header and body
     var lines = responseString.split("\n\n", 2)[0].split(/\n/g);
-    lines.shift();
+    var firstLine = lines.shift();
     var responseHeaders = lines.join("\n");
     var responseBody = responseString.split("\n\n", 2)[1];
 
+    // Search for Request-ID
     match = /^Request-ID:\s+(\w+)/im.exec(responseHeaders);
-    if(!match)
-        return false;
+    if(!match)          // If no request ID is matched,
+        return false;   // pass control to next handler
 
+    // Match Request ID
     var requestID = match[1];
 
-    if(typeof pendingGETRequests[requestID] === 'undefined')
-        return false;
-    //throw new Error("Request ID not found: " + responseString);
 
+    if(typeof pendingGETRequests[requestID] === 'undefined')    // If Request ID wasn't found
+        return false;   // pass control to next handler
+        
+    // Get pending request info
     var pendingGETRequest = pendingGETRequests[requestID];
 
     var pendingClient = pendingGETRequest[1];
     var pendingCallback = pendingGETRequest[2];
+    
+    // Check for client mismatch
     if(pendingClient !== client)
         throw new Error("Invalid request ID: Client mismatch");
 
     // Delete the request so it can't be reused
     delete pendingGETRequests[requestID];
 
-    if(pendingCallback)
+    if(pendingCallback) // Trigger the pending callback
         pendingCallback(responseBody, responseCode, responseMessage, responseHeaders, client);
+
+    // Command was handled
     return true;
 }
 
-
+/**
+ * Send a message to a client
+ * @param {object} client 
+ * @param {string} message
+ **/
 function send(client, message) {
     if(client.readyState === client.OPEN) {
         client.send(message);
@@ -115,62 +170,3 @@ function send(client, message) {
         console.warn("C " + message);
     }
 }
-//function ksSocketClientCloseListener() {
-//    var client = this;
-//    console.info("KeySpace Client Closed: ", typeof client);
-//
-//    for(var pgp_id_public in keySpaceClients) {
-//        if(keySpaceClients.hasOwnProperty(pgp_id_public)) {
-//            var clients = keySpaceClients[pgp_id_public];
-//            for(var i=0; i<clients.length; i++) {
-//                if(clients[i].readyState !== client.OPEN
-//                    || clients[i] === client) {
-//                    clients.splice(i--, 1);
-//                }
-//            }
-//
-//            if(clients.length === 0) {
-//                delete keySpaceClients[pgp_id_public];
-//                sendToKeySpaceSubscribers(pgp_id_public, "KEYSPACE.HOST.OFFLINE " + pgp_id_public);
-//            }
-//        }
-//    }
-//    //SocketServer.addEventListener('connection', function(client) {
-//    //    httpCommand("GET", client);
-//    //});
-//}
-
-
-//function ksHostStatusSocketCommand(commandString, client) {
-//    var match = /^keyspace\.host\.(un)?subscribe\s+([a-f0-9 ]{8,})$/i.exec(commandString);
-//    if(!match)
-//        return false;
-//    console.info("I " + commandString);
-//
-//    var unsubscribe = match[1] ? true : false;
-//    var uids = match[2].split(' ');
-//
-//    for(var i=0; i<uids.length; i++) {
-//        var uid = uids[i].toUpperCase();
-//
-//        var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
-//
-//        uid = uid.substr(uid.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
-//        if(uid < KeySpaceDB.DB_PGP_KEY_LENGTH)
-//            throw new Error("Invalid PGP Key ID Length (" + KeySpaceDB.DB_PGP_KEY_LENGTH + "): " + uid);
-//
-//        if(typeof keySpaceSubscribers[uid] === 'undefined')
-//            keySpaceSubscribers[uid] = [];
-//
-//        var pos = keySpaceSubscribers[uid].indexOf(client);
-//        if(pos === -1 && !unsubscribe) {
-//            client.send("INFO Subscribed to KeySpace: " + uid);
-//            keySpaceSubscribers[uid].push(client);
-//        } else if(pos >= 0 && unsubscribe) {
-//            client.send("INFO Unsubscribed to KeySpace: " + uid);
-//            keySpaceSubscribers[uid].splice(pos, 1);
-//        }
-//    }
-//    return true;
-//}
-
