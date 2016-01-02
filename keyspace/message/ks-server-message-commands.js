@@ -1,17 +1,29 @@
 /**
- * Created by ari.
+ * KeySpace Message Socket Commands
+ * 
+ * Provides server-side command handling for KEYSPACE.MESSAGE
  */
-
+ 
 if(typeof module === 'object') (function() {
-    module.exports.initSocketServerKSMessageCommands = function (SocketServer) {
+   /**
+     * Initiates Server Command Handlers for the server thread
+     **/
+     module.exports.initSocketServerKSMessageCommands = function (SocketServer) {
         SocketServer.addCommand(ksMessageCommandSocket);
     };
 })();
 
+// Load ServerSubscriptions instance
 var ServerSubscriptions =
     require('../../server/subscriptions/server-subscriptions.js')
         .ServerSubscriptions;
 
+/**
+ * Handles Command: KEYSPACE.MESSAGE [To: PGP ID] [From: PGP ID] [message]
+ * @param {string} commandString The command string to process 
+ * @param {object} client The client sender instance
+ * @return {boolean} true if handled otherwise false
+ **/
 function ksMessageCommandSocket(commandString, client) {
     var match = /^(?:keyspace\.)?message\s+([a-f0-9]{8,})\s+([a-f0-9]{8,})\s*([\s\S]*)$/im.exec(commandString);
     if(!match)
