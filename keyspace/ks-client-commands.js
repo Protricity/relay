@@ -117,6 +117,21 @@ if(typeof module === 'object') (function() {
         }
 
 
+        // Keyspace Passphrase Command
+        ClientWorkerThread.addCommand(importKSPassphraseCommand);
+        function importKSPassphraseCommand(commandString, e) {
+            if (!/^(?:keyspace\.)?pass(?:phrase)?/i.test(commandString))
+                return false;
+
+            ClientWorkerThread.removeCommand(importKSPassphraseCommand);
+            self.module = {exports: {}};
+            importScripts('keyspace/passphrase/ks-client-passphrase-commands.js');
+            module.exports.initClientKSPassphraseCommands(ClientWorkerThread);
+            //console.info("Loaded: keyspace/auth/ks-client-auth-command.js");
+            return false;
+        }
+
+
         // Feed Commands
         ClientWorkerThread.addCommand(importFeedCommands);
         function importFeedCommands(commandString, e) {

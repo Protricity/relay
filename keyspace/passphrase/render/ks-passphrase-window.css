@@ -1,0 +1,8 @@
+.ks-passphrase-window\3A {
+}
+
+article.ks-passphrase-window\3A  > main,
+article.ks-passphrase-window\3A  > section {
+     background: #FFF;
+     padding: 0.2em 1em;
+}

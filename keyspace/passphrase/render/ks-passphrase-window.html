@@ -1,0 +1,30 @@
+<article class='ks-passphrase-window: maximized focus-on-render' data-sort='z'>
+    <script src='keyspace/passphrase/render/ks-passphrase-window.js'></script>
+    <link rel='stylesheet' href='keyspace/passphrase/render/ks-passphrase-window.css' type='text/css' property="stylesheet">
+    <header class='header-bar show-on-minimized'>
+        {header:buttons ks-passphrase-window:}
+        <a href='javascript:ClientMainThread.execute("MINIMIZE ks-passphrase-window:");'>
+            <span class="command">Passphrase</span> Required
+        </a>
+    </header>
+    <main>
+        <form name='ks-passphrase-form' class='show-on-minimized'>
+            <label class='label-submit'>
+                A <span class='passphrase'>passphrase</span> is required
+                <br />
+                to use this <strong>PGP Identity</strong>:<br />
+                <input type='password' name='passphrase' style='width: 13em;'/>
+
+                <br />
+                Options:<br/>
+                <select name='auto_passphrase' style="width: 15em;">
+                    <option value=''>Ask me every time (safer)</option>
+                    <option value='memory'>Keep private key decrypted in memory (less safe)</option>
+                </select>
+
+                <br />
+            </label>
+        </form>
+    </main>
+    <footer></footer>
+</article>
