@@ -1,13 +1,27 @@
 /**
- * Created by ari.
+ * KeySpace Auth Commands
+ * 
+ * Provides command and response handling for KEYSPACE.AUTH
  */
-
+ 
 if(typeof module === 'object') (function() {
+    
+    /**
+     * Initiates Client Command/Response Handlers for the worker thread
+     **/
     module.exports.initClientKSMessageCommands = function (ClientWorkerThread) {
+        
+        // Add Command/Response Handlers     
         ClientWorkerThread.addCommand(ksMessageCommand);
         ClientWorkerThread.addResponse(ksMessageResponse);
 
 
+        /**
+         * Handles Command: KEYSPACE.MESSAGE [To: PGP ID] [From: PGP ID] [message]
+         * @param {string} commandString The command string to process 
+         * @param {object} e event The command Event
+         * @return {boolean} true if handled otherwise false
+         **/
         function ksMessageCommand(commandString) {
             var match = /^(?:keyspace\.)?message(?:\.(encrypt))?\s+([a-f0-9]{8,})\s*([a-f0-9]{8,})?\s*([\s\S]*)$/im.exec(commandString);
             if (!match)
@@ -72,6 +86,13 @@ if(typeof module === 'object') (function() {
             return true;
         }
 
+
+        /**
+         * Handles Response: KEYSPACE.MESSAGE [To: PGP ID] [From: PGP ID] [message]
+         * @param {string} responseString The response string to process 
+         * @param {object} e event The response Event
+         * @return {boolean} true if handled otherwise false
+         **/
         function ksMessageResponse(responseString) {
             var match = /^(?:keyspace\.)?message\s+([a-f0-9]{8,})\s+([a-f0-9]{8,})\s*([\s\S]*)$/im.exec(responseString);
             if (!match)
@@ -83,8 +104,6 @@ if(typeof module === 'object') (function() {
 
             responseString = parsePGPEncryptedMessageHTML(responseString);
 
-            //var username = match[2];
-            //var content = fixPGPMessage(match[3]);
             renderMessageWindow(pgp_id_to, pgp_id_from);
             getMessageExports().renderMessage(responseString, function (html) {
                 ClientWorkerThread.render(html);
