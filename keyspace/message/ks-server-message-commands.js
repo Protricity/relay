@@ -26,9 +26,9 @@ var ServerSubscriptions =
  **/
 function ksMessageCommandSocket(commandString, client) {
     var match = /^(?:keyspace\.)?message\s+([a-f0-9]{8,})\s+([a-f0-9]{8,})\s*([\s\S]*)$/im.exec(commandString);
-    if(!match)
-        return false;
-
+    if (!match)         // If unmatched, 
+        return false;   // Pass control to next handler
+        
     var pgp_id_to = match[1].toUpperCase();
     var pgp_id_from = match[2].toUpperCase();
 
