@@ -24,8 +24,8 @@ if(typeof module === 'object') (function() {
          **/
         function ksMessageCommand(commandString) {
             var match = /^(?:keyspace\.)?message(?:\.(encrypt))?\s+([a-f0-9]{8,})\s*([a-f0-9]{8,})?\s*([\s\S]*)$/im.exec(commandString);
-            if (!match)
-                return false;
+            if (!match)         // If unmatched, 
+                return false;   // Pass control to next handler
 
             var subCommand = (match[1] || '').toLowerCase();
             var pgp_id_to = match[2].toUpperCase();
@@ -95,8 +95,8 @@ if(typeof module === 'object') (function() {
          **/
         function ksMessageResponse(responseString) {
             var match = /^(?:keyspace\.)?message\s+([a-f0-9]{8,})\s+([a-f0-9]{8,})\s*([\s\S]*)$/im.exec(responseString);
-            if (!match)
-                return false;
+            if (!match)         // If unmatched, 
+                return false;   // Pass control to next handler
 
             var pgp_id_to = match[1].toUpperCase();
             var pgp_id_from = match[2].toUpperCase();
