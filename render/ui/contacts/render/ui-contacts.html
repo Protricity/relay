@@ -13,7 +13,7 @@
             <option value=''>Select Contact(s)</option>
             {$html_command_options}
         </select>
-        <input type="text" name="search" class="hide-on-selected-contacts" placeholder="Search Contacts or Channels" />
+        <input type="text" name="search" class="hide-on-selected-contacts" placeholder="Filter Contacts and Channels" />
         <input type='hidden' placeholder="Change Username" value="{$nick_value}" />
 
         <button class="keyspace-contact-section-header:"
@@ -22,7 +22,10 @@
         <ul class="keyspace-contact-section:">
             {$html_keyspace_entries}
             <li class='keyspace-contact-default-info:'>
-                <a href='javascript:ClientMainThread.execute("PGP.IMPORT")'>Import</a> a Contact...
+                <a href='javascript:ClientMainThread.execute("KEYSPACE.SEARCH")'>Search</a>
+                for or
+                <a href='javascript:ClientMainThread.execute("PGP.IMPORT")'>Import</a>
+                Identities...
             </li>
         </ul>
 
@@ -32,7 +35,7 @@
         <ul class="keyspace-contact-section:">
             {$html_channel_entries}
             <li class='keyspace-contact-default-info:'>
-                <a href='javascript:ClientMainThread.execute("SUBSCRIBE")'>Join</a> a channel...
+                <a href='javascript:ClientMainThread.execute("CHANNEL.SUGGEST")'>Suggest</a> a channel...
             </li>
         </ul>
 

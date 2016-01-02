@@ -142,7 +142,7 @@ if(typeof module !== 'object')
 
                 renderUIContactListEntry(
                     channelName,
-                    '<span class="status">0-25 subscribers</span>',
+                    '<span class="status">1-25 subscribers</span>',
                     'render/ui/contacts/render/icons/channel_icon_default.png',
                     'channel',
                     html_commands,

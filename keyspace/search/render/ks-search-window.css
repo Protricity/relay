@@ -14,13 +14,54 @@
 article.ks-search-window\3A > main,
 article.ks-search-window\3A > section {
      background: #FFF;
+     padding: 0.2em 1em;
 }
 .ks-search-results\3A   {
 }
 
 
-.ks-search-results\3A  .ks-search-entry {
-    font-family: monospace;
+.ks-search-results\3A  table td{
+    /* font-family: monospace; */
     max-width: 40em;
 }
 
+
+.ks-search-results\3A  table {
+    /* display: inline-table; */
+    /* margin: 1em; */
+    /* border: 6px dashed; */
+}
+
+.ks-search-results\3A  table th,
+.ks-search-results\3A  table td {
+    border: outset 1px;
+    padding: 0.4em 0.7em;
+}
+
+.ks-search-results\3A  table th {
+    background-color: #DDD;
+}
+.ks-search-results\3A  table tr:hover {
+    background-color: #CFE;
+    cursor: pointer;
+}
+
+.ks-search-results\3A  a.search-entry-command a:visited,
+.ks-search-results\3A  a.search-entry-command{
+    border: 1px outset #FFF;
+    border-radius: 0.5em;
+    background-color: #DDD;
+    text-decoration: none;
+    /* font: menu; */
+    display: inline-block;
+    padding: 0.3em 0.5em;
+    transition: max-width 0.2s, box-shadow 0.3s;
+    /* max-width: 2em; */
+    overflow: hidden;
+    text-align: center;
+}
+
+.ks-search-results\3A  a.search-entry-command:hover {
+    box-shadow: 0 0 2em #00F;;
+    max-width: 10em;
+}

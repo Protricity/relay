@@ -407,12 +407,20 @@ module.exports.ServerSubscriptions =
         pgp_id_public = pgp_id_public.toUpperCase();
         if(typeof keyspaceAuthentications[pgp_id_public] === 'undefined')
             return [];
-        return keyspaceAuthentications[pgp_id_public].slice();
+        var clientList = keyspaceAuthentications[pgp_id_public];
+        for(var i=0; i<clientList.length; i++) {
+            if(clientList[i].readyState !== clientList[i].OPEN) {
+                clientList.splice(i--, 1);
+            }
+        }
+        return clientList.slice();
     };
 
-    ServerSubscriptions.hasKeySpaceAuthentication = function(pgp_id_public, client) {
-        return ServerSubscriptions.getAuthenticatedKeySpaceClients(pgp_id_public)
-            .indexOf(client) >= 0;
+    ServerSubscriptions.isKeySpaceAuthorized = function(pgp_id_public, client) {
+        var clients = ServerSubscriptions.getAuthenticatedKeySpaceClients(pgp_id_public);
+        if(client)
+            return clients.indexOf(client) >= 0;
+        return clients.length > 0;
     };
 
     ServerSubscriptions.getAuthenticatedKeySpaceUserID = function(pgp_id_public) {

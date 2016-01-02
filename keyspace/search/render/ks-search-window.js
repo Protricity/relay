@@ -8,7 +8,7 @@
     // Client Script
     if(typeof document === 'object')  {
         document.addEventListener('submit', onFormEvent, false);
-        document.addEventListener('keydown', onFormEvent, false);
+        //document.addEventListener('keydown', onFormEvent, false);
     }
 
     // Worker Scripts
@@ -17,8 +17,36 @@
     }
 
     var TEMPLATE_URL = 'keyspace/search/render/ks-search-window.html';
+    var TEMPLATE_SEARCH_ENTRY =
+        "\n<tr>" +
+            "\n\t<td>{$user_id}</td>" +
+            "\n\t<td>" +
+                "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"KEYSPACE.INFO {$pgp_id_public}\")'>{$pgp_id_public}</a>" +
+            "\n\t</td>" +
+            "\n\t<td>" +
+                "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"MESSAGE {$pgp_id_public}\")'>Message</a>" +
+                "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"MESSAGE {$pgp_id_public} !get public/id\")'>Add</a>" +
+                // "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"KEYSPACE.INFO {$pgp_id_public}\")'>Profile</a>" +
+            "\n\t</td>" +
+        "\n</tr>";
 
-    function renderKeySpaceSearchWindow(responseString, e, callback) {
+    function getSearchPlaceholder() {
+        var placeholders = [
+            'i.e. Johanna Mockel',
+            'i.e. Carl Schurz',
+            'i.e. Charles Dickens',
+            'i.e. Ralph Wiggum',
+            'i.e. My PGP User ID',
+            'i.e. first.last@yourmail',
+            'i.e. johanna.m@gmail.com',
+            'i.e. carl.c.s@gmail.com',
+            'i.e. charles.dickens@gmail.com',
+            'i.e. ralph.wiggum@gmail.com'
+        ];
+        return placeholders[Math.floor(Math.random()*placeholders.length)];
+    }
+
+    function renderKeySpaceSearchWindow(responseString, e, lastSearch, callback) {
         var match = /^keyspace\.search\.results([\s\S]+)$/im.exec(responseString);
         if (!match)
             throw new Error("Invalid KeySpace Search Results: " + responseString);
@@ -31,11 +59,10 @@
             var resultSplit = results[i].split(';'); // Search Results are ; delimited
             var pgp_id_public = resultSplit[0];
             var user_id = resultSplit[1];
-            html_search_results +=
-                "\n<div class='ks-search-entry' data-id='" + pgp_id_public + "'>" +
-                    user_id +
-                "</div>";
-                //.replace(/{/g, '&#123;');
+            var html_options = '';
+            html_search_results += TEMPLATE_SEARCH_ENTRY
+                .replace(/{\$user_id}/g, user_id)
+                .replace(/{\$pgp_id_public}/g, pgp_id_public);
 
         }
 
@@ -45,8 +72,10 @@
         if(xhr.status !== 200)
             throw new Error("Error: " + xhr.responseText);
         callback(xhr.responseText
-            .replace(/{\$html_search_results}/g, html_search_results)
-                //.replace(/{\$url}/gi, url)
+                .replace(/{\$html_search_results}/g, html_search_results)
+                .replace(/{\$search}/g, lastSearch)
+                .replace(/{\$placeholder}/g, getSearchPlaceholder)
+                //.replace(/{\$url}/gi, url)$search
         );
     }
 
@@ -61,39 +90,12 @@
                 //search.log(e);
                 if(e.type === 'submit')
                     submitSearchForm(e, formElm);
-                if(e.type.substr(0, 3) === 'key')
-                    handleFormKeyEvent(e, formElm);
                 return true;
 
             default:
                 return false;
         }
     }
-
-    var history = [];
-    var historyPos = 0;
-    function handleFormKeyEvent(e, formElm) {
-        var messageElm = formElm.querySelector('*[name=message], input[type=text], textarea');
-        switch(e.which) {
-            case 38: // UP
-                messageElm.value = nextHistory(-1);
-                break;
-
-            case 40: // Down
-                messageElm.value = nextHistory(1);
-                break;
-        }
-
-        function nextHistory(inc) {
-            historyPos += inc;
-            if(historyPos > history.length-1)
-                historyPos = 0;
-            else if (historyPos < 0)
-                historyPos = history.length-1;
-            return history[historyPos];
-        }
-    }
-
 
     function submitSearchForm(e, formElm) {
         e.preventDefault();
@@ -120,8 +122,7 @@
         formElm.dispatchEvent(commandEvent);
         if(!commandEvent.defaultPrevented)
             throw new Error("Command event not handled");
-        history.push(messageElm.value);
-        messageElm.value = '';
+        //messageElm.value = '';
         return false;
     }
 })();

@@ -100,6 +100,23 @@ if(typeof module === 'object') (function() {
         }
 
 
+        // Keyspace Message Command
+        ClientWorkerThread.addCommand(importKSMessageCommand);
+        ClientWorkerThread.addResponse(importKSMessageCommand);
+        function importKSMessageCommand(commandString, e) {
+            if (!/^(?:keyspace\.)?message/i.test(commandString))
+                return false;
+
+            ClientWorkerThread.removeCommand(importKSMessageCommand);
+            ClientWorkerThread.removeResponse(importKSMessageCommand);
+            self.module = {exports: {}};
+            importScripts('keyspace/message/ks-client-message-commands.js');
+            module.exports.initClientKSMessageCommands(ClientWorkerThread);
+            //console.info("Loaded: keyspace/auth/ks-client-auth-command.js");
+            return false;
+        }
+
+
         // Feed Commands
         ClientWorkerThread.addCommand(importFeedCommands);
         function importFeedCommands(commandString, e) {

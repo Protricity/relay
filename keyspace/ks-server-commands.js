@@ -53,7 +53,7 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
-        // KEYSPACE.Search Command
+        // KEYSPACE.SEARCH Command
         SocketServer.addCommand(importSearchCommand);
         function importSearchCommand(commandString, e) {
             if (!/^keyspace\.search/i.test(commandString))
@@ -61,6 +61,17 @@ if(typeof module === 'object') (function() {
             SocketServer.removeCommand(importSearchCommand);
             require('./search/ks-server-search-commands.js')
                 .initSocketServerKSSearchCommands(SocketServer);
+            return false;
+        }
+
+        // KEYSPACE.MESSAGE Command
+        SocketServer.addCommand(importMessageCommand);
+        function importMessageCommand(commandString, e) {
+            if (!/^keyspace\.message/i.test(commandString))
+                return false;
+            SocketServer.removeCommand(importMessageCommand);
+            require('./message/ks-server-message-commands.js')
+                .initSocketServerKSMessageCommands(SocketServer);
             return false;
         }
 

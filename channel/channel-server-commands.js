@@ -5,7 +5,7 @@ if (!module) var module = {};
 if (!module.exports) module.exports = {};
 module.exports.initSocketServerChannelCommands = function(SocketServer) {
     //SocketServer.addEventListener('connection', initClient);
-    SocketServer.addCommand(messageClientCommand);
+    //SocketServer.addCommand(messageClientCommand);
 
     SocketServer.addCommand(subscribeCommand);
     SocketServer.addCommand(unsubscribeCommand);
@@ -140,31 +140,6 @@ function unsubscribeCommand(commandString, client) {
     }
     return true;
 }
-
-// TODO: move to channel after all
-function messageClientCommand(commandString, client) {
-    var match = /^(?:channel\.)?message(?:\.(\w+))?\s+(\S+)\s+(\S+)\s+([\s\S]+)$/im.exec(commandString);
-    if(!match)
-        return false;
-
-    var mode = match[1] || DEFAULT_MODE;
-    var channel = match[2];
-    var userID = match[3];
-    var timestamp = Date.now();
-    var message = match[4];
-
-    var channelClients = ServerSubscriptions.getChannelSubscriptions(channel, mode);
-    for(var i=0; i<channelClients.length; i++) {
-        if(channelClients[i][1].split(' ')[0] === userID) {
-            send(channelClients[i][0], commandString);
-            return true;
-        }
-    }
-
-    send(client, "ERROR User not found: " + userID);
-    return true;
-}
-
 
 function chatChannelCommand(commandString, client) {
     var match = /^(?:channel\.)?chat\s+([^\s]+)\s*([\s\S]*)$/im.exec(commandString);

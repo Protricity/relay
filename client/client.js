@@ -508,6 +508,14 @@ if(typeof importScripts !== 'undefined') {
                     targetElement.scrollIntoView();
             }
 
+            if(targetElement.classList.contains('focus-on-render')) {
+                var focusInput = targetElement.querySelector('.focus-input')
+                    || targetElement.querySelector('input[type=text]')
+                    || targetElement.querySelector('textarea')
+                    || targetElement.querySelector('select');
+                if(focusInput)
+                    focusInput.focus(); // TODO: set last text position/selection
+            }
 
             // Include scripts after insert:
             ClientMainThread.includeScriptsAsync(targetElement, includeScripts, function() {
@@ -516,7 +524,7 @@ if(typeof importScripts !== 'undefined') {
                 });
                 targetElement.dispatchEvent(contentEvent);
             });
-        }
+        };
 
         function renderWindowCommand(responseString) {
             var args = /^(minimize|maximize|close)\s+(\S+)$/mi.exec(responseString);

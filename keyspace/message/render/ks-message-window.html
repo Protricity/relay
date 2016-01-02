@@ -1,0 +1,48 @@
+<article class='ks-message:{$pgp_id_to}:{$pgp_id_from} ks-message:'>
+    <script src='keyspace/message/render/ks-message-window.js'></script>
+    <link rel='stylesheet' href='keyspace/message/render/ks-message-window.css' type='text/css' property="stylesheet">
+    <header class='header-bar show-on-minimized'>
+        {header:buttons ks-message:{$pgp_id_to}:{$pgp_id_from}}
+        <a href='javascript:ClientMainThread.execute("MINIMIZE ks-message:{$pgp_id_to}:{$pgp_id_from}");'>
+            <span class="command">Message</span> {$to}
+        </a>
+    </header>
+    <form name='ks-message-form'>
+        <table style='width:100%'>
+            <tbody class="hide-on-minimize">
+                <tr>
+                    <td colspan="2" style='vertical-align: top;'>
+                        <fieldset class='ks-message-log: ks-message-log:{$pgp_id_to}:{$pgp_id_from}'>
+                            Private Messaging
+                            <a href="javascript:ClientMainThread.execute('INFO {$pgp_id_to}');" class="username">{$to}</a>...
+                        </fieldset>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style='vertical-align: top; width:1px;'>
+                        <label>
+                            <select name="message_encryption_options">
+                                <option value="">Don't encrypt</option>
+                                <option disabled="disabled" value="">Encrypt for Public Key</option>
+                                <option value="MESSAGE {$pgp_id_to} {$pgp_id_from} !get public/id">Request Public Key (Add to Contact List)</option>
+                                <option value="MESSAGE {$pgp_id_to} {$pgp_id_from} !get public/profile">Request Public Profile</option>
+                            </select>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input name='message' type='text' class='reset focus'
+                               placeholder='Type a private message' style='width: 100%;'/>
+                    </td>
+                    <td style='width:1px'>
+                        <input type='submit' value='Send' name='submit-send-chat' />
+                        <input type='hidden' value='{$pgp_id_to}' name='pgp_id_to' />
+                        <input type='hidden' value='{$pgp_id_from}' name='pgp_id_from' />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+    <!--<footer></footer>-->
+</article>

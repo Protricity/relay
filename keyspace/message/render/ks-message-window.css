@@ -1,0 +1,73 @@
+
+.pgp-signed-message {
+    white-space: pre;
+    font-style: italic;
+}
+.pgp-signed-message.verification-required {
+    color: red;
+    display: block;
+}
+.pgp-signed-message.verified {
+    color: inherit;
+    display: none;
+}
+
+/** Form **/
+
+form[name=ks-message-form] {
+    min-width: 29em;
+    font-family: monospace;
+}
+
+
+form[name=ks-message-form] input[name=message] {
+    font-family: monospace;
+}
+
+form[name=ks-message-form] input[type=submit] {
+}
+
+form[name=ks-message-form] select[name=message_command],
+form[name=ks-message-form] select[name=message_encryption_options] {
+    width: 7em;
+}
+
+/*form[name=ks-message-form] .pgp-message {*/
+    /*white-space: pre;*/
+
+    /*width: 1em;*/
+    /*height: 1em;*/
+
+    /*border: 2px solid;*/
+    /*overflow: hidden;*/
+    /*background-color: #EEA;*/
+    /*color: #111;*/
+/*}*/
+
+/*form[name=ks-message-form] .pgp-message:hover {*/
+/*/!*     max-height: 8em; *!/*/
+    /*width: 35em;*/
+    /*height: 21em;*/
+/*}*/
+
+form[name=ks-message-form] .ks-message-log\3A {
+    overflow: auto;
+    max-height: 18em;
+    max-width: 48em;
+    /*min-width: 32em;*/
+    min-height: 4em;
+    background-color: white;
+}
+
+form[name=ks-message-form] .ks-message-log\3A .message-log-entry {
+    border: 1px solid transparent;
+    overflow: hidden;
+    max-height: 5em;
+}
+
+form[name=ks-message-form] .ks-message-log\3A .message-log-entry:hover {
+    border-radius: 0.2em;
+    border: 1px solid lightgrey;
+    overflow: hidden;
+    max-height: inherit;
+}

@@ -261,6 +261,16 @@ module.exports.ClientSubscriptions =
         return authorizedKeyspaces[pgp_id_public].indexOf(withSocket) >= 0;
     };
 
+    ClientSubscriptions.getAuthorizedKeySpaces = function() {
+        var keyspaceList = [];
+        for(var pgp_id_public in authorizedKeyspaces) {
+            if(authorizedKeyspaces.hasOwnProperty(pgp_id_public)) {
+                keyspaceList.push(pgp_id_public);
+            }
+        }
+        return keyspaceList;
+    };
+
     ClientSubscriptions.handleKeySpaceAuthResponse = function(responseString, e) {
         var match = /^(?:keyspace\.)?auth(?:\.(challenge|success))?\s+([\s\S]+)$/im.exec(responseString);
         if (!match)

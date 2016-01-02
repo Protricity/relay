@@ -6,13 +6,16 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addCommand(ksSearchCommand);
         ClientWorkerThread.addResponse(ksSearchResponse);
 
+        var lastSearch = null;
         function ksSearchCommand(commandString) {
-            var match = /^(keyspace\.)?search/i.exec(commandString);
+            var match = /^(keyspace\.)?search\s*(.*)/i.exec(commandString);
             if (!match)
                 return false;
 
             if(!match[1])
                 commandString = "KEYSPACE." + commandString;
+
+            lastSearch = match[2];
 
             ClientWorkerThread.sendWithSocket(commandString);
             return true;
@@ -25,7 +28,7 @@ if(typeof module === 'object') (function() {
 
             self.module = {exports: {}};
             importScripts('keyspace/search/render/ks-search-window.js');
-            self.module.exports.renderKeySpaceSearchWindow(responseString, e, function(html) {
+            self.module.exports.renderKeySpaceSearchWindow(responseString, e, lastSearch, function(html) {
                 ClientWorkerThread.render(html);
             });
 

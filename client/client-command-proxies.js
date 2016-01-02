@@ -16,7 +16,7 @@ module.exports.initClientCommands = function(ClientWorkerThread) {
     ClientWorkerThread.addCommand(importHTTPCommands);
     ClientWorkerThread.addResponse(importHTTPCommands);
     function importHTTPCommands(commandString, e) {
-        if(!/^(keyspaces?|get|put|patch|head|http|host|feed)/i.test(commandString))
+        if(!/^(keyspaces?|get|put|patch|head|http|host|feed|messsage)/i.test(commandString))
             return false;
         ClientWorkerThread.removeCommand(importHTTPCommands);
         ClientWorkerThread.removeResponse(importHTTPCommands);

@@ -13,6 +13,8 @@ var ServerSubscriptions =
 
 var DEFAULT_MODE = 'event';
 
+var MAX_RESULTS = 100;
+
 function ksSearchSocketCommand(commandString, client) {
     var match = /^keyspace\.search(?:\.(\w+))?\s*(.*)$/i.exec(commandString);
     if (!match)
@@ -46,7 +48,7 @@ function ksSearchSocketCommand(commandString, client) {
                         keyspaceCount++;
                         var pgp_id_public = keyspaces[k];
                         // Must be authenticated
-                        if(false && !ServerSubscriptions.hasKeySpaceAuthentication(pgp_id_public, channelClient))
+                        if(false && !ServerSubscriptions.isKeySpaceAuthorized(pgp_id_public, channelClient))
                             continue;
 
                         var user_id = ServerSubscriptions.getAuthenticatedKeySpaceUserID(pgp_id_public);
@@ -60,12 +62,19 @@ function ksSearchSocketCommand(commandString, client) {
                         }
 
                         var entry = pgp_id_public + (user_id ? ';' + user_id.replace(/;/g, ',') : '');
+                        if(keyspaceList.length >= MAX_RESULTS)
+                            break;
                         if(keyspaceList.indexOf(entry) === -1)
                             keyspaceList.push(entry);
                     }
                 }
 
+                if(keyspaceList.length >= MAX_RESULTS)
+                    break;
             }
+
+            if(keyspaceList.length >= MAX_RESULTS)
+                break;
         }
     }
 

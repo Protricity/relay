@@ -11,9 +11,6 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addCommand(chatCommand);
         ClientWorkerThread.addResponse(chatResponse);
 
-        ClientWorkerThread.addCommand(messageCommand);
-        ClientWorkerThread.addResponse(messageResponse);
-
         ClientWorkerThread.addResponse(userlistResponse);
 
         //// NICK Command - No need just resubscribe
@@ -164,43 +161,6 @@ if(typeof module === 'object') (function() {
             return true;
         }
 
-        function messageCommand(commandString) {
-            var match = /^message\s+(\S+)\s*([\s\S]*)$/im.exec(commandString);
-            if (!match)
-                return false;
-
-            var username = match[1];
-            var content = match[2];
-
-            renderMessageWindow(username);
-
-
-            if(content) {
-                var formattedCommandString = "MESSAGE " + username + 
-                    " " + Date.now() + " " + content; 
-                ClientWorkerThread.sendWithSocket(formattedCommandString);
-            }
-            return true;
-        }
-
-        function messageResponse(responseString) {
-            var match = /^message\s+([^\s]+)\s+(\d+)\s+([\s\S]+)$/im.exec(responseString);
-            if(!match)
-                return false;
-
-            var username = match[1];
-            var timestamp = parseInt(match[2]);
-            var message = match[3];
-
-            //var username = match[2];
-            //var content = fixPGPMessage(match[3]);
-            renderMessageWindow(username);
-            getMessageExports().renderMessage(responseString, function (html, username) {
-                ClientWorkerThread.render(html);
-            });
-            return true;
-        }
-
         var activeChannels = [];
         function renderChatWindow(channelPath, publicChannel) {
             var channelPathLowerCase = channelPath.toLowerCase();
@@ -213,26 +173,6 @@ if(typeof module === 'object') (function() {
             }
         }
 
-
-        var activeMessages = [];
-        function renderMessageWindow(username) {
-            if (activeMessages.indexOf(username) === -1) {
-                getMessageExports().renderMessageWindow(username, function (html) {
-                    ClientWorkerThread.render(html);
-                    activeMessages.push(username);
-                });
-            }
-        }
-
-
-        var messageExports = null;
-        function getMessageExports() {
-            if(messageExports)
-                return messageExports;
-            self.module = {exports: {}};
-            importScripts('channel/message/render/message-window.js');
-            return messageExports = self.module.exports;
-        }
 
 
         var chatExports = null;
