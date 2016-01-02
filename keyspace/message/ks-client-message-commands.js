@@ -19,7 +19,7 @@ if(typeof module === 'object') (function() {
         /**
          * Handles Command: KEYSPACE.MESSAGE [To: PGP ID] [From: PGP ID] [message]
          * @param {string} commandString The command string to process 
-         * @param {object} e event The command Event
+         * @param {object} e The command Event
          * @return {boolean} true if handled otherwise false
          **/
         function ksMessageCommand(commandString) {
