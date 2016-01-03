@@ -14,7 +14,7 @@ if (typeof self === 'undefined')
 
 // Export ClientSubscriptions Class. Define it if it hasn't
 module.exports.ClientSubscriptions =
-    typeof self.ClientSubscriptions !== 'undefined' ? self.ClientSubscriptions :
+    typeof self.ClientSubscriptions !== 'undefined' ? self.ClientSubscriptions : self.ClientSubscriptions = 
 
 (function() {
 
@@ -292,9 +292,10 @@ module.exports.ClientSubscriptions =
         }
 
         var encryptedChallengeString = match[2];
-        self.module = {exports: self.exports = {}};
-        importScripts('keyspace/ks-db.js');
-        var KeySpaceDB = self.module.exports.KeySpaceDB;
+
+        self.module = {exports: {}};
+        importScripts('keyspace/passphrase/ks-client-passphrases.js');
+        var ClientPassPhrases = self.module.exports.ClientPassPhrases;
 
         self.module = {exports: self.exports = {}};
         importScripts('pgp/lib/openpgpjs/openpgp.js');
@@ -303,27 +304,34 @@ module.exports.ClientSubscriptions =
         var pgpEncryptedMessage = openpgp.message.readArmored(encryptedChallengeString);
         var pgp_id_public = pgpEncryptedMessage.getEncryptionKeyIds()[0].toHex().toUpperCase();
 
-        var requestURL = "http://" + pgp_id_public + ".ks/.private/id";
-        KeySpaceDB.queryOne(requestURL, function (err, contentData) {
-            if (err)
-                throw new Error(err);
+        var passphrase = null;
+        ClientPassPhrases.requestDecryptedPrivateKey(pgp_id_public, passphrase,
+            function(err, privateKey, passphrase) {
+                if (err)
+                    throw new Error(err);
 
-            if (!contentData)
-                throw new Error("Could not find Private Key: " + requestURL);
+                if(!privateKey.primaryKey.isDecrypted)
+                    throw new Error("Primary Key wasn't really decrypted: " + pgp_id_public);
 
-            var privateKey = openpgp.key.readArmored(contentData.content).keys[0];
+                var encryptionKeyIds = pgpEncryptedMessage.getEncryptionKeyIds();
+                var privateKeyPacket = privateKey.getKeyPacket(encryptionKeyIds);
+                if(passphrase)
+                    privateKeyPacket.decrypt(passphrase);
+                if(!privateKeyPacket.isDecrypted)
+                    throw new Error("Subkey not decrypted");
 
-            // TODO: handle passphrase
-            openpgp.decryptMessage(privateKey, pgpEncryptedMessage)
-                .then(function (decryptedChallenge) {
-                    //challengeValidations.push([pgp_id_public, decryptedChallenge]);
-                    ClientWorkerThread.sendWithSocket("KEYSPACE.AUTH.VALIDATE " + decryptedChallenge);
+                openpgp.decryptMessage(privateKey, pgpEncryptedMessage)
+                    .then(function (decryptedChallenge) {
+                        //challengeValidations.push([pgp_id_public, decryptedChallenge]);
+                        ClientWorkerThread.sendWithSocket("KEYSPACE.AUTH.VALIDATE " + decryptedChallenge);
 
-                }).catch(function(err) {
+                    }).catch(function(err) {
 
-                    console.error(err);
-                });
-        });
+                        console.error(err);
+                    });
+            }
+        );
+
     };
 
     ClientSubscriptions.handleKeySpaceStatusResponse = function(responseString, e) {

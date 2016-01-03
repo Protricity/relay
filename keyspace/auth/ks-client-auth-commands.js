@@ -22,7 +22,7 @@ if(typeof module === 'object') (function() {
          * @param {object} e event The command Event
          * @return {boolean} true if handled otherwise false
          **/
-        function ksAuthCommand(commandString) {
+        function ksAuthCommand(commandString, e) {
             var match = /^keyspace\.auth/i.exec(commandString);
             if (!match)         // If unmatched, 
                 return false;   // Pass control to next handler

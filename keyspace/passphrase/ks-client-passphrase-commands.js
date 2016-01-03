@@ -15,8 +15,8 @@ if(typeof module === 'object') (function() {
         // Add Command/Response Handlers   
         ClientWorkerThread.addCommand(ksPassphraseCommand);
 
-        // Passphrase requests
-        var passphraseRequests = {};
+        // Active Containers
+        var activeContainers = [];
 
         /**
          * Handles Command: KEYSPACE.PASSPHRASE [Private Key ID] [passphrase]
@@ -29,9 +29,31 @@ if(typeof module === 'object') (function() {
             if (!match)         // If unmatched,
                 return false;   // Pass control to next handler
 
-            var subCommand = (match[1] || '').toUpperCase();
+
+            var subCommand = (match[1] || '').toLowerCase();
             var pgp_id_public = match[2].toUpperCase();
             var passphrase = match[3];
+
+            var CONTAINER_ID = 'ks-passphrase-window:' + pgp_id_public;
+
+            var renderWindow = true;
+            switch(subCommand) {
+                case 'success':
+                    console.log("Passphrase success: ", pgp_id_public);
+                    ClientWorkerThread.postResponseToClient('CLOSE ' + CONTAINER_ID);
+                    return true;
+
+                case 'fail':
+                    renderWindow = false;
+                    //console.error("Passphrase fail: ", pgp_id_public);
+                    ClientWorkerThread.postResponseToClient('EVENT KEYSPACE.PASSPHRASE.FAIL ' + pgp_id_public);
+                    break;
+
+                case 'try':
+                    renderWindow = false;
+                    ClientWorkerThread.postResponseToClient('EVENT KEYSPACE.PASSPHRASE.TRY ' + pgp_id_public);
+                    break;
+            }
 
             self.module = {exports: {}};
             importScripts('keyspace/passphrase/ks-client-passphrases.js');
@@ -47,17 +69,23 @@ if(typeof module === 'object') (function() {
                         if(!decryptedPrivateKey.primaryKey.isDecrypted)
                             throw new Error("Private Key is not decrypted");
 
-                        console.info("TODO: Private Key Decrypted", decryptedPrivateKey);
+                        //console.info("TODO: Private Key Decrypted", decryptedPrivateKey);
                     }
                 );
 
-            } else {
-                // If no passphrase, render the passphrase window
-                self.module = {exports: {}};
-                importScripts('keyspace/passphrase/render/ks-passphrase-window.js');
-                self.module.exports.renderKeySpacePassphraseWindow(commandString, e, function(html) {
-                    ClientWorkerThread.render(html);
-                });
+            } else if(renderWindow) {
+
+                if(activeContainers.indexOf(CONTAINER_ID) === -1) {
+                    activeContainers.push(CONTAINER_ID);
+                    // If no passphrase, render the passphrase window
+                    self.module = {exports: {}};
+                    importScripts('keyspace/passphrase/render/ks-passphrase-window.js');
+                    self.module.exports.renderKeySpacePassphraseWindow(commandString, e, function(html) {
+                        ClientWorkerThread.render(html);
+                    });
+                } else {
+                    ClientWorkerThread.postResponseToClient('OPEN ' + CONTAINER_ID);
+                }
             }
 
             // Command was handled

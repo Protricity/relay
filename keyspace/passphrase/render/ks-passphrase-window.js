@@ -9,7 +9,8 @@
     // Client Event Listeners
     if(typeof document === 'object')  {
         document.addEventListener('submit', onFormEvent, false);
-        document.addEventListener('keydown', onFormEvent, false);
+        document.addEventListener('keyup', onFormEvent, false);
+        document.addEventListener('response:event', onWorkerEvent, false);
     }
 
     // Worker Thread Exports
@@ -20,6 +21,22 @@
     // Passphrase Window Template URL
     var TEMPLATE_URL = 'keyspace/passphrase/render/ks-passphrase-window.html';
 
+    function onWorkerEvent(e) {
+        if(e.defaultPrevented)
+            return;
+        var responseString = e.detail;
+        var match = /^event\skeyspace\.?passphrase?(?:\.(\w+))?\s+([a-f0-9]{8,})\s*(.*)/i.exec(responseString);
+        if (!match)
+            return;
+        e.preventDefault();
+
+        var subCommand = (match[1] || '').toUpperCase();
+        var pgp_id_public = match[2].toUpperCase();
+        var passphrase = match[3];
+
+        console.log("TODO: Handle passphrase event", responseString);
+    }
+
     /**
      * Handles Command: KEYSPACE.PASSPHRASE [Private Key ID] [passphrase]
      * @param {string} commandString The command string to process
@@ -27,16 +44,17 @@
      * @param {callback} callback render callback
      **/
     function renderKeySpacePassphraseWindow(commandString, e, callback) {
-        var match = /^(?:keyspace\.)?pass(?:phrase)?\s+([a-f0-9]{8,})/i.exec(commandString);
+        var match = /^(?:keyspace\.)?pass(?:phrase)?(?:\.(\w+))?\s+([a-f0-9]{8,})\s*(.*)/i.exec(commandString);
         if (!match)
             throw new Error("Invalid Passphrase request: " + commandString);
-
-        var pgp_id_public = match[1].toUpperCase();
-        var passphrase = match[2];
 
         self.module = {exports: self.exports = {}};
         importScripts('keyspace/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;
+
+        var subCommand = (match[1] || '').toUpperCase();
+        var pgp_id_public = match[2].substr(match[2].length - KeySpaceDB.DB_PGP_KEY_LENGTH).toUpperCase();
+        var passphrase = match[3];
 
         // Query user private key for signing
         var path = 'http://' + pgp_id_public + '.ks/.private/id';
@@ -46,6 +64,9 @@
             if (!privateKeyBlock)
                 throw new Error("User Private key not found: " + pgp_id_public);
 
+            var pgp_id_private = privateKeyBlock.pgp_id_private.substr(privateKeyBlock.pgp_id_private.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+            var user_id = privateKeyBlock.user_id;
+
             var xhr = new XMLHttpRequest();
             xhr.open("GET", TEMPLATE_URL, false);
             xhr.send();
@@ -53,8 +74,8 @@
                 throw new Error("Error: " + xhr.responseText);
             callback(xhr.responseText
                     .replace(/{\$pgp_id_public}/g, pgp_id_public)
-                    .replace(/{\$pgp_id_private}/g, privateKeyBlock.pgp_id_private)
-                    .replace(/{\$user_id}/g, privateKeyBlock.user_id)
+                    .replace(/{\$pgp_id_private}/g, pgp_id_private)
+                    .replace(/{\$user_id}/g, user_id)
                 //.replace(/{\$url}/gi, url)$passphrase
             );
 

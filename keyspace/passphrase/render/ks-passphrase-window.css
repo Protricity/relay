@@ -8,7 +8,7 @@ article.ks-passphrase-window\3A  > section {
 }
 
 form[name=ks-passphrase-form] {
-     padding: 1em 2em 1em 2em;
+     padding: 0.5em 1em;
      border: 3px inset;
      background-color: #FAFAFA;
 }
@@ -19,6 +19,7 @@ form[name=ks-passphrase-form] input {
      margin: 0.5em;
      border-radius: 0.6em;
      border-width: 1px;
+     width: 13em;
 }
 
 form[name=ks-passphrase-form] input[type=submit] {

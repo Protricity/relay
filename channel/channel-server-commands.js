@@ -119,8 +119,10 @@ function unsubscribeCommand(commandString, client) {
     var mode = match[1] || DEFAULT_MODE;
     var channel = match[2];
 
-    var oldArgString = ServerSubscriptions.handleClientSubscription(commandString, client);
-    if(oldArgString) {
+    try {
+        var oldArgString = ServerSubscriptions.handleClientSubscription(commandString, client);
+        if(!oldArgString)
+            throw new Error("Failed to unsubscribe: " + commandString);
         var oldUserName = oldArgString.split(/\s+/)[0];
         var relayCommandString = "CHANNEL.UNSUBSCRIBE." + mode.toUpperCase() + " " + channel + " " + oldUserName;
         var clients = ServerSubscriptions.searchChannelSubscriptions(channel, mode);
@@ -135,8 +137,8 @@ function unsubscribeCommand(commandString, client) {
             }
         }
 
-    } else {
-        send(client, "ERROR Failed to unsubscribe: " + commandString);
+    } catch (e) {
+        send(client, "ERROR " + e.message);
     }
     return true;
 }

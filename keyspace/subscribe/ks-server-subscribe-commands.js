@@ -54,11 +54,16 @@ function ksSubscribeSocketCommand(commandString, client) {
     if (!match)         // If unmatched, 
         return false;   // Pass control to next handler
 
-    // Handle Subscription
-    var oldSubscriptionString = ServerSubscriptions.handleClientSubscription(commandString, client);
-    
-    // TODO: should occur in ^
-    send(client, commandString);
+    try {
+        // Handle Subscription
+        var oldSubscriptionString = ServerSubscriptions.handleClientSubscription(commandString, client);
+        // TODO: should occur in ^
+        send(client, commandString);
+
+    } catch (e) {
+        send(client, "ERROR " + e.message);
+        return true;
+    }
     
     // Command was handled
     return true;
@@ -78,8 +83,10 @@ function ksUnsubscribeSocketCommand(commandString, client) {
     var mode = match[1] || DEFAULT_MODE;
     var channel = match[2];
 
-    var oldArgString = ServerSubscriptions.handleClientSubscription(commandString, client);
-    if(oldArgString) {
+    try {
+        var oldArgString = ServerSubscriptions.handleClientSubscription(commandString, client);
+        if(!oldArgString)
+            throw new Error("Failed to unsubscribe: " + commandString);
         var oldUserName = oldArgString.split(/\s+/)[0];
         var relayCommandString = "CHANNEL.UNSUBSCRIBE." + mode.toUpperCase() + " " + channel + " " + oldUserName;
         var clients = ServerSubscriptions.getChannelSubscriptions(channel, mode);
@@ -91,8 +98,9 @@ function ksUnsubscribeSocketCommand(commandString, client) {
             }
         }
 
-    } else {
-        send(client, "ERROR Failed to unsubscribe: " + commandString);
+    } catch (e) {
+        send(client, "ERROR " + e.message);
+        return true;
     }
 
     // Command was handled

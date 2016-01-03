@@ -1,4 +1,4 @@
-<article class='ks-passphrase-window: maximized focus-on-render' data-sort='z'>
+<article class='ks-passphrase-window:{$pgp_id_public} ks-passphrase-window: maximized focus-on-render' data-sort='z'>
     <script src='keyspace/passphrase/render/ks-passphrase-window.js'></script>
     <link rel='stylesheet' href='keyspace/passphrase/render/ks-passphrase-window.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
@@ -19,16 +19,20 @@
 
                 <br />
                 Passphrase:<br />
-                <input type='password' name='passphrase' style='width: 13em;'/>
-                <br />
-                <input type="submit" value="Decrypt" />
+                <input type='password' name='passphrase'/>
+                <!--<br />-->
+                <!--<input type="submit" value="Decrypt" />-->
 
                 <br />
                 <br />
                 Options:<br/>
-                <select name='auto_passphrase' style="width: 15em;">
-                    <option value=''>Ask me every time (safer)</option>
-                    <option value='memory'>Keep private key decrypted in memory (less safe)</option>
+                <select name='auto_passphrase'>
+                    <option value=''>Ask me every time (safe)</option>
+                    <option value='session'>Remember Passphrase until idle (generally safe)</option>
+                    <option value='1'>Remember Passphrase for 1 minute (less safe)</option>
+                    <option value='5'>Remember Passphrase for 5 minutes (even less safe)</option>
+                    <option value='60'>Remember Passphrase for 1 hour (even even less safe)</option>
+                    <option value='session'>Remember Passphrase while logged in (not safe)</option>
                 </select>
 
                 <br />
