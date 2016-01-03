@@ -96,12 +96,12 @@
 
         clearTimeout(passphraseTimeout);
         passphraseTimeout = setTimeout(function() {
-            console.log("TODO: try passphrase: ", passphrase, pgp_id_public);
 
             var commandString = "KEYSPACE.PASSPHRASE.TRY " + pgp_id_public + " " + passphrase;
 
             var commandEvent = new CustomEvent('command', {
                 detail: commandString,
+                cancelable:true,
                 bubbles:true
             });
             formElm.dispatchEvent(commandEvent);

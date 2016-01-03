@@ -13,8 +13,8 @@ if (typeof self === 'undefined')
     var self = this;
 
 // Export ClientSubscriptions Class. Define it if it hasn't
-module.exports.ClientPassphrases =
-    typeof self.ClientPassphrases !== 'undefined' ? self.ClientPassphrases :
+module.exports.ClientPassPhrases =
+    typeof self.ClientPassPhrases !== 'undefined' ? self.ClientPassPhrases :
 
 (function() {
 
@@ -41,7 +41,13 @@ module.exports.ClientPassphrases =
             if (!privateKeyBlock)
                 return callback("User Private key not found: " + pgp_id_public);
 
+            self.module = {exports: self.exports = {}};
+            importScripts('pgp/lib/openpgpjs/openpgp.js');
+            var openpgp = self.module.exports;
+
             var privateKey = openpgp.key.readArmored(privateKeyBlock.content).keys[0];
+
+            console.log(privateKey);
 
             if(privateKey.primaryKey.isDecrypted)
                 return callback(null, privateKey);

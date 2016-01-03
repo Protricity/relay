@@ -25,7 +25,7 @@ if(typeof module === 'object') (function() {
          * @return {boolean} true if handled otherwise false
          **/
         function ksPassphraseCommand(commandString, e) {
-            var match = /^(?:keyspace\.)?pass(?:phrase)?(?:\.(\w+))?\s+([a-f0-9 ]{8,})\s*(.*)/i.exec(commandString);
+            var match = /^(?:keyspace\.)?pass(?:phrase)?(?:\.(\w+))?\s+([a-f0-9]{8,})\s*(.*)/i.exec(commandString);
             if (!match)         // If unmatched,
                 return false;   // Pass control to next handler
 
@@ -44,7 +44,7 @@ if(typeof module === 'object') (function() {
                             throw new Error(err);
                         if(!decryptedPrivateKey)
                             throw new Error("No Decrypted Private Key");
-                        if(!decryptedPrivateKey.privateKey.isDecrypted)
+                        if(!decryptedPrivateKey.primaryKey.isDecrypted)
                             throw new Error("Private Key is not decrypted");
 
                         console.info("TODO: Private Key Decrypted", decryptedPrivateKey);
