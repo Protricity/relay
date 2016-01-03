@@ -512,6 +512,7 @@ if(typeof importScripts !== 'undefined') {
                 var focusInput = targetElement.querySelector('.focus-input')
                     || targetElement.querySelector('input[type=text]')
                     || targetElement.querySelector('textarea')
+                    || targetElement.querySelector('input[type=password]')
                     || targetElement.querySelector('select');
                 if(focusInput)
                     focusInput.focus(); // TODO: set last text position/selection

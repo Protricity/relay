@@ -12,9 +12,18 @@
             <label class='label-submit'>
                 A <span class='passphrase'>passphrase</span> is required
                 <br />
-                to use this <strong>PGP Identity</strong>:<br />
-                <input type='password' name='passphrase' style='width: 13em;'/>
+                to use this <strong>PGP Private Key</strong>:
+                <br />
+                <br />
+                <code class="status-box">{$pgp_id_public} "{$user_id}"</code>
 
+                <br />
+                Passphrase:<br />
+                <input type='password' name='passphrase' style='width: 13em;'/>
+                <br />
+                <input type="submit" value="Decrypt" />
+
+                <br />
                 <br />
                 Options:<br/>
                 <select name='auto_passphrase' style="width: 15em;">
@@ -23,6 +32,7 @@
                 </select>
 
                 <br />
+                <input type='hidden' name='pgp_id_public' value="{$pgp_id_public}"/>
             </label>
         </form>
     </main>

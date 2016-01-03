@@ -4,5 +4,24 @@
 article.ks-passphrase-window\3A  > main,
 article.ks-passphrase-window\3A  > section {
      background: #FFF;
-     padding: 0.2em 1em;
+     /*padding: 0.2em 1em;*/
+}
+
+form[name=ks-passphrase-form] {
+     padding: 1em 2em 1em 2em;
+     border: 3px inset;
+     background-color: #FAFAFA;
+}
+
+form[name=ks-passphrase-form] select,
+form[name=ks-passphrase-form] input {
+     padding: 0.5em 1em;
+     margin: 0.5em;
+     border-radius: 0.6em;
+     border-width: 1px;
+}
+
+form[name=ks-passphrase-form] input[type=submit] {
+     padding: 1em 2em;
+     border-radius: 1em;
 }

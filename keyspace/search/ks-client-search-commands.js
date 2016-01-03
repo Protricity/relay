@@ -38,7 +38,7 @@ if(typeof module === 'object') (function() {
             // Forward command to socket server
             ClientWorkerThread.sendWithSocket(commandString);
             
-            // Command was handleded
+            // Command was handled
             return true;
         }
 

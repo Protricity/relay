@@ -12,14 +12,6 @@ if(typeof module !== 'object')
     module.exports.renderUIContactListKeySpaceSubscriptions = renderUIContactListKeySpaceSubscriptions;
     module.exports.renderUIContactListChannelSubscriptions = renderUIContactListChannelSubscriptions;
 
-    function getClientSubscriptions() {
-        if(typeof getClientSubscriptions.inst === 'undefined') {
-            self.module = {exports: {}};
-            importScripts('client/subscriptions/client-subscriptions.js');
-            getClientSubscriptions.inst = self.module.exports.ClientSubscriptions;
-        }
-        return getClientSubscriptions.inst;
-    }
 
     function renderUIContactListKeySpaceSubscriptions(callback) {
         var html_command_options = '';
@@ -29,7 +21,9 @@ if(typeof module !== 'object')
         importScripts('keyspace/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;
 
-        var ClientSubscriptions = getClientSubscriptions();
+        self.module = {exports: {}};
+        importScripts('client/subscriptions/client-subscriptions.js');
+        var ClientSubscriptions = self.module.exports.ClientSubscriptions;
 
         var publicKeys = [];
         ClientSubscriptions.searchKeySpaceSubscriptions(null, null,
@@ -113,7 +107,12 @@ if(typeof module !== 'object')
         var html_channel_entries = '';
 
         var channels = {};
-        getClientSubscriptions().searchChannelSubscriptions(null, null,
+
+        self.module = {exports: {}};
+        importScripts('client/subscriptions/client-subscriptions.js');
+        var ClientSubscriptions = self.module.exports.ClientSubscriptions;
+
+        ClientSubscriptions.searchChannelSubscriptions(null, null,
             function(channelName, mode, argString) {
                 var channelNameLowerCase = channelName.toLowerCase();
                 if(typeof channels[channelNameLowerCase] === 'undefined')
