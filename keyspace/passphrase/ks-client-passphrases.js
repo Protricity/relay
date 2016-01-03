@@ -64,7 +64,7 @@ module.exports.ClientPassPhrases =
                     var callbacks = passphraseRequests[pgp_id_public];
                     console.log("Triggering Private Key Callbacks: ", pgp_id_public, callbacks, passphraseRequests);
                     for(var i=0; i<callbacks.length; i++)
-                        callbacks[i](null, privateKey, passphrase);
+                        callbacks[i](null, privateKey, passphrase); // TODO: passing passphrase unsafe hack
                     delete passphraseRequests[pgp_id_public];
 
                     Client.execute("KEYSPACE.PASSPHRASE.SUCCESS " + pgp_id_public);

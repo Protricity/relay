@@ -313,6 +313,7 @@ module.exports.ClientSubscriptions =
                 if(!privateKey.primaryKey.isDecrypted)
                     throw new Error("Primary Key wasn't really decrypted: " + pgp_id_public);
 
+                // TODO: Why is this hack needed?
                 var encryptionKeyIds = pgpEncryptedMessage.getEncryptionKeyIds();
                 var privateKeyPacket = privateKey.getKeyPacket(encryptionKeyIds);
                 if(passphrase)

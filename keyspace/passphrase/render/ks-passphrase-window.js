@@ -10,6 +10,7 @@
     if(typeof document === 'object')  {
         document.addEventListener('submit', onFormEvent, false);
         document.addEventListener('keyup', onFormEvent, false);
+        document.addEventListener('change', onFormEvent, false);
         document.addEventListener('response:event', onWorkerEvent, false);
     }
 
@@ -97,7 +98,9 @@
                 //passphrase.log(e);
                 if(e.type === 'submit')
                     submitPassphraseForm(e, formElm);
-                if(e.type.substr(0, 3) === 'key')
+                else if(e.type.substr(0, 3) === 'key')
+                    handleFormKeyEvent(e, formElm);
+                else
                     handleFormKeyEvent(e, formElm);
                 return true;
 
