@@ -131,7 +131,7 @@
             formElm.dispatchEvent(commandEvent);
             if(!commandEvent.defaultPrevented)
                 throw new Error("Command event not handled");
-        }, 500);
+        }, 300);
     }
 
     function submitPassphraseForm(e, formElm) {

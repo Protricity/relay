@@ -13,19 +13,12 @@ if(typeof module === 'object') (function() {
 
         ClientWorkerThread.addResponse(userlistResponse);
 
+        ClientWorkerThread.addCommand(joinCommand);
+        ClientWorkerThread.addCommand(leaveCommand);
+
         //// NICK Command - No need just resubscribe
         //ClientWorkerThread.addCommand(nickCommand);
 
-        ClientWorkerThread.addCommand(joinCommand);
-        //ClientWorkerThread.addResponse(joinResponse);
-
-        ClientWorkerThread.addCommand(leaveCommand);
-        //ClientWorkerThread.addResponse(leaveResponse);
-
-        //ClientWorkerThread.addCommand(keyListCommand);
-        //ClientWorkerThread.addResponse(keyListResponse);
-
-        //ClientWorkerThread.addResponse(nickResponse);
 
         var ClientSubscriptions = self.ClientSubscriptions || (function() {
             self.module = {exports: {}};

@@ -5,6 +5,9 @@
 ClientSockets.NEXT_SOCKET_INTERVAL = 5000;
 ClientSockets.SOCKET_RECONNECT_INTERVAL = 5000;
 
+ClientSockets.VERSION = 1;
+ClientSockets.VERSION_STRING = '0.1a';
+
 function ClientSockets(socketURL) {
     return ClientSockets.get(socketURL);
 }
@@ -38,6 +41,9 @@ function ClientSockets(socketURL) {
             if(newSocket.readyState != WebSocket.OPEN)
                 return;
             newSocket.removeEventListener('open', onOpen);
+
+            newSocket.send("CLIENT.VERSION " + ClientSockets.VERSION + ' ' + ClientSockets.VERSION_STRING);
+
             //self.postMessage("SOCKET OPEN " + socketURL);
 
             for(var i=0; i<eventListeners.length; i++)

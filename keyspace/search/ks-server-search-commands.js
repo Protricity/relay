@@ -65,12 +65,16 @@ function ksSearchSocketCommand(commandString, client) {
                             continue;
 
                         var user_id = ServerSubscriptions.getAuthenticatedKeySpaceUserID(pgp_id_public);
+                        if(!user_id)
+                            user_id = pgp_id_public;
                         if(search && user_id.toLowerCase().indexOf(search) === -1)
                             continue;
 
                         var keyspaceStatus = ServerSubscriptions.getKeySpaceStatus(pgp_id_public).toLowerCase();
                         switch(keyspaceStatus) {
+                            case 'disconnected': // TODO: is this logic correct?
                             case 'offline':
+                                console.warn("Skipping " + keyspaceStatus + " client: " + pgp_id_public);
                                 continue;
                         }
 

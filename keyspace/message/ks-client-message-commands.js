@@ -100,11 +100,15 @@ if(typeof module === 'object') (function() {
 
             var pgp_id_to = match[1].toUpperCase();
             var pgp_id_from = match[2].toUpperCase();
-            var content = match[3];
-
-            responseString = parsePGPEncryptedMessageHTML(responseString);
+            var messageContent = match[3];
 
             renderMessageWindow(pgp_id_to, pgp_id_from);
+
+            messageContent = parsePGPEncryptedMessageHTML(pgp_id_to, pgp_id_from, messageContent);
+            messageContent = parseActionMessage(pgp_id_to, pgp_id_from, messageContent);
+
+            responseString = "KEYSPACE.MESSAGE " + pgp_id_to + " " + pgp_id_from + " " + messageContent;
+
             getMessageExports().renderMessage(responseString, function (html) {
                 ClientWorkerThread.render(html);
             });
@@ -124,8 +128,39 @@ if(typeof module === 'object') (function() {
             }
         }
 
+        function parseActionMessage(pgp_id_to, pgp_id_from, contentString) {
+            if(contentString[0] === '!') {
+                var match = /^!(\w+)\s*(.*)$/.exec(contentString);
+                if(!match) {
+                    console.error("Invalid Action Message: " + contentString);
+                    return contentString;
+                }
+                var action = match[1].toLowerCase();
+                switch(action) {
+                    case 'get':
+                        var requestPath = match[2];
+                        if(requestPath.indexOf('.') === 0)
+                            throw new Error("TODO: protect private folders");
+                        var requestURL = 'http://' + pgp_id_to + '.ks/' + requestPath;
+                        console.log("TODO: handle requestURL", requestURL, pgp_id_from);
 
-        function parsePGPEncryptedMessageHTML(contentString, spos) {
+                        var actionString = "KEYSPACE.MESSAGE " + pgp_id_to + " " + pgp_id_from + " " +
+                            "User [" + pgp_id_from + "] has requested: " +
+                            "<a href='" + requestURL + "'>" + requestURL + "</a>";
+                        getMessageExports().renderMessage(actionString, function (html) {
+                            ClientWorkerThread.render(html);
+                        });
+                        break;
+                    default:
+                        console.error("Invalid Action: " + action);
+                        return contentString;
+                }
+            }
+            return contentString;
+        }
+
+
+        function parsePGPEncryptedMessageHTML(pgp_id_to, pgp_id_from, contentString, spos) {
             spos = contentString.indexOf("-----BEGIN PGP MESSAGE-----", spos);
             if(spos === -1)
                 return contentString;
@@ -175,6 +210,8 @@ if(typeof module === 'object') (function() {
 
                         openpgp.decryptMessage(privateKey, pgpEncryptedMessage)
                             .then(function (decryptedMessageString) {
+
+                                decryptedMessageString = parseActionMessage(pgp_id_to, pgp_id_from, decryptedMessageString);
 
                                 var replaceHTML =
                                     "<span class='" + classUID + " pgp-message: decrypted'>" +

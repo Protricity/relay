@@ -407,10 +407,12 @@ module.exports.ServerSubscriptions =
         pgp_id_public = pgp_id_public.toUpperCase();
         if(typeof keyspaceAuthentications[pgp_id_public] === 'undefined')
             return [];
+
         var clientList = keyspaceAuthentications[pgp_id_public];
         for(var i=0; i<clientList.length; i++) {
             if(clientList[i].readyState !== clientList[i].OPEN) {
                 clientList.splice(i--, 1);
+                console.warn("Removing Disconnected Client: " + pgp_id_public);
             }
         }
         return clientList.slice();
@@ -636,12 +638,6 @@ module.exports.ServerSubscriptions =
 
         // Verify clients are online;
         var keyspaceClients = ServerSubscriptions.getAuthenticatedKeySpaceClients(pgp_id_public);
-        for(var i=0; i<keyspaceClients.length; i++) {
-            var keyspaceClient = keyspaceClients[i];
-            if(keyspaceClient.readyState === keyspaceClient.OPEN) {
-                keyspaceClients.splice(i--, 1);
-            }
-        }
 
         if(keyspaceClients.length === 0)
             return 'disconnected';
