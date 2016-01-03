@@ -43,7 +43,7 @@ module.exports.initClientCommands = function(ClientWorkerThread) {
     ClientWorkerThread.addCommand(importChannelCommands);
     ClientWorkerThread.addResponse(importChannelCommands);
     function importChannelCommands(commandString, e) {
-        if(!/^(channels?|message|chat|audio|video)/i.test(commandString))
+        if(!/^(channels?|join|leave|chat|audio|video)/i.test(commandString))
             return false;
         ClientWorkerThread.removeCommand(importChannelCommands);
         ClientWorkerThread.removeResponse(importChannelCommands);

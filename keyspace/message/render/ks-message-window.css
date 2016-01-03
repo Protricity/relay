@@ -88,3 +88,5 @@ form[name=ks-message-form] .pgp-message\3A.unprocessed:not(:hover) .encrypted-co
     display: inline-block;
     max-width: 0;
 }
+
+/** TODO: show decryption info **/

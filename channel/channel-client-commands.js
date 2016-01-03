@@ -16,10 +16,10 @@ if(typeof module === 'object') (function() {
         //// NICK Command - No need just resubscribe
         //ClientWorkerThread.addCommand(nickCommand);
 
-        //ClientWorkerThread.addCommand(joinCommand);
+        ClientWorkerThread.addCommand(joinCommand);
         //ClientWorkerThread.addResponse(joinResponse);
 
-        //ClientWorkerThread.addCommand(leaveCommand);
+        ClientWorkerThread.addCommand(leaveCommand);
         //ClientWorkerThread.addResponse(leaveResponse);
 
         //ClientWorkerThread.addCommand(keyListCommand);
@@ -33,6 +33,28 @@ if(typeof module === 'object') (function() {
             return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
         })();
 
+        // Default Subscription Mode
+        var DEFAULT_MODE = 'event';
+
+        function joinCommand(commandString) {
+            var match = /^(?:channel\.)?join\s+(.*)$/im.exec(commandString);
+            if (!match)
+                return false;
+
+            var content = match[1];
+            return subscribeCommand("CHANNEL.SUBSCRIBE." + DEFAULT_MODE.toUpperCase() + " " + content);
+        }
+
+        function leaveCommand(commandString) {
+            var match = /^(?:channel\.)?leave\s+(.*)$/im.exec(commandString);
+            if (!match)
+                return false;
+
+            var content = match[1];
+
+            // TODO: unsubscribe all?
+            return subscribeCommand("CHANNEL.UNSUBSCRIBE." + DEFAULT_MODE.toUpperCase() + " " + content);
+        }
 
         function subscribeCommand(commandString) {
             var match = /^channel\.(un)?subscribe(?:\.(\w+))?\s+(\S+)\s*([\s\S]+)?$/im.exec(commandString);
@@ -40,7 +62,7 @@ if(typeof module === 'object') (function() {
                 return false;
 
             var unsubscribe = (match[1]||'').toLowerCase() === 'un';
-            var mode = (match[2] || '').toLowerCase();
+            var mode = (match[2] || DEFAULT_MODE).toLowerCase();
             var channel = match[3];
             var argString = match[4];
 //             console.log(match);
@@ -50,7 +72,7 @@ if(typeof module === 'object') (function() {
             importScripts('client/settings/settings-db.js');
             var SettingsDB = self.module.exports.SettingsDB;
 
-            var settingsCommandStringPrefix = "CHANNEL.SUBSCRIBE" + (mode ? '.' + mode.toUpperCase() : '') + ' ' + channel;
+            var settingsCommandStringPrefix = "CHANNEL.SUBSCRIBE." + mode.toUpperCase() + ' ' + channel;
             var settingsCommandString = settingsCommandStringPrefix + (argString ? ' ' + argString : "");
             SettingsDB.getSettings("onconnect:subscriptions", function(subscriptionSettings) {
                 if(typeof subscriptionSettings.commands === 'undefined')

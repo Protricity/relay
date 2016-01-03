@@ -35,7 +35,7 @@
         var pgp_id_public = match[2].toUpperCase();
         var passphrase = match[3];
 
-        console.log("TODO: Handle passphrase event", responseString);
+        console.log("TODO: Handle passphrase event", subCommand, responseString);
     }
 
     /**
