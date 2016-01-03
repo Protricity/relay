@@ -291,7 +291,7 @@ if(typeof importScripts !== 'undefined') {
         // Window Client
         ClientWorkerThread.addCommand(channelButtonCommand);
         function channelButtonCommand(commandString, e) {
-            if(!/^(minimize|maximize|close)/i.test(commandString))
+            if(!/^(minimize|maximize|close|open)/i.test(commandString))
                 return false;
             ClientWorkerThread.postResponseToClient(commandString);
             return true;
@@ -374,6 +374,7 @@ if(typeof importScripts !== 'undefined') {
                 case 'minimize':
                 case 'maximize':
                 case 'close':
+                case 'open':
                     renderWindowCommand(responseString);
                     break;
 
@@ -462,8 +463,8 @@ if(typeof importScripts !== 'undefined') {
                 contentElement.classList.add('__no-class');
             var targetClass = contentElement.classList.item(0);
 
-
             var targetElements = document.getElementsByClassName(targetClass);
+            console.log(targetClass, targetElements);
             var targetElement;
             if(targetElements.length === 0) {
                 // First Render
@@ -528,7 +529,7 @@ if(typeof importScripts !== 'undefined') {
         };
 
         function renderWindowCommand(responseString) {
-            var args = /^(minimize|maximize|close)\s+(\S+)$/mi.exec(responseString);
+            var args = /^(minimize|maximize|close|open)\s+(\S+)$/mi.exec(responseString);
             if(!args)
                 throw new Error("Invalid Command: " + responseString);
 
@@ -539,9 +540,18 @@ if(typeof importScripts !== 'undefined') {
                 throw new Error("Class not found: " + targetClass + " - " + responseString);
 
             var targetElement = targetElements[0];
+
+            if(command === 'open') { // TODO: Clean up
+                targetElement.classList.remove('minimized');
+                targetElement.classList.remove('maximized');
+                targetElement.classList.remove('closed');
+                return;
+            }
+
             var hasClass = targetElement.classList.contains(command + 'd');
-            if(command === 'close')
+            if(command === 'close') {
                 hasClass = false;
+            }
 
             var maximizedElms = document.getElementsByClassName('maximized');
             while(maximizedElms.length > 0)

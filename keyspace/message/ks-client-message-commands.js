@@ -134,17 +134,62 @@ if(typeof module === 'object') (function() {
                 throw new Error("Missing END PGP MESSAGE");
             fpos += "-----END PGP MESSAGE-----".length;
 
-            var pgpEncryptedMessage = contentString.substr(spos, fpos);
+            var pgpEncryptedMessageString = contentString.substr(spos, fpos);
 
             var uid = generateUID('xxxx').toUpperCase();
 
+
+//             console.log("TODO Processing Encrypted PGP Message: ", uid);
+
+
+            self.module = {exports: {}};
+            importScripts('keyspace/passphrase/ks-client-passphrases.js');
+            var ClientPassPhrases = self.module.exports.ClientPassPhrases;
+
+            self.module = {exports: self.exports = {}};
+            importScripts('pgp/lib/openpgpjs/openpgp.js');
+            var openpgp = self.module.exports;
+
+            var pgpEncryptedMessage = openpgp.message.readArmored(pgpEncryptedMessageString);
+            var pgp_id_public = pgpEncryptedMessage.getEncryptionKeyIds()[0].toHex().toUpperCase();
+
+            var classUID = 'pgp-message:' + uid;
             var replaceHTML =
-                "<span class='pgp-message: pgp-message:" + uid + " unprocessed'>" +
-                    "<i>[Decrypting PGP Message...]</i>" +
-                    "<div class='encrypted-content'>" + pgpEncryptedMessage + "</div>" +
+                "<span class='" + classUID + " pgp-message: unprocessed'>" +
+                "<i>[Decrypting PGP Message with <span class='pgp-id-public'>" + pgp_id_public + "</span>...]</i>" +
+                "<div class='encrypted-content'>" + pgpEncryptedMessageString + "</div>" +
                 "</span>";
 
-            console.log("TODO Processing Encrypted PGP Message: ", uid);
+            setTimeout(function() {
+                var passphrase = null;
+                ClientPassPhrases.requestDecryptedPrivateKey(pgp_id_public, passphrase,
+                    function(err, privateKey, passphrase) {
+
+                        // TODO: Why is this hack needed?
+                        var encryptionKeyIds = pgpEncryptedMessage.getEncryptionKeyIds();
+                        var privateKeyPacket = privateKey.getKeyPacket(encryptionKeyIds);
+                        if(passphrase)
+                            privateKeyPacket.decrypt(passphrase);
+                        if(!privateKeyPacket.isDecrypted)
+                            throw new Error("Subkey not decrypted");
+
+                        openpgp.decryptMessage(privateKey, pgpEncryptedMessage)
+                            .then(function (decryptedMessageString) {
+
+                                var replaceHTML =
+                                    "<span class='" + classUID + " pgp-message: decrypted'>" +
+                                    "<span class='decrypted-content'>" + decryptedMessageString + "</span>" +
+                                    //"<i>[Encrypted with <span class='pgp-id-public'>" + pgp_id_public + "</span>]</i>" +
+                                    "</span>";
+
+                                ClientWorkerThread.render(replaceHTML);
+                            }).catch(function(err) {
+
+                                console.error(err);
+                            });
+                    }
+                );
+            }, 300);
 
             return contentString.substr(0, spos)
                 + replaceHTML

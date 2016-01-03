@@ -634,6 +634,18 @@ module.exports.ServerSubscriptions =
         if(typeof keyspaceStatus[pgp_id_public] === 'undefined')
             return 'offline';
 
+        // Verify clients are online;
+        var keyspaceClients = ServerSubscriptions.getAuthenticatedKeySpaceClients(pgp_id_public);
+        for(var i=0; i<keyspaceClients.length; i++) {
+            var keyspaceClient = keyspaceClients[i];
+            if(keyspaceClient.readyState === keyspaceClient.OPEN) {
+                keyspaceClients.splice(i--, 1);
+            }
+        }
+
+        if(keyspaceClients.length === 0)
+            return 'disconnected';
+
         return keyspaceStatus[pgp_id_public];
     };
 

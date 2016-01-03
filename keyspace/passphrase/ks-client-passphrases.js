@@ -23,12 +23,17 @@ module.exports.ClientPassPhrases =
     }
 
     var passphraseRequests = [];
+    var passphraseMemory = {};
+
     ClientPassPhrases.requestDecryptedPrivateKey = function(pgp_id_public, passphrase, callback) {
         self.module = {exports: self.exports = {}};
         importScripts('keyspace/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;
 
         pgp_id_public = pgp_id_public.toUpperCase().substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+
+        if(!passphrase && typeof passphraseMemory[pgp_id_public] !== 'undefined')
+            passphrase = passphraseMemory[pgp_id_public]; // TODO: delete based on options
 
         callback = callback || function(err, privateKeyBlock){
             if (err)
@@ -65,11 +70,13 @@ module.exports.ClientPassPhrases =
                     console.log("Triggering Private Key Callbacks: ", pgp_id_public, callbacks, passphraseRequests);
                     for(var i=0; i<callbacks.length; i++)
                         callbacks[i](null, privateKey, passphrase); // TODO: passing passphrase unsafe hack
+
                     delete passphraseRequests[pgp_id_public];
+                    passphraseMemory[pgp_id_public] = passphrase;
 
                     Client.execute("KEYSPACE.PASSPHRASE.SUCCESS " + pgp_id_public);
 
-                    return callback(null, privateKey);
+                    return callback(null, privateKey, passphrase);
                 }
             }
 
