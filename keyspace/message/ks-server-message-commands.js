@@ -35,15 +35,16 @@ function ksMessageCommandSocket(commandString, client) {
     // Sender PGP Public Key ID
     var pgp_id_from = match[2].toUpperCase();
 
-    if(!ServerSubscriptions.isKeySpaceAuthorized(pgp_id_from, client)) {
-        send(client, "ERROR Only Authenticated KeySpace Clients may send private messages: " + pgp_id_from);
-        return true;
-    }
     if(!ServerSubscriptions.isKeySpaceAuthorized(pgp_id_to)) {
         send(client, "ERROR Only Authenticated KeySpace Clients may receive private messages: " + pgp_id_to);
         return true;
     }
 
+    if(!ServerSubscriptions.isKeySpaceAuthorized(pgp_id_from, client)) {
+        send(client, "ERROR Only Authenticated KeySpace Clients may send private messages: " + pgp_id_from);
+        return true;
+    }
+    
     var channelClients = ServerSubscriptions.getAuthenticatedKeySpaceClients(pgp_id_to);
     if(channelClients.length === 0)
         throw new Error("Empty Authenticated Client List");

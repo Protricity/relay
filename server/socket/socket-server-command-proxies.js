@@ -36,6 +36,18 @@ module.exports.initSocketServerCommandProxies = function(SocketServer) {
         return false;
     }
 
+    // Server Commands
+    SocketServer.addCommand(clientCommands);
+    function clientCommands(commandString, client) {
+        if(!/^client\s*(.*)$/i.test(commandString))
+            return false;
+            
+        // TODO: Handle client command/version
+        console.log("Client Command: ", commandString);
+
+        return true;
+    }
+
     // PGP Commands
     //SocketServer.addCommand(pgpCommand);
     //function pgpCommand(commandString, client) {
