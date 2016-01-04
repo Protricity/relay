@@ -17,9 +17,10 @@ if(typeof document === 'object')
 
         switch(formElm.getAttribute('name')) {
             case 'pgp-keygen-form':
-                if(e.type === 'submit')
-                    e.preventDefault() ||
+                if(e.type === 'submit') {
+                    e.preventDefault();
                     submitPGPKeyGenForm(e, formElm);
+                }
                 refreshPGPKeyGenForm(e, formElm);
                 return true;
 
