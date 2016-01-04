@@ -348,6 +348,7 @@ module.exports.ClientSubscriptions =
             case 'online':
             case 'offline':
             case 'away':
+                break;
             default:
                 break;
         }

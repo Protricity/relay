@@ -7,7 +7,7 @@
             <span class="command">Passphrase</span> Required
         </a>
     </header>
-    <main>
+    <main class="hide-on-minimize">
         <form name='ks-passphrase-form' class='show-on-minimized'>
             <label class='label-submit'>
                 A <span class='passphrase'>passphrase</span> is required
@@ -15,8 +15,11 @@
                 to use this <strong>PGP Private Key</strong>:
                 <br />
                 <br />
-                <code class="status-box">{$pgp_id_public} "{$user_id}"</code>
-
+                <div class="status-box">
+                    <strong>User ID:&nbsp;&nbsp;&nbsp;</strong> {$user_id}<br />
+                    <strong>Public ID:&nbsp;</strong> {$pgp_id_public}<br />
+                    <strong>Private ID:</strong> {$pgp_id_private}<br />
+                </div>
                 <br />
                 Passphrase:<br />
                 <input type='password' name='passphrase'/>

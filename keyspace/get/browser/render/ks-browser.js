@@ -20,9 +20,10 @@ if(typeof document === 'object')
 
             switch(formElm.getAttribute('name')) {
                 case 'ks-browser-navigation-form':
-                    if(e.type === 'submit')
-                        e.preventDefault() ||
+                    if(e.type === 'submit') {
+                        e.preventDefault();
                         submitHTTPBrowserNavigationForm(e, formElm);
+                    }
                     return true;
 
                 default:

@@ -11,6 +11,7 @@
         document.addEventListener('submit', onFormEvent, false);
         document.addEventListener('keyup', onFormEvent, false);
         document.addEventListener('change', onFormEvent, false);
+        document.addEventListener('blur', onFormEvent, false);
         document.addEventListener('response:event', onWorkerEvent, false);
     }
 
@@ -131,7 +132,7 @@
             formElm.dispatchEvent(commandEvent);
             if(!commandEvent.defaultPrevented)
                 throw new Error("Command event not handled");
-        }, 300);
+        }, 200);
     }
 
     function submitPassphraseForm(e, formElm) {

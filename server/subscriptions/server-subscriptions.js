@@ -600,6 +600,7 @@ module.exports.ServerSubscriptions =
             case 'online':
             case 'offline':
             case 'away':
+                break;
             default:
                 break;
         }

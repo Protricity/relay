@@ -22,7 +22,7 @@ if(typeof module === 'object') (function() {
          * @param {object} e The command Event
          * @return {boolean} true if handled otherwise false
          **/
-        function ksMessageCommand(commandString) {
+        function ksMessageCommand(commandString, e) {
             var match = /^(?:keyspace\.)?message(?:\.(encrypt))?\s+([a-f0-9]{8,})\s*([a-f0-9]{8,})?\s*([\s\S]*)$/im.exec(commandString);
             if (!match)         // If unmatched, 
                 return false;   // Pass control to next handler
@@ -39,10 +39,11 @@ if(typeof module === 'object') (function() {
                 pgp_id_from = authKeySpaces[0]; // TODO: what to do if multiple?
             }
 
-            if(!getClientSubscriptions().isKeySpaceAuthorized(pgp_id_from))
-                throw new Error("Keyspace must be online to send private messages: " + pgp_id_from);
+            // TODO: only check if we are keeping track of authorization statuses of other keyspaces
+            //if(!getClientSubscriptions().isKeySpaceAuthorized(pgp_id_from))
+            //    throw new Error("Keyspace must be online to send private messages: " + pgp_id_from);
 
-            renderMessageWindow(pgp_id_to, pgp_id_from);
+            renderMessageWindow(pgp_id_to, pgp_id_from, false);
 
             if(contentString) {
                 if(subCommand === 'encrypt') {
@@ -68,6 +69,11 @@ if(typeof module === 'object') (function() {
                                     " " + pgp_id_from +
                                     " " + encryptedContentString;
                                 ClientWorkerThread.sendWithSocket(formattedCommandString);
+
+                                getMessageExports().renderMessage(formattedCommandString, false, function (html) {
+                                    ClientWorkerThread.render(html);
+                                });
+
                                 //ServerSubscriptions.notifyAllAuthenticatedKeySpaceClients(pgp_id_public, "EVENT KEYSPACE.HOST.CHALLENGE " + encryptedMessage);
 
                             }).catch(function(error) {
@@ -81,6 +87,10 @@ if(typeof module === 'object') (function() {
                         " " + pgp_id_from +
                         " " + contentString;
                     ClientWorkerThread.sendWithSocket(formattedCommandString);
+
+                    getMessageExports().renderMessage(formattedCommandString, false, function (html) {
+                        ClientWorkerThread.render(html);
+                    });
                 }
             }
             return true;
@@ -93,7 +103,7 @@ if(typeof module === 'object') (function() {
          * @param {object} e event The response Event
          * @return {boolean} true if handled otherwise false
          **/
-        function ksMessageResponse(responseString) {
+        function ksMessageResponse(responseString, e) {
             var match = /^(?:keyspace\.)?message\s+([a-f0-9]{8,})\s+([a-f0-9]{8,})\s*([\s\S]*)$/im.exec(responseString);
             if (!match)         // If unmatched, 
                 return false;   // Pass control to next handler
@@ -102,61 +112,147 @@ if(typeof module === 'object') (function() {
             var pgp_id_from = match[2].toUpperCase();
             var messageContent = match[3];
 
-            renderMessageWindow(pgp_id_to, pgp_id_from);
+            renderMessageWindow(pgp_id_to, pgp_id_from, true, function() {
+                messageContent = parsePGPEncryptedMessageHTML(pgp_id_to, pgp_id_from, messageContent);
+                if(messageContent === '!')
+                    messageContent = parseActionMessage(pgp_id_to, pgp_id_from, messageContent);
 
-            messageContent = parsePGPEncryptedMessageHTML(pgp_id_to, pgp_id_from, messageContent);
-            messageContent = parseActionMessage(pgp_id_to, pgp_id_from, messageContent);
+                responseString = "KEYSPACE.MESSAGE " + pgp_id_to + " " + pgp_id_from + " " + messageContent;
 
-            responseString = "KEYSPACE.MESSAGE " + pgp_id_to + " " + pgp_id_from + " " + messageContent;
-
-            getMessageExports().renderMessage(responseString, function (html) {
-                ClientWorkerThread.render(html);
+                getMessageExports().renderMessage(responseString, true, function (html) {
+                    ClientWorkerThread.render(html);
+                });
             });
+
             return true;
         }
 
         var activeMessages = [];
-        function renderMessageWindow(pgp_id_to, pgp_id_from) {
-            var id = pgp_id_to + ':' + pgp_id_from;
-            if (activeMessages.indexOf(id) === -1) {
-                getMessageExports().renderMessageWindow(pgp_id_to, pgp_id_from, function (html) {
-                    ClientWorkerThread.render(html);
-                    activeMessages.push(id);
-                });
+        function renderMessageWindow(pgp_id_to, pgp_id_from, switchOnResponse, callback) {
+            var uid = pgp_id_to + ':' + pgp_id_from;
+            if(switchOnResponse)
+                uid = pgp_id_from + ':' + pgp_id_to;
+
+            if (activeMessages.indexOf(uid) === -1) {
+                getMessageExports().renderMessageWindow(pgp_id_to, pgp_id_from, switchOnResponse,
+                    function (html) {
+                        ClientWorkerThread.render(html);
+                        activeMessages.push(uid);
+                        if(callback)
+                            callback();
+                    }
+                );
+
+                // Check for missing public keys
+                requestPublicKeyContent(pgp_id_to);
+                requestPublicKeyContent(pgp_id_from);
+
             } else {
-                ClientWorkerThread.postResponseToClient("FOCUS ks-message:" + id)
+                ClientWorkerThread.postResponseToClient("FOCUS ks-message:" + uid)
+                if(callback)
+                    callback();
             }
         }
 
-        function parseActionMessage(pgp_id_to, pgp_id_from, contentString) {
-            if(contentString[0] === '!') {
-                var match = /^!(\w+)\s*(.*)$/.exec(contentString);
-                if(!match) {
-                    console.error("Invalid Action Message: " + contentString);
-                    return contentString;
-                }
-                var action = match[1].toLowerCase();
-                switch(action) {
-                    case 'get':
-                        var requestPath = match[2];
-                        if(requestPath.indexOf('.') === 0)
-                            throw new Error("TODO: protect private folders");
-                        var requestURL = 'http://' + pgp_id_to + '.ks/' + requestPath;
-                        console.log("TODO: handle requestURL", requestURL, pgp_id_from);
+        function requestPublicKeyContent(pgp_id_public, callback) {
 
-                        var actionString = "KEYSPACE.MESSAGE " + pgp_id_to + " " + pgp_id_from + " " +
-                            "User [" + pgp_id_from + "] has requested: " +
-                            "<a href='" + requestURL + "'>" + requestURL + "</a>" +
-                            "<br/>" +
-                            "Click <a href='javascript:Client.execute(\"KEYSPACE.MESSAGE " + pgp_id_from + " " + pgp_id_to + " !http " + requestPath + "\");'>Send</a> to approve.";
-                        getMessageExports().renderMessage(actionString, function (html) {
-                            ClientWorkerThread.render(html);
-                        });
-                        break;
-                    default:
-                        console.error("Invalid Action: " + action);
-                        return contentString;
+            // Check for missing public keys
+            var requestURL = 'http://' + pgp_id_public + '.ks/public/id';
+            KeySpaceDB.queryOne(requestURL, function(err, contentEntry) {
+                if (contentEntry) {
+                    if(callback)
+                        callback(contentEntry);
+                    //console.log("Sender Private Key Found: ", contentEntry);
+
+                } else {
+                    var requestCommand = 'GET http://' + pgp_id_public + '.ks/public/id';
+                    console.log("Requesting Public Key: " + pgp_id_public, requestCommand);
+                    ClientWorkerThread.sendWithSocket(requestCommand);
+
+                    if(callback)
+                        throw new Error("Incomplete");
+                    // TODO: track request ID and trigger callback
                 }
+            });
+
+        }
+
+        function parseActionMessage(pgp_id_to, pgp_id_from, contentString) {
+            var match = /^!(\w+)\s*([\s\S]*)$/.exec(contentString);
+            if(!match) {
+                console.error("Invalid Action Message: " + contentString);
+                return contentString;
+            }
+
+            self.module = {exports: {}};
+            importScripts('keyspace/ks-db.js');
+            var KeySpaceDB = self.module.exports.KeySpaceDB;
+
+            // TODO: ask user for auto-authorization for action commands
+            var action = match[1].toLowerCase();
+            switch(action) {
+                case 'get':
+                    var requestPath = match[2];
+                    if(requestPath.toLowerCase().indexOf('.priv') >= 0)
+                        throw new Error("TODO: protect private folders");
+
+                    var requestURL = 'http://' + pgp_id_to + '.ks/' + requestPath;
+                    KeySpaceDB.queryOne(requestURL, function (err, contentData) {
+                        var commandString = null;
+                        if (err) {
+                            console.error("GET Request Failed: " + requestURL, err);
+                            commandString = "KEYSPACE.MESSAGE " + pgp_id_from + " " + pgp_id_to + " " +
+                                "!http 400 " + err;
+
+                        } else {
+                            console.info("GET Request: " + requestURL);
+                            commandString = "KEYSPACE.MESSAGE " + pgp_id_from + " " + pgp_id_to + " " +
+                                "!http 200 OK" +
+                                "\n\n" +
+                                contentData.content;
+                        }
+
+                        ClientWorkerThread.sendWithSocket(commandString);
+                    });
+                    contentString = '<span class="action">' + contentString + '</span>';
+                    break;
+
+                case 'http':
+                    var responseSplit = match[2].split(/\n\n/);
+                    var responseHeader = responseSplit[0];
+                    var responseBody = responseSplit[1];
+
+                    self.module = {exports: self.exports = {}};
+                    importScripts('pgp/lib/openpgpjs/openpgp.js');
+                    var openpgp = self.module.exports;
+
+                    KeySpaceDB.verifyAndAddContent(openpgp, responseBody, pgp_id_from,
+                        function(err, insertedContent) {
+                            if(!insertedContent)
+                                err = "No Content Inserted";
+                            var commandString = "KEYSPACE.MESSAGE " + pgp_id_from + " " + pgp_id_to + " ";
+                            if(err) {
+                                commandString += "!http.error " + err;
+
+                            } else {
+                                commandString += "!http.success " + insertedContent.timestamp;
+                            }
+
+                        }
+                    );
+
+                    break;
+
+                case 'http.success':
+                    console.info("Action: " + action);
+                    contentString = '<span class="action">' + contentString + '</span>';
+                    return contentString;
+
+                default:
+                case 'http.error':
+                    console.info("Action Error: " + action);
+                    contentString = '<span class="action error">' + contentString + '</span>';
+                    return contentString;
             }
             return contentString;
         }
@@ -213,7 +309,8 @@ if(typeof module === 'object') (function() {
                         openpgp.decryptMessage(privateKey, pgpEncryptedMessage)
                             .then(function (decryptedMessageString) {
 
-                                decryptedMessageString = parseActionMessage(pgp_id_to, pgp_id_from, decryptedMessageString);
+                                if(contentString[0] === '!')
+                                    decryptedMessageString = parseActionMessage(pgp_id_to, pgp_id_from, decryptedMessageString);
 
                                 var replaceHTML =
                                     "<span class='" + classUID + " pgp-message: decrypted'>" +

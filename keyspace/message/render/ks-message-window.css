@@ -1,3 +1,7 @@
+.ks-message\3A  {
+    min-width: 16em;
+}
+
 
 .pgp-signed-message {
     white-space: pre;
@@ -89,4 +93,9 @@ form[name=ks-message-form] .pgp-message\3A.unprocessed:not(:hover) .encrypted-co
     max-width: 0;
 }
 
+.pgp-message\3A  span.action {
+    border-radius: 0.2em;
+    border: 1px solid lightgrey;
+
+}
 /** TODO: show decryption info **/

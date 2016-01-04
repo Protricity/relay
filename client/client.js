@@ -489,23 +489,28 @@ if(typeof importScripts !== 'undefined') {
                 targetElement.scrollIntoView();
 
             } else {
-                // Existing window with same name
-                targetElement = targetElements[0];
-                if(targetElement.classList.contains('closed'))
-                    targetElement.classList.remove('closed');
-                if(targetElement.classList.contains('minimized'))
-                    targetElement.classList.remove('minimized');
-                if(contentElement.classList.contains('append-children-on-render')
-                    || targetElement.classList.contains('append-children-on-render')) {
-                    for(var j=0; j<contentElement.children.length; j++)
-                        targetElement.appendChild(contentElement.children[j]);
-                    targetElement.children[targetElement.children.length-1].scrollIntoView();
-                } else {
-                    targetElement.innerHTML = contentElement.innerHTML;
-                }
+                // Existing element(s) with same first class name
+                for(var ti=0; ti<targetElements.length; ti++) {
 
-                if(contentElement.classList.contains('scroll-into-view-on-render'))
-                    targetElement.scrollIntoView();
+                    targetElement = targetElements[ti];
+                    if(targetElement.classList.contains('closed'))
+                        targetElement.classList.remove('closed');
+                    if(targetElement.classList.contains('minimized'))
+                        targetElement.classList.remove('minimized');
+                    if(contentElement.classList.contains('append-children-on-render')
+                        || targetElement.classList.contains('append-children-on-render')) {
+                        var contentElementClone = contentElement.cloneNode(true);
+                        for(var j=0; j<contentElementClone.children.length; j++)
+                            targetElement.appendChild(contentElementClone.children[j]);
+                        targetElement.children[targetElement.children.length-1].scrollIntoView();
+                    } else {
+                        targetElement.innerHTML = contentElement.innerHTML;
+                    }
+
+                    if(contentElement.classList.contains('scroll-into-view-on-render'))
+                        targetElement.scrollIntoView();
+                }
+                targetElement = targetElements[0];
             }
 
             if(targetElement.classList.contains('focus-on-render')) {

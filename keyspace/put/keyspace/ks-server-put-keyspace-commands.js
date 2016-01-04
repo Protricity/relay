@@ -114,7 +114,7 @@ function putCommandSocket(commandString, client) {
                 });
         });
 
-    } else if(content.indexOf('-----BEGIN PUBLIC KEY BLOCK-----') === 0) {
+    } else if(content.indexOf('-----BEGIN PGP PUBLIC KEY BLOCK-----') === 0) {
                 var publicKey = openpgp.key.readArmored(content).keys[0];
                 var publicKeyCreateDate = publicKey.subKeys[0].subKey.created;
                 var pkPath = 'public/id';
