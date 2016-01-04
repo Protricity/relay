@@ -493,7 +493,6 @@ if(typeof importScripts !== 'undefined') {
                 for(var ti=0; ti<targetElements.length; ti++) {
 
                     targetElement = targetElements[ti];
-                    console.log(targetClass, targetElement);
                     if(targetElement.classList.contains('closed'))
                         targetElement.classList.remove('closed');
                     if(targetElement.classList.contains('minimized'))

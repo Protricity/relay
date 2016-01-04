@@ -112,22 +112,23 @@ if(typeof module === 'object') (function() {
             var pgp_id_from = match[2].toUpperCase();
             var messageContent = match[3];
 
-            renderMessageWindow(pgp_id_to, pgp_id_from, true);
+            renderMessageWindow(pgp_id_to, pgp_id_from, true, function() {
+                messageContent = parsePGPEncryptedMessageHTML(pgp_id_to, pgp_id_from, messageContent);
+                if(messageContent === '!')
+                    messageContent = parseActionMessage(pgp_id_to, pgp_id_from, messageContent);
 
-            messageContent = parsePGPEncryptedMessageHTML(pgp_id_to, pgp_id_from, messageContent);
-            if(messageContent === '!')
-                messageContent = parseActionMessage(pgp_id_to, pgp_id_from, messageContent);
+                responseString = "KEYSPACE.MESSAGE " + pgp_id_to + " " + pgp_id_from + " " + messageContent;
 
-            responseString = "KEYSPACE.MESSAGE " + pgp_id_to + " " + pgp_id_from + " " + messageContent;
-
-            getMessageExports().renderMessage(responseString, true, function (html) {
-                ClientWorkerThread.render(html);
+                getMessageExports().renderMessage(responseString, true, function (html) {
+                    ClientWorkerThread.render(html);
+                });
             });
+
             return true;
         }
 
         var activeMessages = [];
-        function renderMessageWindow(pgp_id_to, pgp_id_from, switchOnResponse) {
+        function renderMessageWindow(pgp_id_to, pgp_id_from, switchOnResponse, callback) {
             var uid = pgp_id_to + ':' + pgp_id_from;
             if(switchOnResponse)
                 uid = pgp_id_from + ':' + pgp_id_to;
@@ -137,10 +138,14 @@ if(typeof module === 'object') (function() {
                     function (html) {
                         ClientWorkerThread.render(html);
                         activeMessages.push(uid);
+                        if(callback)
+                            callback();
                     }
                 );
             } else {
                 ClientWorkerThread.postResponseToClient("FOCUS ks-message:" + uid)
+                if(callback)
+                    callback();
             }
         }
 

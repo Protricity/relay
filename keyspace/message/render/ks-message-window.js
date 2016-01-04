@@ -123,13 +123,12 @@ if(typeof module === 'object') (function() {
         importScripts('keyspace/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;
 
-        // TODO: fix logic
         var uid = pgp_id_to + ':' + pgp_id_from;
         if(switchOnResponse) {
-            uid = pgp_id_from + ':' + pgp_id_to;
-            //var pgp_id_from_old = pgp_id_from;
-            //pgp_id_from = pgp_id_to;
-            //pgp_id_to = pgp_id_from_old;
+            var pgp_id_from_old = pgp_id_from;
+            pgp_id_from = pgp_id_to;
+            pgp_id_to = pgp_id_from_old;
+            uid = pgp_id_to + ':' + pgp_id_from;
         }
 
         var user_id_from = pgp_id_from;
