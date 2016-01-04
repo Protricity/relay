@@ -27,8 +27,8 @@
                                     <option value="encrypt">Send with PGP Encryption (secure)</option>
                                 </optgroup>
                                 <optgroup label="Commands">
-                                    <option disabled="disabled" value="MESSAGE {$pgp_id_to} {$pgp_id_from} !get public/id">Request Public Key (Add to Contact List)</option>
-                                    <option disabled="disabled" value="MESSAGE {$pgp_id_to} {$pgp_id_from} !get public/profile">Request Public Profile</option>
+                                    <option disabled="disabled" value="GET http://{$pgp_id_public}.ks/public/id">Request Public Key (Add to Contact List)</option>
+                                    <option disabled="disabled" value="GET http://{$pgp_id_public}.ks/public/profile">Request Public Profile</option>
                                 </optgroup>
                             </select>
                         </label>

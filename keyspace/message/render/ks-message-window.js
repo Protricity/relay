@@ -184,8 +184,10 @@ if(typeof module === 'object') (function() {
 
         var requestURL = 'http://' + pgp_id_from + '.ks/public/id';
         KeySpaceDB.queryOne(requestURL, function(err, contentEntry) {
-            if(contentEntry)
+            if(contentEntry) {
                 user_id_from = contentEntry.user_id;
+
+            }
 
             var MESSAGE_TEMPLATE =
                 '<div class="ks-message-log:{$uid} append-children-on-render">' +

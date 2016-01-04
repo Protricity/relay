@@ -101,6 +101,7 @@ function executeServerGetRequest(requestString, callback) {
     //if(!browserID)
     //    requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);
 
+    console.warn("TODO: query all clients: ", requestString);
     //// TODO: Query all client hosts
     //var requestID = 'S' + requestIDCount++;
     //requestString = addContentHeader(requestString, 'Request-ID', requestID);

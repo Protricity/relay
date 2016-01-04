@@ -22,7 +22,7 @@ if(typeof module === 'object') (function() {
          * @param {object} e The command Event
          * @return {boolean} true if handled otherwise false
          **/
-        function ksMessageCommand(commandString) {
+        function ksMessageCommand(commandString, e) {
             var match = /^(?:keyspace\.)?message(?:\.(encrypt))?\s+([a-f0-9]{8,})\s*([a-f0-9]{8,})?\s*([\s\S]*)$/im.exec(commandString);
             if (!match)         // If unmatched, 
                 return false;   // Pass control to next handler
@@ -103,7 +103,7 @@ if(typeof module === 'object') (function() {
          * @param {object} e event The response Event
          * @return {boolean} true if handled otherwise false
          **/
-        function ksMessageResponse(responseString) {
+        function ksMessageResponse(responseString, e) {
             var match = /^(?:keyspace\.)?message\s+([a-f0-9]{8,})\s+([a-f0-9]{8,})\s*([\s\S]*)$/im.exec(responseString);
             if (!match)         // If unmatched, 
                 return false;   // Pass control to next handler
@@ -142,11 +142,39 @@ if(typeof module === 'object') (function() {
                             callback();
                     }
                 );
+
+                // Check for missing public keys
+                requestPublicKeyContent(pgp_id_to);
+                requestPublicKeyContent(pgp_id_from);
+
             } else {
                 ClientWorkerThread.postResponseToClient("FOCUS ks-message:" + uid)
                 if(callback)
                     callback();
             }
+        }
+
+        function requestPublicKeyContent(pgp_id_public, callback) {
+
+            // Check for missing public keys
+            var requestURL = 'http://' + pgp_id_public + '.ks/public/id';
+            KeySpaceDB.queryOne(requestURL, function(err, contentEntry) {
+                if (contentEntry) {
+                    if(callback)
+                        callback(contentEntry);
+                    //console.log("Sender Private Key Found: ", contentEntry);
+
+                } else {
+                    var requestCommand = 'GET http://' + pgp_id_public + '.ks/public/id';
+                    console.log("Requesting Public Key: " + pgp_id_public, requestCommand);
+                    ClientWorkerThread.sendWithSocket(requestCommand);
+
+                    if(callback)
+                        throw new Error("Incomplete");
+                    // TODO: track request ID and trigger callback
+                }
+            });
+
         }
 
         function parseActionMessage(pgp_id_to, pgp_id_from, contentString) {
