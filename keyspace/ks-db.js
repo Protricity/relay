@@ -274,6 +274,88 @@ module.exports.KeySpaceDB =
         );
     };
 
+    KeySpaceDB.verifyAndAddContent = function(openpgp, unverifiedContent, pgp_id_public, callback) {
+
+
+        // TODO: check for encrypted rather than cleartext
+        if(unverifiedContent.indexOf('-----BEGIN PGP SIGNED MESSAGE-----') === 0) {
+            var pgpClearSignedMessage = openpgp.cleartext.readArmored(unverifiedContent);
+
+            var path = /data-path=["'](\S+)["']/i.exec(pgpClearSignedMessage.text)[1];
+            var timestamp =
+                parseInt(/data-timestamp=["'](\d+)["']/i.exec(pgpClearSignedMessage.text)[1])
+                || pgpClearSignedMessage.packets[0].created.getTime();
+            // TODO: get signature packet
+
+            // Query Vote Public Key for encrypting
+            var requestURL = 'http://' + pgp_id_public + '.ks/public/id';
+            KeySpaceDB.queryOne(requestURL, function (err, publicKeyBlock) {
+                if (err) {
+                    callback("ERROR " + err);
+                    throw new Error(err);
+                }
+                if (!publicKeyBlock) {
+                    callback("ERROR KeySpace content may only be added once the KeySpace public key block 'public/id' has been added");
+                    throw new Error(err);
+                }
+
+                var pgpImport = openpgp.key.readArmored(publicKeyBlock.content);
+                if(pgpImport.err && pgpImport.err.length > 0)
+                    throw new Error(pgpImport.err[0]);
+                var publicKeysForEncryption = pgpImport.keys;
+
+                openpgp.verifyClearSignedMessage(publicKey, pgpClearSignedMessage)
+                    .then(function (decryptedContent) {
+                        for (var i = 0; i < decryptedContent.signatures.length; i++)
+                            if (!decryptedContent.signatures[i].valid)
+                                throw new Error("Invalid Signature: " + decryptedContent.signatures[i].keyid.toHex().toUpperCase());
+
+                        console.info("Verified Signed Content for: " + pgp_id_public);
+
+                        var keyspaceContent = pgpClearSignedMessage.armor().trim();
+
+                        KeySpaceDB.addVerifiedContentToDB(keyspaceContent, pgp_id_public, timestamp, path, {},
+                            function (err, insertData) {
+                                if (err) {
+                                    callback("ERROR " + err);
+                                    throw new Error(err);
+                                }
+
+                                callback(null, insertData);
+                            }
+                        );
+
+                    }).catch(function (err) {
+                        console.error(err);
+                        callback("ERROR " + err);
+                    });
+            });
+
+        } else if(unverifiedContent.indexOf('-----BEGIN PGP PUBLIC KEY BLOCK-----') === 0) {
+            var publicKey = openpgp.key.readArmored(unverifiedContent).keys[0];
+            var publicKeyCreateDate = publicKey.subKeys[0].subKey.created;
+            var pkPath = 'public/id';
+            var pkTimestamp = publicKeyCreateDate.getTime();
+            var keyspaceContent = publicKey.armor();
+
+            // Add public key to cache.
+            KeySpaceDB.addVerifiedContentToDB(keyspaceContent, pgp_id_public, pkTimestamp, pkPath, {},
+                function(err, insertData) {
+                    if (err) {
+                        callback("ERROR " + err);
+                        throw new Error(err);
+                    }
+
+                    callback(null, insertData);
+                });
+
+        } else {
+
+            throw new Error("No PGP Signed Message or Public Key found");
+        }
+
+    };
+
     KeySpaceDB.addVerifiedContentToDB = function(verifiedContent, pgp_id_public, timestamp, path, customFields, callback) {
         if(!path || typeof path !== 'string')
             throw new Error("Invalid Path");
@@ -314,7 +396,7 @@ module.exports.KeySpaceDB =
             insertData,
             function(err, newInsertData) {
                 if(callback)
-                    callback(err, insertData);
+                    callback(err.message, insertData);
 
                 if(typeof Client !== 'undefined') {
                     var responseString = "EVENT KEYSPACE.INSERT" +

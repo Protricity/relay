@@ -123,6 +123,10 @@ if(typeof module === 'object') (function() {
         importScripts('keyspace/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;
 
+        var uid = pgp_id_from < pgp_id_to
+            ? pgp_id_from + ':' + pgp_id_to
+            : pgp_id_to + ':' + pgp_id_from;
+
         var user_id_from = pgp_id_from;
         var user_id_to = pgp_id_to;
 
@@ -137,6 +141,7 @@ if(typeof module === 'object') (function() {
                     user_id_to = contentEntry.user_id;
 
                 callback(xhr.responseText
+                        .replace(/{\$uid}/gi, uid)
                         .replace(/{\$pgp_id_to}/gi, pgp_id_to)
                         .replace(/{\$pgp_id_from}/gi, pgp_id_from)
                         .replace(/{\$to}/gi, user_id_to)
@@ -162,6 +167,10 @@ if(typeof module === 'object') (function() {
         var pgp_id_from = match[2].toUpperCase();
         var content = match[3];
 
+        var uid = pgp_id_from < pgp_id_to
+            ? pgp_id_from + ':' + pgp_id_to
+            : pgp_id_to + ':' + pgp_id_from;
+
         var user_id_from = pgp_id_from;
 
         var requestURL = 'http://' + pgp_id_from + '.ks/public/id';
@@ -170,7 +179,7 @@ if(typeof module === 'object') (function() {
                 user_id_from = contentEntry.user_id;
 
             var MESSAGE_TEMPLATE =
-                '<div class="ks-message-log:{$pgp_id_to}:{$pgp_id_from} append-children-on-render">' +
+                '<div class="ks-message-log:{$uid} append-children-on-render">' +
                     '<div class="message-log-entry">' +
                         '<span class="username" data-id="{$pgp_id_from}">{$from}</span>' +
                         ': <span class="message">{$content}</span>' +
@@ -178,6 +187,7 @@ if(typeof module === 'object') (function() {
                 '</div>';
 
             callback(MESSAGE_TEMPLATE
+                    .replace(/{\$uid}/gi, uid)
                     .replace(/{\$pgp_id_to}/gi, pgp_id_to)
                     .replace(/{\$pgp_id_from}/gi, pgp_id_from)
                     //.replace(/{\$to}/gi, user_id_to)

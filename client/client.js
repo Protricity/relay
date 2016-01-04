@@ -464,6 +464,7 @@ if(typeof importScripts !== 'undefined') {
             var targetClass = contentElement.classList.item(0);
 
             var targetElements = document.getElementsByClassName(targetClass);
+            console.log(targetClass, targetElements);
             var targetElement;
             if(targetElements.length === 0) {
                 // First Render

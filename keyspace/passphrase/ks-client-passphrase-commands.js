@@ -60,18 +60,18 @@ if(typeof module === 'object') (function() {
             var ClientPassPhrases = self.module.exports.ClientPassPhrases;
 
             if(passphrase) {
-                ClientPassPhrases.requestDecryptedPrivateKey(pgp_id_public, passphrase,
-                    function(err, decryptedPrivateKey) {
-                        if(err)
-                            throw new Error(err);
-                        if(!decryptedPrivateKey)
-                            throw new Error("No Decrypted Private Key");
-                        if(!decryptedPrivateKey.primaryKey.isDecrypted)
-                            throw new Error("Private Key is not decrypted");
+                ClientPassPhrases.requestDecryptedPrivateKey(pgp_id_public, passphrase);
+                    //function(err, decryptedPrivateKey) {
+                    //    if(err)
+                    //        throw new Error(err);
+                    //    if(!decryptedPrivateKey)
+                    //        throw new Error("No Decrypted Private Key");
+                    //    if(!decryptedPrivateKey.primaryKey.isDecrypted)
+                    //        throw new Error("Private Key is not decrypted");
 
                         //console.info("TODO: Private Key Decrypted", decryptedPrivateKey);
-                    }
-                );
+                    //}
+                //);
 
             } else if(renderWindow) {
 

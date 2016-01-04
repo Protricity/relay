@@ -28,30 +28,34 @@ function ksMessageCommandSocket(commandString, client) {
     var match = /^(?:keyspace\.)?message\s+([a-f0-9]{8,})\s+([a-f0-9]{8,})\s*([\s\S]*)$/im.exec(commandString);
     if (!match)         // If unmatched, 
         return false;   // Pass control to next handler
-        
+
+    // Recipient PGP Public Key ID
     var pgp_id_to = match[1].toUpperCase();
+
+    // Sender PGP Public Key ID
     var pgp_id_from = match[2].toUpperCase();
 
     if(!ServerSubscriptions.isKeySpaceAuthorized(pgp_id_from, client)) {
-        send(client, "ERROR Only Authenticated KeySpace Clients may send private messages");
+        send(client, "ERROR Only Authenticated KeySpace Clients may send private messages: " + pgp_id_from);
         return true;
     }
     if(!ServerSubscriptions.isKeySpaceAuthorized(pgp_id_to)) {
-        send(client, "ERROR Only Authenticated KeySpace Clients may receive private messages");
+        send(client, "ERROR Only Authenticated KeySpace Clients may receive private messages: " + pgp_id_to);
         return true;
     }
-
-    var content = match[3];
 
     var channelClients = ServerSubscriptions.getAuthenticatedKeySpaceClients(pgp_id_to);
     if(channelClients.length === 0)
         throw new Error("Empty Authenticated Client List");
 
+    // Send message to all recipient clients
     for(var i=0; i<channelClients.length; i++) {
         send(channelClients[i], commandString);
     }
-    if(channelClients.indexOf(client) === -1)
-        send(client, commandString);
+
+    // Don't send to client. Client knows what was sent
+    //if(channelClients.indexOf(client) === -1)
+    //    send(client, commandString);
 
     return true;
 }

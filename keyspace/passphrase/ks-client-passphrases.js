@@ -35,18 +35,14 @@ module.exports.ClientPassPhrases =
         if(!passphrase && typeof passphraseMemory[pgp_id_public] !== 'undefined')
             passphrase = passphraseMemory[pgp_id_public]; // TODO: delete based on options
 
-        callback = callback || function(err, privateKeyBlock){
-            if (err)
-                throw new Error(err);
-        };
 
         // Query user private key for signing
         var path = 'http://' + pgp_id_public + '.ks/.private/id';
         KeySpaceDB.queryOne(path, function (err, privateKeyBlock) {
             if (err)
-                return callback(err);
+                return callback ? callback(err) : null;
             if (!privateKeyBlock)
-                return callback("User Private key not found: " + pgp_id_public);
+                return callback ? callback("User Private key not found: " + pgp_id_public) : null;
 
             self.module = {exports: self.exports = {}};
             importScripts('pgp/lib/openpgpjs/openpgp.js');
@@ -57,7 +53,7 @@ module.exports.ClientPassPhrases =
             if(privateKey.primaryKey.isDecrypted) {
                 // Already decrypted or doesn't require a passphrase
                 Client.execute("KEYSPACE.PASSPHRASE.FAIL " + pgp_id_public);
-                return callback(null, privateKey);
+                return callback ? callback(null, privateKey, passphrase) : null;
             }
 
             if(typeof passphraseRequests[pgp_id_public] === 'undefined')
@@ -76,13 +72,13 @@ module.exports.ClientPassPhrases =
 
                     Client.execute("KEYSPACE.PASSPHRASE.SUCCESS " + pgp_id_public);
 
-                    return callback(null, privateKey, passphrase);
+                    return callback ? callback(null, privateKey, passphrase) : null;
                 }
             }
-
-            passphraseRequests[pgp_id_public].push(callback);
-            console.log("Adding Private Key Callback: ", pgp_id_public, passphraseRequests);
-
+            if(callback) {
+                passphraseRequests[pgp_id_public].push(callback);
+                console.log("Adding Private Key Callback: ", pgp_id_public, passphraseRequests);
+            }
             Client.execute("KEYSPACE.PASSPHRASE " + pgp_id_public);
         });
 
