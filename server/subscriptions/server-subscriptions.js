@@ -306,6 +306,23 @@ module.exports.ServerSubscriptions =
     };
 
     /**
+     * Returns a list of subscriptions for a specific keyspace/mode
+     * @param pgp_id_public
+     * @param mode
+     * @returns {*}
+     */
+    ServerSubscriptions.getKeySpaceSubscriptions = function(pgp_id_public, mode) {
+        if(mode)          mode = mode.toLowerCase();
+        if(pgp_id_public) pgp_id_public = pgp_id_public.toUpperCase();
+        if(typeof keyspaceSubscriptions[pgp_id_public] === 'undefined')
+            return [];
+        var modeList = keyspaceSubscriptions[pgp_id_public];
+        if(typeof modeList[mode] === 'undefined')
+            return [];
+        return modeList[mode].slice();
+    };
+
+    /**
      * Returns the Subscription ArgString for a client, if found
      * @param client subscriber client
      * @param channel subscribed channel
