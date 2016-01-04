@@ -4,10 +4,10 @@
     <header class='header-bar show-on-minimized'>
         {header:buttons ks-message:{$uid}}
         <a href='javascript:ClientMainThread.execute("MINIMIZE ks-message:{$uid}");'>
-            <span class="command">Message</span> {$to}
+            <span class="command">Message</span> {$to} [From: {$from}]
         </a>
     </header>
-    <form name='ks-message-form'>
+    <form name='ks-message-form' class="hide-on-minimize">
         <table style='width:100%'>
             <tbody class="hide-on-minimize">
                 <tr>

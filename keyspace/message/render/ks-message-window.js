@@ -112,7 +112,7 @@ if(typeof document === 'object') (function() {
 if(typeof module === 'object') (function() {
     var TEMPLATE_URL = 'keyspace/message/render/ks-message-window.html';
 
-    module.exports.renderMessageWindow = function(pgp_id_to, pgp_id_from, callback) {
+    module.exports.renderMessageWindow = function(pgp_id_to, pgp_id_from, switchOnResponse, callback) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", TEMPLATE_URL, false);
         xhr.send();
@@ -123,9 +123,14 @@ if(typeof module === 'object') (function() {
         importScripts('keyspace/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;
 
-        var uid = pgp_id_from < pgp_id_to
-            ? pgp_id_from + ':' + pgp_id_to
-            : pgp_id_to + ':' + pgp_id_from;
+        // TODO: fix logic
+        var uid = pgp_id_to + ':' + pgp_id_from;
+        if(switchOnResponse) {
+            uid = pgp_id_from + ':' + pgp_id_to;
+            //var pgp_id_from_old = pgp_id_from;
+            //pgp_id_from = pgp_id_to;
+            //pgp_id_to = pgp_id_from_old;
+        }
 
         var user_id_from = pgp_id_from;
         var user_id_to = pgp_id_to;
@@ -154,7 +159,7 @@ if(typeof module === 'object') (function() {
         return true;
     };
 
-    module.exports.renderMessage = function(responseString, callback) {
+    module.exports.renderMessage = function(responseString, switchOnResponse, callback) {
         var match = /^(?:keyspace\.)?message\s+([a-f0-9]{8,})\s+([a-f0-9]{8,})\s*([\s\S]*)$/im.exec(responseString);
         if (!match)
             throw new Error("Invalid Message Response: " + responseString);
@@ -167,9 +172,14 @@ if(typeof module === 'object') (function() {
         var pgp_id_from = match[2].toUpperCase();
         var content = match[3];
 
-        var uid = pgp_id_from < pgp_id_to
-            ? pgp_id_from + ':' + pgp_id_to
-            : pgp_id_to + ':' + pgp_id_from;
+        // TODO: fix logic
+        var uid = pgp_id_to + ':' + pgp_id_from;
+        if(switchOnResponse) {
+            uid = pgp_id_from + ':' + pgp_id_to;
+            //var pgp_id_from_old = pgp_id_from;
+            //pgp_id_from = pgp_id_to;
+            //pgp_id_to = pgp_id_from_old;
+        }
 
         var user_id_from = pgp_id_from;
 

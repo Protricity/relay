@@ -1,3 +1,7 @@
+.ks-message\3A  {
+    min-width: 16em;
+}
+
 
 .pgp-signed-message {
     white-space: pre;

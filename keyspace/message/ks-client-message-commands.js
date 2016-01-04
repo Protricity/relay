@@ -43,7 +43,7 @@ if(typeof module === 'object') (function() {
             //if(!getClientSubscriptions().isKeySpaceAuthorized(pgp_id_from))
             //    throw new Error("Keyspace must be online to send private messages: " + pgp_id_from);
 
-            renderMessageWindow(pgp_id_to, pgp_id_from);
+            renderMessageWindow(pgp_id_to, pgp_id_from, false);
 
             if(contentString) {
                 if(subCommand === 'encrypt') {
@@ -70,7 +70,7 @@ if(typeof module === 'object') (function() {
                                     " " + encryptedContentString;
                                 ClientWorkerThread.sendWithSocket(formattedCommandString);
 
-                                getMessageExports().renderMessage(formattedCommandString, function (html) {
+                                getMessageExports().renderMessage(formattedCommandString, false, function (html) {
                                     ClientWorkerThread.render(html);
                                 });
 
@@ -88,7 +88,7 @@ if(typeof module === 'object') (function() {
                         " " + contentString;
                     ClientWorkerThread.sendWithSocket(formattedCommandString);
 
-                    getMessageExports().renderMessage(formattedCommandString, function (html) {
+                    getMessageExports().renderMessage(formattedCommandString, false, function (html) {
                         ClientWorkerThread.render(html);
                     });
                 }
@@ -112,7 +112,7 @@ if(typeof module === 'object') (function() {
             var pgp_id_from = match[2].toUpperCase();
             var messageContent = match[3];
 
-            renderMessageWindow(pgp_id_to, pgp_id_from);
+            renderMessageWindow(pgp_id_to, pgp_id_from, true);
 
             messageContent = parsePGPEncryptedMessageHTML(pgp_id_to, pgp_id_from, messageContent);
             if(messageContent === '!')
@@ -120,22 +120,25 @@ if(typeof module === 'object') (function() {
 
             responseString = "KEYSPACE.MESSAGE " + pgp_id_to + " " + pgp_id_from + " " + messageContent;
 
-            getMessageExports().renderMessage(responseString, function (html) {
+            getMessageExports().renderMessage(responseString, true, function (html) {
                 ClientWorkerThread.render(html);
             });
             return true;
         }
 
         var activeMessages = [];
-        function renderMessageWindow(pgp_id_to, pgp_id_from) {
-            var uid = pgp_id_from < pgp_id_to
-                ? pgp_id_from + ':' + pgp_id_to
-                : pgp_id_to + ':' + pgp_id_from;
+        function renderMessageWindow(pgp_id_to, pgp_id_from, switchOnResponse) {
+            var uid = pgp_id_to + ':' + pgp_id_from;
+            if(switchOnResponse)
+                uid = pgp_id_from + ':' + pgp_id_to;
+
             if (activeMessages.indexOf(uid) === -1) {
-                getMessageExports().renderMessageWindow(pgp_id_to, pgp_id_from, function (html) {
-                    ClientWorkerThread.render(html);
-                    activeMessages.push(uid);
-                });
+                getMessageExports().renderMessageWindow(pgp_id_to, pgp_id_from, switchOnResponse,
+                    function (html) {
+                        ClientWorkerThread.render(html);
+                        activeMessages.push(uid);
+                    }
+                );
             } else {
                 ClientWorkerThread.postResponseToClient("FOCUS ks-message:" + uid)
             }

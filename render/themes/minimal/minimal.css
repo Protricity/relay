@@ -48,7 +48,7 @@ li {
 }
 
 .theme-minimal > article > header > a:first-of-type {
-    /* display: block; breaks stuff */
+    display: block;
 }
 
 .theme-minimal > article > footer,
