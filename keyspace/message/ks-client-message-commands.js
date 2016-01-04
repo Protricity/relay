@@ -146,7 +146,9 @@ if(typeof module === 'object') (function() {
 
                         var actionString = "KEYSPACE.MESSAGE " + pgp_id_to + " " + pgp_id_from + " " +
                             "User [" + pgp_id_from + "] has requested: " +
-                            "<a href='" + requestURL + "'>" + requestURL + "</a>";
+                            "<a href='" + requestURL + "'>" + requestURL + "</a>" +
+                            "<br/>" +
+                            "Click <a href='javascript:Client.execute(\"KEYSPACE.MESSAGE " + pgp_id_from + " " + pgp_id_to + " !http " + requestPath + "\");'>Send</a> to approve.";
                         getMessageExports().renderMessage(actionString, function (html) {
                             ClientWorkerThread.render(html);
                         });
