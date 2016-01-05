@@ -21,32 +21,13 @@ function httpCommandSocket(commandString, client) {
     if(!match)
         return false;
 
-    var ret = handleKeySpaceHTTPRequest(commandString, client);
-    if(ret === true)
-        return true;
-    ret = ServerSubscriptions.handleKeySpaceHTTPResponse(commandString, client);
+    var ret = ServerSubscriptions.handleKeySpaceHTTPResponse(commandString, client);
     if(ret === true)
         return true;
 
     send(client, "Unhandled Keyspace HTTP Response");
     return false;
 }
-
-
-var RESPONSE_BODY_TEMPLATE =
-    "HTTP/1.1 {$response_code} {$response_text}\n" +
-    "Content-Type: text/html\n" +
-    "Content-Length: {$response_length}\n" +
-    "Request-URL: {$request_url}" +
-    "{$response_headers}" +
-    "\n\n" +
-    "{$response_body}";
-
-var RESPONSE_BODY_TEMPLATE_404 =
-    "HTTP/1.1 404 Not Found\n" +
-    "Content-Type: text/html\n" +
-    "Request-URL: {$request_url}" +
-    "{$response_headers}";
 
 function getCommandSocket(commandString, client) {
     var match = /^get\s+(\S*)/i.exec(commandString);
@@ -55,10 +36,24 @@ function getCommandSocket(commandString, client) {
 
     var requestURL = match[1];
     executeServerGetRequest(requestURL, function(err, responseBody, statusCode, statusMessage, headers) {
-        if(err) {
-            requestGetFromSubscribedHosts(requestURL,
-                function(err, responseBody, statusCode, statusMessage, headers) {
+        if(!responseBody || err) {
+            // No content, so request content from subscribed hosts
+            ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(requestURL,
+                function(err2, responseBody, statusCode, statusMessage, headers) {
+                    if(!responseBody || err2) {
+                        // Send error response
+                        client.send('HTTP/1.1 ' + (statusCode || 400) + (statusMessage || err || err2) +
+                            (headers ? "\n" + headers : '') +
+                            "\n\n" + responseBody
+                        );
 
+                    } else {
+                        // Send success response
+                        client.send('HTTP/1.1 ' + (statusCode || 200) + (statusMessage || 'OK') +
+                            (headers ? "\n" + headers : '') +
+                            "\n\n" + responseBody
+                        );
+                    }
                 }
             )
 
@@ -82,7 +77,7 @@ function getCommandHTTP(request, response) {
     var requestURL = match[1];
     executeServerGetRequest(requestURL, function(err, responseBody, statusCode, statusMessage, headers) {
         if(err) {
-            requestGetFromSubscribedHosts(requestURL,
+            ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(requestURL,
                 function(err, responseBody, statusCode, statusMessage, headers) {
                     response.writeHead(statusCode || 200, statusMessage || 'OK', headers);
                     response.end(responseBody);
@@ -97,94 +92,28 @@ function getCommandHTTP(request, response) {
     return true;
 }
 
-var clientKeySpaceRequests = {};
-function requestGetFromSubscribedHosts(requestURL, callback) {
-    var hostClients = ServerSubscriptions.getKeySpaceSubscriptions(pgp_id_public, "GET");
-    for(var i=0; i<hostClients.length; i++) {
-        if(hostClients[i].readyState !== hostClients[i].OPEN) {
-            hostClients.splice(i--, 1);
-        } else {
-            var commandString = "GET " + requestURL;
-            hostClients.send(commandString);
-        }
-    }
 
-    if(hostClients.length === 0) {
-        callback("No KeySpace Hosts Available");
-        return;
-    }
-    console.info("Requested Keyspace content from (" + hostClients.length + ") Host Clients: " + requestURL);
-    var requestURLID = requestURL.split('?')[0].toLowerCase();
-    if(typeof clientKeySpaceRequests[requestURLID] === 'undefined')
-        clientKeySpaceRequests[requestURLID] = [];
-    clientKeySpaceRequests[requestURLID].push(callback);
-}
-// TODO: move to server subscriptinos duh
-function handleKeySpaceHTTPRequest(responseString, client) {
-    var match = /^http\/1.1 (\d+)\s?([\w ]*)/i.exec(responseString);
-    if(!match)
-        throw new Error("Invalid HTTP Response: " + responseString);
 
-    var responseCode = parseInt(match[1]);
-    var responseMessage = match[2];
+var RESPONSE_BODY_TEMPLATE =
+    "HTTP/1.1 {$response_code} {$response_text}\n" +
+    "Content-Type: text/html\n" +
+    "Content-Length: {$response_length}\n" +
+    "Request-URL: {$request_url}" +
+    "{$response_headers}" +
+    "\n\n" +
+    "{$response_body}";
 
-    var pos = responseString.indexOf("\n\n");
-    var responseHeaders = responseString;
-    var responseBody = null;
-    if(pos > 0) {
-        responseHeaders = responseString.substr(0, pos);
-        responseBody = responseString.substr(pos+2);
-    }
+var RESPONSE_BODY_TEMPLATE_404 =
+    "HTTP/1.1 404 Not Found\n" +
+    "Content-Type: text/html\n" +
+    "Request-URL: {$request_url}" +
+    "{$response_headers}";
 
-    var headerLines = responseHeaders.split(/\n/g);
-    var firstLine = headerLines.shift();
-
-    return false;
-}
-
-//function handleHTTPSocketResponse(responseString, client) {
-//    if(responseString.substr(0,4).toLowerCase() !== 'http')
-//        return false;
-//
-//    var referrerURL = getContentHeader(responseString, 'Request-Url');
-//    if(!referrerURL)
-//        throw new Error("Unknown Request-Url for response: Header is missing");
-//
-//    addURLsToDB(responseString, referrerURL);
-//
-//    var status = getResponseStatus(responseString);
-//    var responseBody = getResponseBody(responseString);
-//    var responseHeaders = getResponseHeaders(responseString);
-//    var responseCode = status[0];
-//    var responseMessage = status[1];
-//    if(responseCode === 200) {
-//
-//        var requestID = getContentHeader(responseString, 'Request-ID');
-//        if(typeof pendingGETRequests[requestID] === 'undefined')
-//            throw new Error("Request ID not found: " + responseString);
-//
-//        var pendingGetRequest = pendingGETRequests[requestID];
-//        delete pendingGETRequests[requestID];
-//
-//        var pendingCommand = pendingGetRequest[0];
-//        var pendingClient = pendingGetRequest[1];
-//        var pendingCallback = pendingGetRequest[2];
-//        if(pendingClient !== client)
-//            throw new Error("Invalid request ID: Client mismatch");
-//        if(pendingCallback)
-//            pendingCallback(responseBody, responseCode, responseMessage, responseHeaders);
-//
-//    } else {
-//        throw new Error("Handle 404: " + responseString);
-//        // Handle 404 request
-//    }
-//    return true;
-//}
 
 function executeServerGetRequest(requestURL, callback) {
-    console.warn("TODO: query all clients: ", requestURL);
 
-    var KeySpaceDB = require('../ks-db.js').KeySpaceDB;
+    var KeySpaceDB = require('../ks-db.js')
+        .KeySpaceDB;
 
     KeySpaceDB.queryOne(requestURL, function (err, contentData) {
         var headers = '';

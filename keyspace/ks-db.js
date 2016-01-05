@@ -6,7 +6,7 @@ if (!module) var module = {exports: {}};
 if (typeof self === 'undefined')
     var self = this;
 module.exports.KeySpaceDB =
-    typeof self.KeySpaceDB !== 'undefined' ? self.KeySpaceDB :
+    typeof self.KeySpaceDB !== 'undefined' ? self.KeySpaceDB : self.KeySpaceDB =
 
 (function() {
     // Config Database
