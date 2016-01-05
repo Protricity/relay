@@ -13,7 +13,7 @@ if(typeof module === 'object') (function() {
          * @param commandString GET [URL]
          */
         function getCommand(commandString) {
-            var match = /^get\s+/i.exec(commandString);
+            var match = /^(head|get)\s+/i.exec(commandString);
             if (!match)
                 return false;
 
@@ -75,7 +75,7 @@ if(typeof module === 'object') (function() {
             } else {
                 //throw new Error("TODO: 404");
                 var requestURL = getContentHeader(responseString, 'Request-Url');
-                if (!requestURL)
+                if (!requestURL) // TODO: Not required
                     throw new Error("Unknown request-url for response: Header is missing");
                 var browserID = getContentHeader(responseString, 'Browser-ID');
                 if (!browserID)

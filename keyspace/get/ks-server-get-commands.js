@@ -35,35 +35,24 @@ function getCommandSocket(commandString, client) {
         return false;
 
     var requestURL = match[1];
-    executeServerGetRequest(requestURL, function(err, responseBody, statusCode, statusMessage, headers) {
-        if(!responseBody || err) {
+    executeServerGetRequest(requestURL, function(responseBody, statusCode, statusMessage, headers) {
+        if(statusCode !== 200) {
             // No content, so request content from subscribed hosts
             ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(requestURL,
-                function(err2, responseBody, statusCode, statusMessage, headers) {
-                    if(!responseBody || err2) {
-                        // Send error response
-                        client.send(headers + "\n\n" + responseBody);
-                            //'HTTP/1.1 ' + (statusCode || 401) + ' ' + (statusMessage || err || err2) +
-                            //(headers ? "\n" + headers : '') +
-                        //);
+                function(hostClient, responseBody, statusCode, statusMessage, headers) {
+                    send(client, 'HTTP/1.1 ' + (statusCode || 200) + ' ' + (statusMessage || 'OK') +
+                        (headers ? "\n" + headers : '') +
+                        (responseBody ? "\n\n" + responseBody : '')
+                    );
 
-                    } else {
-                        // Send success response
-                        client.send(headers + "\n\n" + responseBody);
-                        //client.send('HTTP/1.1 ' + (statusCode || 200) + ' ' + (statusMessage || 'OK') +
-                        //    (headers ? "\n" + headers : '') +
-                        //    "\n\n" + responseBody
-                        //);
-                    }
                 }
             )
 
         } else {
-            client.send(headers + "\n\n" + responseBody);
-            //client.send('HTTP/1.1 ' + (statusCode || 200) + ' ' + (statusMessage || 'OK') +
-            //    (headers ? "\n" + headers : '') +
-            //    "\n\n" + responseBody
-            //);
+            send(client, 'HTTP/1.1 ' + (statusCode || 200) + ' ' + (statusMessage || 'OK') +
+                (headers ? "\n" + headers : '') +
+                (responseBody ? "\n\n" + responseBody : '')
+            );
         }
     });
     return true;
@@ -77,10 +66,10 @@ function getCommandHTTP(request, response) {
 
     var requestURL = match[1];
     executeServerGetRequest(requestURL,
-        function(err, responseBody, statusCode, statusMessage, headers) {
-            if(err) {
+        function(responseBody, statusCode, statusMessage, headers) {
+            if(statusCode !== 200) {
                 ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(requestURL,
-                    function(err, respondingClient, responseBody, responseCode, responseMessage, responseHeaders) {
+                    function(respondingClient, responseBody, statusCode, statusMessage, headers) {
                         response.writeHead(statusCode || 200, statusMessage || 'OK', headers);
                         response.end(responseBody);
                     }
@@ -95,66 +84,44 @@ function getCommandHTTP(request, response) {
     return true;
 }
 
-
-var RESPONSE_HEADER_TEMPLATE =
-    "HTTP/1.1 {$response_code} {$response_text}\n" +
-    "Content-Type: text/html\n" +
-    "Content-Length: {$response_length}\n" +
-    "Request-URL: {$request_url}" +
-    "{$response_headers}";
-
-var RESPONSE_HEADER_TEMPLATE_404 =
-    "HTTP/1.1 404 Not Found\n" +
-    "Content-Type: text/html\n" +
-    "Request-URL: {$request_url}" +
-    "{$response_headers}";
-
-
 function executeServerGetRequest(requestURL, callback) {
 
     var KeySpaceDB = require('../ks-db.js')
         .KeySpaceDB;
 
     KeySpaceDB.queryOne(requestURL, function (err, contentData) {
-        var headers = '';
 
         if(err) {
-            callback(err,
+            callback(
                 err,
                 400,
                 err,
-                RESPONSE_HEADER_TEMPLATE
-                    .replace(/{\$response_headers}/gi, headers)
-                    .replace(/{\$response_code}/gi, 400)
-                    .replace(/{\$response_text}/gi, err)
-                    .replace(/{\$request_url}/gi, requestURL)
-                    .replace(/{\$response_length}/gi, err.length)
+                "Content-Type: text/html\n" +
+                "Content-Length: " + err.length + "\n" +
+                "Request-URL: " + requestURL
             );
             throw new Error(err);
         }
 
         if(contentData) {
             // TODO: respond with content before querying keyspace hosts?
-            callback(null,
+            callback(
                 contentData.content,
                 200,
                 "OK",
-                RESPONSE_HEADER_TEMPLATE
-                    .replace(/{\$response_headers}/gi, headers)
-                    .replace(/{\$response_code}/gi, 200)
-                    .replace(/{\$response_text}/gi, 'OK')
-                    .replace(/{\$request_url}/gi, requestURL)
-                    .replace(/{\$response_length}/gi, contentData.content.length)
+                "Content-Type: text/html\n" +
+                "Content-Length: " + contentData.content + "\n" +
+                "Request-URL: " + requestURL
             );
 
         } else {
-            callback(null,
-                'Not Found',
+            callback(
+                '',
                 404,
                 'Not Found',
-                RESPONSE_HEADER_TEMPLATE_404
-                    .replace(/{\$response_headers}/gi, headers)
-                    .replace(/{\$request_url}/gi, requestURL)
+                "Content-Type: text/html\n" +
+                "Content-Length: 0\n" +
+                "Request-URL: " + requestURL
             );
         }
     });

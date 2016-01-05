@@ -686,17 +686,19 @@ module.exports.ServerSubscriptions =
             "\nRequest-ID: " + requestID;
 
         var hostClients = ServerSubscriptions.getKeySpaceSubscriptions(pgp_id_public, "GET");
+        if(hostClients.length <=2) // Hack: Adding authenticated clients also
+            hostClients = hostClients.concat(ServerSubscriptions.getAuthenticatedKeySpaceClients(pgp_id_public));
         for(var i=0; i<hostClients.length; i++) {
             if(hostClients[i].readyState !== hostClients[i].OPEN) {
                 hostClients.splice(i--, 1);
             } else {
-                hostClients.send(requestString);
+                hostClients[i].send(requestString);
             }
         }
 
         // No requests were sent to clients, so callback with error
         if(hostClients.length === 0) {
-            callback("No KeySpace Hosts Available");
+            callback(null, "No KeySpace Hosts Available", 400, "No KeySpace Hosts Available", "Request-URL: " + requestURL);
             return;
         }
         console.info("Requested Keyspace content HEAD from (" + hostClients.length + ") Host Clients: " + requestURL);
@@ -716,11 +718,11 @@ module.exports.ServerSubscriptions =
             console.info("Requested Keyspace content from first responder: " + requestURL);
             keyspaceRequests[requestID] = function(respondingClient, responseBody, responseCode, responseMessage, responseHeaders) {
                 if (responseCode !== 200) {
-                    callback("Responding Client failed to provide full GET request. What gives!?");
+                    callback(respondingClient, "Responding Client failed to provide full GET request. What gives!?", responseCode, responseMessage, responseHeaders);
                     return false;
                 }
 
-                callback(null, respondingClient, responseBody, responseCode, responseMessage, responseHeaders);
+                callback(respondingClient, responseBody, responseCode, responseMessage, responseHeaders);
             };
             return true;
             //callback();
