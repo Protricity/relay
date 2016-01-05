@@ -55,11 +55,10 @@ function ksSearchSocketCommand(commandString, client) {
               for(var j=0; j<subscriptions.length; j++) {
                   var channelClient = subscriptions[j][0];
                   var channelClientArgString = subscriptions[j][1];
-  
-                  clientCount++;
-                  
+
                   if(channelClient.readyState !== channelClient.OPEN)
                       continue;
+                  clientCount++;
   
                   if(typeof channelClient.keyspaces !== 'undefined') {
                       var keyspaces = channelClient.keyspaces;

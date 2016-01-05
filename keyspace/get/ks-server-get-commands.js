@@ -42,14 +42,14 @@ function getCommandSocket(commandString, client) {
                 function(err2, responseBody, statusCode, statusMessage, headers) {
                     if(!responseBody || err2) {
                         // Send error response
-                        client.send('HTTP/1.1 ' + (statusCode || 400) + (statusMessage || err || err2) +
+                        client.send('HTTP/1.1 ' + (statusCode || 401) + ' ' + (statusMessage || err || err2) +
                             (headers ? "\n" + headers : '') +
                             "\n\n" + responseBody
                         );
 
                     } else {
                         // Send success response
-                        client.send('HTTP/1.1 ' + (statusCode || 200) + (statusMessage || 'OK') +
+                        client.send('HTTP/1.1 ' + (statusCode || 200) + ' ' + (statusMessage || 'OK') +
                             (headers ? "\n" + headers : '') +
                             "\n\n" + responseBody
                         );
@@ -58,8 +58,7 @@ function getCommandSocket(commandString, client) {
             )
 
         } else {
-            //client.send(responseBody);
-            client.send('HTTP/1.1 ' + (statusCode || 200) + (statusMessage || 'OK') +
+            client.send('HTTP/1.1 ' + (statusCode || 200) + ' ' + (statusMessage || 'OK') +
                 (headers ? "\n" + headers : '') +
                 "\n\n" + responseBody
             );
@@ -75,35 +74,34 @@ function getCommandHTTP(request, response) {
         return false;
 
     var requestURL = match[1];
-    executeServerGetRequest(requestURL, function(err, responseBody, statusCode, statusMessage, headers) {
-        if(err) {
-            ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(requestURL,
-                function(err, responseBody, statusCode, statusMessage, headers) {
-                    response.writeHead(statusCode || 200, statusMessage || 'OK', headers);
-                    response.end(responseBody);
-                }
-            )
+    executeServerGetRequest(requestURL,
+        function(err, responseBody, statusCode, statusMessage, headers) {
+            if(err) {
+                ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(requestURL,
+                    function(err, respondingClient, responseBody, responseCode, responseMessage, responseHeaders) {
+                        response.writeHead(statusCode || 200, statusMessage || 'OK', headers);
+                        response.end(responseBody);
+                    }
+                )
 
-        } else {
-            response.writeHead(statusCode || 200, statusMessage || 'OK', headers);
-            response.end(responseBody);
+            } else {
+                response.writeHead(statusCode || 200, statusMessage || 'OK', headers);
+                response.end(responseBody);
+            }
         }
-    });
+    );
     return true;
 }
 
 
-
-var RESPONSE_BODY_TEMPLATE =
+var RESPONSE_HEADER_TEMPLATE =
     "HTTP/1.1 {$response_code} {$response_text}\n" +
     "Content-Type: text/html\n" +
     "Content-Length: {$response_length}\n" +
     "Request-URL: {$request_url}" +
-    "{$response_headers}" +
-    "\n\n" +
-    "{$response_body}";
+    "{$response_headers}";
 
-var RESPONSE_BODY_TEMPLATE_404 =
+var RESPONSE_HEADER_TEMPLATE_404 =
     "HTTP/1.1 404 Not Found\n" +
     "Content-Type: text/html\n" +
     "Request-URL: {$request_url}" +
@@ -120,16 +118,15 @@ function executeServerGetRequest(requestURL, callback) {
 
         if(err) {
             callback(err,
-                RESPONSE_BODY_TEMPLATE
+                err,
+                400,
+                err,
+                RESPONSE_HEADER_TEMPLATE
                     .replace(/{\$response_headers}/gi, headers)
                     .replace(/{\$response_code}/gi, 400)
                     .replace(/{\$response_text}/gi, err)
                     .replace(/{\$request_url}/gi, requestURL)
                     .replace(/{\$response_length}/gi, err.length)
-                    .replace(/{\$response_body}/gi, err),
-                400,
-                err,
-                headers
             );
             throw new Error(err);
         }
@@ -137,26 +134,25 @@ function executeServerGetRequest(requestURL, callback) {
         if(contentData) {
             // TODO: respond with content before querying keyspace hosts?
             callback(null,
-                RESPONSE_BODY_TEMPLATE
-                .replace(/{\$response_headers}/gi, headers)
-                .replace(/{\$response_code}/gi, 200)
-                .replace(/{\$response_text}/gi, 'OK')
-                .replace(/{\$request_url}/gi, requestURL)
-                .replace(/{\$response_length}/gi, contentData.content.length)
-                .replace(/{\$response_body}/gi, contentData.content),
-                400,
-                err,
-                headers
+                contentData.content,
+                200,
+                "OK",
+                RESPONSE_HEADER_TEMPLATE
+                    .replace(/{\$response_headers}/gi, headers)
+                    .replace(/{\$response_code}/gi, 200)
+                    .replace(/{\$response_text}/gi, 'OK')
+                    .replace(/{\$request_url}/gi, requestURL)
+                    .replace(/{\$response_length}/gi, contentData.content.length)
             );
 
         } else {
             callback(null,
-                RESPONSE_BODY_TEMPLATE_404
+                'Not Found',
+                404,
+                'Not Found',
+                RESPONSE_HEADER_TEMPLATE_404
                     .replace(/{\$response_headers}/gi, headers)
-                    .replace(/{\$request_url}/gi, requestURL),
-                400,
-                err,
-                headers
+                    .replace(/{\$request_url}/gi, requestURL)
             );
         }
     });

@@ -36,16 +36,44 @@ if(typeof module === 'object') (function() {
 
         // TODO: default content on response http only?
         function httpResponse(responseString) {
-            if (responseString.substr(0, 4).toLowerCase() !== 'http')
+            var match = /^http\/1.1 (\d+)\s?([\w ]*)/i.exec(responseString);
+            if (!match)
                 return false;
+
+            var responseCode = parseInt(match[1]);
+            var responseMessage = match[2];
+
+            var pos = responseString.indexOf("\n\n");
+            var responseHeaders = responseString;
+            var responseBody = null;
+            if(pos > 0) {
+                responseHeaders = responseString.substr(0, pos);
+                responseBody = responseString.substr(pos+2);
+            }
+
+            var headerLines = responseHeaders.split(/\n/g);
+            var firstLine = headerLines.shift();
 
             //addURLsToDB(responseString);
 
-            var responseCode = getResponseStatus(responseString)[0];
             if (responseCode === 200) {
-                renderResponseString(responseString);
 
+                self.module = {exports: {}};
+                importScripts('keyspace/ks-db.js');
+                var KeySpaceDB = self.module.exports.KeySpaceDB;
+
+                self.module = {exports: self.exports = {}};
+                importScripts('pgp/lib/openpgpjs/openpgp.js');
+                var openpgp = self.module.exports;
+
+                KeySpaceDB.verifyAndAddContent(openpgp, responseBody, null, function(err, insertedData) {
+                    console.log(err, insertedData);
+                });
+
+                // TODO: Auto Render? Handle in browser handler
+                //renderResponseString(responseString);
             } else {
+                //throw new Error("TODO: 404");
                 var requestURL = getContentHeader(responseString, 'Request-Url');
                 if (!requestURL)
                     throw new Error("Unknown request-url for response: Header is missing");

@@ -720,7 +720,7 @@ module.exports.ServerSubscriptions =
                     return false;
                 }
 
-                callback(null, responseBody, respondingClient);
+                callback(null, respondingClient, responseBody, responseCode, responseMessage, responseHeaders);
             };
             return true;
             //callback();
@@ -747,7 +747,7 @@ module.exports.ServerSubscriptions =
 
         var headerLines = responseHeaders.split(/\n/g);
         var firstLine = headerLines.shift();
-
+        responseHeaders = headerLines.join("\n");
 
         var requestID = null;
         for(var i=0; i<headerLines.length; i++) {

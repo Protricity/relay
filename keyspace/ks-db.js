@@ -275,11 +275,25 @@ module.exports.KeySpaceDB =
     };
 
     KeySpaceDB.verifyAndAddContent = function(openpgp, unverifiedContent, pgp_id_public, callback) {
-
+        callback = callback || function(err, insertData) {
+            if(err)
+                throw new Error(err);
+            else
+                console.info("Verified and Added content: ", insertData);
+        };
 
         // TODO: check for encrypted rather than cleartext
         if(unverifiedContent.indexOf('-----BEGIN PGP SIGNED MESSAGE-----') === 0) {
             var pgpClearSignedMessage = openpgp.cleartext.readArmored(unverifiedContent);
+            var verify_pgp_id_public = pgpClearSignedMessage.getEncryptionKeyIds()[0].toHex().toUpperCase();
+            verify_pgp_id_public = verify_pgp_id_public.substr(verify_pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+            if(pgp_id_public && pgp_id_public.toUpperCase() !== verify_pgp_id_public)
+                throw new Error("PGP Public Key ID Mismatch: " + pgp_id_public);
+            pgp_id_public = verify_pgp_id_public;
+
+            console.log(pgpClearSignedMessage);
+            //var encIDs = getEncryptionKeyIds(pgpClearSignedMessage.packets);
+            //var pgp_id_public = encIDs[0].toHex().toUpperCase();
 
             var path = /data-path=["'](\S+)["']/i.exec(pgpClearSignedMessage.text)[1];
             var timestamp =
@@ -338,19 +352,24 @@ module.exports.KeySpaceDB =
             var pkTimestamp = publicKeyCreateDate.getTime();
             var keyspaceContent = publicKey.armor();
 
+            var verify_pgp_id_public2  = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+            verify_pgp_id_public2 = verify_pgp_id_public2.substr(verify_pgp_id_public2.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+            if(pgp_id_public && pgp_id_public.toUpperCase() !== verify_pgp_id_public2)
+                throw new Error("PGP Public Key ID Mismatch: " + pgp_id_public);
+            pgp_id_public = verify_pgp_id_public2;
+
             // Add public key to cache.
             KeySpaceDB.addVerifiedContentToDB(keyspaceContent, pgp_id_public, pkTimestamp, pkPath, {},
                 function(err, insertData) {
                     if (err) {
                         callback("ERROR " + err);
-                        throw new Error(err);
-                    }
 
-                    callback(null, insertData);
+                    } else {
+                        callback(null, insertData);
+                    }
                 });
 
         } else {
-
             throw new Error("No PGP Signed Message or Public Key found");
         }
 
