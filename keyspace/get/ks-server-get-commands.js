@@ -42,26 +42,28 @@ function getCommandSocket(commandString, client) {
                 function(err2, responseBody, statusCode, statusMessage, headers) {
                     if(!responseBody || err2) {
                         // Send error response
-                        client.send('HTTP/1.1 ' + (statusCode || 401) + ' ' + (statusMessage || err || err2) +
-                            (headers ? "\n" + headers : '') +
-                            "\n\n" + responseBody
-                        );
+                        client.send(headers + "\n\n" + responseBody);
+                            //'HTTP/1.1 ' + (statusCode || 401) + ' ' + (statusMessage || err || err2) +
+                            //(headers ? "\n" + headers : '') +
+                        //);
 
                     } else {
                         // Send success response
-                        client.send('HTTP/1.1 ' + (statusCode || 200) + ' ' + (statusMessage || 'OK') +
-                            (headers ? "\n" + headers : '') +
-                            "\n\n" + responseBody
-                        );
+                        client.send(headers + "\n\n" + responseBody);
+                        //client.send('HTTP/1.1 ' + (statusCode || 200) + ' ' + (statusMessage || 'OK') +
+                        //    (headers ? "\n" + headers : '') +
+                        //    "\n\n" + responseBody
+                        //);
                     }
                 }
             )
 
         } else {
-            client.send('HTTP/1.1 ' + (statusCode || 200) + ' ' + (statusMessage || 'OK') +
-                (headers ? "\n" + headers : '') +
-                "\n\n" + responseBody
-            );
+            client.send(headers + "\n\n" + responseBody);
+            //client.send('HTTP/1.1 ' + (statusCode || 200) + ' ' + (statusMessage || 'OK') +
+            //    (headers ? "\n" + headers : '') +
+            //    "\n\n" + responseBody
+            //);
         }
     });
     return true;

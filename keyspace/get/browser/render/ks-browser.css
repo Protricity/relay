@@ -1,28 +1,28 @@
 
 /** Script **/
 
-.channel.ks-response-400 {
+.ks-browser\3A  .ks-response-400 {
     border: 1px solid red;
 }
 
-.channel.ks-browser {
+.ks-browser\3A {
     min-height: 15em;
 }
 
-.channel.ks-browser nav {
+.ks-browser\3A  nav {
     background-color: lightgray;
     border: 1px outset;
 }
 
-.channel.ks-browser input[name=url] {
+.ks-browser\3A  input[name=url] {
     width: 21em;
 }
 
-.channel.ks-browser nav input[name=url] {
+.ks-browser\3A  nav input[name=url] {
     padding: 1px 5px;
 }
 
-.channel.ks-browser nav button {
+.ks-browser\3A  nav button {
     /* height: 24px; */
     /* vertical-align: top; */
     margin: 1px;
@@ -33,11 +33,11 @@
     background-color: transparent;
 }
 
-.channel.ks-browser .ks-body {
+.ks-browser\3A  .ks-body {
     min-height: 11em;
 }
 
-.channel.ks-browser .ks-status {
+.ks-browser\3A  .ks-status {
     background-color: lightgrey;
     padding: 0 0.5em;
     color: #666;
