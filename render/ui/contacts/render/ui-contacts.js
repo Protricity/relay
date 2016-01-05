@@ -39,9 +39,13 @@ if(typeof module !== 'object')
             }
         );
 
-         //console.log("KeySpace Contacts: ", publicKeys);
-
-        for(i=0; i<publicKeys.length; i++)
+        if(publicKeys.length === 0) { 
+          callback(html_public_key_entries, html_command_options);
+         
+        } else {
+         
+          console.log("KeySpace Contacts: ", publicKeys);
+          for(i=0; i<publicKeys.length; i++)
             (function(i, pgp_id_public, modes) {
 
                 var requestURL = 'http://' + pgp_id_public + '.ks/public/id';
@@ -99,6 +103,8 @@ if(typeof module !== 'object')
                     }
                 );
             })(i, publicKeys[i][0], publicKeys[i][1]);
+       }
+
     }
 
 

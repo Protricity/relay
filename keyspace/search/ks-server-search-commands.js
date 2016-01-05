@@ -33,7 +33,9 @@ function ksSearchSocketCommand(commandString, client) {
     if (!match)         // If unmatched, 
         return false;   // Pass control to next handler
 
-    var mode = (match[1] || DEFAULT_MODE).toLowerCase();
+    var searchModes = ['chat', 'event'];
+    if(match[1] && searchModes.indexOf(match[1].toLowerCase()) === -1)
+        searchModes.push(match[1].toLowerCase());
     var search = (match[2] || '').toLowerCase(); // TOD: allow regex
     // Get all clients via subscriptions, get all online keyspaces
 
@@ -45,53 +47,59 @@ function ksSearchSocketCommand(commandString, client) {
         for(var i=0; i<channels.length; i++) {
             channelCount++;
             var channel = channels[i];
-            var subscriptions = ServerSubscriptions.getChannelSubscriptions(channel, mode);
-            for(var j=0; j<subscriptions.length; j++) {
-                var channelClient = subscriptions[j][0];
-                var channelClientArgString = subscriptions[j][1];
-
-                if(channelClient.readyState !== channelClient.OPEN)
-                    continue;
-
-                clientCount++;
-                if(typeof channelClient.keyspaces !== 'undefined') {
-                    var keyspaces = channelClient.keyspaces;
-
-                    for(var k=0; k<keyspaces.length; k++) {
-                        keyspaceCount++;
-                        var pgp_id_public = keyspaces[k];
-                        // Must be authenticated
-                        if(false && !ServerSubscriptions.isKeySpaceAuthorized(pgp_id_public, channelClient))
-                            continue;
-
-                        var user_id = ServerSubscriptions.getAuthenticatedKeySpaceUserID(pgp_id_public);
-                        if(!user_id)
-                            user_id = pgp_id_public;
-                        if(search && user_id.toLowerCase().indexOf(search) === -1)
-                            continue;
-
-                        var keyspaceStatus = ServerSubscriptions.getKeySpaceStatus(pgp_id_public).toLowerCase();
-                        switch(keyspaceStatus) {
-                            case 'disconnected': // TODO: is this logic correct?
-                            case 'offline':
-                                console.warn("Skipping " + keyspaceStatus + " client: " + pgp_id_public);
-                                continue;
-                        }
-
-                        var entry = pgp_id_public + (user_id ? ';' + user_id.replace(/;/g, ',') : '');
-                        if(keyspaceList.length >= MAX_RESULTS)
-                            break;
-                        if(keyspaceList.indexOf(entry) === -1)
-                            keyspaceList.push(entry);
-                    }
-                }
-
-                if(keyspaceList.length >= MAX_RESULTS)
-                    break;
+            
+            for(var mi=0; mi<searchModes.length; mi++) {
+              var mode = searchModes[mi];
+              var subscriptions = ServerSubscriptions.getChannelSubscriptions(channel, mode);
+              //console.log(channel, mode, subscriptions);
+              for(var j=0; j<subscriptions.length; j++) {
+                  var channelClient = subscriptions[j][0];
+                  var channelClientArgString = subscriptions[j][1];
+  
+                  clientCount++;
+                  
+                  if(channelClient.readyState !== channelClient.OPEN)
+                      continue;
+  
+                  if(typeof channelClient.keyspaces !== 'undefined') {
+                      var keyspaces = channelClient.keyspaces;
+  
+                      for(var k=0; k<keyspaces.length; k++) {
+                          keyspaceCount++;
+                          var pgp_id_public = keyspaces[k];
+                          // Must be authenticated
+                          if(false && !ServerSubscriptions.isKeySpaceAuthorized(pgp_id_public, channelClient))
+                              continue;
+  
+                          var user_id = ServerSubscriptions.getAuthenticatedKeySpaceUserID(pgp_id_public);
+                          if(!user_id)
+                              user_id = pgp_id_public;
+                          if(search && user_id.toLowerCase().indexOf(search) === -1)
+                              continue;
+  
+                          var keyspaceStatus = ServerSubscriptions.getKeySpaceStatus(pgp_id_public).toLowerCase();
+                          switch(keyspaceStatus) {
+                              case 'disconnected': // TODO: is this logic correct?
+                              case 'offline':
+                                  console.warn("Skipping " + keyspaceStatus + " client: " + pgp_id_public);
+                                  continue;
+                          }
+  
+                          var entry = pgp_id_public + (user_id ? ';' + user_id.replace(/;/g, ',') : '');
+                          if(keyspaceList.length >= MAX_RESULTS)
+                              break;
+                          if(keyspaceList.indexOf(entry) === -1)
+                              keyspaceList.push(entry);
+                      }
+                  }
+  
+                  if(keyspaceList.length >= MAX_RESULTS)
+                      break;
+              }
+  
+              if(keyspaceList.length >= MAX_RESULTS)
+                  break;
             }
-
-            if(keyspaceList.length >= MAX_RESULTS)
-                break;
         }
     }
 
