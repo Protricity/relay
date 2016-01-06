@@ -669,6 +669,10 @@ module.exports.ServerSubscriptions =
         return keyspaceStatus[pgp_id_public];
     };
 
+    ServerSubscriptions.requestKeySpaceContentFromClient = function(KeySpaceDB, requestURL, callback) {
+        // TODO:
+    };
+
     ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts = function(KeySpaceDB, requestURL, additionalClients, callback) {
         var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(requestURL);
         if(!match)
