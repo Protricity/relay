@@ -527,7 +527,7 @@ module.exports.KeySpaceDB =
                 responseText = err + '';
                 responseCode = 400;
             }
-            case(requestType) {
+            switch(requestType) {
                 case 'head':
                     responseBody = '';
                     break;

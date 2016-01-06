@@ -660,8 +660,7 @@ module.exports.ServerSubscriptions =
         return keyspaceStatus[pgp_id_public];
     };
 
-// Use KeySpaceDB calls instead
-    ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts = function(requestURL, callback) {
+    ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts = function(KeySpaceDB, requestURL, callback) {
         var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(requestURL);
         if(!match)
             throw new Error("Invalid URI: " + requestURL);
@@ -669,8 +668,6 @@ module.exports.ServerSubscriptions =
         var scheme = match[2],
             host = match[4],
             contentPath = (match[5] || '').toLowerCase() ;
-
-        var KeySpaceDB = require('../../keyspace/ks-db.js').KeySpaceDB;
 
         match = /^([^.]*\.)?([a-f0-9]{8,16})\.ks$/i.exec(host);
         if (!match)
@@ -701,34 +698,31 @@ module.exports.ServerSubscriptions =
             callback(null, "No KeySpace Hosts Available", 400, "No KeySpace Hosts Available", "Request-URL: " + requestURL);
             return;
         }
-        console.info("Requested Keyspace content HEAD from (" + hostClients.length + ") Host Clients: " + requestURL);
 
         // TODO: timeout, count, and try next host. FAIL!
-        keyspaceRequests[requestID] = function(respondingClient, responseBody, responseCode, responseMessage, responseHeaders) {
-            if(responseCode !== 200) {
-                return false;
-            }
-            // Client returned 200 on a HEAD request. Indicates the client has the right piece. Lets ask for it
+        for(i=0; i<hostClients.length; i++) {
+            KeySpaceDB.executeSocketGETRequest(requestString, hostClients[i],
+                function(responseBody, responseCode, responseMessage, responseHeaders, respondingClient) {
+                    if(responseCode !== 200) {
+                        // TODO: callback on all fail
+                        return false;
+                    }
 
-            var requestID = "G" + Date.now();
-            var requestString = "GET " + requestURL +
-                "\nRequest-ID: " + requestID;
+                    KeySpaceDB.executeSocketGETRequest(requestString, respondingClient,
+                        function(responseBody, responseCode, responseMessage, responseHeaders, respondingClient) {
+                            if(responseCode !== 200) {
+                                callback(respondingClient, "Responding Client failed to provide full GET request. What gives!?", responseCode, responseMessage, responseHeaders);
+                                return false;
+                            }
 
-            respondingClient.send(requestString);
-            console.info("Requested Keyspace content from first responder: " + requestURL);
-            keyspaceRequests[requestID] = function(respondingClient, responseBody, responseCode, responseMessage, responseHeaders) {
-                if (responseCode !== 200) {
-                    callback(respondingClient, "Responding Client failed to provide full GET request. What gives!?", responseCode, responseMessage, responseHeaders);
-                    return false;
+                            callback(responseBody, responseCode, responseMessage, responseHeaders, respondingClient);
+                        }
+                    );
+
                 }
-
-                callback(respondingClient, responseBody, responseCode, responseMessage, responseHeaders);
-            };
-            return true;
-            //callback();
-        };
-
-
+            );
+        }
+        console.info("Requested Keyspace content HEAD from (" + hostClients.length + ") Host Clients: " + requestURL);
     };
 
     ServerSubscriptions.handleKeySpaceHTTPResponse = function(responseString, client) {

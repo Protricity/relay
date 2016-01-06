@@ -30,32 +30,38 @@ function httpCommandSocket(commandString, client) {
 }
 
 function getCommandSocket(commandString, client) {
-    var match = /^get\s+(\S*)/i.exec(commandString);
+    var match = /^(head|get)\s+(\S*)/i.exec(commandString);
     if(!match)
         return false;
 
-    var requestURL = match[1];
-    executeServerGetRequest(requestURL, function(responseBody, statusCode, statusMessage, headers) {
-        if(statusCode !== 200) {
-            // No content, so request content from subscribed hosts
-            ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(requestURL,
-            
-                function(hostClient, responseBody, responseCode, responseMessage, responseHeaders) {
-                    var responseString = 'HTTP/1.1 ' + (responseCode || 200) + ' ' + (responseMessage || 'OK') +
-                        (responseHeaders ? "\n" + responseHeaders : '') +
-                        (responseBody ? "\n\n" + responseBody : '');
+    var requestURL = match[2];
 
-                    send(client, responseString);
-                }
-            )
+    var KeySpaceDB = require('../../keyspace/ks-db.js').KeySpaceDB;
 
-        } else {
-            send(client, 'HTTP/1.1 ' + (statusCode || 200) + ' ' + (statusMessage || 'OK') +
-                (headers ? "\n" + headers : '') +
-                (responseBody ? "\n\n" + responseBody : '')
-            );
+    KeySpaceDB.executeLocalGETRequest(requestURL,
+        function(responseBody, responseCode, responseMessage, responseHeaders) {
+            if(responseCode === 200) {
+                var responseString = 'HTTP/1.1 ' + (responseCode || 200) + ' ' + (responseMessage || 'OK') +
+                    (responseHeaders ? "\n" + responseHeaders : '') +
+                    (responseBody ? "\n\n" + responseBody : '');
+
+                send(client, responseString);
+
+            } else {
+                // No content, so request content from subscribed hosts
+                ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(KeySpaceDB, requestURL,
+
+                    function(responseBody, responseCode, responseMessage, responseHeaders, responseClient) {
+                        var responseString = 'HTTP/1.1 ' + (responseCode || 200) + ' ' + (responseMessage || 'OK') +
+                            (responseHeaders ? "\n" + responseHeaders : '') +
+                            (responseBody ? "\n\n" + responseBody : '');
+
+                        send(client, responseString);
+                    }
+                )
+            }
         }
-    });
+    );
     return true;
 }
 

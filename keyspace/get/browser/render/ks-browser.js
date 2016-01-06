@@ -88,13 +88,13 @@ if(typeof document === 'object')
 if(typeof module === 'object') (function() {
     var TEMPLATE_URL = 'keyspace/get/browser/render/ks-browser.html';
 
-    module.exports.renderBrowser = function(responseText, callback) {
-        var headerBody = responseText;
+    module.exports.renderBrowser = function(responseString, callback) {
+        var headerBody = responseString;
         var responseBody = '';
         var splitPos = headerBody.indexOf("\n\n");
         if(splitPos !== -1) {
-            headerBody = responseText.substr(0, splitPos);
-            responseBody = responseText.substr(splitPos).trim();
+            headerBody = responseString.substr(0, splitPos);
+            responseBody = responseString.substr(splitPos).trim();
         }
         var headers = headerBody.split(/\n/);
         var headerFirstLine = headers.shift();
@@ -113,7 +113,7 @@ if(typeof module === 'object') (function() {
             throw new Error("Unknown request-url for response: Header is missing");
         var browserID = headerValues['browser-id'];
         if(!browserID)
-            throw new Error("Unknown browser-id for response:\n" + responseText);
+            throw new Error("Unknown browser-id for response:\n" + responseString);
 
         var xhr = new XMLHttpRequest();
         xhr.open("GET", TEMPLATE_URL, false);
