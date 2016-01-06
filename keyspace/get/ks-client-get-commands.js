@@ -9,13 +9,47 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addResponse(httpResponse); // Not an Alias for GET response. Handles requests sent by the client
 
         /**
-         *
-         * @param commandString GET [URL]
+         * Processes a request from the client and makes a request to the server if necessary
+         * @param commandString GET [url] [\n headers]
          */
         function getCommand(commandString) {
             var match = /^(head|get)\s+/i.exec(commandString);
             if (!match)
                 return false;
+
+            var socket = e.target;
+            if(!socket)
+                throw new Error("Invalid Socket target");
+
+            self.module = {exports: {}};
+            importScripts('keyspace/ks-db.js');
+            var KeySpaceDB = self.module.exports.KeySpaceDB;
+
+
+            KeySpaceDB.executeLocalGETRequest(responseString,
+                function(responseBody, responseCode, responseMessage, responseHeaders) {
+    
+                    var responseString = 'HTTP/1.1 ' + (responseCode || 200) + ' ' + (responseMessage || 'OK') +
+                        (responseHeaders ? "\n" + responseHeaders : '') +
+                        (responseBody ? "\n\n" + responseBody : '');
+                    
+                    renderResponseString(responseString);
+                    
+                    // Content was missing, so ask make a request to the server
+                    if(responseCode !== 200) {
+                        KeySpaceDB.executeSocketGETRequest(commandString,
+                          function(responseBody, responseCode, responseMessage, responseHeaders, responseSocket) {
+                              var responseString = 'HTTP/1.1 ' + (responseCode || 200) + ' ' + (responseMessage || 'OK') +
+                                  (responseHeaders ? "\n" + responseHeaders : '') +
+                                  (responseBody ? "\n\n" + responseBody : '');
+                                                
+                              renderResponseString(responseString);
+                          }
+                      );
+                    }
+                    
+                }
+            );
 
             executeGETRequest(commandString, function (responseString) {
                 renderResponseString(responseString);
@@ -23,23 +57,41 @@ if(typeof module === 'object') (function() {
             return true;
         }
 
-        function getResponse(responseString) {
-            var match = /^(head|get)/i.exec(responseString); // (?:\w+:\/\/)?([a-f0-9]{8,})(?:\.ks)(\/@pgp.*)$
+        /**
+         * Gets a request from a socket and sends a response
+         * @param {string} responseString 
+         * @param {object} e 
+         **/
+        function getResponse(responseString, e) {
+            var match = /^(head|get)/i.exec(responseString); 
             if (!match)
                 return false;
+
+            var socket = e.target;
+            if(!socket)
+                throw new Error("Invalid Socket target");
 
             self.module = {exports: {}};
             importScripts('keyspace/ks-db.js');
             var KeySpaceDB = self.module.exports.KeySpaceDB;
 
             KeySpaceDB.executeLocalGETRequest(responseString,
-                function(responseBody, responseCode, responseStatus, responseHeaders) {
-                    ...
+                function(responseBody, responseCode, responseMessage, responseHeaders) {
+                    var responseString = 'HTTP/1.1 ' + (responseCode || 200) + ' ' + (responseMessage || 'OK') +
+                        (responseHeaders ? "\n" + responseHeaders : '') +
+                        (responseBody ? "\n\n" + responseBody : '')
+                    
+                    ClientWorkerThread.sendWithSocket(responseString, socket);
                 }
             );
             return true;
         }
 
+        /**
+         * Gets a (previously requested) HTTP response from a socket and processes it
+         * @param {string} responseString 
+         * @param {object} e 
+         **/
         function httpResponse(responseString, e) {
             var match = /^http\/1.1 (\d+)\s?([\w ]*)/i.exec(responseString);
             if (!match)

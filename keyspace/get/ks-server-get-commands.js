@@ -39,12 +39,13 @@ function getCommandSocket(commandString, client) {
         if(statusCode !== 200) {
             // No content, so request content from subscribed hosts
             ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(requestURL,
-                function(hostClient, responseBody, statusCode, statusMessage, headers) {
-                    send(client, 'HTTP/1.1 ' + (statusCode || 200) + ' ' + (statusMessage || 'OK') +
-                        (headers ? "\n" + headers : '') +
-                        (responseBody ? "\n\n" + responseBody : '')
-                    );
+            
+                function(hostClient, responseBody, responseCode, responseMessage, responseHeaders) {
+                    var responseString = 'HTTP/1.1 ' + (responseCode || 200) + ' ' + (responseMessage || 'OK') +
+                        (responseHeaders ? "\n" + responseHeaders : '') +
+                        (responseBody ? "\n\n" + responseBody : '');
 
+                    send(client, responseString);
                 }
             )
 

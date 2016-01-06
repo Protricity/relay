@@ -52,9 +52,16 @@ module.exports.KeySpaceDB =
     //}
 
 
+    // Instance of Database
     var dbInst = null;
+    
+    // Array of callbacks to trigger once the Dataabse has been loaded
     var onDBCallbacks = [];
+    
+    // Database is connecting
     var connecting = false;
+    
+    // Pending GET/HEAD requests from client and server sockets
     var pendingSocketRequests = {};
 
     KeySpaceDB.getDBInstance = function(callback) {
@@ -458,7 +465,7 @@ module.exports.KeySpaceDB =
             var pendingSocket = pendingSocketRequests[requestID][1];
             if(socket && socket !== pendingSocket)
                 throw new Error("Socket Mismatch");
-            var deleteCallback = callback(responseBody, responseCode, responseMessage, responseHeaders);
+            var deleteCallback = callback(responseBody, responseCode, responseMessage, responseHeaders, pendingSocket);
             if(deleteCallback !== false)
                 delete pendingSocketRequests[requestID];
             return true;
@@ -488,15 +495,23 @@ module.exports.KeySpaceDB =
 
     };
 
-
+    /** 
+     * Requests KeySpace content from the local database
+     * @param {string} requestString 
+     * @param {callback} callback
+     */
     KeySpaceDB.executeLocalGETRequest = function(requestString, callback) {
         var match = /^(head|get)\s+(\S+)/i.exec(requestString);
         if (!match)
             throw new Error("Invalid Local GET/HEAD Request: " + requestString);
-
-        var isHeadRequest = match[1].toLowerCase() === 'head';
+        
+        // Request Type HEAD or GET?
+        var requestType = match[1].toLowerCase();
+        
+        // Request URL
         var requestURL = match[2];
 
+        // Query the local database
         KeySpaceDB.queryOne(requestURL, function (err, contentData) {
 
             var responseCode = 404;
@@ -512,8 +527,11 @@ module.exports.KeySpaceDB =
                 responseText = err + '';
                 responseCode = 400;
             }
-            if(isHeadRequest)
-                responseBody = '';
+            case(requestType) {
+                case 'head':
+                    responseBody = '';
+                    break;
+            }
             callback(
                 responseBody,
                 responseCode,
