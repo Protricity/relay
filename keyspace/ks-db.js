@@ -55,6 +55,8 @@ module.exports.KeySpaceDB =
     var dbInst = null;
     var onDBCallbacks = [];
     var connecting = false;
+    var pendingSocketRequests = {};
+
     KeySpaceDB.getDBInstance = function(callback) {
         if(dbInst)
             return callback(null, dbInst);
@@ -154,93 +156,6 @@ module.exports.KeySpaceDB =
             });
         }
 
-    };
-
-    var activeHosts = [];
-//     console.log(activeHosts, self);
-    KeySpaceDB.addSocketHost = function(pgp_id_public, webSocket) {
-        pgp_id_public = pgp_id_public
-            .substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH)
-            .toUpperCase();
-
-        if(typeof webSocket.KS_HOST === 'undefined')
-            webSocket.KS_HOST = [];
-        if(webSocket.KS_HOST.indexOf(pgp_id_public) === -1)
-            webSocket.KS_HOST.push(pgp_id_public);
-
-        // DB instead of var?
-        activeHosts.push([pgp_id_public, webSocket]);
-        console.log("KeySpace Online: " + pgp_id_public);
-
-        if(typeof Client !== 'undefined') {
-            var responseString = "EVENT KEYSPACE.HOST.ONLINE " + pgp_id_public;
-            Client.processResponse(responseString);
-        }
-    };
-
-    KeySpaceDB.removeSocketHost = function(pgp_id_public, webSocket) {
-        pgp_id_public = pgp_id_public
-            .substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH)
-            .toUpperCase();
-
-        var pos = webSocket.KS_HOST.indexOf(pgp_id_public);
-        webSocket.KS_HOST.splice(pos, 1);
-
-        // DB instead of var?
-        for(var i=0; i<activeHosts.length; i++) {
-            if(activeHosts[i][0] === pgp_id_public) {
-                activeHosts.splice(i, 1);
-                console.log("KeySpace Offline: " + pgp_id_public);
-                if(typeof Client !== 'undefined') {
-                    var responseString = "EVENT KEYSPACE.HOST.OFFLINE " + pgp_id_public;
-                    Client.processResponse(responseString);
-                }
-                return true;
-            }
-        }
-
-        throw new Error("KeySpace was not hosted: " + pgp_id_public);
-    };
-
-    KeySpaceDB.getSocketHost = function(pgp_id_public) {
-        pgp_id_public = pgp_id_public
-            .substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH)
-            .toUpperCase();
-
-        for(var i=0; i<activeHosts.length; i++) {
-            if(activeHosts[i][0] === pgp_id_public) {
-                return activeHosts[i][1];
-            }
-        }
-
-//         console.error("Could not get socket host for : " + pgp_id_public);
-        return null;
-        //throw new Error("Socket host not found for KeySpace: " + pgp_id_public);
-
-        //var requestURL = "http://" + pgp_id_public + ".ks/.private/id";
-        //KeySpaceDB.queryOne(requestURL, function (err, contentData) {
-        //    if (err)
-        //        throw new Error(err);
-        //
-        //    if (!contentData)
-        //        throw new Error("Could not find Private Key: " + requestURL);
-        //
-        //    if(typeof contentData.tags === 'undefined')
-        //        contentData.tags = [];
-        //
-        //    if(contentData.tags.indexOf('keyspace:hosting') >= 0)
-        //        throw new Error("Keyspace is already being hosted: " + pgp_id_public);
-        //
-        //    contentData.tags.push('keyspace:hosting');
-        //
-        //    KeySpaceDB.update(KeySpaceDB.DB_TABLE_HTTP_CONTENT, contentData,
-        //        function (err, updateData) {
-        //            if(err)
-        //                throw new Error(err);
-        //
-        //            //console.info("Publish Successful:", pgp_id_public, timestamp);
-        //    })
-        //});
     };
 
 
@@ -508,6 +423,108 @@ module.exports.KeySpaceDB =
     //        }
     //    })
     //};
+
+
+    KeySpaceDB.handleHTTPResponse = function(responseString, socket) {
+        var match = /^http\/1.1 (\d+)\s?([\w ]*)/i.exec(responseString);
+        if(!match)
+            throw new Error("Invalid HTTP Response: " + responseString);
+
+        var responseCode = parseInt(match[1]);
+        var responseMessage = match[2];
+
+        var pos = responseString.indexOf("\n\n");
+        var responseHeaders = responseString;
+        var responseBody = null;
+        if(pos > 0) {
+            responseHeaders = responseString.substr(0, pos);
+            responseBody = responseString.substr(pos+2);
+        }
+
+        var headerLines = responseHeaders.split(/\n/g);
+        var firstLine = headerLines.shift();
+        responseHeaders = headerLines.join("\n");
+
+        match = /^Request-ID: (\S)+$/im.exec(headerLines);
+        if(match) {
+            var requestID = match[1];
+            if(typeof pendingSocketRequests[requestID] === 'undefined') {
+                console.warn("Unhandled request ID: " + requestID);
+                //send(client, "Unknown request ID: " + requestID);
+                return false;
+            }
+
+            var callback = pendingSocketRequests[requestID][0];
+            var pendingSocket = pendingSocketRequests[requestID][1];
+            if(socket && socket !== pendingSocket)
+                throw new Error("Socket Mismatch");
+            var deleteCallback = callback(responseBody, responseCode, responseMessage, responseHeaders);
+            if(deleteCallback !== false)
+                delete pendingSocketRequests[requestID];
+            return true;
+        }
+
+        return false;
+    };
+
+    // Pass HEAD instead of GET to skip the body
+    KeySpaceDB.executeSocketGETRequest = function(requestString, socket, callback) {
+        var match = /^(head|get)\s+(\S+)/i.exec(requestString);
+        if (!match)
+            throw new Error("Invalid Socket GET/HEAD Request: " + requestString);
+
+        var isHeadRequest = match[1].toLowerCase() === 'head';
+        var requestID = "RG" + Date.now();
+        if(typeof pendingSocketRequests[requestID] !== 'undefined')
+            throw new Error("Duplicate Request ID: " + requestID);
+
+        pendingSocketRequests[requestID] = [callback, socket];
+
+        requestString = requestString.trim() +
+            "\nRequest-ID: " + requestID;
+
+        console.info("Executing Socket Request: " + requestString);
+        socket.send(requestString);
+
+    };
+
+
+    KeySpaceDB.executeLocalGETRequest = function(requestString, callback) {
+        var match = /^(head|get)\s+(\S+)/i.exec(requestString);
+        if (!match)
+            throw new Error("Invalid Local GET/HEAD Request: " + requestString);
+
+        var isHeadRequest = match[1].toLowerCase() === 'head';
+        var requestURL = match[2];
+
+        KeySpaceDB.queryOne(requestURL, function (err, contentData) {
+
+            var responseCode = 404;
+            var responseText = "Not Found";
+            var responseBody = "Not Found";
+            if(contentData) {
+                responseBody = contentData.content;
+                responseCode = 200;
+                responseText = "OK";
+
+            } else if (err) {
+                responseBody = err + '';
+                responseText = err + '';
+                responseCode = 400;
+            }
+            if(isHeadRequest)
+                responseBody = '';
+            callback(
+                responseBody,
+                responseCode,
+                responseText,
+                "Content-Type: text/html\n" +
+                "Content-Length: " + responseBody.length + "\n" +
+                "Request-URL: " + requestURL
+                + (responseBody ? "\n\n" + responseBody : "")
+            );
+        });
+    };
 
     KeySpaceDB.queryOne = function(contentURL, callback) {
         var done = false;

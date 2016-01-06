@@ -17,85 +17,40 @@ if(typeof module === 'object') (function() {
             if (!match)
                 return false;
 
-            executeRemoteGETRequest(commandString, function (responseString) {
+            executeGETRequest(commandString, function (responseString) {
                 renderResponseString(responseString);
             });
             return true;
         }
 
-        function getResponse(requestString) {
-            var match = /^get/i.exec(requestString); // (?:\w+:\/\/)?([a-f0-9]{8,})(?:\.ks)(\/@pgp.*)$
+        function getResponse(responseString) {
+            var match = /^(head|get)/i.exec(responseString); // (?:\w+:\/\/)?([a-f0-9]{8,})(?:\.ks)(\/@pgp.*)$
             if (!match)
                 return false;
 
-            executeLocalGETRequest(requestString, function (responseString) {
-                ClientWorkerThread.sendWithSocket(responseString);
-            });
+            self.module = {exports: {}};
+            importScripts('keyspace/ks-db.js');
+            var KeySpaceDB = self.module.exports.KeySpaceDB;
+
+            KeySpaceDB.executeLocalGETRequest(responseString,
+                function(responseBody, responseCode, responseStatus, responseHeaders) {
+                    ...
+                }
+            );
             return true;
         }
 
-        // TODO: default content on response http only?
-        function httpResponse(responseString) {
+        function httpResponse(responseString, e) {
             var match = /^http\/1.1 (\d+)\s?([\w ]*)/i.exec(responseString);
             if (!match)
                 return false;
 
-            var responseCode = parseInt(match[1]);
-            var responseMessage = match[2];
+            self.module = {exports: {}};
+            importScripts('keyspace/ks-db.js');
+            var KeySpaceDB = self.module.exports.KeySpaceDB;
 
-            var pos = responseString.indexOf("\n\n");
-            var responseHeaders = responseString;
-            var responseBody = null;
-            if(pos > 0) {
-                responseHeaders = responseString.substr(0, pos);
-                responseBody = responseString.substr(pos+2);
-            }
-
-            var headerLines = responseHeaders.split(/\n/g);
-            var firstLine = headerLines.shift();
-
-            //addURLsToDB(responseString);
-
-            if (responseCode === 200) {
-
-                self.module = {exports: {}};
-                importScripts('keyspace/ks-db.js');
-                var KeySpaceDB = self.module.exports.KeySpaceDB;
-
-                self.module = {exports: self.exports = {}};
-                importScripts('pgp/lib/openpgpjs/openpgp.js');
-                var openpgp = self.module.exports;
-
-                KeySpaceDB.verifyAndAddContent(openpgp, responseBody, null, function(err, insertedData) {
-                    console.log(err, insertedData);
-                });
-
-                // TODO: Auto Render? Handle in browser handler
-                //renderResponseString(responseString);
-            } else {
-                //throw new Error("TODO: 404");
-                var requestURL = getContentHeader(responseString, 'Request-Url');
-                if (!requestURL) // TODO: Not required
-                    throw new Error("Unknown request-url for response: Header is missing");
-                var browserID = getContentHeader(responseString, 'Browser-ID');
-                if (!browserID)
-                    throw new Error("Unknown browser-id for response:\n" + responseString);
-                var requestString = "GET " + requestURL +
-                    "\nBrowser-ID: " + browserID + "\n";
-
-                executeLocalGETRequest(requestString, function (responseString, responseCode) {
-                    if (responseCode === 200) {
-                        responseString = protectHTMLContent(responseString);
-                        renderResponseString(responseString);
-
-                    } else {
-                        processResponseWithDefaultContent(responseString, function (responseString) {
-                            renderResponseString(responseString);
-                        });
-                    }
-                });
-            }
-            return true;
+            return KeySpaceDB.handleHTTPResponse(responseString, e ? e.target : null);
+            //renderResponseString(responseString);
         }
 
 
@@ -117,7 +72,17 @@ if(typeof module === 'object') (function() {
         var requestIDCount = 0;
         var pendingGETRequests = {};
 
+
+
         function executeRemoteGETRequest(requestString, callback) {
+            var match = /^(head|get)\s+(\S+)/i.exec(requestString);
+            if (!match)
+                return false;
+
+            var headers = requestString.split(/\n/g);
+            headers.shift();
+            var requestURL = match[1];
+
             var browserID = getContentHeader(requestString, 'Browser-ID');
             if (!browserID)
                 requestString = addContentHeader(requestString, 'Browser-ID', browserID = httpBrowserID++);

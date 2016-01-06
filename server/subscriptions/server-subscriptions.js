@@ -660,7 +660,7 @@ module.exports.ServerSubscriptions =
         return keyspaceStatus[pgp_id_public];
     };
 
-
+// Use KeySpaceDB calls instead
     ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts = function(requestURL, callback) {
         var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(requestURL);
         if(!match)
