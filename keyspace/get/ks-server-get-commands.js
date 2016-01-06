@@ -16,17 +16,19 @@ var ServerSubscriptions =
     require('../../server/subscriptions/server-subscriptions.js')
         .ServerSubscriptions;
 
+var KeySpaceDB = require('../../keyspace/ks-db.js')
+    .KeySpaceDB;
+
 function httpCommandSocket(commandString, client) {
     var match = /^http/i.exec(commandString);
     if(!match)
         return false;
 
-    var ret = ServerSubscriptions.handleKeySpaceHTTPResponse(commandString, client);
-    if(ret === true)
+    if(KeySpaceDB.handleHTTPResponse(commandString, client) === true)
         return true;
 
     send(client, "Unhandled Keyspace HTTP Response");
-    return false;
+    return true;
 }
 
 function getCommandSocket(commandString, client) {
@@ -35,8 +37,6 @@ function getCommandSocket(commandString, client) {
         return false;
 
     var requestURL = match[2];
-
-    var KeySpaceDB = require('../../keyspace/ks-db.js').KeySpaceDB;
 
     KeySpaceDB.executeLocalGETRequest(requestURL,
         function(responseBody, responseCode, responseMessage, responseHeaders) {
@@ -49,7 +49,7 @@ function getCommandSocket(commandString, client) {
 
             } else {
                 // No content, so request content from subscribed hosts
-                ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(KeySpaceDB, requestURL,
+                ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(KeySpaceDB, requestURL, null,
 
                     function(responseBody, responseCode, responseMessage, responseHeaders, responseClient) {
                         var responseString = 'HTTP/1.1 ' + (responseCode || 200) + ' ' + (responseMessage || 'OK') +
@@ -72,66 +72,23 @@ function getCommandHTTP(request, response) {
         return false;
 
     var requestURL = match[1];
-    executeServerGetRequest(requestURL,
-        function(responseBody, statusCode, statusMessage, headers) {
-            if(statusCode !== 200) {
-                ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(requestURL,
-                    function(respondingClient, responseBody, statusCode, statusMessage, headers) {
-                        response.writeHead(statusCode || 200, statusMessage || 'OK', headers);
+    KeySpaceDB.executeLocalGETRequest(requestURL,
+        function(responseBody, responseCode, responseHeaders, respondingClient) {
+            if(responseCode === 200) {
+                response.writeHead(responseCode || 200, responseHeaders || 'OK', respondingClient);
+                response.end(responseBody);
+
+            } else {
+                ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(KeySpaceDB, requestURL, null,
+                    function(responseBody, responseCode, responseMessage, responseHeaders, respondingClient) {
+                        response.writeHead(responseCode || 200, responseMessage || 'OK', responseHeaders);
                         response.end(responseBody);
                     }
                 )
-
-            } else {
-                response.writeHead(statusCode || 200, statusMessage || 'OK', headers);
-                response.end(responseBody);
             }
         }
     );
     return true;
-}
-
-function executeServerGetRequest(requestURL, callback) {
-
-    var KeySpaceDB = require('../ks-db.js')
-        .KeySpaceDB;
-
-    KeySpaceDB.queryOne(requestURL, function (err, contentData) {
-
-        if(err) {
-            callback(
-                err,
-                400,
-                err,
-                "Content-Type: text/html\n" +
-                "Content-Length: " + err.length + "\n" +
-                "Request-URL: " + requestURL
-            );
-            throw new Error(err);
-        }
-
-        if(contentData) {
-            // TODO: respond with content before querying keyspace hosts?
-            callback(
-                contentData.content,
-                200,
-                "OK",
-                "Content-Type: text/html\n" +
-                "Content-Length: " + contentData.content + "\n" +
-                "Request-URL: " + requestURL
-            );
-
-        } else {
-            callback(
-                '',
-                404,
-                'Not Found',
-                "Content-Type: text/html\n" +
-                "Content-Length: 0\n" +
-                "Request-URL: " + requestURL
-            );
-        }
-    });
 }
 
 

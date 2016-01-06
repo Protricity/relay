@@ -8,7 +8,7 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addCommand(importGETCommand);
         ClientWorkerThread.addResponse(importGETCommand);
         function importGETCommand(commandString, e) {
-            if (!/^(?:keyspace\.)?(get|http)/i.test(commandString))
+            if (!/^(?:keyspace\.)?(head|get|http)/i.test(commandString))
                 return false;
             ClientWorkerThread.removeCommand(importGETCommand);
             ClientWorkerThread.removeResponse(importGETCommand);

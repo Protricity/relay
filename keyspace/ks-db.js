@@ -448,11 +448,10 @@ module.exports.KeySpaceDB =
             responseBody = responseString.substr(pos+2);
         }
 
-        var headerLines = responseHeaders.split(/\n/g);
-        var firstLine = headerLines.shift();
-        responseHeaders = headerLines.join("\n");
 
-        match = /^Request-ID: (\S)+$/im.exec(headerLines);
+        // TODO: verify keyspace content
+
+        match = /^Request-ID: (\S+)$/im.exec(responseHeaders);
         if(match) {
             var requestID = match[1];
             if(typeof pendingSocketRequests[requestID] === 'undefined') {
@@ -511,6 +510,16 @@ module.exports.KeySpaceDB =
         // Request URL
         var requestURL = match[2];
 
+        var requestSplit = requestString.split(/\n/g);
+        var firstLine = requestSplit.shift();
+        var requestHeaders = requestSplit.join("\n");
+        var responseHeaders = '';
+
+        // TODO: verify keyspace content
+
+        if(match = /^Request-ID: (\S+)$/im.exec(requestHeaders))
+            responseHeaders += "\nRequest-ID: " + match[1];
+
         // Query the local database
         KeySpaceDB.queryOne(requestURL, function (err, contentData) {
 
@@ -538,8 +547,9 @@ module.exports.KeySpaceDB =
                 responseText,
                 "Content-Type: text/html\n" +
                 "Content-Length: " + responseBody.length + "\n" +
-                "Request-URL: " + requestURL
-                + (responseBody ? "\n\n" + responseBody : "")
+                "Request-URL: " + requestURL +
+                responseHeaders +
+                (responseBody ? "\n\n" + responseBody : "")
             );
         });
     };

@@ -555,50 +555,59 @@ module.exports.ServerSubscriptions =
 
     ServerSubscriptions.requestClientPublicKey = function (pgp_id_public, client, callback) {
         pgp_id_public = pgp_id_public.toUpperCase();
+
+        var KeySpaceDB = require('../../keyspace/ks-db.js')
+            .KeySpaceDB;
+
         var requestURL = "http://" + pgp_id_public + ".ks/public/id";
         console.info("Requesting Public Key from Client: " + requestURL);
+        ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(KeySpaceDB, requestURL, [client],
+            function(responseBody, responseCode, responseMessage, responseHeaders, respondingClient) {
 
+                if(responseCode !== 200) {
+                    callback(responseCode + " " + responseMessage, responseCode, responseMessage, '');
+                    return send(client, "ERROR " + responseCode + " " + responseMessage);
+                }
 
-        var requestID = "PK" + Date.now();
-        if(typeof keyspaceRequests[requestID] !== 'undefined')
-            throw new Error("Duplicate Request ID: " + requestID);
+                if(respondingClient !== client) { // TODO: Necessary?
+                    callback("Client Mismatch", 400, "Client Mismatch", '');
+                    return send(client, "ERROR Client Mismatch");
+                }
 
-        var requestString = "GET " + requestURL +
-            "\nRequest-ID: " + requestID;
+                var KeySpaceDB = require('../../keyspace/ks-db.js')
+                    .KeySpaceDB;
+                if(typeof openpgp === 'undefined')
+                    var openpgp = require('openpgp');
 
-        send(client, requestString);
+                var publicKey = openpgp.key.readArmored(responseBody).keys[0];
+                //var publicKeyCreateDate = publicKey.subKeys[0].subKey.created;
+                //var privateKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
+                var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+                publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+                if(publicKeyID !== pgp_id_public){
+                    callback("Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
+                    return send(client, "ERROR Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
+                }
 
-        keyspaceRequests[requestID] = function(hostClient, responseBody, responseCode, responseMessage, responseHeaders) {
-            if(hostClient !== client) {
-                callback("Client Mismatch");
-                return send(client, "ERROR Client Mismatch");
+                var user_id = publicKey.getUserIds()[0] + '';
+                keyspaceUserIDs[pgp_id_public] = user_id;
+
+                callback(null, publicKey);
             }
+        );
 
-            if(responseCode !== 200) {
-                callback(responseCode + " " + responseMessage);
-                return send(client, "ERROR " + responseCode + " " + responseMessage);
-            }
-
-            var KeySpaceDB = require('../../keyspace/ks-db.js')
-                .KeySpaceDB;
-            if(typeof openpgp === 'undefined')
-                var openpgp = require('openpgp');
-
-            var publicKey = openpgp.key.readArmored(responseBody).keys[0];
-            //var publicKeyCreateDate = publicKey.subKeys[0].subKey.created;
-            //var privateKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
-            var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
-            publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
-            if(publicKeyID !== pgp_id_public){
-                callback("Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
-                return send(client, "ERROR Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
-            }
-
-            var user_id = publicKey.getUserIds()[0] + '';
-            keyspaceUserIDs[pgp_id_public] = user_id;
-
-            callback(null, publicKey);
-        };
+        //var requestID = "PK" + Date.now();
+        //if(typeof keyspaceRequests[requestID] !== 'undefined')
+        //    throw new Error("Duplicate Request ID: " + requestID);
+        //
+        //var requestString = "GET " + requestURL +
+        //    "\nRequest-ID: " + requestID;
+        //
+        //send(client, requestString);
+        //
+        //keyspaceRequests[requestID] = function(hostClient, responseBody, responseCode, responseMessage, responseHeaders) {
+        //
+        //};
     };
 
     ServerSubscriptions.handleKeySpaceStatusCommand = function(commandString, client) {
@@ -660,7 +669,7 @@ module.exports.ServerSubscriptions =
         return keyspaceStatus[pgp_id_public];
     };
 
-    ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts = function(KeySpaceDB, requestURL, callback) {
+    ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts = function(KeySpaceDB, requestURL, additionalClients, callback) {
         var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(requestURL);
         if(!match)
             throw new Error("Invalid URI: " + requestURL);
@@ -675,12 +684,8 @@ module.exports.ServerSubscriptions =
         var pgp_id_public = match[2].toUpperCase();
         pgp_id_public = pgp_id_public.substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
 
-        var requestID = "H" + Date.now();
-        if(typeof keyspaceRequests[requestID] !== 'undefined')
-            throw new Error("Duplicate Request ID: " + requestID);
-
-        var requestString = "HEAD " + requestURL +
-            "\nRequest-ID: " + requestID;
+        var requestString = "HEAD " + requestURL;
+            //"\nRequest-ID: " + requestID;
 
         var hostClients = ServerSubscriptions.getKeySpaceSubscriptions(pgp_id_public, "GET");
         if(hostClients.length <=2) // Hack: Adding authenticated clients also
@@ -688,16 +693,21 @@ module.exports.ServerSubscriptions =
         for(var i=0; i<hostClients.length; i++) {
             if(hostClients[i].readyState !== hostClients[i].OPEN) {
                 hostClients.splice(i--, 1);
-            } else {
-                hostClients[i].send(requestString);
+            //} else {
+                //hostClients[i].send(requestString);
             }
         }
+
+        if(additionalClients)
+            hostClients = hostClients.concat(additionalClients);
 
         // No requests were sent to clients, so callback with error
         if(hostClients.length === 0) {
             callback(null, "No KeySpace Hosts Available", 400, "No KeySpace Hosts Available", "Request-URL: " + requestURL);
             return;
         }
+
+        console.info("Requesting Keyspace content HEAD from (" + hostClients.length + ") Host Clients: " + requestURL);
 
         // TODO: timeout, count, and try next host. FAIL!
         for(i=0; i<hostClients.length; i++) {
@@ -708,6 +718,7 @@ module.exports.ServerSubscriptions =
                         return false;
                     }
 
+                    requestString = "GET " + requestURL;
                     KeySpaceDB.executeSocketGETRequest(requestString, respondingClient,
                         function(responseBody, responseCode, responseMessage, responseHeaders, respondingClient) {
                             if(responseCode !== 200) {
@@ -722,56 +733,55 @@ module.exports.ServerSubscriptions =
                 }
             );
         }
-        console.info("Requested Keyspace content HEAD from (" + hostClients.length + ") Host Clients: " + requestURL);
     };
 
-    ServerSubscriptions.handleKeySpaceHTTPResponse = function(responseString, client) {
-        var match = /^http\/1.1 (\d+)\s?([\w ]*)/i.exec(responseString);
-        if(!match)
-            throw new Error("Invalid HTTP Response: " + responseString);
-
-        var responseCode = parseInt(match[1]);
-        var responseMessage = match[2];
-
-        var pos = responseString.indexOf("\n\n");
-        var responseHeaders = responseString;
-        var responseBody = null;
-        if(pos > 0) {
-            responseHeaders = responseString.substr(0, pos);
-            responseBody = responseString.substr(pos+2);
-        }
-
-        var headerLines = responseHeaders.split(/\n/g);
-        var firstLine = headerLines.shift();
-        responseHeaders = headerLines.join("\n");
-
-        var requestID = null;
-        for(var i=0; i<headerLines.length; i++) {
-            var headerSplit = headerLines[i].split(': ');
-            var headerName = headerSplit[0].toLowerCase();
-            switch(headerName) {
-                case 'request-id':
-                    requestID = headerSplit[1];
-                    break;
-            }
-        }
-
-        if(requestID) {
-            if(typeof keyspaceRequests[requestID] === 'undefined') {
-                console.warn("Unhandled request ID: " + requestID);
-                //send(client, "Unknown request ID: " + requestID);
-                return false;
-            }
-
-            var callback = keyspaceRequests[requestID];
-            var deleteCallback = callback(client, responseBody, responseCode, responseMessage, responseHeaders);
-            if(deleteCallback !== false)
-                delete keyspaceRequests[requestID];
-            return true;
-        }
-
-        return false;
-    };
+    //ServerSubscriptions.handleKeySpaceHTTPResponse = function(responseString, client) {
+    //    var match = /^http\/1.1 (\d+)\s?([\w ]*)/i.exec(responseString);
+    //    if(!match)
+    //        throw new Error("Invalid HTTP Response: " + responseString);
+    //
+    //    var responseCode = parseInt(match[1]);
+    //    var responseMessage = match[2];
+    //
+    //    var pos = responseString.indexOf("\n\n");
+    //    var responseHeaders = responseString;
+    //    var responseBody = null;
+    //    if(pos > 0) {
+    //        responseHeaders = responseString.substr(0, pos);
+    //        responseBody = responseString.substr(pos+2);
+    //    }
+    //
+    //    var headerLines = responseHeaders.split(/\n/g);
+    //    var firstLine = headerLines.shift();
+    //    responseHeaders = headerLines.join("\n");
+    //
+    //    var requestID = null;
+    //    for(var i=0; i<headerLines.length; i++) {
+    //        var headerSplit = headerLines[i].split(': ');
+    //        var headerName = headerSplit[0].toLowerCase();
+    //        switch(headerName) {
+    //            case 'request-id':
+    //                requestID = headerSplit[1];
+    //                break;
+    //        }
+    //    }
+    //
+    //    if(requestID) {
+    //        if(typeof keyspaceRequests[requestID] === 'undefined') {
+    //            console.warn("Unhandled request ID: " + requestID);
+    //            //send(client, "Unknown request ID: " + requestID);
+    //            return false;
+    //        }
+    //
+    //        var callback = keyspaceRequests[requestID];
+    //        var deleteCallback = callback(client, responseBody, responseCode, responseMessage, responseHeaders);
+    //        if(deleteCallback !== false)
+    //            delete keyspaceRequests[requestID];
+    //        return true;
+    //    }
+    //
+    //    return false;
+    //};
 
     function generateUID(format) {
         return (format).replace(/[xy]/g, function(c) {
