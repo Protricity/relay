@@ -10,9 +10,10 @@ if(typeof module === 'object') (function() {
 
         /**
          * Processes a request from the client and makes a request to the server if necessary
-         * @param commandString GET [url] [\n headers]
+         * @param {string} commandString GET [url] [\n headers]
+         * @param {object} e
          */
-        function getCommand(commandString) {
+        function getCommand(commandString, e) {
             var match = /^(head|get)\s+/i.exec(commandString);
             if (!match)
                 return false;
@@ -47,7 +48,10 @@ if(typeof module === 'object') (function() {
                             "<span class='request'><a href='" + commandString + "'>" + commandString + "</a></span>: "
                         );
 
-                        KeySpaceDB.executeSocketGETRequest(commandString,
+                        if(typeof ClientSockets === 'undefined')
+                            importScripts('client/sockets/client-sockets.js');
+
+                        KeySpaceDB.executeSocketGETRequest(commandString, ClientSockets, // TODO: hack?
                           function(responseBody, responseCode, responseMessage, responseHeaders, responseSocket) {
                               var responseString = 'HTTP/1.1 ' + (responseCode || 200) + ' ' + (responseMessage || 'OK') +
                                   (responseHeaders ? "\n" + responseHeaders : '') +
@@ -107,7 +111,7 @@ if(typeof module === 'object') (function() {
          * @param {object} e 
          **/
         function httpResponse(responseString, e) {
-            var match = /^http\/1.1 (\d+)\s?([\w ]*)/i.exec(responseString);
+            var match = /^http\/1.1 (\d+)\s+([\w ]*)/i.exec(responseString);
             if (!match)
                 return false;
 
@@ -120,7 +124,12 @@ if(typeof module === 'object') (function() {
             importScripts('keyspace/ks-db.js');
             var KeySpaceDB = self.module.exports.KeySpaceDB;
 
-            return KeySpaceDB.handleHTTPResponse(responseString, e ? e.target : null);
+            var ret = KeySpaceDB.handleHTTPResponse(responseString, e ? e.target : null);
+            if(ret === true)
+                return true;
+
+            console.warn("Unhandled: ", responseString);
+            return false;
             //renderResponseString(responseString);
         }
 

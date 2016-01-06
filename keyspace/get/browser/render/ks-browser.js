@@ -111,9 +111,9 @@ if(typeof module === 'object') (function() {
         var requestURL = headerValues['request-url'];
         if(!requestURL)
             throw new Error("Unknown request-url for response: Header is missing");
-        var browserID = headerValues['browser-id'];
-        if(!browserID)
-            throw new Error("Unknown browser-id for response:\n" + responseString);
+        var browserID = headerValues['browser-id'] || '';
+        //if(!browserID)
+        //    throw new Error("Unknown browser-id for response:\n" + responseString);
 
         var xhr = new XMLHttpRequest();
         xhr.open("GET", TEMPLATE_URL, false);

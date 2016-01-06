@@ -433,7 +433,7 @@ module.exports.KeySpaceDB =
 
 
     KeySpaceDB.handleHTTPResponse = function(responseString, socket) {
-        var match = /^http\/1.1 (\d+)\s?([\w ]*)/i.exec(responseString);
+        var match = /^http\/1\.1 (\d+)\s?([\w ]*)/i.exec(responseString);
         if(!match)
             throw new Error("Invalid HTTP Response: " + responseString);
 
@@ -455,7 +455,7 @@ module.exports.KeySpaceDB =
         if(match) {
             var requestID = match[1];
             if(typeof pendingSocketRequests[requestID] === 'undefined') {
-                console.warn("Unhandled request ID: " + requestID);
+                console.error("Unhandled request ID: " + requestID);
                 //send(client, "Unknown request ID: " + requestID);
                 return false;
             }

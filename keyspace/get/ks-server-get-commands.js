@@ -38,7 +38,7 @@ function getCommandSocket(commandString, client) {
 
     var requestURL = match[2];
 
-    KeySpaceDB.executeLocalGETRequest(requestURL,
+    KeySpaceDB.executeLocalGETRequest(commandString,
         function(responseBody, responseCode, responseMessage, responseHeaders) {
             if(responseCode === 200) {
                 var responseString = 'HTTP/1.1 ' + (responseCode || 200) + ' ' + (responseMessage || 'OK') +
