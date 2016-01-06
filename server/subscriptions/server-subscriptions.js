@@ -418,7 +418,7 @@ module.exports.ServerSubscriptions =
     var keyspaceAuthentications = {};
     var keyspaceUserIDs = {};
     var keyspaceChallenges = {};
-    var keyspaceRequests = {};
+    //var keyspaceRequests = {};
 
     ServerSubscriptions.getAuthenticatedKeySpaceClients = function(pgp_id_public) {
         pgp_id_public = pgp_id_public.toUpperCase();
