@@ -433,7 +433,7 @@ module.exports.KeySpaceDB =
 
 
     KeySpaceDB.handleHTTPResponse = function(responseString, socket) {
-        var match = /^http\/1\.1 (\d+)\s?([\w ]*)/i.exec(responseString);
+        var match = /^http\/1.1 (\d+)\s?([\w ]*)/i.exec(responseString);
         if(!match)
             throw new Error("Invalid HTTP Response: " + responseString);
 
@@ -448,14 +448,15 @@ module.exports.KeySpaceDB =
             responseBody = responseString.substr(pos+2);
         }
 
+        var headerLines = responseHeaders.split(/\n/g);
+        var firstLine = headerLines.shift();
+        responseHeaders = headerLines.join("\n");
 
-        // TODO: verify keyspace content
-
-        match = /^Request-ID: (\S+)$/im.exec(responseHeaders);
+        match = /^Request-ID: (\S)+$/im.exec(headerLines);
         if(match) {
             var requestID = match[1];
             if(typeof pendingSocketRequests[requestID] === 'undefined') {
-                console.error("Unhandled request ID: " + requestID);
+                console.warn("Unhandled request ID: " + requestID);
                 //send(client, "Unknown request ID: " + requestID);
                 return false;
             }
@@ -510,16 +511,6 @@ module.exports.KeySpaceDB =
         // Request URL
         var requestURL = match[2];
 
-        var requestSplit = requestString.split(/\n/g);
-        var firstLine = requestSplit.shift();
-        var requestHeaders = requestSplit.join("\n");
-        var responseHeaders = '';
-
-        // TODO: verify keyspace content
-
-        if(match = /^Request-ID: (\S+)$/im.exec(requestHeaders))
-            responseHeaders += "\nRequest-ID: " + match[1];
-
         // Query the local database
         KeySpaceDB.queryOne(requestURL, function (err, contentData) {
 
@@ -547,9 +538,8 @@ module.exports.KeySpaceDB =
                 responseText,
                 "Content-Type: text/html\n" +
                 "Content-Length: " + responseBody.length + "\n" +
-                "Request-URL: " + requestURL +
-                responseHeaders +
-                (responseBody ? "\n\n" + responseBody : "")
+                "Request-URL: " + requestURL
+                // + (responseBody ? "\n\n" + responseBody : "")
             );
         });
     };
