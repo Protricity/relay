@@ -236,24 +236,35 @@ module.exports.KeySpaceDB =
             var requestURL = 'http://' + pgp_id_public + '.ks/public/id';
             KeySpaceDB.queryOne(requestURL, function (err, publicKeyBlock) {
                 if (err) {
-                    callback("ERROR " + err);
-                    throw new Error(err);
+                    callback(err);
+                    console.error(err);
+                    return;
                 }
                 if (!publicKeyBlock) {
-                    callback("ERROR KeySpace content may only be added once the KeySpace public key block 'public/id' has been added");
-                    throw new Error(err);
+                    var err2 = "KeySpace content may only be added once the KeySpace public key block 'public/id' has been added";
+                    console.error(err2);
+                    callback(err2);
+                    return;
                 }
 
                 var pgpImport = openpgp.key.readArmored(publicKeyBlock.content);
-                if(pgpImport.err && pgpImport.err.length > 0)
-                    throw new Error(pgpImport.err[0]);
-                var publicKeysForEncryption = pgpImport.keys;
+                if(pgpImport.err && pgpImport.err.length > 0){
+                    var err3 = pgpImport.err[0];
+                    console.error(err3);
+                    callback(err3);
+                    return;
+                }
+                //var publicKeysForEncryption = pgpImport.keys;
 
                 openpgp.verifyClearSignedMessage(publicKey, pgpClearSignedMessage)
                     .then(function (decryptedContent) {
                         for (var i = 0; i < decryptedContent.signatures.length; i++)
-                            if (!decryptedContent.signatures[i].valid)
-                                throw new Error("Invalid Signature: " + decryptedContent.signatures[i].keyid.toHex().toUpperCase());
+                            if (!decryptedContent.signatures[i].valid) {
+                                var err = "Invalid Signature: " + decryptedContent.signatures[i].keyid.toHex().toUpperCase();
+                                console.error(err);
+                                callback(err);
+                                return;
+                            }
 
                         console.info("Verified Signed Content for: " + pgp_id_public);
 
@@ -262,8 +273,10 @@ module.exports.KeySpaceDB =
                         KeySpaceDB.addVerifiedContentToDB(keyspaceContent, pgp_id_public, timestamp, path, {},
                             function (err, insertData) {
                                 if (err) {
-                                    callback("ERROR " + err);
-                                    throw new Error(err);
+                                    callback(err);
+                                    console.error(err);
+                                    callback(err);
+                                    return;
                                 }
 
                                 callback(null, insertData);
@@ -272,7 +285,7 @@ module.exports.KeySpaceDB =
 
                     }).catch(function (err) {
                         console.error(err);
-                        callback("ERROR " + err);
+                        callback(err);
                     });
             });
 
@@ -297,7 +310,7 @@ module.exports.KeySpaceDB =
                 },
                 function(err, insertData) {
                     if (err) {
-                        callback("ERROR " + err);
+                        callback(err);
 
                     } else {
                         callback(null, insertData);
@@ -305,7 +318,9 @@ module.exports.KeySpaceDB =
                 });
 
         } else {
-            throw new Error("No PGP Signed Message or Public Key found" + unverifiedContent);
+            var err = "No PGP Signed Message or Public Key found" + unverifiedContent;
+            console.error(err);
+            callback(err);
         }
 
     };

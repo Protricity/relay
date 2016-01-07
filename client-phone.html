@@ -12,11 +12,14 @@
         <script>
             // TODO: auto scroll to focus container
 
-            ClientMainThread.execute("PGP.LIST");
-            ClientMainThread.execute("UI.CONTACTS");
-            ClientMainThread.execute("KEYSPACE.HOST.AUTO");
-            ClientMainThread.execute("SETTINGS.AUTORUN");
+            // Render Navigation Menu and about box
+            setTimeout(function() {
+                // ClientMainThread.execute("render {nav}");
+                ClientMainThread.execute("UI.CONTACTS");
+                ClientMainThread.execute("SETTINGS.AUTORUN");
 
+                ClientMainThread.execute("CHAT /debug"); // Connect to socket server
+            }, 10);
         </script>
     </head>
     <body class='theme-minimal layout-vertical'></body>

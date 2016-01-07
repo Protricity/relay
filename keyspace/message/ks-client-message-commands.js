@@ -237,6 +237,7 @@ if(typeof module === 'object') (function() {
                             } else {
                                 commandString += "!http.success " + insertedContent.timestamp;
                             }
+                            ClientWorkerThread.sendWithSocket(commandString);
 
                         }
                     );

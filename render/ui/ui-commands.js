@@ -93,7 +93,7 @@ if(typeof module === 'object') (function() {
                     //ClientSubscriptions.cachePublicKeyInfo(publicKeyContentEntry);
 
                 } else {
-                    if(publicKeys.length) {
+                    if(publicKeys.length > 0) {
                         var eventSubscriptionCommand = "KEYSPACES.SUBSCRIBE.EVENT " + publicKeys.join(" ");
                         if(eventSubscriptionCommand !== lastEventSubscriptionCommand) {
                             console.info("Subscribing to contact list: " + eventSubscriptionCommand);
@@ -117,14 +117,19 @@ if(typeof module === 'object') (function() {
                             privateKeys.push(pgp_id_public);
 
                         } else {
-                            var statusSubscriptionCommand = "KEYSPACES.STATUS ONLINE " + privateKeys.join(" ");
-
-                            if(statusSubscriptionCommand !== lastStatusSubscriptionCommand) {
-                                console.info("Setting Status Online: " + statusSubscriptionCommand);
-                                ClientWorkerThread.sendWithSocket(statusSubscriptionCommand);
-                                lastStatusSubscriptionCommand = statusSubscriptionCommand;
+                            if(privateKeys.length === 0) {
+                               console.warn("No private keys were found for the contact list");
+                                
                             } else {
-                                console.info("Ignoring unchanged status: " + statusSubscriptionCommand);
+                                var statusSubscriptionCommand = "KEYSPACE.STATUS ONLINE " + privateKeys.join(" ");
+
+                                if(statusSubscriptionCommand !== lastStatusSubscriptionCommand) {
+                                    console.info("Setting Status Online: " + statusSubscriptionCommand);
+                                    ClientWorkerThread.sendWithSocket(statusSubscriptionCommand);
+                                    lastStatusSubscriptionCommand = statusSubscriptionCommand;
+                                } else {
+                                    console.info("Ignoring unchanged status: " + statusSubscriptionCommand);
+                                }
                             }
                         }
                     });
