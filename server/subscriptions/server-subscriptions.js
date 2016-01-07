@@ -668,7 +668,7 @@ module.exports.ServerSubscriptions =
 
                     keyspaceStatus[pgp_id_public] = statusValue;
 
-                    var notifyCommandString = "KEYSPACE.STATUS " + statusValue + " " + all_pgp_id_public;
+                    var notifyCommandString = "KEYSPACE.STATUS " + statusValue + " " + all_pgp_id_public.join(" ");
 
                     // notify keyspace status subscribers yo{
                     var count = 0;
