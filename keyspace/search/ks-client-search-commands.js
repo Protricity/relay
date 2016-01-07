@@ -24,7 +24,7 @@ if(typeof module === 'object') (function() {
          * @param {object} e The command Event
          * @return {boolean} true if handled otherwise false
          **/
-        function ksSearchCommand(commandString) {
+        function ksSearchCommand(commandString, e) {
             var match = /^(keyspace\.)?search\s*(.*)/i.exec(commandString);
             if (!match)         // If unmatched, 
                 return false;   // Pass control to next handler
@@ -60,7 +60,7 @@ if(typeof module === 'object') (function() {
                 ClientWorkerThread.render(html);
             });
 
-            console.info("Search Results: " + responseString);
+            console.info("KeySpace Search Results: " + responseString);
 
             // Response was handled
             return true;

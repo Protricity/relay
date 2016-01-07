@@ -16,6 +16,10 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addResponse(channelChatResponse);
         ClientWorkerThread.addResponse(eventListener, true);
 
+        self.module = {exports: {}};
+        importScripts('channel/chat/render/chat-window.js');
+        var chatExports = self.module.exports;
+
         var refreshTimeout = null;
         function eventListener(responseString) {
             var match = /^event\s(?:channel\.)?userlist\.(\w+)(?:\s(\S+))?\n([\s\S]+)$/im.exec(responseString);
@@ -30,7 +34,7 @@ if(typeof module === 'object') (function() {
             refreshTimeout = setTimeout(function() {
                 // console.info("Refreshing Chat List: " + responseString, subscriptionList);
                 renderChatWindow(channel, function () {
-                    getChatExports().renderChatUserList(channel, subscriptionList, function (html) {
+                    chatExports.renderChatUserList(channel, subscriptionList, function (html) {
                         ClientWorkerThread.render(html);
                     });
                 });
@@ -59,7 +63,7 @@ if(typeof module === 'object') (function() {
             renderChatWindow(channel);
             //console.info("Channel has Activity: " + channelPath);
 
-            getChatExports().renderChatMessage(responseString, function (html) {
+            chatExports.renderChatMessage(responseString, function (html) {
                 ClientWorkerThread.render(html);
             });
             return true;
@@ -70,7 +74,7 @@ if(typeof module === 'object') (function() {
             var channelPathLowerCase = channelPath.toLowerCase();
 
             if (activeChannels.indexOf(channelPathLowerCase) === -1) {
-                getChatExports().renderChatWindow(channelPath, function (html) {
+                chatExports.renderChatWindow(channelPath, function (html) {
                     ClientWorkerThread.render(html);
                     activeChannels.push(channelPathLowerCase);
                     if(callback)
@@ -84,7 +88,7 @@ if(typeof module === 'object') (function() {
 
                     var userList = ClientSubscriptions.getChannelUserList('chat', channelPath);
 
-                    getChatExports().renderChatUserList(channelPath, userList, function(html) {
+                    chatExports.renderChatUserList(channelPath, userList, function(html) {
                         ClientWorkerThread.render(html);
                     });
                 });
@@ -93,17 +97,6 @@ if(typeof module === 'object') (function() {
                 if(callback)
                     callback();
             }
-        }
-
-
-
-        var chatExports = null;
-        function getChatExports() {
-            if(chatExports)
-                return chatExports;
-            self.module = {exports: {}};
-            importScripts('channel/chat/render/chat-window.js');
-            return chatExports = self.module.exports;
         }
 
     };

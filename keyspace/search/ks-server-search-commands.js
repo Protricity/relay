@@ -73,13 +73,7 @@ function ksSearchSocketCommand(commandString, client) {
                           // Must be authenticated
                           if(false && !ServerSubscriptions.isKeySpaceAuthorized(pgp_id_public, channelClient))
                               continue;
-  
-                          var user_id = ServerSubscriptions.getAuthenticatedKeySpaceUserID(pgp_id_public);
-                          if(!user_id)
-                              user_id = pgp_id_public;
-                          if(search && user_id.toLowerCase().indexOf(search) === -1)
-                              continue;
-  
+
                           var keyspaceStatus = ServerSubscriptions.getKeySpaceStatus(pgp_id_public).toLowerCase();
                           switch(keyspaceStatus) {
                               case 'disconnected': // TODO: is this logic correct?
@@ -87,7 +81,13 @@ function ksSearchSocketCommand(commandString, client) {
                                   console.warn("Skipping " + keyspaceStatus + " client: " + pgp_id_public);
                                   continue;
                           }
-  
+
+                          var user_id = ServerSubscriptions.getAuthenticatedKeySpaceUserID(pgp_id_public);
+                          if(!user_id)
+                              user_id = pgp_id_public;
+                          if(search && user_id.toLowerCase().indexOf(search) === -1)
+                              continue;
+
                           var entry = pgp_id_public + (user_id ? ';' + user_id.replace(/;/g, ',') : '');
                           if(keyspaceList.length >= MAX_RESULTS)
                               break;

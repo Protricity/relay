@@ -1,14 +1,14 @@
-<article class='ks-search-window: maximized focus-on-render' data-sort='z'>
-    <script src='keyspace/search/render/ks-search-window.js'></script>
-    <link rel='stylesheet' href='keyspace/search/render/ks-search-window.css' type='text/css' property="stylesheet">
+<article class='channel-search-window: maximized focus-on-render' data-sort='z'>
+    <script src='channel/search/render/channel-search-window.js'></script>
+    <link rel='stylesheet' href='channel/search/render/channel-search-window.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
-        {header:buttons ks-search-window:}
-        <a href='javascript:ClientMainThread.execute("MINIMIZE ks-search-window:");'>
-            <span class="command">Search</span> Contacts
+        {header:buttons channel-search-window:}
+        <a href='javascript:ClientMainThread.execute("MINIMIZE channel-search-window:");'>
+            <span class="command">Search</span> for Channels
         </a>
     </header>
     <main class="hide-on-minimize">
-        <form name='ks-search-form' class='show-on-minimized'>
+        <form name='channel-search-form' class='show-on-minimized'>
             <table style='width:100%'>
                 <tbody>
                 <tr class='show-on-minimized'>
@@ -25,12 +25,12 @@
             </table>
         </form>
     </main>
-    <section class='ks-search-results: hide-on-minimize'>
+    <section class='channel-search-results: hide-on-minimize'>
         <table>
             <thead>
                 <tr>
-                    <th>Identity Name</th>
-                    <th>Key ID</th>
+                    <th>Channel Name</th>
+                    <!--<th>Channel Info</th>-->
                     <th>Options</th>
                 </tr>
             </thead>

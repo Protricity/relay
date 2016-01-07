@@ -10,11 +10,11 @@ module.exports.initSocketServerCommandProxies = function(SocketServer) {
     //SocketServer.addEventListener('connection', function(client) {
     //    httpCommand("GET", client);
     //});
-    SocketServer.addCommand(httpCommand);
-    function httpCommand(commandString, client) {
+    SocketServer.addCommand(importHTTPCommands);
+    function importHTTPCommands(commandString, client) {
         if(!/^(keyspaces?|get|post|put|delete|patch|head|http|host|message)/i.test(commandString))
             return false;
-        SocketServer.removeCommand(httpCommand);
+        SocketServer.removeCommand(importHTTPCommands);
         require('../../keyspace/ks-server-commands.js')
             .initSocketServerKSCommands(SocketServer);
         console.log("Loaded keyspace/ks-server-commands.js");
@@ -23,11 +23,11 @@ module.exports.initSocketServerCommandProxies = function(SocketServer) {
     }
 
     // Channel Commands
-    SocketServer.addCommand(channelCommand);
-    function channelCommand(commandString, client) {
+    SocketServer.addCommand(importChannelCommands);
+    function importChannelCommands(commandString, client) {
         if(!/^(subscribe|channels?|join|leave|channel|nick|userlist)/i.test(commandString))
             return false;
-        SocketServer.removeCommand(channelCommand);
+        SocketServer.removeCommand(importChannelCommands);
 
         require('../../channel/channel-server-commands.js')
             .initSocketServerChannelCommands(SocketServer);
@@ -37,8 +37,8 @@ module.exports.initSocketServerCommandProxies = function(SocketServer) {
     }
 
     // Server Commands
-    SocketServer.addCommand(clientCommands);
-    function clientCommands(commandString, client) {
+    SocketServer.addCommand(importClientCommands);
+    function importClientCommands(commandString, client) {
         if(!/^client\s*(.*)$/i.test(commandString))
             return false;
             

@@ -16,14 +16,14 @@ module.exports.initSocketServerChannelCommands = function(SocketServer) {
         return false;
     }
 
-    // Socket Channel Suggest Commands
-    SocketServer.addCommand(importChannelSuggestCommand);
-    function importChannelSuggestCommand(commandString, e) {
-        if (!/^(?:channel\.)?suggest/i.test(commandString))
+    // Socket Channel Search Commands
+    SocketServer.addCommand(importChannelSearchCommand);
+    function importChannelSearchCommand(commandString, e) {
+        if (!/^(?:channel\.)?search/i.test(commandString))
             return false;
-        SocketServer.removeCommand(importChannelSuggestCommand);
-        require('./suggest/channel-server-suggest-commands.js')
-            .initSocketServerChannelSuggestCommands(SocketServer);
+        SocketServer.removeCommand(importChannelSearchCommand);
+        require('./search/channel-server-search-commands.js')
+            .initSocketServerChannelSearchCommands(SocketServer);
         return false;
     }
 

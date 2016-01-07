@@ -18,17 +18,17 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
-        // Channel Suggest Commands
-        ClientWorkerThread.addCommand(importChannelSuggestCommands);
-        ClientWorkerThread.addResponse(importChannelSuggestCommands);
-        function importChannelSuggestCommands(commandString, e) {
-            if (!/^(?:channel\.)?suggest/i.test(commandString))
+        // Channel Search Commands
+        ClientWorkerThread.addCommand(importChannelSearchCommands);
+        ClientWorkerThread.addResponse(importChannelSearchCommands);
+        function importChannelSearchCommands(commandString, e) {
+            if (!/^(?:channel\.)?search/i.test(commandString))
                 return false;
-            ClientWorkerThread.removeCommand(importChannelSuggestCommands);
-            ClientWorkerThread.removeResponse(importChannelSuggestCommands);
+            ClientWorkerThread.removeCommand(importChannelSearchCommands);
+            ClientWorkerThread.removeResponse(importChannelSearchCommands);
             self.module = {exports: {}};
-            importScripts('channel/suggest/channel-client-suggest-commands.js');
-            module.exports.initClientChannelSuggestCommands(ClientWorkerThread);
+            importScripts('channel/search/channel-client-search-commands.js');
+            module.exports.initClientChannelSearchCommands(ClientWorkerThread);
             return false;
         }
 
