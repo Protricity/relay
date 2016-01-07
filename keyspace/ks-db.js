@@ -54,6 +54,9 @@ module.exports.KeySpaceDB =
 
     // Instance of Database
     var dbInst = null;
+
+    // Database Error
+    var dbErr = null;
     
     // Array of callbacks to trigger once the Dataabse has been loaded
     var onDBCallbacks = [];
@@ -67,6 +70,8 @@ module.exports.KeySpaceDB =
     var pendingSocketRequestCount = 0;
 
     KeySpaceDB.getDBInstance = function(callback) {
+        if(dbErr)
+            return callback(dbErr, dbInst);
         if(dbInst) // TODO: false if fail
             return callback(null, dbInst);
         if(callback)
@@ -92,6 +97,7 @@ module.exports.KeySpaceDB =
                 for (var i = 0; i < onDBCallbacks.length; i++)
                     onDBCallbacks[i](err, null);
                 onDBCallbacks = [];
+                dbErr = err;
                 dbInst = null;
                 throw new Error(err);
             };
@@ -143,6 +149,7 @@ module.exports.KeySpaceDB =
             MongoClient.connect(url, function(err, db) {
                 if(err) {
                     dbInst = null;
+                    dbErr = err;
                     for (var j = 0; j < onDBCallbacks.length; j++)
                         onDBCallbacks[j](err, db);
                     onDBCallbacks = [];
