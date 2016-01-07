@@ -142,16 +142,16 @@ module.exports.KeySpaceDB =
 
             MongoClient.connect(url, function(err, db) {
                 if(err) {
+                    dbInst = null;
                     for (var j = 0; j < onDBCallbacks.length; j++)
                         onDBCallbacks[j](err, db);
                     onDBCallbacks = [];
-                    dbInst = null;
-                    console.error(err);
+                    console.error("Could not connect to MongoDB: ", err.message);
                     // TODO: timed reconnect?
                     return;
                 }
 
-                console.log("Connected: " + url);
+                console.log("Connected to MongoDB: " + url);
                 dbInst = db;
 
                 var dbCollection = db.collection(KeySpaceDB.DB_TABLE_HTTP_CONTENT);

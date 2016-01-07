@@ -404,7 +404,12 @@ module.exports.ServerSubscriptions =
                         for(var i=0; i<clientList.length; i++) {
                             if(!clientList[i] || !clientList[i][0])
                                 throw new Error("Invalid Client Entry: " + i);
-                            var ret = callback(clientList[i][0], channel, mode, clientList[i][1]);
+
+                            var client = clientList[i][0];
+                            if(searchClient && searchClient !== client)
+                                continue;
+
+                            var ret = callback(client, channel, mode, clientList[i][1]);
 
                             // Count the matched subscription
                             count++;
@@ -526,8 +531,11 @@ module.exports.ServerSubscriptions =
         pgp_id_public = pgp_id_public.toUpperCase();
         if(typeof keyspaceAuthentications[pgp_id_public] !== 'undefined') {
             if(keyspaceAuthentications[pgp_id_public].indexOf(client) >= 0) {
-                if(callback)
+                if(callback) try {
                     callback(pgp_id_public, client);
+                } catch (e) {
+                    callback(e);
+                }
                 return true;
             }
         }

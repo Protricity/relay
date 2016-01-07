@@ -48,15 +48,38 @@ function channelClientCloseListener() {
 }
 
 function unloadClient(client) {
-    //if(channelClient.readyState === channelClient.OPEN)
-    //    return false;
+    if(client.readyState === client.OPEN)
+        throw new Error("Client was not disconnected");
     //console.info("Socket Client Closed: ", typeof client);
-    ServerSubscriptions.searchChannelSubscriptions(client, null, null,
-        function(channelClient, channel, mode, argString) {
-            console.log("TODO: unsubscribe - ", channel, mode, argString);
-            unsubscribeCommand("CHANNEL.UNSUBSCRIBE." + mode.toUpperCase() + " " + channel, client);
+    if(!client.channels) {
+        console.warn("Client had no active channels");
+        return;
+    }
+
+    var activeChannels = client.channels;
+    delete client.channels;
+
+    for(var i=0; i<activeChannels[i]; i++) {
+        var channel = activeChannels[i];
+        var searchModes = ['chat', 'event'];
+        for(var mi=0; mi<searchModes.length; mi++) {
+            var mode = searchModes[mi];
+            var clientList = ServerSubscriptions.getChannelSubscriptions(channel, mode);
+            for(var j=0; j<clientList.length; j++) {
+                if(clientList[j][0] === client) {
+                    var argString = clientList[j][0];
+                    console.log("TODO: unsubscribe - ", channel, mode, argString);
+                    unsubscribeCommand("CHANNEL.UNSUBSCRIBE." + mode.toUpperCase() + " " + channel, client);
+                }
+            }
         }
-    );
+    }
+    //ServerSubscriptions.searchChannelSubscriptions(client, null, null,
+    //    function(channelClient, channel, mode, argString) {
+    //        console.log("TODO: unsubscribe - ", channel, mode, argString);
+    //        unsubscribeCommand("CHANNEL.UNSUBSCRIBE." + mode.toUpperCase() + " " + channel, client);
+    //    }
+    //);
     return true;
 }
 
