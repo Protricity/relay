@@ -48,7 +48,7 @@ if(typeof module === 'object') (function() {
             if(refreshTimeout)
                 clearTimeout(refreshTimeout);
             refreshTimeout = setTimeout(function() {
-                 console.info("Refreshing Contact List: " + responseString);
+                // console.info("Refreshing Contact List: " + responseString);
                 contactCommand("UI.CONTACTS.REFRESH");
             }, 500);
 
@@ -100,7 +100,7 @@ if(typeof module === 'object') (function() {
                             ClientWorkerThread.sendWithSocket(eventSubscriptionCommand);
                             lastEventSubscriptionCommand = eventSubscriptionCommand;
                         } else {
-                            console.info("Ignoring unchanged subscriptions: " + eventSubscriptionCommand);
+                            //console.info("Ignoring unchanged subscriptions: " + eventSubscriptionCommand);
                         }
                     }
 

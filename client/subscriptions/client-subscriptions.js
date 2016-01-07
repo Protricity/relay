@@ -49,7 +49,7 @@ module.exports.ClientSubscriptions =
         if (!match)
             throw new Error("Invalid UserList: " + responseString);
 
-        var mode = match[1];
+        var mode = match[1].toLowerCase();
         var channel = match[2].toLowerCase();
         var subscriptionList = match[3].split(/\n+/img);
 
@@ -332,9 +332,8 @@ module.exports.ClientSubscriptions =
 
             keyspaceStatus[pgp_id_public] = statusValue;
 
-            // TODO: event notify
             ClientWorkerThread.processResponse("EVENT " + responseString);
-            console.info("KeySpace Status Change for " + pgp_id_public + ": " + statusValue, "Old: ", oldStatusArgString);
+            // console.info("KeySpace Status Change for " + pgp_id_public + ": " + statusValue, "Old: ", oldStatusArgString);
 
         }
         return true;

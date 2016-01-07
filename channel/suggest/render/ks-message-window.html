@@ -1,0 +1,52 @@
+<article class='ks-message:{$uid} ks-message:'>
+    <script src='keyspace/message/render/ks-message-window.js'></script>
+    <link rel='stylesheet' href='keyspace/message/render/ks-message-window.css' type='text/css' property="stylesheet">
+    <header class='header-bar show-on-minimized'>
+        {header:buttons ks-message:{$uid}}
+        <a href='javascript:ClientMainThread.execute("MINIMIZE ks-message:{$uid}");'>
+            <span class="command">Message</span> {$to} [From: {$from}]
+        </a>
+    </header>
+    <form name='ks-message-form' class="hide-on-minimize">
+        <table style='width:100%'>
+            <tbody class="hide-on-minimize">
+                <tr>
+                    <td colspan="2" style='vertical-align: top;'>
+                        <fieldset class='ks-message-log:{$uid} ks-message-log:'>
+                            Private Messaging
+                            <a href="javascript:ClientMainThread.execute('INFO {$pgp_id_to}');" class="username">{$to}</a>...
+                        </fieldset>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style='vertical-align: top; width:1px;'>
+                        <label>
+                            <select name="message_encryption_options">
+                                <optgroup label="Message Options">
+                                    <option value="">Send without encryption (insecure)</option>
+                                    <option value="encrypt">Send with PGP Encryption (secure)</option>
+                                </optgroup>
+                                <optgroup label="Commands">
+                                    <option disabled="disabled" value="GET http://{$pgp_id_public}.ks/public/id">Request Public Key (Add to Contact List)</option>
+                                    <option disabled="disabled" value="GET http://{$pgp_id_public}.ks/public/profile">Request Public Profile</option>
+                                </optgroup>
+                            </select>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <textarea name='message' class='reset focus'
+                               placeholder='Type a private message' rows='2'></textarea>
+                    </td>
+                    <td style='width:1px'>
+                        <input type='submit' value='Send' name='submit-send-chat' />
+                        <input type='hidden' value='{$pgp_id_to}' name='pgp_id_to' />
+                        <input type='hidden' value='{$pgp_id_from}' name='pgp_id_from' />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+    <!--<footer></footer>-->
+</article>

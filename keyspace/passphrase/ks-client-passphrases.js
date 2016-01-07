@@ -77,7 +77,7 @@ module.exports.ClientPassPhrases =
             }
             if(callback) {
                 passphraseRequests[pgp_id_public].push(callback);
-                console.log("Adding Private Key Callback: ", pgp_id_public, passphraseRequests);
+                // console.log("Adding Private Key Callback: ", pgp_id_public, passphraseRequests);
             }
             Client.execute("KEYSPACE.PASSPHRASE " + pgp_id_public);
         });

@@ -57,6 +57,10 @@
     transition: box-shadow 1s ease-in;
 }
 
+.keyspace-contact-entry\3A.private-key {
+    border-width: 2px;
+}
+
 .keyspace-contact-entry\3A:hover {
     box-shadow: 0 0 2em #558;
 
@@ -78,6 +82,11 @@
 .keyspace-contact-entry-status\3A {
     /* display: block; */
     color: #AAA;
+}
+
+.keyspace-contact-entry\3A.private-key 
+.keyspace-contact-entry-status\3A {
+    color: #66F
 }
 
 .keyspace-contact-entry-icon\3A {

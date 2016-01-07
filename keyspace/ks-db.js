@@ -386,7 +386,7 @@ module.exports.KeySpaceDB =
                         (path ? ' ' + path : '');
                     Client.processResponse(responseString);
                 }
-                console.info("Added content to database: http://" + pgp_id_public + '.ks/' + path, insertData);
+                console.info("Added content to database: http://" + pgp_id_public + '.ks/' + path, insertData, arg);
             }
         );
 
