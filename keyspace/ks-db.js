@@ -372,8 +372,12 @@ module.exports.KeySpaceDB =
             insertData,
             {},
             function(err, newInsertData, arg) {
-                if(callback)
-                    callback(err?err.message:null, insertData);
+                if(err) {
+                    if(callback)
+                        callback(err.message);
+                    console.error(err.message);
+                    return;
+                }
 
                 if(typeof Client !== 'undefined') {
                     var responseString = "EVENT KEYSPACE.INSERT" +
