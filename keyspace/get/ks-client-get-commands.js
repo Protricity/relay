@@ -54,15 +54,15 @@ if(typeof module === 'object') (function() {
                         var chosenSocket = ClientSockets.getAll()[0];
 
                         KeySpaceDB.executeSocketGETRequest(commandString, chosenSocket, // TODO: hack?
-                          function(responseBody, responseCode, responseMessage, responseHeaders, responseSocket) {
-                              var responseString = 'HTTP/1.1 ' + (responseCode || 200) + ' ' + (responseMessage || 'OK') +
-                                  (responseHeaders ? "\n" + responseHeaders : '') +
-                                  (responseBody ? "\n\n" + responseBody : '');
+                        function(responseBody, responseCode, responseMessage, responseHeaders, responseSocket) {
+                            var responseString = 'HTTP/1.1 ' + (responseCode || 200) + ' ' + (responseMessage || 'OK') +
+                                (responseHeaders ? "\n" + responseHeaders : '') +
+                                (responseBody ? "\n\n" + responseBody : '');
 
-                              renderBrowser(responseString, function (html) {
-                                  ClientWorkerThread.render(html);
-                              });
-                          }
+                            renderBrowser(responseString, function (html) {
+                              ClientWorkerThread.render(html);
+                            });
+                        }
                       );
                     }
                     

@@ -219,45 +219,6 @@ module.exports.ClientSubscriptions =
         return existingSubscriptionString;
     };
 
-//    var cachedPublicKeyUserIDs = {};
-//    ClientSubscriptions.getCachedPublicKeyUserID = function(pgp_id_public, callback) {
-//        pgp_id_public = pgp_id_public.toUpperCase();
-//        if(typeof cachedPublicKeyUserIDs[pgp_id_public] !== 'undefined') {
-//            if(callback)
-//                callback(cachedPublicKeyUserIDs[pgp_id_public]);
-//            return cachedPublicKeyUserIDs[pgp_id_public];
-//        }
-//
-//        if(!callback)
-//            return null;
-//
-//        self.module = {exports: {}};
-//        importScripts('keyspace/ks-db.js');
-//        var KeySpaceDB = self.module.exports.KeySpaceDB;
-//
-//        var path = 'http://' + pgp_id_public + '/public/id';
-//        KeySpaceDB.queryOne(path, function(err, publicKeyContentEntry) {
-//            if (err)
-//                throw new Error(err);
-//
-//            if (publicKeyContentEntry) {
-//                ClientSubscriptions.cachePublicKeyInfo(publicKeyContentEntry);
-//                callback(cachedPublicKeyUserIDs[pgp_id_public]);
-//            }
-//        });
-//
-//        return null;
-//    };
-//
-//    ClientSubscriptions.cachePrivateKeyInfo =
-//    ClientSubscriptions.cachePublicKeyInfo = function(publicKeyContentEntry) {
-//        var pgp_id_public = publicKeyContentEntry.pgp_id_public.toUpperCase();
-////         if(typeof cachedPublicKeyUserIDs[pgp_id_public] !== 'undefined')
-////             console.warn("Cached Public Key ID already exists: " + pgp_id_public);
-//
-//        if(typeof cachedPublicKeyUserIDs[pgp_id_public] === 'undefined')
-//            cachedPublicKeyUserIDs[pgp_id_public] = publicKeyContentEntry.user_id;
-//    };
 
     ClientSubscriptions.isKeySpaceAuthorized = function(pgp_id_public, withSocket) {
         if(typeof authorizedKeyspaces[pgp_id_public] === 'undefined')

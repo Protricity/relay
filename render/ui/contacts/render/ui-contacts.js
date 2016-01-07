@@ -44,7 +44,7 @@ if(typeof module !== 'object')
          
         } else {
          
-          console.log("KeySpace Contacts: ", publicKeys);
+          //console.log("KeySpace Contacts: ", publicKeys);
           for(i=0; i<publicKeys.length; i++)
             (function(i, pgp_id_public, modes) {
 
@@ -55,11 +55,26 @@ if(typeof module !== 'object')
                             if(i >= publicKeys.length-1)
                                 callback(html_public_key_entries, html_command_options);
                             // TODO: unsubscribe from missing entry? No. That's handled via event listeners
+                            // TODO: content might just be missing a public key, so grab it
+
+                            var commandString = 'GET ' + requestURL;
+                            console.info("Requested Public Key for missing contact: " + pgp_id_public);
+                            ClientWorkerThread.sendWithSocket(commandString);
+
+                            //KeySpaceDB.executeSocketGETRequest(commandString, null, // TODO: hack?
+                            //    function(responseBody, responseCode, responseMessage, responseHeaders, responseSocket) {
+                            //        if(responseCode !== 200)
+                            //            throw new Error("Failed to request Public Key from missing contact: " + pgp_id_public);
+                            //        console.info("Successfully requested Public Key for contact: " + pgp_id_public);
+                            //    }
+                            //);
+
                             return;
                         }
 
                         var user_id = publicKeyContentEntry.user_id || pgp_id_public;
 
+                        console.log(user_id, arguments);
                         var subscriptionStatus = false ? 'Subscribe' : 'Unsubscribe' ;
                         //var user_id = ClientSubscriptions.getCachedPublicKeyUserID(pgp_id_public)
                         //    || pgp_id_public;

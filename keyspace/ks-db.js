@@ -290,7 +290,11 @@ module.exports.KeySpaceDB =
             pgp_id_public = pgp_id_public2;
 
             // Add public key to cache.
-            KeySpaceDB.addVerifiedContentToDB(keyspaceContent, pgp_id_public, pkTimestamp, pkPath, {},
+            var publicKeyUserIDString = publicKey.getUserIds().join('; ');
+            KeySpaceDB.addVerifiedContentToDB(keyspaceContent, pgp_id_public, pkTimestamp, pkPath,
+                {
+                    user_id: publicKeyUserIDString
+                },
                 function(err, insertData) {
                     if (err) {
                         callback("ERROR " + err);
@@ -561,6 +565,7 @@ module.exports.KeySpaceDB =
                 responseBody = err + '';
                 responseText = err + '';
                 responseCode = 400;
+                console.error(requestString + "\n" + err);
             }
             switch(requestType) {
                 case 'head':
