@@ -27,18 +27,18 @@ function httpCommandSocket(commandString, client) {
     if(KeySpaceDB.handleHTTPResponse(commandString, client) === true)
         return true;
 
-    send(client, "Unhandled Keyspace HTTP Response");
+    send(client, "ERROR Unhandled HTTP Request [Probably No request ID]:\n" + commandString); // .split("\n")[0]
     return true;
 }
 
-function getCommandSocket(commandString, client) {
-    var match = /^(head|get)\s+(\S*)/i.exec(commandString);
+function getCommandSocket(requestString, client) {
+    var match = /^(head|get)\s+(\S*)/i.exec(requestString);
     if(!match)
         return false;
 
-    var requestURL = match[2];
+    //var requestURL = match[2];
 
-    KeySpaceDB.executeLocalGETRequest(commandString,
+    KeySpaceDB.executeLocalGETRequest(requestString,
         function(responseBody, responseCode, responseMessage, responseHeaders) {
             if(responseCode === 200) {
                 var responseString = 'HTTP/1.1 ' + (responseCode || 200) + ' ' + (responseMessage || 'OK') +
@@ -49,7 +49,7 @@ function getCommandSocket(commandString, client) {
 
             } else {
                 // No content, so request content from subscribed hosts
-                ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(KeySpaceDB, requestURL, null,
+                ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(KeySpaceDB, requestString, null,
 
                     function(responseBody, responseCode, responseMessage, responseHeaders, responseClient) {
                         var responseString = 'HTTP/1.1 ' + (responseCode || 200) + ' ' + (responseMessage || 'OK') +
@@ -66,7 +66,7 @@ function getCommandSocket(commandString, client) {
 }
 
 function getCommandHTTP(request, response) {
-    var commandString = request.method + ' ' + request.url;
+    var commandString = request.method + ' ' + request.url; // TODO: headers
     var match = /^get\s+(\S*)/i.exec(commandString);
     if(!match)
         return false;
@@ -79,7 +79,7 @@ function getCommandHTTP(request, response) {
                 response.end(responseBody);
 
             } else {
-                ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(KeySpaceDB, requestURL, null,
+                ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(KeySpaceDB, commandString, null,
                     function(responseBody, responseCode, responseMessage, responseHeaders, respondingClient) {
                         response.writeHead(responseCode || 200, responseMessage || 'OK', responseHeaders);
                         response.end(responseBody);

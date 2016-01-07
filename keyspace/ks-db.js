@@ -433,7 +433,7 @@ module.exports.KeySpaceDB =
 
 
     KeySpaceDB.handleHTTPResponse = function(responseString, socket) {
-        var match = /^http\/1.1 (\d+)\s?([\w ]*)/i.exec(responseString);
+        var match = /^http\/1\.1\s(\d+)\s([\w ]+)/i.exec(responseString);
         if(!match)
             throw new Error("Invalid HTTP Response: " + responseString);
 
@@ -452,22 +452,24 @@ module.exports.KeySpaceDB =
         var firstLine = headerLines.shift();
         responseHeaders = headerLines.join("\n");
 
-        match = /^Request-ID: (\S)+$/im.exec(headerLines);
+        match = /^Request-ID: (\S+)$/im.exec(responseHeaders);
         if(match) {
             var requestID = match[1];
             if(typeof pendingSocketRequests[requestID] === 'undefined') {
-                console.warn("Unhandled request ID: " + requestID);
+                console.warn("Unhandled request ID: " + requestID, match, responseString);
                 //send(client, "Unknown request ID: " + requestID);
                 return false;
             }
 
-            var callback = pendingSocketRequests[requestID][0];
-            var pendingSocket = pendingSocketRequests[requestID][1];
+            var entry = pendingSocketRequests[requestID];
+            var callback = entry[0];
+            var pendingSocket = entry[1];
             if(socket && socket !== pendingSocket)
                 throw new Error("Socket Mismatch");
+            delete pendingSocketRequests[requestID];
             var deleteCallback = callback(responseBody, responseCode, responseMessage, responseHeaders, pendingSocket);
-            if(deleteCallback !== false)
-                delete pendingSocketRequests[requestID];
+            if(deleteCallback === false)
+                pendingSocketRequests[requestID] = entry;
             return true;
         }
 
@@ -480,10 +482,19 @@ module.exports.KeySpaceDB =
         if (!match)
             throw new Error("Invalid Socket GET/HEAD Request: " + requestString);
 
-        var isHeadRequest = match[1].toLowerCase() === 'head';
+        //var isHeadRequest = match[1].toLowerCase() === 'head';
+
+        var headerLines = requestString.split(/\n/g);
+        headerLines.shift();
+        var requestHeaders = headerLines.join("\n");
+
         var requestID = "RG" + Date.now();
+        match = /^Request-ID: (\S+)$/im.exec(requestHeaders);
+        if(match)
+            requestID = match[1];
+
         if(typeof pendingSocketRequests[requestID] !== 'undefined')
-            throw new Error("Duplicate Request ID: " + requestID);
+            throw new Error("Duplicate Request ID: " + requestID); // old requestID needs to be deleted before being reused
 
         pendingSocketRequests[requestID] = [callback, socket];
 
@@ -511,12 +522,25 @@ module.exports.KeySpaceDB =
         // Request URL
         var requestURL = match[2];
 
+
+        var headerLines = requestString.split(/\n/g);
+        var firstLine = headerLines.shift();
+        var requestHeaders = headerLines.join("\n");
+        var requestID = null;
+        match = /^Request-ID: (\S+)$/im.exec(requestHeaders);
+        if(match)
+            requestID = match[1];
+
         // Query the local database
         KeySpaceDB.queryOne(requestURL, function (err, contentData) {
 
             var responseCode = 404;
             var responseText = "Not Found";
             var responseBody = "Not Found";
+            var responseHeaders =
+                "Content-Type: text/html\n" +
+                "Request-URL: " + requestURL;
+
             if(contentData) {
                 responseBody = contentData.content;
                 responseCode = 200;
@@ -532,13 +556,17 @@ module.exports.KeySpaceDB =
                     responseBody = '';
                     break;
             }
+
+            if(responseBody && responseBody.length)
+                responseHeaders += "\nContent-Length: " + responseBody.length;
+            if(requestID)
+                responseHeaders += "\nRequest-ID: " + requestID;
+
             callback(
                 responseBody,
                 responseCode,
                 responseText,
-                "Content-Type: text/html\n" +
-                "Content-Length: " + responseBody.length + "\n" +
-                "Request-URL: " + requestURL
+                responseHeaders
                 // + (responseBody ? "\n\n" + responseBody : "")
             );
         });

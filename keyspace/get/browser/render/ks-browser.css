@@ -6,7 +6,7 @@
 }
 
 .ks-browser\3A {
-    min-height: 15em;
+    /* min-height: 15em; */
 }
 
 .ks-browser\3A  nav {
@@ -34,7 +34,9 @@
 }
 
 .ks-browser\3A  .ks-body {
-    min-height: 11em;
+    /* min-height: 11em; */
+    white-space: pre;
+    padding: 0.5em;
 }
 
 .ks-browser\3A  .ks-status {

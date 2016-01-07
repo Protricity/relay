@@ -51,7 +51,9 @@ if(typeof module === 'object') (function() {
                         if(typeof ClientSockets === 'undefined')
                             importScripts('client/sockets/client-sockets.js');
 
-                        KeySpaceDB.executeSocketGETRequest(commandString, ClientSockets, // TODO: hack?
+                        var chosenSocket = ClientSockets.getAll()[0];
+
+                        KeySpaceDB.executeSocketGETRequest(commandString, chosenSocket, // TODO: hack?
                           function(responseBody, responseCode, responseMessage, responseHeaders, responseSocket) {
                               var responseString = 'HTTP/1.1 ' + (responseCode || 200) + ' ' + (responseMessage || 'OK') +
                                   (responseHeaders ? "\n" + responseHeaders : '') +
@@ -81,7 +83,7 @@ if(typeof module === 'object') (function() {
                 return false;
 
             ClientWorkerThread.log(
-                "<span class='direction'>I</span>: " +
+                "<span class='direction'>I</span> " +
                 "<span class='request'><a href='" + responseString + "'>" + responseString + "</a></span>: "
             );
 
@@ -116,7 +118,7 @@ if(typeof module === 'object') (function() {
                 return false;
 
             ClientWorkerThread.log(
-                "<span class='direction'>I</span>: " +
+                "<span class='direction'>I</span> " +
                 "<span class='request'><a href='" + responseString + "'>" + responseString + "</a></span>: "
             );
 
@@ -128,7 +130,7 @@ if(typeof module === 'object') (function() {
             if(ret === true)
                 return true;
 
-            console.warn("Unhandled: ", responseString);
+            //console.warn("Unhandled: ", responseString);
             return false;
             //renderResponseString(responseString);
         }

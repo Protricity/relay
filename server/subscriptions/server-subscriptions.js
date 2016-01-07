@@ -559,9 +559,9 @@ module.exports.ServerSubscriptions =
         var KeySpaceDB = require('../../keyspace/ks-db.js')
             .KeySpaceDB;
 
-        var requestURL = "http://" + pgp_id_public + ".ks/public/id";
-        console.info("Requesting Public Key from Client: " + requestURL);
-        ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(KeySpaceDB, requestURL, [client],
+        var requestString = "GET http://" + pgp_id_public + ".ks/public/id";
+        console.info("Requesting Public Key from Client: " + requestString);
+        ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(KeySpaceDB, requestString, [client],
             function(responseBody, responseCode, responseMessage, responseHeaders, respondingClient) {
 
                 if(responseCode !== 200) {
@@ -600,7 +600,7 @@ module.exports.ServerSubscriptions =
         //if(typeof keyspaceRequests[requestID] !== 'undefined')
         //    throw new Error("Duplicate Request ID: " + requestID);
         //
-        //var requestString = "GET " + requestURL +
+        //var requestString = "GET " + requestString +
         //    "\nRequest-ID: " + requestID;
         //
         //send(client, requestString);
@@ -673,10 +673,20 @@ module.exports.ServerSubscriptions =
         // TODO:
     };
 
-    ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts = function(KeySpaceDB, requestURL, additionalClients, callback) {
-        var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(requestURL);
+    ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts = function(KeySpaceDB, requestString, additionalClients, callback) {
+        var headerLines = requestString.split(/\n/g);
+        var firstLine = headerLines.shift();
+        var requestHeaders = headerLines.join("\n");
+        var match = /^(head|get)\s+(\S+)/i.exec(requestString);
+        if (!match)
+            throw new Error("Invalid Socket GET/HEAD Request: " + requestString);
+
+        var requestType = match[1];
+        var requestURL = match[2];
+
+        match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(requestURL);
         if(!match)
-            throw new Error("Invalid URI: " + requestURL);
+            throw new Error("Invalid URI: " + requestString);
 
         var scheme = match[2],
             host = match[4],
@@ -684,12 +694,11 @@ module.exports.ServerSubscriptions =
 
         match = /^([^.]*\.)?([a-f0-9]{8,16})\.ks$/i.exec(host);
         if (!match)
-            throw new Error("Host must match [PGP KEY ID (8 or 16)].ks: " + requestURL);
+            throw new Error("Host must match [PGP KEY ID (8 or 16)].ks: " + requestString);
         var pgp_id_public = match[2].toUpperCase();
         pgp_id_public = pgp_id_public.substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
 
-        var requestString = "HEAD " + requestURL;
-            //"\nRequest-ID: " + requestID;
+        requestString = "HEAD " + requestURL + (requestHeaders ? "\n" + requestHeaders : "");
 
         var hostClients = ServerSubscriptions.getKeySpaceSubscriptions(pgp_id_public, "GET");
         if(hostClients.length <=2) // Hack: Adding authenticated clients also
@@ -707,11 +716,11 @@ module.exports.ServerSubscriptions =
 
         // No requests were sent to clients, so callback with error
         if(hostClients.length === 0) {
-            callback(null, "No KeySpace Hosts Available", 400, "No KeySpace Hosts Available", "Request-URL: " + requestURL);
+            callback(null, "No KeySpace Hosts Available", 400, "No KeySpace Hosts Available", "Request-URL: " + requestString);
             return;
         }
 
-        console.info("Requesting Keyspace content HEAD from (" + hostClients.length + ") Host Clients: " + requestURL);
+        console.info("Requesting Keyspace content HEAD from (" + hostClients.length + ") Host Clients: " + requestString);
 
         // TODO: timeout, count, and try next host. FAIL!
         for(i=0; i<hostClients.length; i++) {
@@ -722,7 +731,7 @@ module.exports.ServerSubscriptions =
                         return false;
                     }
 
-                    requestString = "GET " + requestURL;
+                    requestString = "GET " + requestURL + (requestHeaders ? "\n" + requestHeaders : "");
                     KeySpaceDB.executeSocketGETRequest(requestString, respondingClient,
                         function(responseBody, responseCode, responseMessage, responseHeaders, respondingClient) {
                             if(responseCode !== 200) {
