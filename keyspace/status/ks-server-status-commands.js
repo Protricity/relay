@@ -14,9 +14,12 @@ var ServerSubscriptions =
 
 function ksStatusSocketCommand(commandString, client) {
     var match = /^keyspaces?\.status/i.exec(commandString);
-    if (!match)
-        return false;
-
+    if (!match)         // If unmatched, 
+        return false;   // Pass control to next handler
+    
+    // Output to console
+    console.info('I', commandString);
+    
     ServerSubscriptions.handleKeySpaceStatusCommand(commandString, client);
     return true;
 }

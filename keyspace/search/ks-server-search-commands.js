@@ -33,6 +33,10 @@ function ksSearchSocketCommand(commandString, client) {
     if (!match)         // If unmatched, 
         return false;   // Pass control to next handler
 
+    // Output to console
+    console.info('I ', commandString);
+    
+    
     var searchModes = ['chat', 'event'];
     if(match[1] && searchModes.indexOf(match[1].toLowerCase()) === -1)
         searchModes.push(match[1].toLowerCase());

@@ -74,7 +74,7 @@ if(typeof module !== 'object')
 
                         var user_id = publicKeyContentEntry.user_id || pgp_id_public;
 
-                        console.log(user_id, arguments);
+                        // console.log(user_id, arguments);
                         var subscriptionStatus = false ? 'Subscribe' : 'Unsubscribe' ;
                         //var user_id = ClientSubscriptions.getCachedPublicKeyUserID(pgp_id_public)
                         //    || pgp_id_public;

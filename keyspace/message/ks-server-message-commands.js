@@ -28,6 +28,9 @@ function ksMessageCommandSocket(commandString, client) {
     var match = /^(?:keyspace\.)?message\s+([a-f0-9]{8,})\s+([a-f0-9]{8,})\s*([\s\S]*)$/im.exec(commandString);
     if (!match)         // If unmatched, 
         return false;   // Pass control to next handler
+    
+    // Output to console
+    console.info('I ', commandString);
 
     // Recipient PGP Public Key ID
     var pgp_id_to = match[1].toUpperCase();

@@ -21,8 +21,11 @@ var KeySpaceDB = require('../../keyspace/ks-db.js')
 
 function httpCommandSocket(responseString, client) {
     var match = /^http/i.exec(responseString);
-    if(!match)
-        return false;
+    if (!match)         // If unmatched, 
+        return false;   // Pass control to next handler
+    
+    // Output to console
+    console.info('I ', responseString);
 
     var ret = KeySpaceDB.handleHTTPResponse(responseString, client);
     if(ret === true) {
@@ -40,9 +43,12 @@ function httpCommandSocket(responseString, client) {
 
 function getCommandSocket(requestString, client) {
     var match = /^(head|get)\s+(\S*)/i.exec(requestString);
-    if(!match)
-        return false;
-
+    if (!match)         // If unmatched, 
+        return false;   // Pass control to next handler
+    
+    // Output to console
+    console.info('I ', requestString);
+    
     //var requestURL = match[2];
 
     KeySpaceDB.executeLocalGETRequest(requestString,
@@ -75,8 +81,11 @@ function getCommandSocket(requestString, client) {
 function getCommandHTTP(request, response) {
     var requestString = request.method + ' ' + request.url; // TODO: headers
     var match = /^get\s+(\S*)/i.exec(requestString);
-    if(!match)
-        return false;
+    if (!match)         // If unmatched, 
+        return false;   // Pass control to next handler
+    
+    // Output to console
+    console.info('I ', requestString);
 
     var requestURL = match[1];
     KeySpaceDB.executeLocalGETRequest(requestString,

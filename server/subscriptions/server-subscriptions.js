@@ -444,7 +444,7 @@ module.exports.ServerSubscriptions =
         for(var i=0; i<clientList.length; i++) {
             if(clientList[i].readyState !== clientList[i].OPEN) {
                 clientList.splice(i--, 1);
-                console.warn("Removing Disconnected Client: " + pgp_id_public);
+                console.warn("Removing Disconnected Client (" + clientList.length + "): " + pgp_id_public);
             }
         }
         return clientList.slice();
@@ -528,24 +528,28 @@ module.exports.ServerSubscriptions =
     };
 
     ServerSubscriptions.requestKeySpaceAuthentication = function(pgp_id_public, client, callback) {
+  
         pgp_id_public = pgp_id_public.toUpperCase();
         if(typeof keyspaceAuthentications[pgp_id_public] !== 'undefined') {
             if(keyspaceAuthentications[pgp_id_public].indexOf(client) >= 0) {
                 if(callback) try {
                     callback(pgp_id_public, client);
+                    console.info("Client reusing existing Keyspace authentication: ", pgp_id_public);
+                    return true;
                 } catch (e) {
-                    callback(e);
+                    console.error("Error requesting authentication: ", e);
                 }
-                return true;
             }
         }
 
+        console.info("Client requesting Keyspace authentication: ", pgp_id_public);
         ServerSubscriptions.requestClientPublicKey(pgp_id_public, client,
             function(err, publicKey) {
 
                 if(err) {
                     send(client, "ERROR " + err);
-                    throw new Error("Error requesting public key: " + err);
+                    console.error("Error requesting public key: " + err);
+                    return;
                 }
 
                 // Generate new challenge
@@ -561,11 +565,13 @@ module.exports.ServerSubscriptions =
 
                 openpgp.encryptMessage(publicKey, hostCode)
                     .then(function(encryptedMessage) {
+                        console.info("Sending KeySpace Auth Challenge...");
                         send(client, "KEYSPACE.AUTH.CHALLENGE " + encryptedMessage);
                         //ServerSubscriptions.notifyAllAuthenticatedKeySpaceClients(pgp_id_public, "EVENT KEYSPACE.HOST.CHALLENGE " + encryptedMessage);
 
                     }).catch(function(error) {
                         send(client, "ERROR " + error);
+                        console.error("Error encrypting KeySpace Auth Challenge: " + err);
                     });
             }
         );
@@ -579,11 +585,12 @@ module.exports.ServerSubscriptions =
         var KeySpaceDB = require('../../keyspace/ks-db.js')
             .KeySpaceDB;
 
+        console.info("Checking for local cache of Private Key: " + requestString);
         KeySpaceDB.executeLocalGETRequest(requestString,
             function(responseBody, responseCode, responseMessage, responseHeaders) {
                 if(responseCode === 200) {
-                    parseResponse(responseBody, responseCode, responseMessage, responseHeaders);
                     console.info("Public Key found locally: " + requestString);
+                    parseResponse(responseBody, responseCode, responseMessage, responseHeaders);
 
                 } else {
                     console.info("Requesting Public Key from Client: " + requestString);
@@ -631,18 +638,6 @@ module.exports.ServerSubscriptions =
 
             callback(null, publicKey);
         }
-        //var requestID = "PK" + Date.now();
-        //if(typeof keyspaceRequests[requestID] !== 'undefined')
-        //    throw new Error("Duplicate Request ID: " + requestID);
-        //
-        //var requestString = "GET " + requestString +
-        //    "\nRequest-ID: " + requestID;
-        //
-        //send(client, requestString);
-        //
-        //keyspaceRequests[requestID] = function(hostClient, responseBody, responseCode, responseMessage, responseHeaders) {
-        //
-        //};
     };
 
     ServerSubscriptions.handleKeySpaceStatusCommand = function(commandString, client) {

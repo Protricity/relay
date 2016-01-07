@@ -26,7 +26,10 @@ if(typeof module === 'object') (function() {
             var match = /^keyspace\.auth/i.exec(commandString);
             if (!match)         // If unmatched, 
                 return false;   // Pass control to next handler
-
+        
+            // Output to console
+            console.info('O ', commandString);
+            
             // Forward command to socket server
             ClientWorkerThread.sendWithSocket(commandString);
      
@@ -46,6 +49,9 @@ if(typeof module === 'object') (function() {
             if (!match)         // If unmatched, 
                 return false;   // Pass control to next handler
 
+            // Output to console
+            console.info('I ', responseString);
+            
             // Import ClientSubscription instance
             self.module = {exports: {}};
             importScripts('client/subscriptions/client-subscriptions.js');

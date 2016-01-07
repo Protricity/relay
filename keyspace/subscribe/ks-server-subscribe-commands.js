@@ -37,7 +37,10 @@ function ksAuthSocketCommand(commandString, client) {
     var match = /^(?:keyspaces?\.)?auth/im.exec(commandString);
     if (!match)         // If unmatched, 
         return false;   // Pass control to next handler
-
+    
+    // Output to console
+    console.info('I ', commandString);
+    
     ServerSubscriptions.handleKeySpaceAuthenticationCommand(commandString, client);
     return true;
 }
@@ -53,7 +56,10 @@ function ksSubscribeSocketCommand(commandString, client) {
     var match = /^(keyspaces?\.)?(un|re)?subscribe/i.exec(commandString);
     if (!match)         // If unmatched, 
         return false;   // Pass control to next handler
-
+    
+    // Output to console
+    console.info('I ', commandString);
+    
     try {
         // Handle Subscription
         var oldSubscriptionString = ServerSubscriptions.handleClientSubscription(commandString, client);
@@ -79,6 +85,9 @@ function ksUnsubscribeSocketCommand(commandString, client) {
     var match = /^(?:channel\.)?unsubscribe(?:\.(\w+))?\s+(\S+)$/im.exec(commandString);
     if (!match)         // If unmatched, 
         return false;   // Pass control to next handler
+    
+    // Output to console
+    console.info('I ', commandString);
 
     var mode = match[1] || DEFAULT_MODE;
     var channel = match[2];

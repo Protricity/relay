@@ -67,7 +67,7 @@ module.exports.KeySpaceDB =
     var pendingSocketRequestCount = 0;
 
     KeySpaceDB.getDBInstance = function(callback) {
-        if(dbInst)
+        if(dbInst) // TODO: false if fail
             return callback(null, dbInst);
         if(callback)
             onDBCallbacks.push(callback);
@@ -543,8 +543,12 @@ module.exports.KeySpaceDB =
      */
     KeySpaceDB.executeLocalGETRequest = function(requestString, callback) {
         var match = /^(head|get)\s+(\S+)/i.exec(requestString);
-        if (!match)
-            throw new Error("Invalid Local GET/HEAD Request: " + requestString);
+        if (!match) {
+            var err = "Invalid Local GET/HEAD Request: " + requestString;
+            callback(err, 400);
+            console.error(err);
+            return;
+        }
         
         // Request Type HEAD or GET?
         var requestType = match[1].toLowerCase();
@@ -560,10 +564,9 @@ module.exports.KeySpaceDB =
         match = /^Request-ID: (\S+)$/im.exec(requestHeaders);
         if(match)
             requestID = match[1];
-
         // Query the local database
         KeySpaceDB.queryOne(requestURL, function (err, contentData) {
-
+          
             var responseCode = 404;
             var responseText = "Not Found";
             var responseBody = "Not Found";
@@ -618,8 +621,11 @@ module.exports.KeySpaceDB =
 // TODO: 521D4941.ks + [] => myspace.abc123.nks - [] => 521D4941.ks
     KeySpaceDB.queryAll = function(contentURI, callback) {
         var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(contentURI);
-        if(!match)
-            throw new Error("Invalid URI: " + contentURI);
+        if(!match) {
+            console.error("Invalid URI: " + contentURI);
+            callback("Invalid URI: " + contentURI);
+            return;
+        }
 
         var scheme = match[2],
             host = match[4],
@@ -631,8 +637,13 @@ module.exports.KeySpaceDB =
         var publicKeyID = null;
         if(host && host !== '*') {
             match = /^([^.]*\.)?([a-f0-9]{8,16})\.ks$/i.exec(host);
-            if (!match)
-                throw new Error("Host must match [PGP KEY ID (8 or 16)].ks: " + contentURI);
+            if (!match){
+                var err = "Host must match [PGP KEY ID (8 or 16)].ks: " + contentURI;
+                console.error(err);
+                callback(err);
+                return;
+            }
+            
             publicKeyID = match[2].toUpperCase();
             publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
         }
@@ -686,8 +697,8 @@ module.exports.KeySpaceDB =
                     .each(callback);
 
             } else {
-                throw new Error("Invalid Database Driver");
-
+                console.error("Invalid Database Driver");
+                callback("Invalid Database Driver");
             }
         });
     };
