@@ -70,8 +70,6 @@ if(typeof module === 'object') (function() {
                 Client.render(html);
             });
 
-            //console.info("Requesting contact list status");
-
             self.module = {exports: {}};
             importScripts('keyspace/ks-db.js');
             var KeySpaceDB = self.module.exports.KeySpaceDB;
@@ -97,9 +95,13 @@ if(typeof module === 'object') (function() {
                 } else {
                     if(publicKeys.length) {
                         var eventSubscriptionCommand = "KEYSPACES.SUBSCRIBE.EVENT " + publicKeys.join(" ");
-                        if(eventSubscriptionCommand !== lastEventSubscriptionCommand)
+                        if(eventSubscriptionCommand !== lastEventSubscriptionCommand) {
+                            console.info("Subscribing to contact list: " + eventSubscriptionCommand);
                             ClientWorkerThread.sendWithSocket(eventSubscriptionCommand);
-                        lastEventSubscriptionCommand = eventSubscriptionCommand;
+                            lastEventSubscriptionCommand = eventSubscriptionCommand;
+                        } else {
+                            console.info("Ignoring unchanged subscriptions: " + eventSubscriptionCommand);
+                        }
                     }
 
                     var privateKeys = [];
@@ -116,9 +118,14 @@ if(typeof module === 'object') (function() {
 
                         } else {
                             var statusSubscriptionCommand = "KEYSPACES.STATUS ONLINE " + privateKeys.join(" ");
-                            if(statusSubscriptionCommand !== lastStatusSubscriptionCommand)
+
+                            if(statusSubscriptionCommand !== lastStatusSubscriptionCommand) {
+                                console.info("Setting Status Online: " + statusSubscriptionCommand);
                                 ClientWorkerThread.sendWithSocket(statusSubscriptionCommand);
-                            lastStatusSubscriptionCommand = statusSubscriptionCommand;
+                                lastStatusSubscriptionCommand = statusSubscriptionCommand;
+                            } else {
+                                console.info("Ignoring unchanged status: " + statusSubscriptionCommand);
+                            }
                         }
                     });
 
