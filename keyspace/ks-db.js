@@ -64,6 +64,8 @@ module.exports.KeySpaceDB =
     // Pending GET/HEAD requests from client and server sockets
     var pendingSocketRequests = {};
 
+    var pendingSocketRequestCount = 0;
+
     KeySpaceDB.getDBInstance = function(callback) {
         if(dbInst)
             return callback(null, dbInst);
@@ -497,7 +499,7 @@ module.exports.KeySpaceDB =
         headerLines.shift();
         var requestHeaders = headerLines.join("\n");
 
-        var requestID = "RG" + Date.now();
+        var requestID = "RG" + Date.now() + pendingSocketRequestCount++;
         match = /^Request-ID: (\S+)$/im.exec(requestHeaders);
         if(match)
             requestID = match[1];
