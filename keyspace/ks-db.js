@@ -189,6 +189,7 @@ module.exports.KeySpaceDB =
         KeySpaceDB.insert(
             KeySpaceDB.DB_TABLE_HTTP_MESSAGE,
             insertData,
+            {},
             function(err, insertData, arg) {
                 if(callback)
                     callback(err, insertData, arg);
@@ -341,6 +342,7 @@ module.exports.KeySpaceDB =
         KeySpaceDB.insert(
             KeySpaceDB.DB_TABLE_HTTP_CONTENT,
             insertData,
+            {},
             function(err, newInsertData, arg) {
                 if(callback)
                     callback(err?err.message:null, insertData);

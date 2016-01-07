@@ -87,7 +87,7 @@ if(typeof module === 'object') (function() {
                             passphrase_required: privateKey.primaryKey.isDecrypted ? false : true
                         }, function (err, insertData) {
                             if (err)
-                                return doErr(err.message);
+                                return doErr(err.message || err);
 
                             var path = '/public/id';
                             KeySpaceDB.addVerifiedContentToDB(exportedPublicKey.armor(), publicKeyID, exportedPublicKeyTimeStamp, path, {
