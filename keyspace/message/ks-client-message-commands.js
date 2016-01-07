@@ -148,7 +148,7 @@ if(typeof module === 'object') (function() {
                 requestPublicKeyContent(pgp_id_from);
 
             } else {
-                ClientWorkerThread.postResponseToClient("FOCUS ks-message:" + uid)
+                ClientWorkerThread.postResponseToClient("FOCUS ks-message:" + uid);
                 if(callback)
                     callback();
             }

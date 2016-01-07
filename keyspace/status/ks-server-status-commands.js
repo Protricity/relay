@@ -13,7 +13,7 @@ var ServerSubscriptions =
         .ServerSubscriptions;
 
 function ksStatusSocketCommand(commandString, client) {
-    var match = /^keyspace\.status/i.exec(commandString);
+    var match = /^keyspaces?\.status/i.exec(commandString);
     if (!match)
         return false;
 

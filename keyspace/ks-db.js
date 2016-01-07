@@ -144,6 +144,8 @@ module.exports.KeySpaceDB =
                         onDBCallbacks[j](err, db);
                     onDBCallbacks = [];
                     dbInst = null;
+                    console.error(err);
+                    // TODO: timed reconnect?
                     return;
                 }
 
@@ -187,25 +189,29 @@ module.exports.KeySpaceDB =
         KeySpaceDB.insert(
             KeySpaceDB.DB_TABLE_HTTP_MESSAGE,
             insertData,
-            function(err, insertData) {
+            function(err, insertData, arg) {
                 if(callback)
-                    callback(err, insertData);
+                    callback(err, insertData, arg);
 
                  console.info("Added encrypted message to database", insertData);
             }
         );
     };
 
+    // TODO LATER: only allow registered member keys to store/cache content on servers, but for now, everyone gets cached. yay!
     KeySpaceDB.verifyAndAddContent = function(openpgp, unverifiedContent, pgp_id_public, callback) {
         callback = callback || function(err, insertData) {
             if(err)
-                throw new Error(err);
+                console.error(err);
             else
-                console.info("Verified and Added content: ", insertData);
+                console.info("Successfully added KeySpace Content:" +
+                    " " + insertData.pgp_id_public +
+                    " " + insertData.timestamp);
         };
 
         // TODO: check for encrypted rather than cleartext
-        if(unverifiedContent.indexOf('-----BEGIN PGP SIGNED MESSAGE-----') === 0) {
+        // TODO: check for multiple contents in one, although that shouldn't happen
+        if((unverifiedContent.indexOf('-----BEGIN PGP SIGNED MESSAGE-----') >= 0)) {
             var pgpClearSignedMessage = openpgp.cleartext.readArmored(unverifiedContent);
             var verify_pgp_id_public = pgpClearSignedMessage.getEncryptionKeyIds()[0].toHex().toUpperCase();
             verify_pgp_id_public = verify_pgp_id_public.substr(verify_pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
@@ -267,18 +273,18 @@ module.exports.KeySpaceDB =
                     });
             });
 
-        } else if(unverifiedContent.indexOf('-----BEGIN PGP PUBLIC KEY BLOCK-----') === 0) {
+        } else if(unverifiedContent.indexOf('-----BEGIN PGP PUBLIC KEY BLOCK-----') >= 0) {
             var publicKey = openpgp.key.readArmored(unverifiedContent).keys[0];
             var publicKeyCreateDate = publicKey.subKeys[0].subKey.created;
             var pkPath = 'public/id';
             var pkTimestamp = publicKeyCreateDate.getTime();
             var keyspaceContent = publicKey.armor();
 
-            var verify_pgp_id_public2  = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
-            verify_pgp_id_public2 = verify_pgp_id_public2.substr(verify_pgp_id_public2.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
-            if(pgp_id_public && pgp_id_public.toUpperCase() !== verify_pgp_id_public2)
+            var pgp_id_public2  = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+            pgp_id_public2 = pgp_id_public2.substr(pgp_id_public2.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+            if(pgp_id_public && pgp_id_public.toUpperCase() !== pgp_id_public2)
                 throw new Error("PGP Public Key ID Mismatch: " + pgp_id_public);
-            pgp_id_public = verify_pgp_id_public2;
+            pgp_id_public = pgp_id_public2;
 
             // Add public key to cache.
             KeySpaceDB.addVerifiedContentToDB(keyspaceContent, pgp_id_public, pkTimestamp, pkPath, {},
@@ -292,7 +298,7 @@ module.exports.KeySpaceDB =
                 });
 
         } else {
-            throw new Error("No PGP Signed Message or Public Key found");
+            throw new Error("No PGP Signed Message or Public Key found" + unverifiedContent);
         }
 
     };
@@ -335,7 +341,7 @@ module.exports.KeySpaceDB =
         KeySpaceDB.insert(
             KeySpaceDB.DB_TABLE_HTTP_CONTENT,
             insertData,
-            function(err, newInsertData) {
+            function(err, newInsertData, arg) {
                 if(callback)
                     callback(err?err.message:null, insertData);
 
@@ -452,6 +458,7 @@ module.exports.KeySpaceDB =
         var firstLine = headerLines.shift();
         responseHeaders = headerLines.join("\n");
 
+        // Match Request ID or pass to next handler
         match = /^Request-ID: (\S+)$/im.exec(responseHeaders);
         if(match) {
             var requestID = match[1];
@@ -709,7 +716,7 @@ module.exports.KeySpaceDB =
         });
     };
 
-    KeySpaceDB.insert = function(tableName, insertData, callback) {
+    KeySpaceDB.insert = function(tableName, insertData, insertOptions, callback) {
         KeySpaceDB(function(err, db) {
             if(err)
                 return callback(err);
@@ -731,8 +738,7 @@ module.exports.KeySpaceDB =
 
             } else if (typeof mongodb !== 'undefined' && db instanceof mongodb.Db) {
                 var dbCollection = db.collection(tableName);
-                dbCollection.insert(insertData);
-                callback(null, insertData);
+                dbCollection.insert(insertData, insertOptions, callback);
 
             } else {
                 throw new Error("Invalid Database Driver");
@@ -740,7 +746,7 @@ module.exports.KeySpaceDB =
         });
     };
 
-    KeySpaceDB.update = function(tableName, updateData, callback) {
+    KeySpaceDB.update = function(tableName, searchData, updateData, updateOptions, callback) {
         callback = callback || function(err, updateData) {
             if(err)
                 throw err;
@@ -768,7 +774,8 @@ module.exports.KeySpaceDB =
 
             } else if (typeof mongodb !== 'undefined' && db instanceof mongodb.Db) {
                 var dbCollection = db.collection(tableName);
-                dbCollection.update(null, updateData);
+
+                dbCollection.update(searchData, updateData, updateOptions, callback);
                 //callback(null, insertData);
 
             } else {

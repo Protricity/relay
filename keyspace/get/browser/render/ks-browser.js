@@ -41,7 +41,7 @@ if(typeof document === 'object')
 
             var browserID = null;
             var targetElm = e.target || formElm;
-            while(!browserID && (targetElm = targetElm.parentNode))
+            while(!browserID && (targetElm = targetElm.parentNode) && targetElm.getAttribute)
                 browserID = targetElm.getAttribute('data-browser-id');
             if(!browserID)
                 throw new Error("Browser ID not found");

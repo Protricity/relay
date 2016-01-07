@@ -45,7 +45,7 @@ if(typeof module === 'object') (function() {
         // KEYSPACE.STATUS Command
         SocketServer.addCommand(importStatusCommand);
         function importStatusCommand(commandString, e) {
-            if (!/^keyspace\.status/i.test(commandString))
+            if (!/^keyspaces?\.status/i.test(commandString))
                 return false;
             SocketServer.removeCommand(importStatusCommand);
             require('./status/ks-server-status-commands.js')

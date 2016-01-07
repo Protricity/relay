@@ -127,8 +127,17 @@ if(typeof module === 'object') (function() {
             var KeySpaceDB = self.module.exports.KeySpaceDB;
 
             var ret = KeySpaceDB.handleHTTPResponse(responseString, e ? e.target : null);
-            if(ret === true)
+            if(ret === true) {
+                // Add content to local database, if applicable
+                self.module = {exports: self.exports = {}};
+                importScripts('pgp/lib/openpgpjs/openpgp.js');
+                var openpgp = self.module.exports;
+
+                if(responseString.indexOf("\n\n") > 0) // Indicates a body
+                    KeySpaceDB.verifyAndAddContent(openpgp, responseString);
+
                 return true;
+            }
 
             //console.warn("Unhandled: ", responseString);
             return false;

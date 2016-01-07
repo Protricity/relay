@@ -45,7 +45,7 @@ module.exports.ClientSubscriptions =
 
     // TODO: needs comments
     ClientSubscriptions.handleClientUserList = function(responseString) {
-        var match = /^(?:channel\.)?userlist\.(\w+)\s(\S+)\n([\s\S]+)$/im.exec(responseString);
+        var match = /^(?:channel\.)?userlist\.(\S+)\s(\S+)\n([\s\S]+)$/im.exec(responseString);
         if (!match)
             throw new Error("Invalid UserList: " + responseString);
 
@@ -80,7 +80,7 @@ module.exports.ClientSubscriptions =
     // KEYSPACE.SUBSCRIBE.GET ABCD1234 <-- host keyspace content
     // KEYSPACE.SUBSCRIBE.PUT ABCD1234 <-- host keyspace service
     ClientSubscriptions.handleSubscriptionResponse = function(subscriptionString, e) {
-        var match = /^(\w+)\.(|un|re)subscribe(?:\.(\w+))?\s+(\S+)\s*([\s\S]*)$/im.exec(subscriptionString);
+        var match = /^(\w+)\.(|un|re)subscribe(?:\.(\S+))?\s+(\S+)\s*([\s\S]*)$/im.exec(subscriptionString);
         if (!match)
             throw new Error("Invalid Subscription: " + subscriptionString);
 
@@ -88,8 +88,16 @@ module.exports.ClientSubscriptions =
 
         var type = match[1].toLowerCase();
         var prefix = match[2].toLowerCase();
-        var mode = (match[3] || DEFAULT_MODE).toLowerCase();
+        var modeString = (match[3] || DEFAULT_MODE);
+        var mode = modeString.toLowerCase();
         var argString = match[5];
+
+        var subMode = null;
+        if(mode.indexOf('.') > 0) {
+            var modeSplit = modeString.split('.');
+            mode = modeSplit.shift();
+            subMode = modeSplit.join('.');
+        }
 
         var modeList;
         switch(type) {
@@ -102,7 +110,7 @@ module.exports.ClientSubscriptions =
                     if(ksplit[kspliti].length > 0)
                         kss.push(
                             ClientSubscriptions.handleSubscriptionResponse(
-                                'KEYSPACE.' + prefix.toUpperCase() + 'SUBSCRIBE.' + mode.toUpperCase() +
+                                'KEYSPACE.' + prefix.toUpperCase() + 'SUBSCRIBE.' + modeString.toUpperCase() +
                                 ' ' + ksplit[kspliti],
                                 e
                             )
@@ -144,7 +152,7 @@ module.exports.ClientSubscriptions =
                     if(csplit[cspliti].length > 0)
                         css.push(
                             ClientSubscriptions.handleSubscriptionResponse(
-                                'CHANNEL.' + prefix.toUpperCase() + 'SUBSCRIBE.' + mode.toUpperCase() +
+                                'CHANNEL.' + prefix.toUpperCase() + 'SUBSCRIBE.' + modeString.toUpperCase() +
                                 ' ' + csplit[cspliti],
                                 e
                             )
@@ -336,33 +344,38 @@ module.exports.ClientSubscriptions =
     };
 
     ClientSubscriptions.handleKeySpaceStatusResponse = function(responseString, e) {
-        var match = /^keyspace\.status\s+([a-f0-9]{8,})\s+(.*)$/i.exec(responseString);
+        var match = /^keyspaces?\.status\s+(\S{2,256})\s+([a-f0-9 ]+)$/i.exec(responseString);
         if (!match)
-            throw new Error("Invalid Status Response: " + responseString);
+            throw new Error("Invalid Status Command: " + responseString);
 
-        var pgp_id_public = match[1];
-        pgp_id_public = pgp_id_public.toUpperCase().substr(pgp_id_public.length - 8);
-        var argString = match[2];
-        var statusValue = argString.split(' ')[0].toLowerCase();
-        switch(statusValue) {
-            case 'online':
-            case 'offline':
-            case 'away':
-                break;
-            default:
-                break;
+        var statusValue = match[1];
+        var statusCommand = statusValue.split('.')[0].toLowerCase();
+        var all_pgp_id_public = match[2].split(/\s+/g);
+
+        for(var i=0; i<all_pgp_id_public.length; i++) {
+            var pgp_id_public = all_pgp_id_public[i];
+            pgp_id_public = pgp_id_public.toUpperCase().substr(pgp_id_public.length - 8);
+
+            switch (statusCommand) {
+                case 'online':
+                case 'offline':
+                case 'away':
+                    break;
+                default:
+                    break;
+            }
+
+            var oldStatusArgString = null;
+            if (typeof keyspaceStatus[pgp_id_public] !== 'undefined')
+                oldStatusArgString = keyspaceStatus[pgp_id_public];
+
+            keyspaceStatus[pgp_id_public] = statusValue;
+
+            // TODO: event notify
+            ClientWorkerThread.processResponse("EVENT " + responseString);
+            console.info("KeySpace Status Change for " + pgp_id_public + ": " + statusValue, "Old: ", oldStatusArgString);
+
         }
-
-        var oldStatusArgString = null;
-        if(typeof keyspaceStatus[pgp_id_public] !== 'undefined')
-            oldStatusArgString = keyspaceStatus[pgp_id_public];
-
-        keyspaceStatus[pgp_id_public] = argString;
-
-        // TODO: event notify
-        ClientWorkerThread.processResponse("EVENT " + responseString);
-        console.info("KeySpace Status Change for " + pgp_id_public + ": " + argString, "Old: ", oldStatusArgString);
-
         return true;
     };
 

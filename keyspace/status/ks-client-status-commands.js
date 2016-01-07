@@ -9,7 +9,7 @@ if(typeof module === 'object') (function() {
 
         // KEYSPACE.STATUS ABCD1234 ONLINE
         function ksStatusResponse(responseString, e) {
-            var match = /^keyspace\.status\s+([a-f0-9]{8,})\s+(.*)$/i.exec(responseString);
+            var match = /^keyspace\.status/i.exec(responseString);
             if (!match)
                 return false;
 

@@ -46,15 +46,25 @@ module.exports.ServerSubscriptions =
      * @example KEYSPACE.SUBSCRIBE.PUT ABCD1234 ABCD1234 <-- host keyspace service
      */
     ServerSubscriptions.handleClientSubscription = function(subscriptionString, client) {
-        var match = /^(\w+)\.(|un|re)subscribe(?:\.(\w+))?\s+(\S+)\s*([\s\S]*)$/im.exec(subscriptionString);
+        var match = /^(\w+)\.(|un|re)subscribe(?:\.(\S+))?\s+(\S+)\s*([\s\S]*)$/im.exec(subscriptionString);
         if (!match)
             throw new Error("Invalid Subscription: " + subscriptionString);
+
 
         // New Subscription was matched correctly, so let's handle it
         var type = match[1].toLowerCase();
         var prefix = match[2].toLowerCase();
-        var mode = (match[3] || DEFAULT_MODE).toLowerCase();
+        var modeString = (match[3] || DEFAULT_MODE);
+        var mode = modeString.toLowerCase();
         var argString = match[5];
+
+        var subMode = null;
+        if(mode.indexOf('.') > 0) {
+            var modeSplit = modeString.split('.');
+            mode = modeSplit.shift();
+            subMode = modeSplit.join('.');
+        }
+
 
         var subscriptionListItem = null;
         var subscriptionList = null;
@@ -70,7 +80,7 @@ module.exports.ServerSubscriptions =
                         kss.push(
                             ServerSubscriptions.handleClientSubscription(
                                 'KEYSPACE.' +
-                                prefix.toUpperCase() + 'SUBSCRIBE.' + mode.toUpperCase() +
+                                prefix.toUpperCase() + 'SUBSCRIBE.' + modeString.toUpperCase() +
                                 ' ' + ksplit[kspliti],
                                 client
                             )
@@ -110,7 +120,7 @@ module.exports.ServerSubscriptions =
                             .toLowerCase();
                         if(keyspaceStatus !== 'offline' && prefix === '') {
                             // Notify subscriber of keyspace status
-                            send(client, "KEYSPACE.STATUS " + pgp_id_public + " " + keyspaceStatusString);
+                            send(client, "KEYSPACE.STATUS " + keyspaceStatusString + " " + pgp_id_public);
                         }
                         break;
                     default:
@@ -143,7 +153,7 @@ module.exports.ServerSubscriptions =
                     if(csplit[cspliti].length > 0)
                         css.push(
                             ServerSubscriptions.handleClientSubscription(
-                                'CHANNEL.' + prefix.toUpperCase() + 'SUBSCRIBE.' + type.toUpperCase() +
+                                'CHANNEL.' + prefix.toUpperCase() + 'SUBSCRIBE.' + modeString.toUpperCase() +
                                 ' ' + csplit[cspliti],
                                 client
                             )
@@ -556,46 +566,63 @@ module.exports.ServerSubscriptions =
     ServerSubscriptions.requestClientPublicKey = function (pgp_id_public, client, callback) {
         pgp_id_public = pgp_id_public.toUpperCase();
 
+        var requestString = "GET http://" + pgp_id_public + ".ks/public/id";
+
         var KeySpaceDB = require('../../keyspace/ks-db.js')
             .KeySpaceDB;
 
-        var requestString = "GET http://" + pgp_id_public + ".ks/public/id";
-        console.info("Requesting Public Key from Client: " + requestString);
-        ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(KeySpaceDB, requestString, [client],
-            function(responseBody, responseCode, responseMessage, responseHeaders, respondingClient) {
+        KeySpaceDB.executeLocalGETRequest(requestString,
+            function(responseBody, responseCode, responseMessage, responseHeaders) {
+                if(responseCode === 200) {
+                    parseResponse(responseBody, responseCode, responseMessage, responseHeaders);
+                    console.info("Public Key found locally: " + requestString);
 
-                if(responseCode !== 200) {
-                    callback(responseCode + " " + responseMessage, responseCode, responseMessage, '');
-                    return send(client, "ERROR " + responseCode + " " + responseMessage);
+                } else {
+                    console.info("Requesting Public Key from Client: " + requestString);
+                    ServerSubscriptions.requestKeySpaceContentFromSubscribedHosts(
+                        KeySpaceDB,
+                        requestString,
+                        [client],
+                        parseResponse
+                    );
+
                 }
-
-                if(respondingClient !== client) { // TODO: Necessary?
-                    callback("Client Mismatch", 400, "Client Mismatch", '');
-                    return send(client, "ERROR Client Mismatch");
-                }
-
-                var KeySpaceDB = require('../../keyspace/ks-db.js')
-                    .KeySpaceDB;
-                if(typeof openpgp === 'undefined')
-                    var openpgp = require('openpgp');
-
-                var publicKey = openpgp.key.readArmored(responseBody).keys[0];
-                //var publicKeyCreateDate = publicKey.subKeys[0].subKey.created;
-                //var privateKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
-                var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
-                publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
-                if(publicKeyID !== pgp_id_public){
-                    callback("Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
-                    return send(client, "ERROR Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
-                }
-
-                var user_id = publicKey.getUserIds()[0] + '';
-                keyspaceUserIDs[pgp_id_public] = user_id;
-
-                callback(null, publicKey);
             }
         );
 
+        function parseResponse(responseBody, responseCode, responseMessage, responseHeaders, respondingClient) {
+
+            if(responseCode !== 200) {
+                callback(responseCode + " " + responseMessage, responseCode, responseMessage, '');
+                return send(client, "ERROR " + responseCode + " " + responseMessage);
+            }
+
+            // No mismatch, key can come from cache or anywhere. respondingClient might be null dude
+            //if(respondingClient && respondingClient !== client) { // TODO: Necessary?
+            //    callback("Client Mismatch", 400, "Client Mismatch", '');
+            //    return send(client, "ERROR Client Mismatch");
+            //}
+
+            var KeySpaceDB = require('../../keyspace/ks-db.js')
+                .KeySpaceDB;
+            if(typeof openpgp === 'undefined')
+                var openpgp = require('openpgp');
+
+            var publicKey = openpgp.key.readArmored(responseBody).keys[0];
+            //var publicKeyCreateDate = publicKey.subKeys[0].subKey.created;
+            //var privateKeyID = publicKey.primaryKey.getKeyId().toHex().toUpperCase();
+            var publicKeyID = publicKey.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
+            publicKeyID = publicKeyID.substr(publicKeyID.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
+            if(publicKeyID !== pgp_id_public){
+                callback("Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
+                return send(client, "ERROR Public Key ID mismatch: " + publicKeyID + " !== " + pgp_id_public);
+            }
+
+            var user_id = publicKey.getUserIds()[0] + '';
+            keyspaceUserIDs[pgp_id_public] = user_id;
+
+            callback(null, publicKey);
+        }
         //var requestID = "PK" + Date.now();
         //if(typeof keyspaceRequests[requestID] !== 'undefined')
         //    throw new Error("Duplicate Request ID: " + requestID);
@@ -611,45 +638,51 @@ module.exports.ServerSubscriptions =
     };
 
     ServerSubscriptions.handleKeySpaceStatusCommand = function(commandString, client) {
-        var match = /^keyspace\.status\s+([a-f0-9]{8,})\s+(.{1,256})$/i.exec(commandString);
+        var match = /^keyspaces?\.status\s+(\S{2,256})\s+([a-f0-9 ]+)$/i.exec(commandString);
         if (!match)
             throw new Error("Invalid Status Command: " + commandString);
 
-        var pgp_id_public = match[1];
-        pgp_id_public = pgp_id_public.toUpperCase().substr(pgp_id_public.length - 8);
-        var argString = match[2];
-        var statusValue = argString.split(' ')[0].toLowerCase();
-        switch(statusValue) {
-            case 'online':
-            case 'offline':
-            case 'away':
-                break;
-            default:
-                break;
-        }
+        var statusValue = match[1];
+        var statusCommand = statusValue.split('.')[0].toLowerCase();
+        var all_pgp_id_public = match[2].split(/\s+/g);
 
-        ServerSubscriptions.requestKeySpaceAuthentication(pgp_id_public, client,
-            function(pgp_id_public, authClient) {
+        for(var i=0; i<all_pgp_id_public.length; i++) {
+            var pgp_id_public = all_pgp_id_public[i];
+            pgp_id_public = pgp_id_public.toUpperCase().substr(pgp_id_public.length - 8);
 
-                var oldStatus = null;
-                if(typeof keyspaceStatus[pgp_id_public] !== 'undefined')
-                    oldStatus = keyspaceStatus[pgp_id_public];
-
-                keyspaceStatus[pgp_id_public] = argString;
-
-                // notify keyspace status subscribers yo{
-                var count = 0;
-                ServerSubscriptions.searchKeySpaceSubscriptions(null, 'event', null,
-                    function(subscriberClient, mode, pgp_id_public, subscriberArgString) {
-                        subscriberClient.send(commandString);
-                        count++;
-                    }
-                );
-
-                console.info("O" + count + " " + commandString);
+            switch(statusCommand) {
+                case 'online':
+                case 'offline':
+                case 'away':
+                    break;
+                default:
+                    break;
             }
-        );
 
+            ServerSubscriptions.requestKeySpaceAuthentication(pgp_id_public, client,
+                function(pgp_id_public, authClient) {
+
+                    var oldStatus = null;
+                    if(typeof keyspaceStatus[pgp_id_public] !== 'undefined')
+                        oldStatus = keyspaceStatus[pgp_id_public];
+
+                    keyspaceStatus[pgp_id_public] = statusValue;
+
+                    var notifyCommandString = "KEYSPACE.STATUS " + statusValue + " " + all_pgp_id_public;
+
+                    // notify keyspace status subscribers yo{
+                    var count = 0;
+                    ServerSubscriptions.searchKeySpaceSubscriptions(null, 'event', null,
+                        function(subscriberClient, mode, pgp_id_public, subscriberArgString) {
+                            subscriberClient.send(notifyCommandString);
+                            count++;
+                        }
+                    );
+
+                    console.info("O" + count + " " + notifyCommandString);
+                }
+            );
+        }
 
         return true;
     };
@@ -681,7 +714,7 @@ module.exports.ServerSubscriptions =
         if (!match)
             throw new Error("Invalid Socket GET/HEAD Request: " + requestString);
 
-        var requestType = match[1];
+        var requestType = match[1].toLowerCase();
         var requestURL = match[2];
 
         match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(requestURL);
@@ -698,6 +731,8 @@ module.exports.ServerSubscriptions =
         var pgp_id_public = match[2].toUpperCase();
         pgp_id_public = pgp_id_public.substr(pgp_id_public.length - KeySpaceDB.DB_PGP_KEY_LENGTH);
 
+
+        // No local content found, so query each host client with a HEAD to see who might have it
         requestString = "HEAD " + requestURL + (requestHeaders ? "\n" + requestHeaders : "");
 
         var hostClients = ServerSubscriptions.getKeySpaceSubscriptions(pgp_id_public, "GET");
@@ -706,7 +741,7 @@ module.exports.ServerSubscriptions =
         for(var i=0; i<hostClients.length; i++) {
             if(hostClients[i].readyState !== hostClients[i].OPEN) {
                 hostClients.splice(i--, 1);
-            //} else {
+                //} else {
                 //hostClients[i].send(requestString);
             }
         }
@@ -722,27 +757,39 @@ module.exports.ServerSubscriptions =
 
         console.info("Requesting Keyspace content HEAD from (" + hostClients.length + ") Host Clients: " + requestString);
 
+
         // TODO: timeout, count, and try next host. FAIL!
+        var hostContentFound = false;
         for(i=0; i<hostClients.length; i++) {
             KeySpaceDB.executeSocketGETRequest(requestString, hostClients[i],
                 function(responseBody, responseCode, responseMessage, responseHeaders, respondingClient) {
-                    if(responseCode !== 200) {
-                        // TODO: callback on all fail
+                    if(hostContentFound)
                         return false;
-                    }
 
-                    requestString = "GET " + requestURL + (requestHeaders ? "\n" + requestHeaders : "");
-                    KeySpaceDB.executeSocketGETRequest(requestString, respondingClient,
-                        function(responseBody, responseCode, responseMessage, responseHeaders, respondingClient) {
-                            if(responseCode !== 200) {
-                                callback(respondingClient, "Responding Client failed to provide full GET request. What gives!?", responseCode, responseMessage, responseHeaders);
-                                return false;
+                    // TODO: callback on all fail
+                    if(responseCode !== 200)
+                        return false;
+
+                    if(requestType === 'head') {
+                        // If it was just a HEAD request, then we're done
+                        callback(responseBody, responseCode, responseMessage, responseHeaders, respondingClient);
+                        hostContentFound = true;
+
+                    } else {
+                        // If not, then lets ask for the whole body from the responding client.
+                        requestString = "GET " + requestURL + (requestHeaders ? "\n" + requestHeaders : "");
+                        KeySpaceDB.executeSocketGETRequest(requestString, respondingClient,
+                            function(responseBody, responseCode, responseMessage, responseHeaders, respondingClient) {
+                                if(responseCode !== 200) {
+                                    callback(respondingClient, "Responding Client failed to provide full GET request. What gives!?", responseCode, responseMessage, responseHeaders);
+                                    return false;
+                                }
+
+                                callback(responseBody, responseCode, responseMessage, responseHeaders, respondingClient);
+                                hostContentFound = true;
                             }
-
-                            callback(responseBody, responseCode, responseMessage, responseHeaders, respondingClient);
-                        }
-                    );
-
+                        );
+                    }
                 }
             );
         }

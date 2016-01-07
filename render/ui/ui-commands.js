@@ -55,9 +55,9 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
-
-        var activeContactList = false;
-        function contactCommand(commandString) {
+        var lastEventSubscriptionCommand = null;
+        var lastStatusSubscriptionCommand = null; // TODO: per socket connection
+        function contactCommand(commandString, e) {
             var match = /^(?:ui\.)?contacts(\.refresh)?/i.exec(commandString);
             if (!match)
                 return false;
@@ -70,55 +70,61 @@ if(typeof module === 'object') (function() {
                 Client.render(html);
             });
 
-            if(!activeContactList) {
-                activeContactList = true;
-                //console.info("Requesting contact list status");
+            //console.info("Requesting contact list status");
 
-                self.module = {exports: {}};
-                importScripts('keyspace/ks-db.js');
-                var KeySpaceDB = self.module.exports.KeySpaceDB;
+            self.module = {exports: {}};
+            importScripts('keyspace/ks-db.js');
+            var KeySpaceDB = self.module.exports.KeySpaceDB;
 
-                //var ClientSubscriptions = self.ClientSubscriptions || (function() {
-                //    self.module = {exports: {}};
-                //    importScripts('client/subscriptions/client-subscriptions.js');
-                //    return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
-                //})();
+            //var ClientSubscriptions = self.ClientSubscriptions || (function() {
+            //    self.module = {exports: {}};
+            //    importScripts('client/subscriptions/client-subscriptions.js');
+            //    return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
+            //})();
 
 
-                // Query public keys.
-                var path = 'public/id';
-                var publicKeys = [];
-                KeySpaceDB.queryAll(path, function(err, publicKeyContentEntry) {
-                    if (err)
-                        throw new Error(err);
+            // Query public keys.
+            var path = 'public/id';
+            var publicKeys = [];
+            KeySpaceDB.queryAll(path, function(err, publicKeyContentEntry) {
+                if (err)
+                    throw new Error(err);
 
-                    if (publicKeyContentEntry) {
-                        publicKeys.push(publicKeyContentEntry.pgp_id_public);
-                        //ClientSubscriptions.cachePublicKeyInfo(publicKeyContentEntry);
+                if (publicKeyContentEntry) {
+                    publicKeys.push(publicKeyContentEntry.pgp_id_public);
+                    //ClientSubscriptions.cachePublicKeyInfo(publicKeyContentEntry);
 
-                    } else {
-                        if(publicKeys.length)
-                            ClientWorkerThread.sendWithSocket("KEYSPACES.SUBSCRIBE.EVENT " + publicKeys.join(" "));
-
-                        // Query private keys.
-                        var path = '.private/id';
-                        KeySpaceDB.queryAll(path, function(err, privateKeyContentEntry) {
-                            if (err)
-                                throw new Error(err);
-
-                            if (privateKeyContentEntry) {
-                                var pgp_id_public = privateKeyContentEntry.pgp_id_public;
-                                //ClientSubscriptions.cachePrivateKeyInfo(privateKeyContentEntry);
-                                // TODO: check settings for online/offline/away etc
-                                ClientWorkerThread.execute("KEYSPACE.STATUS " + pgp_id_public + " ONLINE");
-
-                            }
-                        });
-
+                } else {
+                    if(publicKeys.length) {
+                        var eventSubscriptionCommand = "KEYSPACES.SUBSCRIBE.EVENT " + publicKeys.join(" ");
+                        if(eventSubscriptionCommand !== lastEventSubscriptionCommand)
+                            ClientWorkerThread.sendWithSocket(eventSubscriptionCommand);
+                        lastEventSubscriptionCommand = eventSubscriptionCommand;
                     }
-                });
 
-            }
+                    var privateKeys = [];
+
+                    // Query private keys.
+                    var path = '.private/id';
+                    KeySpaceDB.queryAll(path, function(err, privateKeyContentEntry) {
+                        if (err)
+                            throw new Error(err);
+
+                        if (privateKeyContentEntry) {
+                            var pgp_id_public = privateKeyContentEntry.pgp_id_public;
+                            privateKeys.push(pgp_id_public);
+
+                        } else {
+                            var statusSubscriptionCommand = "KEYSPACES.STATUS ONLINE " + privateKeys.join(" ");
+                            if(statusSubscriptionCommand !== lastStatusSubscriptionCommand)
+                                ClientWorkerThread.sendWithSocket(statusSubscriptionCommand);
+                            lastStatusSubscriptionCommand = statusSubscriptionCommand;
+                        }
+                    });
+
+                }
+            });
+
 
             return true;
         }
