@@ -544,13 +544,14 @@ if(typeof importScripts !== 'undefined') {
                 throw new Error("Class not found: " + targetClass + " - " + responseString);
 
             // var targetElement = targetElements[0];
+            // for(var i=0; i<targetElements.length; i++) {
+            var targetElement = targetElements[0];
 
+            var wasMaximized = targetElement.classList.contains('maximized');
             var maximizedElms = document.getElementsByClassName('maximized');
             while(maximizedElms.length > 0)
                 maximizedElms[0].classList.remove('maximized');
                 
-            // for(var i=0; i<targetElements.length; i++) {
-            var targetElement = targetElements[0];
                 
             switch(command) {
                 case 'open':
@@ -558,29 +559,49 @@ if(typeof importScripts !== 'undefined') {
                     targetElement.classList.remove('maximized');
                     targetElement.classList.remove('closed');
                     break;
-                case 'close':
-                    targetElement.classList.remove('minimized');
-                    targetElement.classList.remove('maximized');
-                    targetElement.classList.add('closed');
-                    break;  
-                case 'minimize':
-                    targetElement.classList.add('minimized');
-                    targetElement.classList.remove('maximized');
-                    targetElement.classList.remove('closed');
-
-// TODO
-                    // Move to bottom of the list
-                    // while(targetElement.nextSibling.nodeType === targetElement.nodeType) 
-                    //     targetElement.parentNode.insertBefore(targetElement, targetElement.nextSibling);
-                    break; 
-                case 'maximize':
-                    targetElement.classList.remove('minimized');
-                    targetElement.classList.add('maximized');
-                    targetElement.classList.remove('closed');
                     
-                    // Move to top of the list
-                    // while(targetElement.previousSibling.nodeType === targetElement.nodeType) 
-                    //    targetElement.parentNode.insertBefore(targetElement, targetElement.previousSibling);
+                case 'close':
+                    if(targetElement.classList.contains('closed')) {
+                        targetElement.classList.remove('closed');
+                      
+                    } else {
+                        targetElement.classList.remove('minimized');
+                        targetElement.classList.remove('maximized');
+                        targetElement.classList.add('closed');
+                    }
+                    break;  
+                    
+                case 'minimize':
+                    if(targetElement.classList.contains('minimized')) {
+                        targetElement.classList.remove('minimized');
+                      
+                    } else {
+                        targetElement.classList.remove('maximized');
+                        targetElement.classList.remove('closed');
+                        targetElement.classList.add('minimized');
+                        
+                        // Move to bottom of the list
+                        while(targetElement.nextSibling
+                            && targetElement.nextSibling.nodeType === targetElement.nodeType) 
+                            targetElement.parentNode.insertBefore(targetElement.nextSibling, targetElement);
+                    }
+
+                    break; 
+                    
+                case 'maximize':
+                    if(wasMaximized || targetElement.classList.contains('maximized')) {
+                        targetElement.classList.remove('maximized');
+                      
+                    } else {
+                        targetElement.classList.remove('minimized');
+                        targetElement.classList.remove('closed');
+                        targetElement.classList.add('maximized');
+                        
+                        // Move to top of the list
+                        while(targetElement.previousSibling 
+                            && targetElement.previousSibling.nodeType === targetElement.nodeType) 
+                            targetElement.parentNode.insertBefore(targetElement, targetElement.previousSibling);
+                    }
                     break;   
             }
 
