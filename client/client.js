@@ -486,7 +486,7 @@ if(typeof importScripts !== 'undefined') {
                     throw new Error("Re-render class mismatch: '" + targetClass + "'\n" + content);
                 targetElement = targetElements[0];
 
-                targetElement.scrollIntoView();
+                // targetElement.scrollIntoView();
 
             } else {
                 // Existing element(s) with same first class name
@@ -502,7 +502,7 @@ if(typeof importScripts !== 'undefined') {
                         var contentElementClone = contentElement.cloneNode(true);
                         for(var j=0; j<contentElementClone.children.length; j++)
                             targetElement.appendChild(contentElementClone.children[j]);
-                        targetElement.children[targetElement.children.length-1].scrollIntoView();
+                        // targetElement.children[targetElement.children.length-1].scrollIntoView();
                     } else {
                         targetElement.innerHTML = contentElement.innerHTML;
                     }
