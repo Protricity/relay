@@ -6,6 +6,7 @@
 
 .ui-login\3A  main{
     min-height: 20em;
+    /* background-color: white; */
 }
 
 .ui-login\3A.maximized{
@@ -26,4 +27,23 @@ form[name=ui-login-form] {
 
 form[name=ui-login-form] .status-box:empty {
     display: none;
+}
+
+
+/** Buttons **/
+
+
+.ui-login-button {
+    padding: 2em;
+    display: block;
+    border: outset;
+    margin: 1em;
+    background: #DDD;
+    text-align: center;
+    font-size: 3vw;
+}
+
+.ui-login-button.disabled {
+    color: grey;
+    opacity: 0.6;
 }

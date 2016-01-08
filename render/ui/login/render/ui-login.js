@@ -31,7 +31,7 @@ if(typeof module !== 'object')
 
             } else {
                 if(privateKeys.length === 0) {
-                    console.info("No private keys were found for login");
+                    //console.info("No private keys were found for login");
                     forceRender = true;
 
                 } else {

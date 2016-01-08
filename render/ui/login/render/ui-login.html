@@ -8,7 +8,18 @@
         </a>
     </header>
     <main class="hide-on-minimize">
-
+        <a class="ui-login-button" href='javascript:ClientMainThread.execute("UI.LOGIN.CREATE")'>
+            <span class="command">KeyGen</span> a new Account
+        </a>
+        <a class="ui-login-button" href='javascript:ClientMainThread.execute("UI.LOGIN.IMPORT")'>
+            <span class="command">Import</span> an existing Account (PGP Identity)
+        </a>
+        <a class="ui-login-button" href='javascript:ClientMainThread.execute("UI.LOGIN.GUEST")'>
+            Use Relay as a Guest
+        </a>
+        <a class="ui-login-button disabled" href1='javascript:ClientMainThread.execute("UI.LOGIN.EXISTING")'>
+            <span class="command">Login</span> to an existing Account
+        </a>
     </main>
     <footer></footer>
 </article>

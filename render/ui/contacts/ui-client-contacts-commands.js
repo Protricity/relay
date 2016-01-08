@@ -122,7 +122,7 @@ if(typeof module === 'object') (function() {
 
                         } else {
                             if(privateKeys.length === 0) {
-                               console.warn("No private keys were found for the contact list");
+                               // console.warn("No private keys were found for the contact list");
                                 
                             } else {
                                 var statusSubscriptionCommand = "KEYSPACE.STATUS ONLINE " + privateKeys.join(" ");
