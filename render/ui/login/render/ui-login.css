@@ -40,7 +40,7 @@ form[name=ui-login-form] .status-box:empty {
     margin: 1em;
     background: #DDD;
     text-align: center;
-    font-size: 3vw;
+    /*font-size: 3vw;*/
 }
 
 .ui-login-button.disabled {
