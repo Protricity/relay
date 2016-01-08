@@ -9,6 +9,7 @@
             // Render Navigation Menu and about box
             setTimeout(function() {
                 ClientMainThread.execute("render {nav}");
+                ClientMainThread.execute("UI.LOGIN");
                 ClientMainThread.execute("UI.CONTACTS");
                 ClientMainThread.execute("SETTINGS.AUTORUN");
 //                ClientMainThread.execute("SETTINGS.ONCONNECT");

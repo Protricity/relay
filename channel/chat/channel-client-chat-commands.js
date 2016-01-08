@@ -23,8 +23,9 @@ if(typeof module === 'object') (function() {
         var refreshTimeout = null;
         function eventListener(responseString) {
             var match = /^event\s(?:channel\.)?userlist\.(\w+)(?:\s(\S+))?\n([\s\S]+)$/im.exec(responseString);
-            if (!match)
-                return false;
+            if (!match)         // If unmatched,
+                return false;   // Pass control to next handler
+
             var mode = match[1];
             var channel = match[2] || null;
             var subscriptionList = match[3].split(/\n+/img);
@@ -45,8 +46,8 @@ if(typeof module === 'object') (function() {
 
         function channelChatCommand(commandString) {
             var match = /^(channel\.)?chat\s*([\s\S]*)$/im.exec(commandString);
-            if (!match)
-                return false;
+            if (!match)         // If unmatched,
+                return false;   // Pass control to next handler
 
             if(!match[1])
                 commandString = "CHANNEL." + commandString;
@@ -56,8 +57,8 @@ if(typeof module === 'object') (function() {
 
         function channelChatResponse(responseString) {
             var match = /^(?:channel\.)?chat\s+(\S+)/im.exec(responseString);
-            if (!match)
-                return false;
+            if (!match)         // If unmatched,
+                return false;   // Pass control to next handler
 
             var channel = match[1];
             renderChatWindow(channel);

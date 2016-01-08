@@ -57,7 +57,7 @@ module.exports.initClientCommands = function(ClientWorkerThread) {
     ClientWorkerThread.addCommand(importClientUICommands);
     ClientWorkerThread.addResponse(importClientUICommands);
     function importClientUICommands(commandString, e) {
-        if(!/^(ui|contacts)/i.test(commandString))
+        if(!/^(ui|contacts|login)/i.test(commandString))
             return false;
         ClientWorkerThread.removeCommand(importClientUICommands);
         ClientWorkerThread.removeResponse(importClientUICommands);

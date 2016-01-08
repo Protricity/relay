@@ -15,8 +15,8 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addCommand(channelSubscribeCommand);
         ClientWorkerThread.addResponse(channelSubscribeResponse);
 
-        ClientWorkerThread.addResponse(channelJoinCommand);
-        ClientWorkerThread.addResponse(channelLeaveCommand);
+        ClientWorkerThread.addCommand(channelJoinCommand);
+        ClientWorkerThread.addCommand(channelLeaveCommand);
         ClientWorkerThread.addResponse(channelUserlistResponse);
 
 
