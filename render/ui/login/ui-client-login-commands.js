@@ -16,6 +16,18 @@ if(typeof module === 'object') (function() {
                 console.log(subCommand);
                 ClientWorkerThread.execute("CLOSE ui-login:");
 
+                switch(subCommand.toLowerCase()) {
+                    case 'create':
+                        ClientWorkerThread.execute("PGP.KEYGEN");
+                        break;
+                        
+                    case 'guest':
+                        break;
+                        
+                    case 'existing':
+                        throw new Error("remote login unavailable yet");
+                }
+                
             } else {
 
                 self.module = {exports: {}};

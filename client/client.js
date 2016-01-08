@@ -543,36 +543,46 @@ if(typeof importScripts !== 'undefined') {
             if(targetElements.length === 0)
                 throw new Error("Class not found: " + targetClass + " - " + responseString);
 
-            var targetElement = targetElements[0];
+            // var targetElement = targetElements[0];
 
-            if(command === 'open') { // TODO: Clean up
-                targetElement.classList.remove('minimized');
-                targetElement.classList.remove('maximized');
-                targetElement.classList.remove('closed');
-                return;
-            }
+            // for(var i=0; i<targetElements.length; i++) {
+            targetElement = targetElements[0];
+                
+            switch(command) {
+                case 'open':
+                    targetElement.classList.remove('minimized');
+                    targetElement.classList.remove('maximized');
+                    targetElement.classList.remove('closed');
+                    break;
+                case 'close':
+                    targetElement.classList.remove('minimized');
+                    targetElement.classList.remove('maximized');
+                    targetElement.classList.add('closed');
+                    break;  
+                case 'minimize':
+                    targetElement.classList.add('minimized');
+                    targetElement.classList.remove('maximized');
+                    targetElement.classList.remove('closed');
 
-            var hasClass = targetElement.classList.contains(command + 'd');
-            if(command === 'close') {
-                hasClass = false;
+                    // Move to bottom of the list
+                    while(targetElement.nextSibling.nodeType === targetElement.nodeType) 
+                        targetElement.parentNode.insertBefore(targetElement, targetElement.nextSibling);
+                    break; 
+                case 'maximize':
+                    targetElement.classList.remove('minimized');
+                    targetElement.classList.add('maximized');
+                    targetElement.classList.remove('closed');
+                    
+                    // Move to top of the list
+                    while(targetElement.previousSibling.nodeType === targetElement.nodeType) 
+                        targetElement.parentNode.insertBefore(targetElement.previousSibling, targetElement);
+                    break;   
             }
 
             var maximizedElms = document.getElementsByClassName('maximized');
             while(maximizedElms.length > 0)
                 maximizedElms[0].classList.remove('maximized');
 
-            for(var i=0; i<targetElements.length; i++) {
-                targetElement = targetElements[i];
-                if(hasClass) {
-                    targetElement.classList.remove(command + 'd');
-
-                } else {
-                    targetElement.classList.remove('minimized');
-                    targetElement.classList.remove('maximized');
-                    targetElement.classList.remove('closed');
-                    targetElement.classList.add(command + 'd');
-                }
-            }
 
         }
 
