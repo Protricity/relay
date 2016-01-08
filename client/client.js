@@ -546,7 +546,7 @@ if(typeof importScripts !== 'undefined') {
             // var targetElement = targetElements[0];
 
             // for(var i=0; i<targetElements.length; i++) {
-            targetElement = targetElements[0];
+            var targetElement = targetElements[0];
                 
             switch(command) {
                 case 'open':
