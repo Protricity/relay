@@ -582,7 +582,7 @@ if(typeof importScripts !== 'undefined') {
                         
                         // Move to bottom of the list
                         while(targetElement.nextSibling
-                            && targetElement.nextSibling.nodeType === targetElement.nodeType) 
+                            && targetElement.nextSibling.nodeName === targetElement.nodeName)
                             targetElement.parentNode.insertBefore(targetElement.nextSibling, targetElement);
                     }
 
@@ -596,11 +596,13 @@ if(typeof importScripts !== 'undefined') {
                         targetElement.classList.remove('minimized');
                         targetElement.classList.remove('closed');
                         targetElement.classList.add('maximized');
-                        
-                        // Move to top of the list
+
+                            // Move to top of the list
                         while(targetElement.previousSibling 
-                            && targetElement.previousSibling.nodeType === targetElement.nodeType) 
+                            && targetElement.previousSibling.nodeName === targetElement.nodeName)
                             targetElement.parentNode.insertBefore(targetElement, targetElement.previousSibling);
+
+                        targetElement.scrollIntoView();
                     }
                     break;   
             }

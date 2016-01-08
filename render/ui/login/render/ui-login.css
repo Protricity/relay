@@ -11,9 +11,9 @@
 
 .ui-login\3A.maximized{
     left: 5% !important;
-/*     bottom: 5% !important; */
+    /*     bottom: 5% !important; */
     top: 5% !important;
-    right: 5% !important;
+    /* right: 5% !important; */
 }
 
 /** Form **/
@@ -33,6 +33,15 @@ form[name=ui-login-form] .status-box:empty {
 /** Buttons **/
 
 
+.ui-login-info {
+    padding: 1em 2em;
+    margin: 1em;
+    border: outset;
+    background-color: #FFF;
+    text-align: center;
+/*     display: block; */
+}
+
 .ui-login-button {
     padding: 2em;
     display: block;
@@ -40,10 +49,12 @@ form[name=ui-login-form] .status-box:empty {
     margin: 1em;
     background: #DDD;
     text-align: center;
+    cursor: pointer;
     /*font-size: 3vw;*/
 }
 
 .ui-login-button.disabled {
     color: grey;
     opacity: 0.6;
+    cursor: not-allowed;
 }

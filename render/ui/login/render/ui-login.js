@@ -8,7 +8,7 @@ if(typeof module !== 'object')
 
 (function() {
 
-    module.exports.renderUILoginWindow = function(forceRender, callback) {
+    module.exports.renderUILoginWindow = function(subCommand, forceRender, callback) {
         var nick_value = '';
         var status_box = '';
         var html_command_options = '';
@@ -41,6 +41,25 @@ if(typeof module !== 'object')
                 if(forceRender) {
 
                     var TEMPLATE_URL = "render/ui/login/render/ui-login.html";
+
+                    if(subCommand) {
+                        switch(subCommand.toLowerCase()) {
+                            case 'create':
+                                TEMPLATE_URL = "render/ui/login/render/ui-login-finished.html";
+                                break;
+
+                            case 'import':
+                                TEMPLATE_URL = "render/ui/login/render/ui-login-finished.html";
+                                break;
+
+                            case 'guest':
+                                TEMPLATE_URL = "render/ui/login/render/ui-login-finished.html";
+                                break;
+
+                            case 'remote':
+                                TEMPLATE_URL = "render/ui/login/render/ui-login-finished.html";
+                        }
+                    }
 
                     var xhr = new XMLHttpRequest();
                     xhr.open("GET", TEMPLATE_URL, false);

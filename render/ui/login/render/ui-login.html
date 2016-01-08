@@ -8,17 +8,22 @@
         </a>
     </header>
     <main class="hide-on-minimize">
+        <div class="ui-login-info">
+            <strong>Welcome to The Relay Network</strong>
+            <br />
+            <em>Please choose a <strong>Log In</strong> method:</em>
+        </div>
         <a class="ui-login-button" href='javascript:ClientMainThread.execute("UI.LOGIN.CREATE")'>
-            <span class="command">KeyGen</span> a new Account
+            <span class="command">KeyGen</span> (Create) a new Identity
         </a>
         <a class="ui-login-button" href='javascript:ClientMainThread.execute("UI.LOGIN.IMPORT")'>
-            <span class="command">Import</span> an existing Account (PGP Identity)
+            <span class="command">Import</span> an <em>existing</em> Identity
         </a>
         <a class="ui-login-button" href='javascript:ClientMainThread.execute("UI.LOGIN.GUEST")'>
-            Use Relay as a Guest
+            [Use Relay as a Guest]
         </a>
-        <a class="ui-login-button disabled" href1='javascript:ClientMainThread.execute("UI.LOGIN.EXISTING")'>
-            <span class="command">Login</span> to an existing Account
+        <a class="ui-login-button disabled" href='javascript:ClientMainThread.execute("UI.LOGIN.REMOTE")'>
+            Remote <span class="command">Login</span> (Coming soon)
         </a>
     </main>
     <footer></footer>

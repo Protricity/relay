@@ -14,33 +14,35 @@ if(typeof module === 'object') (function() {
 
             if(subCommand) {
                 console.log(subCommand);
-                ClientWorkerThread.execute("CLOSE ui-login:");
 
                 switch(subCommand.toLowerCase()) {
                     case 'create':
+                        //ClientWorkerThread.execute("CLOSE ui-login:");
                         ClientWorkerThread.execute("PGP.KEYGEN");
                         break;
-                        
+
+                    case 'import':
+                        //ClientWorkerThread.execute("CLOSE ui-login:");
+                        ClientWorkerThread.execute("PGP.IMPORT");
+                        break;
+
                     case 'guest':
                         break;
                         
-                    case 'existing':
+                    case 'remote':
                         throw new Error("remote login unavailable yet");
                 }
                 
-            } else {
-
-                self.module = {exports: {}};
-                importScripts('render/ui/login/render/ui-login.js');
-                var templateExports = self.module.exports;
-
-                var forceRender = false;
-
-                templateExports.renderUILoginWindow(forceRender, function (html) {
-                    Client.render(html);
-                });
             }
 
+            self.module = {exports: {}};
+            importScripts('render/ui/login/render/ui-login.js');
+            var templateExports = self.module.exports;
+
+            var forceRender = false;
+            templateExports.renderUILoginWindow(subCommand, forceRender, function (html) {
+                Client.render(html);
+            });
             // Command was handled
             return true;
         }

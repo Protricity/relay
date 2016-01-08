@@ -1,0 +1,27 @@
+<article class='ui-login: maximized'>
+    <script src='render/ui/login/render/ui-login.js'></script>
+    <link rel='stylesheet' href='render/ui/login/render/ui-login.css' type='text/css' property="stylesheet">
+    <header class='header-bar show-on-minimized'>
+        {header:buttons ui-login:}
+        <a href='javascript:ClientMainThread.execute("MINIMIZE ui-login:");'>
+            Getting Started with Relay.
+        </a>
+    </header>
+    <main class="hide-on-minimize">
+        <div class="ui-login-info">
+            <strong>Thank you for using The Relay Network</strong>
+            <br />
+            <em>Here are some <strong>Things To Do</strong> to get you going:</em>
+        </div>
+        <a class="ui-login-button" href='javascript:ClientMainThread.execute("UI.CONTACTS")'>
+            View your <span class="command">Contact</span> List
+        </a>
+        <a class="ui-login-button" href='javascript:ClientMainThread.execute("KEYSPACE.SEARCH");'>
+            <span class="command">Search</span> for <em>Contacts</em> on the network
+        </a>
+        <a class="ui-login-button" href='javascript:ClientMainThread.execute("CHANNEL.SEARCH");'>
+            <span class="command">Subscribe</span> to <em>Channels</em> you might be interested in
+        </a>
+    </main>
+    <footer></footer>
+</article>
