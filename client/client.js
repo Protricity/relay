@@ -545,6 +545,10 @@ if(typeof importScripts !== 'undefined') {
 
             // var targetElement = targetElements[0];
 
+            var maximizedElms = document.getElementsByClassName('maximized');
+            while(maximizedElms.length > 0)
+                maximizedElms[0].classList.remove('maximized');
+                
             // for(var i=0; i<targetElements.length; i++) {
             var targetElement = targetElements[0];
                 
@@ -564,9 +568,10 @@ if(typeof importScripts !== 'undefined') {
                     targetElement.classList.remove('maximized');
                     targetElement.classList.remove('closed');
 
+// TODO
                     // Move to bottom of the list
-                    while(targetElement.nextSibling.nodeType === targetElement.nodeType) 
-                        targetElement.parentNode.insertBefore(targetElement, targetElement.nextSibling);
+                    // while(targetElement.nextSibling.nodeType === targetElement.nodeType) 
+                    //     targetElement.parentNode.insertBefore(targetElement, targetElement.nextSibling);
                     break; 
                 case 'maximize':
                     targetElement.classList.remove('minimized');
@@ -574,14 +579,11 @@ if(typeof importScripts !== 'undefined') {
                     targetElement.classList.remove('closed');
                     
                     // Move to top of the list
-                    while(targetElement.previousSibling.nodeType === targetElement.nodeType) 
-                        targetElement.parentNode.insertBefore(targetElement.previousSibling, targetElement);
+                    // while(targetElement.previousSibling.nodeType === targetElement.nodeType) 
+                    //    targetElement.parentNode.insertBefore(targetElement, targetElement.previousSibling);
                     break;   
             }
 
-            var maximizedElms = document.getElementsByClassName('maximized');
-            while(maximizedElms.length > 0)
-                maximizedElms[0].classList.remove('maximized');
 
 
         }
