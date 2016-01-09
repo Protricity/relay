@@ -135,6 +135,9 @@
             throw new Error("Command event not handled");
         history.push(messageElm.value);
         messageElm.value = '';
+        
+        document.getElementsByClassName("console:")[0].classList.remove("minimized");
+        
         return false;
     }
 

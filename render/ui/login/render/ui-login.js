@@ -38,7 +38,7 @@ if(typeof module !== 'object')
                 } else {
                     console.info("Existing Private Keys Found. Skipping Login...");
                     TEMPLATE_URL = "render/ui/login/render/ui-login-finished.html";
-                    forceRender = true;
+                    // forceRender = true;
 
                     ClientWorkerThread.execute("UI.CONTACTS");
                 }

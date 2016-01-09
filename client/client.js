@@ -500,10 +500,10 @@ if(typeof importScripts !== 'undefined') {
                 for(var ti=0; ti<targetElements.length; ti++) {
 
                     targetElement = targetElements[ti];
-                    if(targetElement.classList.contains('closed'))
-                        targetElement.classList.remove('closed');
-                    if(targetElement.classList.contains('minimized'))
-                        targetElement.classList.remove('minimized');
+                    //if(targetElement.classList.contains('closed'))
+                    //    targetElement.classList.remove('closed');
+                    //if(targetElement.classList.contains('minimized'))
+                    //    targetElement.classList.remove('minimized');
                     if(contentElement.classList.contains('append-children-on-render')
                         || targetElement.classList.contains('append-children-on-render')) {
                         var contentElementClone = contentElement.cloneNode(true);
