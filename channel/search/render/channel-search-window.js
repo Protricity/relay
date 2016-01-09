@@ -20,11 +20,12 @@
     var TEMPLATE_SEARCH_ENTRY =
         "\n<tr>" +
             "\n\t<td>" +
-                "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"CHANNEL.CHAT {$channel}\")'>{$channel}</a>" +
+                "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"CHANNEL.SUBSCRIBE.EVENT {$channel}\")'>{$channel}</a>" +
             "\n\t</td>" +
             //"\n\t<td>{$channel_info}</td>" +
             "\n\t<td>" +
-                "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"JOIN {$channel}\")'>Join</a>" +
+            "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"CHANNEL.SUBSCRIBE.EVENT {$channel}\")'>Subscribe</a>" +
+            "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"CHANNEL.CHAT {$channel}\")'>Chat</a>" +
                 // "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"GET http://{$channel}.ks/public/id\")'>JOIN</a>" +
                 // "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"CHANNEL.INFO {$channel}\")'>Profile</a>" +
             "\n\t</td>" +

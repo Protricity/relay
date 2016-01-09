@@ -49,7 +49,7 @@ if(typeof module === 'object') (function() {
                 var pgpKey = pgpImport.keys[0];
                 if(!pgpKey)
                     return doErr("PGP Key block not found in import");
-                    
+
                 if(pgpKey.isPrivate()) {
                     var privateKey = pgpKey;
                     var privateKeyID = privateKey.primaryKey.getKeyId().toHex().toUpperCase();
@@ -86,6 +86,7 @@ if(typeof module === 'object') (function() {
                             pgp_id_public: publicKeyID,
                             passphrase_required: privateKey.primaryKey.isDecrypted ? false : true
                         }, function (err, insertData) {
+                            console.log(arguments);
                             if (err)
                                 return doErr(err.message || err);
 
@@ -95,6 +96,7 @@ if(typeof module === 'object') (function() {
                                 pgp_id_private: privateKeyID,
                                 pgp_id_public: publicKeyID
                             }, function (err, insertData) {
+                                console.log(arguments);
                                 if (err)
                                     return doErr(err.message);
 
@@ -102,7 +104,7 @@ if(typeof module === 'object') (function() {
                                     <span class='success'>PGP Private Key imported successfully</span><br/><br/>\n\
                                     <span class='info'>You may now make use of your new identity:</span><br/>\n\
                                     User ID: <strong>" + privateKeyUserIDString.replace(/</g, '&lt;') + "</strong><br/>";
-
+console.log(status_box);
                                 self.module = {exports: {}};
                                 importScripts('pgp/manage/render/pgp-manage-form.js');
                                 self.module.exports.renderPGPManageForm(status_box, function (html) {

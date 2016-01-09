@@ -59,6 +59,12 @@ li {
     border-bottom: 2px double threedface;
 }
 
+
+.theme-minimal > article > form > footer,
+.theme-minimal > article > footer {
+    border-top: 2px double threedface;
+}
+
 .theme-minimal > article > footer:last-of-type,
 .theme-minimal > article > form > footer:last-of-type {
     /* padding: 0 0 0.1em 0; */
@@ -150,6 +156,11 @@ li {
 
 .theme-minimal span.error {
     color: red;
+    font-style: italic;
+}
+
+.theme-minimal span.warn {
+    color: darkred;
     font-style: italic;
 }
 
@@ -362,7 +373,7 @@ body.theme-minimal.layout-vertical > article > header{
 
 
 /** Hide Maximized Button **/
-.theme-minimal.layout-vertical > article > header > .header-bar-buttons > a.header-bar-button-maximize {
+.theme-minimal.layout-vertical > article:first-of-type > header > .header-bar-buttons > a.header-bar-button-maximize {
     display: none;
     /*font-size: 2vw;*/
 }

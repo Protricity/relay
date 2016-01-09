@@ -3,7 +3,7 @@
     <link rel='stylesheet' href='channel/search/render/channel-search-window.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {header:buttons channel-search-window:}
-        <a href='javascript:ClientMainThread.execute("MINIMIZE channel-search-window:");'>
+        <a href='javascript:ClientMainThread.execute("TOGGLE channel-search-window:");'>
             <span class="command">Search</span> for Channels
         </a>
     </header>
@@ -14,7 +14,7 @@
                 <tr class='show-on-minimized'>
                     <td>
                         <input name='search' type='text' class='reset focus'
-                               placeholder='{$placeholder}' style='width: 99%;'
+                               placeholder='{$placeholder}' style='width: 80%;'
                                 value='{$search}'/>
                     </td>
                     <td style='width:1px'>

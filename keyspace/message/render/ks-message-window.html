@@ -3,7 +3,7 @@
     <link rel='stylesheet' href='keyspace/message/render/ks-message-window.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {header:buttons ks-message:{$uid}}
-        <a href='javascript:ClientMainThread.execute("MINIMIZE ks-message:{$uid}");'>
+        <a href='javascript:ClientMainThread.execute("TOGGLE ks-message:{$uid}");'>
             <span class="command">Message</span> {$to} [From: {$from}]
         </a>
     </header>

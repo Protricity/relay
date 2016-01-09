@@ -379,6 +379,8 @@ module.exports.KeySpaceDB =
                     return;
                 }
 
+                callback(err, insertData, arg);
+
                 if(typeof Client !== 'undefined') {
                     var responseString = "EVENT KEYSPACE.INSERT" +
                         ' ' + insertData.pgp_id_public +

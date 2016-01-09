@@ -291,7 +291,7 @@ if(typeof importScripts !== 'undefined') {
         // Window Client
         ClientWorkerThread.addCommand(channelButtonCommand);
         function channelButtonCommand(commandString, e) {
-            if(!/^(minimize|maximize|close|open)/i.test(commandString))
+            if(!/^(minimize|maximize|close|open|toggle)/i.test(commandString))
                 return false;
             ClientWorkerThread.postResponseToClient(commandString);
             return true;
@@ -375,6 +375,7 @@ if(typeof importScripts !== 'undefined') {
                 case 'maximize':
                 case 'close':
                 case 'open':
+                case 'toggle':
                     renderWindowCommand(responseString);
                     break;
 
@@ -486,7 +487,8 @@ if(typeof importScripts !== 'undefined') {
                     throw new Error("Re-render class mismatch: '" + targetClass + "'\n" + content);
                 targetElement = targetElements[0];
 
-                // targetElement.scrollIntoView();
+                if(targetElement.classList.contains('maximized'))
+                    targetElement.scrollIntoView();
 
             } else {
                 // Existing element(s) with same first class name
@@ -533,7 +535,7 @@ if(typeof importScripts !== 'undefined') {
         };
 
         function renderWindowCommand(responseString) {
-            var args = /^(minimize|maximize|close|open)\s+(\S+)$/mi.exec(responseString);
+            var args = /^(minimize|maximize|close|open|toggle)\s+(\S+)$/mi.exec(responseString);
             if(!args)
                 throw new Error("Invalid Command: " + responseString);
 
@@ -547,23 +549,46 @@ if(typeof importScripts !== 'undefined') {
             // for(var i=0; i<targetElements.length; i++) {
             var targetElement = targetElements[0];
 
-            var wasMaximized = targetElement.classList.contains('maximized');
-            var maximizedElms = document.getElementsByClassName('maximized');
-            while(maximizedElms.length > 0)
-                maximizedElms[0].classList.remove('maximized');
-                
-                
+            var isHidden = targetElement.classList.contains('minimized')
+                || targetElement.classList.contains('closed')
+                || targetElement.offsetParent === null;
+
             switch(command) {
+                case 'toggle':
+                    targetElement.classList.remove('closed');
+                    if(isHidden) {
+                        targetElement.classList.remove('minimized');
+                        //targetElement.classList.add('maximized');
+                    } else {
+                        targetElement.classList.add('minimized');
+                        //targetElement.classList.remove('maximized');
+                    }
+
+                    break;
+
                 case 'open':
+                    // Remove all other maximized
+                    var maximizedElms = document.getElementsByClassName('maximized');
+                    while(maximizedElms.length > 0)
+                        maximizedElms[0].classList.remove('maximized');
+
                     targetElement.classList.remove('minimized');
                     targetElement.classList.remove('maximized');
                     targetElement.classList.remove('closed');
+
+                    // Move to bottom of the list
+                    while(targetElement.nextSibling
+                    && targetElement.nextSibling.nodeName === targetElement.nodeName)
+                        targetElement.parentNode.insertBefore(targetElement.nextSibling, targetElement);
+
+                    targetElement.scrollIntoView();
+
                     break;
                     
                 case 'close':
                     if(targetElement.classList.contains('closed')) {
                         targetElement.classList.remove('closed');
-                      
+
                     } else {
                         targetElement.classList.remove('minimized');
                         targetElement.classList.remove('maximized');
@@ -572,27 +597,41 @@ if(typeof importScripts !== 'undefined') {
                     break;  
                     
                 case 'minimize':
-                    if(targetElement.classList.contains('minimized')) {
-                        targetElement.classList.remove('minimized');
-                      
-                    } else {
+                    //if(targetElement.classList.contains('minimized')) {
+                    //    targetElement.classList.remove('minimized');
+
+                        //// Move to top of the list
+                        //while(targetElement.previousSibling
+                        //&& targetElement.previousSibling.nodeName === targetElement.nodeName)
+                        //    targetElement.parentNode.insertBefore(targetElement, targetElement.previousSibling);
+
+                    //} else {
+                        // Minimize!
                         targetElement.classList.remove('maximized');
                         targetElement.classList.remove('closed');
                         targetElement.classList.add('minimized');
-                        
+
                         // Move to bottom of the list
                         while(targetElement.nextSibling
                             && targetElement.nextSibling.nodeName === targetElement.nodeName)
                             targetElement.parentNode.insertBefore(targetElement.nextSibling, targetElement);
-                    }
+
+                        //targetElement.scrollIntoView();
+                    //}
 
                     break; 
                     
                 case 'maximize':
-                    if(wasMaximized || targetElement.classList.contains('maximized')) {
+                    if(targetElement.classList.contains('maximized')) {
                         targetElement.classList.remove('maximized');
                       
                     } else {
+                        // Remove all other maximized
+                        var maximizedElms2 = document.getElementsByClassName('maximized');
+                        while(maximizedElms2.length > 0)
+                            maximizedElms2[0].classList.remove('maximized');
+
+                        // Maximize!
                         targetElement.classList.remove('minimized');
                         targetElement.classList.remove('closed');
                         targetElement.classList.add('maximized');
