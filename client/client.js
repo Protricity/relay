@@ -566,7 +566,7 @@ if(typeof importScripts !== 'undefined') {
                         //targetElement.classList.add('maximized');
                     } else {
                         targetElement.classList.add('minimized');
-                        //targetElement.classList.remove('maximized');
+                        targetElement.classList.remove('maximized');
                     }
 
                     break;
