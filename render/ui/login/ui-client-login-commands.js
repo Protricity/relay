@@ -13,16 +13,16 @@ if(typeof module === 'object') (function() {
             var subCommand = match[1];
 
             if(subCommand) {
-                console.log(subCommand);
-
                 switch(subCommand.toLowerCase()) {
                     case 'create':
                         //ClientWorkerThread.execute("CLOSE ui-login:");
+                        ClientWorkerThread.execute("OPEN ui-login:");
                         ClientWorkerThread.execute("PGP.KEYGEN");
                         break;
 
                     case 'import':
                         //ClientWorkerThread.execute("CLOSE ui-login:");
+                        ClientWorkerThread.execute("OPEN ui-login:");
                         ClientWorkerThread.execute("PGP.IMPORT");
                         break;
 

@@ -90,7 +90,7 @@ if(typeof module === 'object') (function() {
             var publicKeys = [];
             KeySpaceDB.queryAll(path, function(err, publicKeyContentEntry) {
                 if (err)
-                    throw new Error(err);
+                    throw new Error(err.message || err);
 
                 if (publicKeyContentEntry) {
                     publicKeys.push(publicKeyContentEntry.pgp_id_public);

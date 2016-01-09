@@ -27,7 +27,7 @@ if(typeof module === 'object') (function() {
          * @return {boolean} true if handled otherwise false
          **/
         function channelSearchCommand(commandString, e) {
-            var match = /^(channel\.)?search/im.exec(commandString);
+            var match = /^(channel\.)?search(?:\.(\w+))?\s*(.*)$/im.exec(commandString);
             if (!match)         // If unmatched,
                 return false;   // Pass control to next handler
 
@@ -35,7 +35,29 @@ if(typeof module === 'object') (function() {
                 commandString = "CHANNEL." + commandString;
 
             // Remember search value
-            lastSearch = match[2];
+            var subCommand = match[2];
+            if(subCommand) {
+                switch(subCommand.toLowerCase()) {
+                    case 'suggest':
+                        var suggestedChannel = match[3];
+                        activeSuggestions.unshift(suggestedChannel);
+                        console.info("Added Custom Suggested Channel: ", suggestedChannel);
+                        ClientWorkerThread.processResponse("EVENT CHANNEL.SEARCH.LIST\n"
+                            + activeSuggestions.join("\n"));
+                        return true;
+
+                    case 'list':
+                        ClientWorkerThread.processResponse("EVENT CHANNEL.SEARCH.LIST\n"
+                            + activeSuggestions.join("\n"));
+                        return true;
+                        
+                    default:
+                        throw new Error("Invalid subCommand: " + subCommand);
+                }
+            }
+
+            // Remember search value
+            lastSearch = match[3];
 
             // Forward command to socket server
             ClientWorkerThread.sendWithSocket(commandString);
@@ -56,9 +78,11 @@ if(typeof module === 'object') (function() {
                             addedChannels.push(channelList[i]);
                         }
                     }
-                    if(addedChannels.length > 0)
+                    if(addedChannels.length > 0) {
                         console.info("Added Suggested Channels: ", addedChannels);
-
+                        ClientWorkerThread.processResponse("EVENT CHANNEL.SEARCH.LIST\n"
+                            + activeSuggestions.join("\n"));
+                    }
 
                     self.module = {exports: {}};
                     importScripts('channel/search/render/channel-search-window.js');

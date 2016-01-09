@@ -1,4 +1,4 @@
-<article class='ui-login: maximized'>
+<article class='ui-login:'>
     <script src='render/ui/login/render/ui-login.js'></script>
     <link rel='stylesheet' href='render/ui/login/render/ui-login.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
@@ -18,11 +18,15 @@
                 <li><span class="command">Message</span> someone on your Contact list</li>
             </ol>
         </div>
-        <a class="ui-login-button" href='javascript:ClientMainThread.execute("CHANNEL.SEARCH");'>
+        <a class="ui-login-button" href='javascript:
+        ClientMainThread.execute("CHANNEL.SEARCH");
+        ClientMainThread.execute("OPEN ui-login:");'>
             1. <span class="command">Subscribe</span> to <em>Channels</em> you might be interested in.
             <br /><span class="info">[this is also how you find others and others find you]</span>
         </a>
-        <a class="ui-login-button" href='javascript:ClientMainThread.execute("KEYSPACE.SEARCH");'>
+        <a class="ui-login-button" href='javascript:
+        ClientMainThread.execute("KEYSPACE.SEARCH");
+        ClientMainThread.execute("OPEN ui-login:");'>
             2. <span class="command">Search</span> for <em>Contacts</em> on the network
             <br /><span class="warn">[only works if you're subscribed to channels with people in it]</span>
         </a>
