@@ -122,6 +122,7 @@ form[name=ui-contacts-form] select {
     width: 90%;
     margin: 0.5em;
     display: block;
+    font-size: 1em;
 }
 
 form[name=ui-contacts-form] input[type=checkbox].keyspace-contact-entry-checkbox\3A {

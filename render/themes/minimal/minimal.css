@@ -334,7 +334,7 @@ body.theme-minimal.layout-vertical > article > header{
 /** Articles - Phone Layout **/
 
 .theme-minimal.layout-vertical > article {
-    margin: 0 0 0.5em 0;
+    margin: 0 0px 1.5em 0;
     box-shadow: 0.1em 0.2em 0.8em #999;
     width: 100%;
     /* transition: box-shadow 0.5s ease-out; */

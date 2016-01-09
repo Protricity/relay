@@ -30,17 +30,21 @@ if(typeof module !== 'object')
                 privateKeys.push(pgp_id_public);
 
             } else {
+                var TEMPLATE_URL = "render/ui/login/render/ui-login.html";
                 if(privateKeys.length === 0) {
                     //console.info("No private keys were found for login");
                     forceRender = true;
 
                 } else {
                     console.info("Existing Private Keys Found. Skipping Login...");
+                    TEMPLATE_URL = "render/ui/login/render/ui-login-finished.html";
+                    forceRender = true;
+
+                    ClientWorkerThread.execute("UI.CONTACTS");
                 }
 
                 if(forceRender) {
 
-                    var TEMPLATE_URL = "render/ui/login/render/ui-login.html";
 
                     if(subCommand) {
                         switch(subCommand.toLowerCase()) {

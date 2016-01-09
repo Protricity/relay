@@ -487,8 +487,13 @@ if(typeof importScripts !== 'undefined') {
                     throw new Error("Re-render class mismatch: '" + targetClass + "'\n" + content);
                 targetElement = targetElements[0];
 
-                if(targetElement.classList.contains('maximized'))
+                if(targetElement.classList.contains('maximized')) {
+                    // Move to top of the list
+                    while(targetElement.previousSibling
+                    && targetElement.previousSibling.nodeName === targetElement.nodeName)
+                        targetElement.parentNode.insertBefore(targetElement, targetElement.previousSibling);
                     targetElement.scrollIntoView();
+                }
 
             } else {
                 // Existing element(s) with same first class name
