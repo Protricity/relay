@@ -67,7 +67,7 @@ if(typeof module === 'object') (function() {
                 return false;
 
             self.module = {exports: {}};
-            importScripts('render/ui/contacts/render/ui-contacts.js');
+            importScripts('ui/contacts/render/ui-contacts.js');
             var templateExports = self.module.exports;
 
             templateExports.renderUIContactList(function (html) {
@@ -85,7 +85,7 @@ if(typeof module === 'object') (function() {
             //})();
 
 
-            // Query public keys.
+            // Query public keys. Subscribe to all
             var path = 'public/id';
             var publicKeys = [];
             KeySpaceDB.queryAll(path, function(err, publicKeyContentEntry) {
@@ -110,7 +110,7 @@ if(typeof module === 'object') (function() {
 
                     var privateKeys = [];
 
-                    // Query private keys.
+                    // Query private keys. Set online
                     var path = '.private/id';
                     KeySpaceDB.queryAll(path, function(err, privateKeyContentEntry) {
                         if (err)

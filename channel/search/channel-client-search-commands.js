@@ -20,6 +20,9 @@ if(typeof module === 'object') (function() {
 
         var activeSuggestions = [];
 
+        var suggestionStats = [0,0,0]; // [Keyspaces, Clients, Channels]
+        var searchWindowActive = false;
+
         /**
          * Handles Command: CHANNEL.SEARCH [To: PGP ID] [From: PGP ID] [search]
          * @param {string} commandString The command string to process 
@@ -35,12 +38,15 @@ if(typeof module === 'object') (function() {
                 commandString = "CHANNEL." + commandString;
 
             // Remember search value
+            lastSearch = match[3];
+
             var subCommand = match[2];
             if(subCommand) {
                 switch(subCommand.toLowerCase()) {
                     case 'suggest':
                         var suggestedChannel = match[3];
                         activeSuggestions.unshift(suggestedChannel);
+                        suggestionStats[2] = activeSuggestions.length;
                         console.info("Added Custom Suggested Channel: ", suggestedChannel);
                         ClientWorkerThread.processResponse("EVENT CHANNEL.SEARCH.LIST\n"
                             + activeSuggestions.join("\n"));
@@ -56,17 +62,23 @@ if(typeof module === 'object') (function() {
                 }
             }
 
-            // Remember search value
-            lastSearch = match[3];
 
             // Forward command to socket server
             ClientWorkerThread.sendWithSocket(commandString);
 
-            self.module = {exports: {}};
-            importScripts('channel/search/render/channel-search-window.js');
-            self.module.exports.renderChannelSearchWindow(activeSuggestions, lastSearch, function(html) {
-                ClientWorkerThread.render(html);
-            });
+            if(searchWindowActive === false) {
+                searchWindowActive = true;
+                self.module = {exports: {}};
+                importScripts('channel/search/render/channel-search-window.js');
+                self.module.exports.renderChannelSearchWindow(activeSuggestions, suggestionStats, lastSearch, function(html) {
+                    ClientWorkerThread.render(html);
+                    //ClientWorkerThread.postResponseToClient("OPEN channel-search-window:");
+                });
+
+            } else {
+                ClientWorkerThread.postResponseToClient("OPEN channel-search-window:");
+            }
+
 
             // local suggestions
             suggestLocalChannels(
@@ -76,19 +88,20 @@ if(typeof module === 'object') (function() {
                         if(activeSuggestions.indexOf(channelList[i]) === -1) {
                             activeSuggestions.unshift(channelList[i]);
                             addedChannels.push(channelList[i]);
+                            suggestionStats[2] = activeSuggestions.length;
                         }
                     }
                     if(addedChannels.length > 0) {
                         console.info("Added Suggested Channels: ", addedChannels);
                         ClientWorkerThread.processResponse("EVENT CHANNEL.SEARCH.LIST\n"
                             + activeSuggestions.join("\n"));
-                    }
 
-                    self.module = {exports: {}};
-                    importScripts('channel/search/render/channel-search-window.js');
-                    self.module.exports.renderChannelSearchWindow(activeSuggestions, lastSearch, function(html) {
-                        ClientWorkerThread.render(html);
-                    });
+                        self.module = {exports: {}};
+                        importScripts('channel/search/render/channel-search-window.js');
+                        self.module.exports.renderChannelSearchWindowResults(activeSuggestions, suggestionStats, lastSearch, function(html) {
+                            ClientWorkerThread.render(html);
+                        });
+                    }
                 }
             );
 
@@ -104,13 +117,12 @@ if(typeof module === 'object') (function() {
          * @return {boolean} true if handled otherwise false
          **/
         function channelSearchResponse(responseString, e) {
-
             var match = /^channel\.search\.results([\s\S]+)$/im.exec(responseString);
             if (!match)         // If unmatched,
                 return false;   // Pass control to next handler
 
             var newResults = match[1].split("\n");
-            var stats = newResults.shift();
+            suggestionStats = newResults.shift().trim().split(" ");
 
             var addedChannels = [];
             for(var i=0; i<newResults.length; i++) {
@@ -122,12 +134,21 @@ if(typeof module === 'object') (function() {
             if(addedChannels.length > 0)
                 console.info("Added Suggested Channels: ", addedChannels);
 
+            suggestionStats[2] = activeSuggestions.length;
+
             self.module = {exports: {}};
             importScripts('channel/search/render/channel-search-window.js');
-            self.module.exports.renderChannelSearchWindow(activeSuggestions, lastSearch, function(html) {
-                ClientWorkerThread.render(html);
-            });
 
+            if(searchWindowActive === false) {
+                searchWindowActive = true;
+                self.module.exports.renderChannelSearchWindow(activeSuggestions, suggestionStats, lastSearch, function(html) {
+                    ClientWorkerThread.render(html);
+                });
+            } else {
+                self.module.exports.renderChannelSearchWindowResults(activeSuggestions, suggestionStats, lastSearch, function(html) {
+                    ClientWorkerThread.render(html);
+                });
+            }
             // Response was handled
             return true;
         }

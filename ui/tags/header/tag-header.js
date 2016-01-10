@@ -27,7 +27,7 @@ if(typeof module === 'object') (function() {
             throw new Error("Invalid Nav Header Buttons Tag Format: " + tagHTML);
 
         var className = match[1];
-        var TEMPLATE_URL = 'render/tags/header/tag-header-buttons.html';
+        var TEMPLATE_URL = 'ui/tags/header/tag-header-buttons.html';
 
         var xhr = new XMLHttpRequest();
         xhr.open("GET", TEMPLATE_URL, false);

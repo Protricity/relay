@@ -55,7 +55,7 @@ article.channel-search-window\3A > section {
     /* font: menu; */
     display: inline-block;
     padding: 0.3em 0.5em;
-    transition: max-width 0.2s, box-shadow 0.3s;
+    transition: max-width 0.2s, box-shadow 0.3s, opacity 1s;
     /* max-width: 2em; */
     overflow: hidden;
     text-align: center;
@@ -65,7 +65,11 @@ article.channel-search-window\3A > section {
     box-shadow: 0 0 2em #00F;;
 /*     max-width: 10em; */
 }
-
+.channel-search-results\3A  a.search-entry-command.subscribed {
+    font-weight: bold;
+    opacity: 0.4;
+    cursor: no-drop;
+}
 
 form[name=channel-search-form] select,
 form[name=channel-search-form] input {
@@ -73,5 +77,30 @@ form[name=channel-search-form] input {
     margin: 0.5em;
     border-radius: 0.6em;
     border-width: 1px;
-    /* font-size: 1em; */
+    font-size: 1em;
+}
+
+.channel-search-button {
+    padding: 1em;
+    display: inline-block;
+    border: outset;
+    margin: 0.4em;
+    background: #DDD;
+    text-align: center;
+    cursor: pointer;
+    /*font-size: 3vw;*/
+    transition: box-shadow 0.5s ease-out;
+    box-shadow: 0.1em 0.1em 0.5em #999;
+}
+
+
+.channel-search-button.disabled {
+    color: grey;
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: 0 0 0 #999;
+}
+
+.channel-search-button:hover {
+    box-shadow: 0 0 1em #09F;
 }

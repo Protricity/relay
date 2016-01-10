@@ -64,24 +64,29 @@ function channelSubscribeSocketCommand(commandString, client) {
             relayCommandString = "CHANNEL.RESUBSCRIBE." + mode.toUpperCase() + " " + channel + " " + firstArgString;
         }
 
-        var clients = ServerSubscriptions.getChannelSubscriptions(channel, mode);
+        // Userlist. TODO: Refactor?
         var channelClientUserList = [firstArgString + (argString ? ' ' + argString : '')];
-        for(var i=0; i<clients.length; i++) {
+        var clients = ServerSubscriptions.getChannelSubscriptions(channel, mode);
+        for (var i = 0; i < clients.length; i++) {
             var channelClient = clients[i][0];
             var channelClientArgString = clients[i][1];
             //var channelClientUsername = channelClientArgString.split(/\s+/)[0] || 'unknown';
-            if(channelClient && channelClient.readyState === channelClient.OPEN) {
+            if (channelClient && channelClient.readyState === channelClient.OPEN) {
                 // Relay to other subscribers
                 send(channelClient, relayCommandString);
                 // Add to user list
-                if(channelClientUserList.indexOf(channelClientArgString) === -1)
+                if (channelClientUserList.indexOf(channelClientArgString) === -1)
                     channelClientUserList.push(channelClientArgString);
             } else {
                 // TODO: invalid client?
             }
         }
 
-        send(client, "CHANNEL.USERLIST." + mode.toUpperCase() + " " + channel + "\n" + channelClientUserList.join("\n"));
+        if(mode.toLowerCase() === 'chat') {
+            send(client, "CHANNEL.USERLIST." + mode.toUpperCase() + " " + channel + "\n" + channelClientUserList.join("\n"));
+        }
+        send(client, "CHANNEL.USERCOUNT." + mode.toUpperCase() + " " + channel + " " + clients.length);
+
 
     } catch (e) {
         send(client, "ERROR " + e.message);
@@ -99,8 +104,9 @@ function channelUnsubscribeSocketCommand(commandString, client) {
     var channel = match[2];
 
     try {
+
         var oldArgString = ServerSubscriptions.handleClientSubscription(commandString, client);
-        if(!oldArgString) {
+        if(oldArgString === null) {
             send(client, "ERROR Failed to unsubscribe. No existing subscription: " + commandString);
             return true;
         }
@@ -108,15 +114,17 @@ function channelUnsubscribeSocketCommand(commandString, client) {
         var relayCommandString = "CHANNEL.UNSUBSCRIBE." + mode.toUpperCase() + " " + channel + " " + oldUserName;
         var clients = ServerSubscriptions.searchChannelSubscriptions(channel, mode);
         for(var i=0; i<clients.length; i++) {
-            if(!clients[i])
-                console.log(clients);
-
             var channelClient = clients[i][0];
+            if(channelClient === client) {
+                console.warn("Client is still in channel");
+                continue;
+            }
             if(channelClient.readyState === channelClient.OPEN) {
                 // Inform other subscribers
                 send(channelClient, relayCommandString);
             }
         }
+        send(client, relayCommandString);
 
     } catch (e) {
         send(client, "ERROR " + e.message);

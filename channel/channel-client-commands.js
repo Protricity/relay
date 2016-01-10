@@ -37,7 +37,7 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addCommand(importChannelSubscribeCommands);
         ClientWorkerThread.addResponse(importChannelSubscribeCommands);
         function importChannelSubscribeCommands(commandString, e) {
-            if (!/^(?:channel\.)?(subscribe|join|leave|userlist|nick)/i.test(commandString))
+            if (!/^(?:channel\.)?(subscribe|join|leave|userlist|usercount|nick)/i.test(commandString))
                 return false;
             ClientWorkerThread.removeCommand(importChannelSubscribeCommands);
             ClientWorkerThread.removeResponse(importChannelSubscribeCommands);

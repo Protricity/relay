@@ -18,12 +18,12 @@ body.theme-minimal header{
 
 @font-face {
     font-family: body;
-    src: url( "fonts/DroidSerif-Regular.ttf" ) format("truetype");
+    src: url("fonts/DroidSerif-Regular.ttf") format("truetype");
 }
 
 @font-face {
     font-family: command ;
-    src: url( "fonts/Oswald-Bold.ttf" ) format("truetype");
+    src: url("fonts/Oswald-Bold.ttf") format("truetype");
 }
 
 /** General **/

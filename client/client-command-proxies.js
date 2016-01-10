@@ -61,7 +61,7 @@ module.exports.initClientCommands = function(ClientWorkerThread) {
             return false;
         ClientWorkerThread.removeCommand(importClientUICommands);
         ClientWorkerThread.removeResponse(importClientUICommands);
-        importScripts('render/ui/ui-commands.js');
+        importScripts('ui/ui-commands.js');
         module.exports.initClientUICommands(ClientWorkerThread);
 //         console.info("Loaded: channel/channel-client-commands.js");
         return false;

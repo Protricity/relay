@@ -1,6 +1,6 @@
 <article class='ui-login: maximized'>
-    <script src='render/ui/login/render/ui-login.js'></script>
-    <link rel='stylesheet' href='render/ui/login/render/ui-login.css' type='text/css' property="stylesheet">
+    <script src='ui/login/render/ui-login.js'></script>
+    <link rel='stylesheet' href='ui/login/render/ui-login.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {header:buttons ui-login:}
         <a href='javascript:ClientMainThread.execute("TOGGLE ui-login:");'>
@@ -12,6 +12,12 @@
             <strong>Welcome to The Relay Network</strong>
             <br />
             Please choose a <span class="command">Login</span> method:
+            <ol>
+                <li>Create a new Identity with <span class="command">PGP KeyGen</span></li>
+                <li>Import an existing Identity with <span class="command">PGP Import</span></li>
+                <li>Browse The Relay Network anonymously</li>
+                <li style="color: lightgrey">Log In to another device [coming soon]</li>
+            </ol>
         </div>
         <a class="ui-login-button" href='javascript:ClientMainThread.execute("UI.LOGIN.CREATE")'>
             <span class="command">KeyGen</span> (Create) a new Identity
@@ -26,7 +32,7 @@
             <br /><span class="info">[browse the relay network anonymously]</span>
         </a>
         <a class="ui-login-button disabled" href='javascript:ClientMainThread.execute("UI.LOGIN.REMOTE")'>
-            Remote <span class="command">Login</span> (Coming soon)
+            <span class="command">Remote Login</span> (Coming soon)
             <br /><span class="info">[safely log in with a pin or password from anywhere]</span>
         </a>
     </main>

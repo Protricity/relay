@@ -36,7 +36,7 @@ if(typeof module === 'object') (function() {
             }
 
             self.module = {exports: {}};
-            importScripts('render/ui/login/render/ui-login.js');
+            importScripts('ui/login/render/ui-login.js');
             var templateExports = self.module.exports;
 
             var forceRender = false;

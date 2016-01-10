@@ -13,7 +13,7 @@ if(typeof module === 'object') (function() {
             ClientWorkerThread.removeCommand(importUIContactsCommands);
             ClientWorkerThread.removeResponse(importUIContactsCommands);
             self.module = {exports: {}};
-            importScripts('render/ui/contacts/ui-client-contacts-commands.js');
+            importScripts('ui/contacts/ui-client-contacts-commands.js');
             module.exports.initClientUIContactsCommands(ClientWorkerThread);
             return false;
         }
@@ -27,7 +27,7 @@ if(typeof module === 'object') (function() {
                 return false;
             ClientWorkerThread.removeCommand(importUILoginCommands);
             self.module = {exports: {}};
-            importScripts('render/ui/login/ui-client-login-commands.js');
+            importScripts('ui/login/ui-client-login-commands.js');
             module.exports.initClientUILoginCommands(ClientWorkerThread);
             return false;
         }

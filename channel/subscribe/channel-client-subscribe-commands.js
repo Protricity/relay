@@ -17,7 +17,8 @@ if(typeof module === 'object') (function() {
 
         ClientWorkerThread.addCommand(channelJoinCommand);
         ClientWorkerThread.addCommand(channelLeaveCommand);
-        ClientWorkerThread.addResponse(channelUserlistResponse);
+        ClientWorkerThread.addResponse(channelUserListResponse);
+        ClientWorkerThread.addResponse(channelUserCountResponse);
 
 
         // Default Subscription Mode
@@ -45,7 +46,7 @@ if(typeof module === 'object') (function() {
 
 
         // USERLIST Response
-        function channelUserlistResponse(commandResponse) {
+        function channelUserListResponse(commandResponse) {
             var match = /^(?:channel\.)?userlist\.(\w+)(?:\s(\S+))?\n([\s\S]+)$/im.exec(commandResponse);
             if (!match)
                 return false;
@@ -60,6 +61,29 @@ if(typeof module === 'object') (function() {
             })();
 
             ClientSubscriptions.handleClientUserList(commandResponse);
+
+            // Send event to signal user list refresh
+            ClientWorkerThread.processResponse("EVENT " + commandResponse);
+
+            return true;
+        }
+
+        // USERCOUNT Response
+        function channelUserCountResponse(commandResponse) {
+            var match = /^(?:channel\.)?usercount\.(\w+)\s+(\S+)\s+(\d+)$/im.exec(commandResponse);
+            if (!match)
+                return false;
+            var mode = match[1];
+            var channel = match[2] || null;
+            var subscriptionCount = match[3];
+
+            var ClientSubscriptions = self.ClientSubscriptions || (function() {
+                self.module = {exports: {}};
+                importScripts('client/subscriptions/client-subscriptions.js');
+                return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
+            })();
+
+            ClientSubscriptions.handleClientUserCount(commandResponse);
 
             // Send event to signal user list refresh
             ClientWorkerThread.processResponse("EVENT " + commandResponse);
@@ -96,8 +120,9 @@ if(typeof module === 'object') (function() {
                     subscriptionSettings.commands = [];
                 var commands = subscriptionSettings.commands;
                 var oldSubscriptionPos = -1;
+                var settingsCommandStringLC = settingsCommandString.toLowerCase();
                 for(var i=0; i<commands.length; i++) {
-                    if(commands[i].indexOf(settingsCommandStringPrefix) === 0)
+                    if(commands[i].toLowerCase().indexOf(settingsCommandStringLC) === 0)
                         oldSubscriptionPos = i;
                     //match = /^(?:channel\.)?subscribe(?:\.(\w+))?/i.exec(commands[i]);
                     //if(match && (match[1] || '').toLowerCase() === mode)
@@ -126,6 +151,7 @@ if(typeof module === 'object') (function() {
                 }
                 SettingsDB.updateSettings(subscriptionSettings);
             });
+
 
             ClientWorkerThread.sendWithSocket(commandString);
             return true;

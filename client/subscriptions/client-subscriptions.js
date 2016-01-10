@@ -40,7 +40,40 @@ module.exports.ClientSubscriptions =
     // Channel User List Object
     var channelUserLists = {};
 
+    // Channel User List Object
+    var channelUserCounts = {};
 
+
+    ClientSubscriptions.handleClientUserCount = function(responseString) {
+        var match = /^(?:channel\.)?usercount\.(\w+)\s+(\S+)?\s+(\d+)$/im.exec(responseString);
+        if (!match)
+            throw new Error("Invalid UserCount: " + responseString);
+
+        var mode = match[1].toLowerCase();
+        var channel = match[2].toLowerCase();
+        var subscriptionCount = parseInt(match[3]);
+
+        if(typeof channelUserCounts[mode] === 'undefined')
+            channelUserCounts[mode] = {};
+
+        var modeChannels = channelUserCounts[mode];
+
+        var oldUserCount = modeChannels[channel] || null;
+        modeChannels[channel] = subscriptionCount;
+        return oldUserCount;
+    };
+
+    // TODO: needs comments
+    ClientSubscriptions.getChannelUserCount = function(channel, mode) {
+        mode = mode.toLowerCase();
+        channel = channel.toLowerCase();
+        if(typeof channelUserCounts[mode] === 'undefined')
+            return 0;
+        var channelModes = channelUserCounts[mode];
+        if(typeof channelModes[channel] === 'undefined')
+            return 0;
+        return channelModes[channel];
+    };
 
 
     // TODO: needs comments
@@ -64,7 +97,7 @@ module.exports.ClientSubscriptions =
     };
 
     // TODO: needs comments
-    ClientSubscriptions.getChannelUserList = function(mode, channel) {
+    ClientSubscriptions.getChannelUserList = function(channel, mode) {
         mode = mode.toLowerCase();
         channel = channel.toLowerCase();
         if(typeof channelUserLists[mode] === 'undefined')

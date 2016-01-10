@@ -87,7 +87,7 @@ if(typeof module === 'object') (function() {
                         return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
                     })();
 
-                    var userList = ClientSubscriptions.getChannelUserList('chat', channelPath);
+                    var userList = ClientSubscriptions.getChannelUserList(channelPath, 'chat');
 
                     chatExports.renderChatUserList(channelPath, userList, function(html) {
                         ClientWorkerThread.render(html);

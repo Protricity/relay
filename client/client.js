@@ -233,7 +233,7 @@ if(typeof importScripts !== 'undefined') {
             var tagString = match[0];
 
             self.module = {exports: {}};
-            importScripts('render/tags/client-tag-list.js');
+            importScripts('ui/tags/client-tag-list.js');
             var tags = self.module.exports.tags;
 
             for (var i = 0; i < tags.length; i++) {
@@ -467,6 +467,7 @@ if(typeof importScripts !== 'undefined') {
             var targetElements = document.getElementsByClassName(targetClass);
             var targetElement;
             if(targetElements.length === 0) {
+
                 // First Render
                 var bodyElm = document.getElementsByTagName('body')[0];
 
@@ -487,7 +488,13 @@ if(typeof importScripts !== 'undefined') {
                     throw new Error("Re-render class mismatch: '" + targetClass + "'\n" + content);
                 targetElement = targetElements[0];
 
-                if(targetElement.classList.contains('maximized')) {
+                if(contentElement.classList.contains('maximized')) {
+                    // Remove all other maximized
+                    var maximizedElms = document.getElementsByClassName('maximized');
+                    while(maximizedElms.length > 0)
+                        maximizedElms[0].classList.remove('maximized');
+                    targetElement.classList.add('maximized');
+
                     // Move to top of the list
                     while(targetElement.previousSibling
                     && targetElement.previousSibling.nodeName === targetElement.nodeName)
@@ -581,10 +588,10 @@ if(typeof importScripts !== 'undefined') {
                     targetElement.classList.remove('maximized');
                     targetElement.classList.remove('closed');
 
-                    // Move to bottom of the list
-                    while(targetElement.nextSibling
-                    && targetElement.nextSibling.nodeName === targetElement.nodeName)
-                        targetElement.parentNode.insertBefore(targetElement.nextSibling, targetElement);
+                    // Move to top of the list
+                    while(targetElement.previousSibling
+                    && targetElement.previousSibling.nodeName === targetElement.nodeName)
+                        targetElement.parentNode.insertBefore(targetElement, targetElement.previousSibling);
 
                     targetElement.scrollIntoView();
 
@@ -602,15 +609,12 @@ if(typeof importScripts !== 'undefined') {
                     break;  
                     
                 case 'minimize':
-                    //if(targetElement.classList.contains('minimized')) {
-                    //    targetElement.classList.remove('minimized');
+                    if(targetElement.classList.contains('minimized')) {
+                        // Unminimize!
+                        targetElement.classList.remove('minimized');
+                        targetElement.scrollIntoView(); // TODO: good idea?
 
-                        //// Move to top of the list
-                        //while(targetElement.previousSibling
-                        //&& targetElement.previousSibling.nodeName === targetElement.nodeName)
-                        //    targetElement.parentNode.insertBefore(targetElement, targetElement.previousSibling);
-
-                    //} else {
+                    } else {
                         // Minimize!
                         targetElement.classList.remove('maximized');
                         targetElement.classList.remove('closed');
@@ -618,18 +622,19 @@ if(typeof importScripts !== 'undefined') {
 
                         // Move to bottom of the list
                         while(targetElement.nextSibling
-                            && targetElement.nextSibling.nodeName === targetElement.nodeName)
+                        && targetElement.nextSibling.nodeName === targetElement.nodeName)
                             targetElement.parentNode.insertBefore(targetElement.nextSibling, targetElement);
 
                         //targetElement.scrollIntoView();
-                    //}
+                    }
 
                     break; 
                     
                 case 'maximize':
                     if(targetElement.classList.contains('maximized')) {
+                        // Unmaximize
                         targetElement.classList.remove('maximized');
-                      
+
                     } else {
                         // Remove all other maximized
                         var maximizedElms2 = document.getElementsByClassName('maximized');
@@ -640,10 +645,10 @@ if(typeof importScripts !== 'undefined') {
                         targetElement.classList.remove('minimized');
                         targetElement.classList.remove('closed');
                         targetElement.classList.add('maximized');
-
-                            // Move to top of the list
-                        while(targetElement.previousSibling 
-                            && targetElement.previousSibling.nodeName === targetElement.nodeName)
+                        
+                        // Move to top of the list
+                        while(targetElement.previousSibling
+                        && targetElement.previousSibling.nodeName === targetElement.nodeName)
                             targetElement.parentNode.insertBefore(targetElement, targetElement.previousSibling);
 
                         targetElement.scrollIntoView();

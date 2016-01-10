@@ -24,7 +24,7 @@ if(typeof module === 'object') (function() {
 
     var renderNavMenuTag =
     module.exports.renderNavMenuTag = function (tagHTML, callback) {
-        var TEMPLATE_URL = 'render/tags/nav/tag-nav-menu.html';
+        var TEMPLATE_URL = 'ui/tags/nav/tag-nav-menu.html';
 
         var xhr = new XMLHttpRequest();
         xhr.open("GET", TEMPLATE_URL, false);

@@ -30,14 +30,14 @@ if(typeof module !== 'object')
                 privateKeys.push(pgp_id_public);
 
             } else {
-                var TEMPLATE_URL = "render/ui/login/render/ui-login.html";
+                var TEMPLATE_URL = "ui/login/render/ui-login.html";
                 if(privateKeys.length === 0) {
                     //console.info("No private keys were found for login");
                     forceRender = true;
 
                 } else {
                     console.info("Existing Private Keys Found. Skipping Login...");
-                    TEMPLATE_URL = "render/ui/login/render/ui-login-finished.html";
+                    TEMPLATE_URL = "ui/login/render/ui-login-finished.html";
                     // forceRender = true;
 
                     ClientWorkerThread.execute("UI.CONTACTS");
@@ -49,19 +49,19 @@ if(typeof module !== 'object')
                     if(subCommand) {
                         switch(subCommand.toLowerCase()) {
                             case 'create':
-                                TEMPLATE_URL = "render/ui/login/render/ui-login-finished.html";
+                                TEMPLATE_URL = "ui/login/render/ui-login-finished.html";
                                 break;
 
                             case 'import':
-                                TEMPLATE_URL = "render/ui/login/render/ui-login-finished.html";
+                                TEMPLATE_URL = "ui/login/render/ui-login-finished.html";
                                 break;
 
                             case 'guest':
-                                TEMPLATE_URL = "render/ui/login/render/ui-login-finished.html";
+                                TEMPLATE_URL = "ui/login/render/ui-login-finished.html";
                                 break;
 
                             case 'remote':
-                                TEMPLATE_URL = "render/ui/login/render/ui-login-finished.html";
+                                TEMPLATE_URL = "ui/login/render/ui-login-finished.html";
                         }
                     }
 

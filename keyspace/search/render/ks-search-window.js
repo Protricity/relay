@@ -14,18 +14,51 @@
     // Worker Scripts
     if(typeof module === 'object') {
         module.exports.renderKeySpaceSearchWindow = renderKeySpaceSearchWindow;
+        module.exports.renderKeySpaceSearchWindowResults = renderKeySpaceSearchWindowResults;
     }
 
+
+    var MAX_RESULTS = 30; // TODO: next page
     var TEMPLATE_URL = 'keyspace/search/render/ks-search-window.html';
+
+    var TEMPLATE_SEARCH_RESULTS =
+        "<section class='channel-search-results:'>" +
+            "<table style='width: 100%'>" +
+                "<thead>" +
+                    "<tr>" +
+                        "<th>Identity Name</th>" +
+                        "<th>Key ID</th>" +
+                        "<th>Options</th>" +
+                    "</tr>" +
+                "</thead>" +
+                "<tbody>" +
+                    "{$html_search_results}" +
+                "</tbody>" +
+                "<tfoot>" +
+                    "<tr>" +
+                        "<th class='info'>" +
+                        "    Channels Searched: {$stat_channel_count}" +
+                        "</th>" +
+                        "<th class='info'>" +
+                        "    Active Clients: {$stat_client_count}" +
+                        "</th>" +
+                        "<th class='info'>" +
+                        "    Contacts Found: {$stat_keyspace_count}" +
+                        "</th>" +
+                    "</tr>" +
+                "</tfoot>" +
+            "</table>" +
+        "</section>";
+
     var TEMPLATE_SEARCH_ENTRY =
         "\n<tr>" +
             "\n\t<td>{$user_id}</td>" +
             "\n\t<td>" +
-                "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"KEYSPACE.INFO {$pgp_id_public}\")'>{$pgp_id_public}</a>" +
+                "\n\t\t<a class='search-entry-command' onclick='Client.execute(\"KEYSPACE.INFO {$pgp_id_public}\")'>{$pgp_id_public}</a>" +
             "\n\t</td>" +
             "\n\t<td>" +
-                "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"MESSAGE {$pgp_id_public}\")'>Message</a>" +
-                "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"GET http://{$pgp_id_public}.ks/public/id\")'>Add</a>" +
+                "\n\t\t<a class='search-entry-command' onclick='Client.execute(\"GET http://{$pgp_id_public}.ks/public/id\");this.classList.add(\"subscribed\");'>Add</a>" +
+                "\n\t\t<a class='search-entry-command' onclick='Client.execute(\"MESSAGE {$pgp_id_public}\")'>Message</a>" +
                 // "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"KEYSPACE.INFO {$pgp_id_public}\")'>Profile</a>" +
             "\n\t</td>" +
         "\n</tr>";
@@ -48,37 +81,77 @@
         return placeholders[Math.floor(Math.random()*placeholders.length)];
     }
 
-    function renderKeySpaceSearchWindow(responseString, e, lastSearch, callback) {
-        var match = /^keyspace\.search\.results([\s\S]+)$/im.exec(responseString);
-        if (!match)
-            throw new Error("Invalid KeySpace Search Results: " + responseString);
+    //var searchFilter = null;
+    function renderKeySpaceSearchWindow(activeSuggestions, suggestionStats, lastSearch, callback) {
 
-        var results = match[1].split("\n");
-        var stats = results.shift();
+        renderKeySpaceSearchWindowResults(activeSuggestions, suggestionStats, lastSearch,
+            function(html_search_results) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", TEMPLATE_URL, false);
+                xhr.send();
+                if(xhr.status !== 200)
+                    throw new Error("Error: " + xhr.responseText);
+                callback(xhr.responseText
+                        .replace(/{\$html_search_results}/g, html_search_results)
+                        .replace(/{\$search}/g, lastSearch || '')
+                        .replace(/{\$placeholder}/g, getSearchPlaceholder())
+                    //.replace(/{\$url}/gi, url)$search
+                );
+            }
+        );
+    }
 
+    function renderKeySpaceSearchWindowResults(activeSuggestions, suggestionStats, lastSearch, callback) {
+        var stat_channel_count = suggestionStats[0];
+        var stat_client_count = suggestionStats[1];
+        var stat_keyspace_count = suggestionStats[2];
+
+        var subscribedKeyspaces = [];
+
+        self.module = {exports: {}};
+        importScripts('client/subscriptions/client-subscriptions.js');
+        var ClientSubscriptions = self.module.exports.ClientSubscriptions;
+
+        // List all subscribed keyspaces
+        ClientSubscriptions.searchKeySpaceSubscriptions(null, null,
+            function(pgp_id_public, mode, argString) {
+                if(subscribedKeyspaces.indexOf(pgp_id_public.toLowerCase()) === -1)
+                    subscribedKeyspaces.push(pgp_id_public.toLowerCase());
+            });
+
+        var count = 0;
         var html_search_results = '';
-        for(var i=0; i<results.length; i++) {
-            var resultSplit = results[i].split(';'); // Search Results are ; delimited
+        for(var i=0; i<activeSuggestions.length; i++) {
+            var resultSplit = activeSuggestions[i].split(';'); // Search Results are ; delimited
             var pgp_id_public = resultSplit[0];
             var user_id = resultSplit[1];
-            var html_options = '';
+
+            // Skip subscribed channels
+            if(subscribedKeyspaces.indexOf(pgp_id_public.toLowerCase()) >= 0)
+                continue;
+
+            // Search Filter
+            if(lastSearch
+                && user_id.toLowerCase().indexOf(lastSearch) === -1
+                && pgp_id_public.toLowerCase().indexOf(lastSearch) === -1)
+                continue;
+
             html_search_results += TEMPLATE_SEARCH_ENTRY
                 .replace(/{\$user_id}/g, user_id)
                 .replace(/{\$pgp_id_public}/g, pgp_id_public);
 
         }
 
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", TEMPLATE_URL, false);
-        xhr.send();
-        if(xhr.status !== 200)
-            throw new Error("Error: " + xhr.responseText);
-        callback(xhr.responseText
+        callback(TEMPLATE_SEARCH_RESULTS
                 .replace(/{\$html_search_results}/g, html_search_results)
-                .replace(/{\$search}/g, lastSearch)
-                .replace(/{\$placeholder}/g, getSearchPlaceholder)
-                //.replace(/{\$url}/gi, url)$search
+                .replace(/{\$stat_keyspace_count}/g, stat_keyspace_count)
+                .replace(/{\$stat_client_count}/g, stat_client_count)
+                .replace(/{\$stat_channel_count}/g, stat_channel_count)
+                .replace(/{\$search}/g, lastSearch || '')
+                .replace(/{\$placeholder}/g, getSearchPlaceholder())
+            //.replace(/{\$url}/gi, url)$search
         );
+
     }
 
 

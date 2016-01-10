@@ -73,7 +73,7 @@ if(typeof module !== 'object')
                         }
 
                         var user_id = publicKeyContentEntry.user_id || pgp_id_public;
-                        var user_icon_path = 'render/ui/contacts/render/icons/public_key_icon_default.png';
+                        var user_icon_path = 'ui/contacts/render/icons/public_key_icon_default.png';
 
                         // console.log(user_id, arguments);
                         var subscriptionStatus = false ? 'Subscribe' : 'Unsubscribe' ;
@@ -94,7 +94,7 @@ if(typeof module !== 'object')
 
                         if(isKeySpaceAuthorized) {
                             keyType = 'private-key';
-                            user_icon_path = 'render/ui/contacts/render/icons/private_key_icon_default.png';
+                            user_icon_path = 'ui/contacts/render/icons/private_key_icon_default.png';
 
                             html_commands +=
                                 "<br/>" +
@@ -135,7 +135,10 @@ if(typeof module !== 'object')
         importScripts('client/subscriptions/client-subscriptions.js');
         var ClientSubscriptions = self.module.exports.ClientSubscriptions;
 
-        ClientSubscriptions.searchChannelSubscriptions(null, null,
+        var searchMode = 'event'; // Only EVENT subscriptions are listed
+
+        // List all subscribed channels
+        ClientSubscriptions.searchChannelSubscriptions(null, searchMode,
             function(channelName, mode, argString) {
                 var channelNameLowerCase = channelName.toLowerCase();
                 if(typeof channels[channelNameLowerCase] === 'undefined')
@@ -154,18 +157,22 @@ if(typeof module !== 'object')
                 var modes = channels[channelNameLowerCase].modes;
                 var channelName = channels[channelNameLowerCase].original_case || channelNameLowerCase;
 
+                var subscriptionCount = ClientSubscriptions.getChannelUserCount(channelNameLowerCase, searchMode)
+                    || '0';
+
                 // TODO: pressed buttons
                 var html_commands = getCommandHTML("CHANNEL.CHAT " + channelNameLowerCase, 'Chat', modes.indexOf('chat') === -1 ? '' : 'subscribed');
                 html_commands += getCommandHTML("CHANNEL.AUDIO " + channelNameLowerCase, 'Audio', 'disabled');
                 html_commands += getCommandHTML("CHANNEL.VIDEO " + channelNameLowerCase, 'Video', 'disabled');
+                html_commands += getCommandHTML("CHANNEL.LEAVE " + channelNameLowerCase, 'Leave', '');
 
                 //html_commands += "<br/>";
                 //html_commands += getCommandHTML("CHANNEL.LEAVE " + channelName, "LEAVE");
 
                 renderUIContactListEntry(
                     channelName,
-                    '<span class="status">1-25 subscribers</span>',
-                    'render/ui/contacts/render/icons/channel_icon_default.png',
+                    '<span class="status">' + subscriptionCount + ' subscribers</span>',
+                    'ui/contacts/render/icons/channel_icon_default.png',
                     'channel',
                     html_commands,
                     function(html) {
@@ -190,7 +197,7 @@ if(typeof module !== 'object')
             renderUIContactListChannelSubscriptions(function(html_channel_entries, _html_command_options) {
                 html_command_options += _html_command_options;
 
-                var TEMPLATE_URL = "render/ui/contacts/render/ui-contacts.html";
+                var TEMPLATE_URL = "ui/contacts/render/ui-contacts.html";
 
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", TEMPLATE_URL, false);
@@ -214,7 +221,7 @@ if(typeof module !== 'object')
     var i=0;
     module.exports.renderUIContactListEntry = renderUIContactListEntry;
     function renderUIContactListEntry(name, status, user_icon_path, type, html_commands, callback) {
-        var TEMPLATE_URL = "render/ui/contacts/render/ui-contacts-entry.html";
+        var TEMPLATE_URL = "ui/contacts/render/ui-contacts-entry.html";
 
         var xhr = new XMLHttpRequest();
         xhr.open("GET", TEMPLATE_URL, false);
@@ -225,7 +232,7 @@ if(typeof module !== 'object')
         // TODO: cache xhr
 
         //status = 'online';
-        user_icon_path = user_icon_path || 'render/ui/contacts/render/icons/user_icon_default.png';
+        user_icon_path = user_icon_path || 'ui/contacts/render/icons/user_icon_default.png';
 
 
         // Callback
