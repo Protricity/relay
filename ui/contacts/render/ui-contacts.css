@@ -14,8 +14,7 @@
 
 .keyspace-contact-section-header\3A {
 /*     display: block; */
-    padding: 0.4em 1em 0.3em 1em;
-    border-radius: 0.5em 0.5em 0 0;
+    padding: 0.4em 1em 0.3em 1em;margin: 0.8em 0 0 0;border-radius: 0.5em 0.5em 0 0;
     width: 100%;
     border-width: 1px;/* font-size: 1em; */
     font-weight: bold;}
@@ -31,7 +30,7 @@
 }
 
 .keyspace-contact-section\3A {
-    padding: 0 0 1em 0;
+    /* padding: 0; */
     /* border-radius: 0 0 1.5em 1.5em; */
     max-height: 100em;
     transition: padding 1s, max-height 1s;
@@ -55,10 +54,12 @@
     border: 1px outset;
     overflow: hidden;
     transition: box-shadow 1s ease-in;
+    background-color: #FFF;
 }
 
 .keyspace-contact-entry\3A.private-key {
     border-width: 2px;
+    background-color: #EFFFCF;
 }
 
 .keyspace-contact-entry\3A:hover {
@@ -135,7 +136,7 @@ form[name=ui-contacts-form] .keyspace-contact-entry-label\3A {
     padding: 0.2em 0.5em;
     transition: padding 1s, font-size 0.5s, background-color 1s;
     /* transition-delay: 0.6s; */
-    background-color: #FFF;
+    /* background-color: #FFF; */
 }
 
 form[name=ui-contacts-form] .keyspace-contact-entry-checkbox\3A:checked + .keyspace-contact-entry-label\3A,

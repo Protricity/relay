@@ -86,9 +86,9 @@ if(typeof module !== 'object')
 
                         var html_commands =
                             getCommandHTML("MESSAGE " + pgp_id_public, "Message") +
-                            getCommandHTML("GET " + pgp_id_public + "/public/profile", "Profile") +
-                            getCommandHTML("GET " + pgp_id_public, "Get") +
-                            "<br/>" +
+                            //getCommandHTML("GET " + pgp_id_public + "/public/profile", "Profile") +
+                            //getCommandHTML("GET " + pgp_id_public, "Get") +
+                            //"<br/>" +
                             getCommandHTML("PGP.EXPORT " + pgp_id_public, "Export") +
                             getCommandHTML("PGP.DELETE " + pgp_id_public, "Delete");
 
@@ -97,7 +97,7 @@ if(typeof module !== 'object')
                             user_icon_path = 'ui/contacts/render/icons/private_key_icon_default.png';
 
                             html_commands +=
-                                "<br/>" +
+                                //"<br/>" +
                                 getCommandHTML("KEYSPACE.STATUS " + pgp_id_public + " " + hostingCommand.toUpperCase(), "Go " + hostingCommand)
                         } else {
                         }
