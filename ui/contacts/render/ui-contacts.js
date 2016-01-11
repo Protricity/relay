@@ -164,7 +164,7 @@ if(typeof module !== 'object')
                 var html_commands = getCommandHTML("CHANNEL.CHAT " + channelNameLowerCase, 'Chat', modes.indexOf('chat') === -1 ? '' : 'subscribed');
                 html_commands += getCommandHTML("CHANNEL.AUDIO " + channelNameLowerCase, 'Audio', 'disabled');
                 html_commands += getCommandHTML("CHANNEL.VIDEO " + channelNameLowerCase, 'Video', 'disabled');
-                html_commands += getCommandHTML("CHANNEL.LEAVE " + channelNameLowerCase, 'Leave', '');
+                html_commands += getCommandHTML("CHANNEL.UNSUBSCRIBE.EVENT " + channelNameLowerCase, 'Unsubscribe', '');
 
                 //html_commands += "<br/>";
                 //html_commands += getCommandHTML("CHANNEL.LEAVE " + channelName, "LEAVE");
@@ -349,11 +349,11 @@ if(typeof document === 'object')
             if(channels.length > 0)
                 html_command_options +=
                     "<optgroup label='Channel Commands'>" +
-                        "<option value='JOIN [channel]'>" +
-                            "JOIN (" + channels.length + ") Channel" + (channels.length === 1 ? '' : 's') +
+                        "<option value='CHANNEL.SUBSCRIBE.EVENT [channel]'>" +
+                            "SUBSCRIBE to (" + channels.length + ") Channel" + (channels.length === 1 ? '' : 's') +
                         "</option>" +
-                        "<option value='LEAVE [channel]'>" +
-                            "LEAVE (" + channels.length + ") Channel" + (channels.length === 1 ? '' : 's') +
+                        "<option value='CHANNEL.UNSUBSCRIBE.EVENT [channel]'>" +
+                            "UNSUBSCRIBE to (" + channels.length + ") Channel" + (channels.length === 1 ? '' : 's') +
                         "</option>" +
                     "</optgroup>";
 

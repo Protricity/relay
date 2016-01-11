@@ -41,15 +41,16 @@ if(typeof document === 'object') (function() {
                             var promptMatch = /\[prompt:([^\]]+)\]/i.exec(formattedCommandString);
                             if(promptMatch)
                                 formattedCommandString = formattedCommandString.replace(promptMatch[0],
-                                    prompt(promptMatch[1]))
+                                    prompt(promptMatch[1]));
 
+                            var socketEvent;
                             if(formattedCommandString.indexOf("[$username]") !== -1) {
                                 for(var j=0; j<selectedUsers.length; j++) {
                                     formattedCommandString = formattedCommandString
                                         .replace('[$username]', selectedUsers[j])
                                         .replace('[$channel]', formElm.channel.value);
 
-                                    var socketEvent = new CustomEvent('command', {
+                                    socketEvent = new CustomEvent('command', {
                                         detail: formattedCommandString,
                                         cancelable:true,
                                         bubbles:true
@@ -62,7 +63,7 @@ if(typeof document === 'object') (function() {
                                 formattedCommandString = formattedCommandString
                                     .replace('[$channel]', formElm.channel.value);
 
-                                var socketEvent = new CustomEvent('command', {
+                                socketEvent = new CustomEvent('command', {
                                     detail: formattedCommandString,
                                     cancelable:true,
                                     bubbles:true

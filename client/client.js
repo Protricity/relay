@@ -346,9 +346,9 @@ if(typeof importScripts !== 'undefined') {
         };
 
         Client.execute =
-        ClientMainThread.execute = function (commandString) {
+        ClientMainThread.execute = function (commandString, transferList) {
             ClientMainThread.get()
-                .postMessage(commandString);
+                .postMessage(commandString, transferList);
         };
 
         Client.postResponseToClient =

@@ -8,7 +8,7 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addCommand(importChannelChatCommands);
         ClientWorkerThread.addResponse(importChannelChatCommands);
         function importChannelChatCommands(commandString, e) {
-            if (!/^(?:channel\.)?(chat)/i.test(commandString))
+            if (!/^(?:channel\.)?(chat|nick)/i.test(commandString))
                 return false;
             ClientWorkerThread.removeCommand(importChannelChatCommands);
             ClientWorkerThread.removeResponse(importChannelChatCommands);
@@ -37,7 +37,7 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addCommand(importChannelSubscribeCommands);
         ClientWorkerThread.addResponse(importChannelSubscribeCommands);
         function importChannelSubscribeCommands(commandString, e) {
-            if (!/^(?:channel\.)?(subscribe|join|leave|userlist|usercount|nick)/i.test(commandString))
+            if (!/^(?:channel\.)?(subscribe|join|leave|userlist|usercount)/i.test(commandString))
                 return false;
             ClientWorkerThread.removeCommand(importChannelSubscribeCommands);
             ClientWorkerThread.removeResponse(importChannelSubscribeCommands);

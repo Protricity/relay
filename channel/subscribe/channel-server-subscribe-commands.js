@@ -38,7 +38,7 @@ function generateUID(format) {
  * @return {boolean} true if handled otherwise false
  **/
 function channelSubscribeSocketCommand(commandString, client) {
-    var match = /^(?:channel\.)?subscribe(?:\.(\w+))?\s+(\S+)\s*(\S*)\s*([\S\s]*)$/im.exec(commandString);
+    var match = /^(?:channel\.)?(?:re)?subscribe(?:\.(\w+))?\s+(\S+)\s*(\S*)\s*([\S\s]*)$/im.exec(commandString);
     if (!match)         // If unmatched,
         return false;   // Pass control to next handler
 

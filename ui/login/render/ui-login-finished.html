@@ -19,17 +19,20 @@
             </ol>
         </div>
         <a class="ui-login-button" href='javascript:
-            ClientMainThread.execute("CHANNEL.SEARCH");'>
+            Client.execute("CHANNEL.SEARCH");
+            Client.execute("CLOSE ui-login:");'>
             1. <span class="command">Subscribe</span> to <em>Channels</em> you might be interested in.
             <br /><span class="info">[this is also how you find others and others find you]</span>
         </a>
         <a class="ui-login-button" href='javascript:
-            ClientMainThread.execute("KEYSPACE.SEARCH");'>
+            Client.execute("KEYSPACE.SEARCH");
+            Client.execute("CLOSE ui-login:");'>
             2. <span class="command">Search</span> for <em>Contacts</em> on the network
             <br /><span class="warn">[only works if you're subscribed to channels with people in it]</span>
         </a>
         <a class="ui-login-button" href='javascript:
-            ClientMainThread.execute("MAXIMIZE keyspace-contact:");'>
+            Client.execute("UI.CONTACTS");
+            Client.execute("CLOSE ui-login:");'>
             3. Send a <i>PGP Encrypted</i> <span class="command">Message</span> to someone on your contact list!
             <br /><span class="info">[end-to-end with pgp encryption is virtually uncrackable]</span>
         </a>

@@ -227,7 +227,7 @@ module.exports.ClientSubscriptions =
 
         if(prefix === 'un') {
             if(existingSubscriptionString === null)
-                throw new Error("Old Subscription not found: " + subscriptionString);
+                throw new Error("Old " + type + " Subscription not found: " + subscriptionString);
             delete modeList[mode];
             console.info(type + " subscription removed: ", subscriptionString);
 
@@ -238,6 +238,17 @@ module.exports.ClientSubscriptions =
 
             } else {
                 console.info(type + " subscription replaced: ", subscriptionString);
+
+                if(typeof channelUserLists[mode] === 'undefined')
+                    channelUserLists[mode] = {};
+                var modeChannels = channelUserLists[mode];
+                var oldUserList = modeChannels[channel] || null;
+                var opos = oldUserList.indexOf(existingSubscriptionString.split(' ')[0]);
+                if(opos >= 0) 
+                    oldUserList[opos] = argString.split(' ')[0];
+                else
+                    console.warn("Username not found in userlist", existingSubscriptionString, oldUserList);
+
             }
 
         } else {
@@ -246,6 +257,17 @@ module.exports.ClientSubscriptions =
                 console.info(type + " subscription: ", subscriptionString);
             } else {
                 console.warn(type + " subscription replaced: ", subscriptionString);
+                
+                if(typeof channelUserLists[mode] === 'undefined')
+                    channelUserLists[mode] = {};
+                var modeChannels = channelUserLists[mode];
+                var oldUserList = modeChannels[channel] || null;
+                var opos = oldUserList.indexOf(existingSubscriptionString.split(' ')[0]);
+                if(opos >= 0) 
+                    oldUserList[opos] = argString.split(' ')[0];
+                else
+                    console.warn("Username not found in userlist", existingSubscriptionString, oldUserList);
+
             }
         }
 

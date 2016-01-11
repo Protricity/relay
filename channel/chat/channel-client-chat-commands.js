@@ -11,9 +11,12 @@ if(typeof module === 'object') (function() {
      **/
     module.exports.initClientChannelChatCommands = function (ClientWorkerThread) {
         
-        // Add Command/Response Handlers     
+        // Add Command/Response Handlers
         ClientWorkerThread.addCommand(channelChatCommand);
         ClientWorkerThread.addResponse(channelChatResponse);
+
+        ClientWorkerThread.addCommand(channelNickCommand);
+
         ClientWorkerThread.addResponse(eventListener, true);
 
         self.module = {exports: {}};
@@ -42,6 +45,36 @@ if(typeof module === 'object') (function() {
             }, 500);
 
             return false;
+        }
+
+        function channelNickCommand(commandString) {
+            var match = /^(?:channel\.)?nick\s*(\S*)\s+(\w+)$/im.exec(commandString);
+            if (!match)         // If unmatched,
+                return false;   // Pass control to next handler
+
+            var channel = match[1];
+            var nick = match[2];
+            if(!channel) {
+
+                var ClientSubscriptions = self.ClientSubscriptions || (function() {
+                    self.module = {exports: {}};
+                    importScripts('client/subscriptions/client-subscriptions.js');
+                    return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
+                })();
+
+                ClientSubscriptions.searchChannelSubscriptions(null, 'chat',
+                    function(channel, mode, argString) {
+                        commandString = "CHANNEL.RESUBSCRIBE.CHAT " + channel + " " + nick;
+                        ClientWorkerThread.sendWithSocket(commandString);
+                    }
+                );
+
+            } else {
+                commandString = "CHANNEL.RESUBSCRIBE.CHAT " + channel + " " + nick;
+                ClientWorkerThread.sendWithSocket(commandString);
+            }
+
+            return true;
         }
 
         function channelChatCommand(commandString) {

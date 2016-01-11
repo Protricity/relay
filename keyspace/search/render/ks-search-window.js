@@ -22,7 +22,7 @@
     var TEMPLATE_URL = 'keyspace/search/render/ks-search-window.html';
 
     var TEMPLATE_SEARCH_RESULTS =
-        "<section class='channel-search-results:'>" +
+        "<section class='ks-search-results:'>" +
             "<table style='width: 100%'>" +
                 "<thead>" +
                     "<tr>" +
@@ -140,6 +140,8 @@
                 .replace(/{\$user_id}/g, user_id)
                 .replace(/{\$pgp_id_public}/g, pgp_id_public);
 
+            if(count++ >= MAX_RESULTS)
+                break;
         }
 
         callback(TEMPLATE_SEARCH_RESULTS

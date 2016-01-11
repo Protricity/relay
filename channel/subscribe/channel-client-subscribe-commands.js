@@ -17,6 +17,7 @@ if(typeof module === 'object') (function() {
 
         ClientWorkerThread.addCommand(channelJoinCommand);
         ClientWorkerThread.addCommand(channelLeaveCommand);
+
         ClientWorkerThread.addResponse(channelUserListResponse);
         ClientWorkerThread.addResponse(channelUserCountResponse);
 
@@ -25,23 +26,24 @@ if(typeof module === 'object') (function() {
         var DEFAULT_MODE = 'event';
 
         function channelJoinCommand(commandString) {
-            var match = /^(?:channel\.)?join\s+(.*)$/im.exec(commandString);
+            var match = /^(?:channel\.)?join\s+(.+)$/im.exec(commandString);
             if (!match)
                 return false;
 
             var content = match[1];
-            return channelSubscribeCommand("CHANNEL.SUBSCRIBE." + DEFAULT_MODE.toUpperCase() + " " + content);
+            return channelSubscribeCommand("CHANNEL.SUBSCRIBE.CHAT " + content);
         }
 
         function channelLeaveCommand(commandString) {
-            var match = /^(?:channel\.)?leave\s+(.*)$/im.exec(commandString);
+            var match = /^(?:channel\.)?leave\s+(.+)$/im.exec(commandString);
             if (!match)
                 return false;
 
-            var content = match[1];
+            var channel = match[1];
+            ClientWorkerThread.postResponseToClient("CLOSE chat:" + channel.toLowerCase());
 
             // TODO: unsubscribe all?
-            return channelSubscribeCommand("CHANNEL.UNSUBSCRIBE." + DEFAULT_MODE.toUpperCase() + " " + content);
+            return channelSubscribeCommand("CHANNEL.UNSUBSCRIBE.CHAT " + channel);
         }
 
 
@@ -175,7 +177,11 @@ if(typeof module === 'object') (function() {
                 return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
             })();
 
-            ClientSubscriptions.handleSubscriptionResponse(responseString, e);
+            try {
+                ClientSubscriptions.handleSubscriptionResponse(responseString, e);
+            } catch (e) {
+                ClientWorkerThread.processResponse("ERROR " + (e.message || e));
+            }
             ClientWorkerThread.processResponse("EVENT " + responseString); // CHANNEL.SUBSCRIPTION.UPDATE " + channel + " " + mode + " " + argString);
 
             return true;

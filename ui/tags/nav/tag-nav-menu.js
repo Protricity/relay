@@ -35,8 +35,8 @@ if(typeof document === 'object')
             for(var i=0; i<channelValues.length; i++)
                 channelHTML +=
                     "<li>" +
-                        "<a href='javascript:Client.execute(\"JOIN " + channelValues[i][0] + "\");'>" +
-                            "<span class='command'>Join</span> " +
+                        "<a href='javascript:Client.execute(\"CHANNEL.SUBSCRIBE.EVENT " + channelValues[i][0] + "\");'>" +
+                            "<span class='command'>Subscribe </span> " +
                             "<strong>" +
                                 channelValues[i][1] +
                             "</strong>" +
