@@ -6,10 +6,6 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addCommand(contactCommand);
         ClientWorkerThread.addResponse(eventListener, true);
 
-
-
-
-
         var refreshTimeout = null;
         function eventListener(responseString) {
             var match = /^event (keyspace|channel)\.(\w+)\s*(.*)$/i.exec(responseString);

@@ -4,7 +4,7 @@
 if(typeof module === 'object') (function() {
     module.exports.initClientUICommands = function (ClientWorkerThread) {
 
-        // Channel Contacts Commands
+        // UI Contacts Commands
         ClientWorkerThread.addCommand(importUIContactsCommands);
         ClientWorkerThread.addResponse(importUIContactsCommands);
         function importUIContactsCommands(commandString, e) {
@@ -20,7 +20,7 @@ if(typeof module === 'object') (function() {
 
 
 
-        // Channel Login Commands
+        // UI Login Commands
         ClientWorkerThread.addCommand(importUILoginCommands);
         function importUILoginCommands(commandString, e) {
             if (!/^(ui\.)?login/i.test(commandString))
@@ -32,5 +32,29 @@ if(typeof module === 'object') (function() {
             return false;
         }
 
+
+        // UI Menu Commands
+        ClientWorkerThread.addCommand(importUILoMenuCommands);
+        function importUILoMenuCommands(commandString, e) {
+            if (!/^(ui\.)?menu/i.test(commandString))
+                return false;
+            ClientWorkerThread.removeCommand(importUILoMenuCommands);
+            self.module = {exports: {}};
+            importScripts('ui/menu/ui-client-menu-commands.js');
+            module.exports.initClientUIMenuCommands(ClientWorkerThread);
+            return false;
+        }
+
+
+        // UI About Window Commands
+        ClientWorkerThread.addCommand(importAboutCommand);
+        function importAboutCommand(commandString, e) {
+            if (!/^(ui\.)?about/i.test(commandString))
+                return false;
+            ClientWorkerThread.removeCommand(importAboutCommand);
+            importScripts('ui/about/about.js');
+            module.exports.initClientUIAboutCommands(Client);
+            return false;
+        }
     };
 })();

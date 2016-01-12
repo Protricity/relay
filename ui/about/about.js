@@ -5,7 +5,7 @@
  */
 
 if(typeof module === 'object') (function() {
-    module.exports.initClientAppAboutCommands = function (ClientWorkerThread) {
+    module.exports.initClientUIAboutCommands = function (ClientWorkerThread) {
 
         ClientWorkerThread.addCommand(aboutCommand);
 
@@ -20,7 +20,7 @@ if(typeof module === 'object') (function() {
 
             self.exports = {};
             self.module = {exports: {}};
-            importScripts('app/tool/about/window/about-window.js');
+            importScripts('ui/about/window/about-window.js');
             var renderExports = self.module.exports;
 
             renderExports.renderAboutWindow(commandString, function (html) {

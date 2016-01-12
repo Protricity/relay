@@ -15,7 +15,6 @@ if(typeof module === 'object') (function() {
 
         var classes = [];
 
-        // Query private key
         self.module = {exports: {}};
         importScripts('keyspace/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;

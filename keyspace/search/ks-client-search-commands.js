@@ -124,6 +124,9 @@ if(typeof module === 'object') (function() {
                 });
             }
 
+            // Send an event with all active results
+            ClientWorkerThread.processResponse("EVENT KEYSPACE.SEARCH.RESULTS\n" + activeSuggestions.join("\n"));
+
             // Response was handled
             return true;
         }

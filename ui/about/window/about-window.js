@@ -14,7 +14,7 @@ if(typeof document === 'object') (function() {
 
 // Worker Script
 if(typeof module === 'object') (function() {
-    var TEMPLATE_URL = "app/tool/about/window/about-window.html";
+    var TEMPLATE_URL = "ui/about/window/about-window.html";
 
     module.exports.renderAboutWindow = function (commandString, callback) {
         var xhr = new XMLHttpRequest();

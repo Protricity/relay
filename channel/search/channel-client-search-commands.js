@@ -149,6 +149,10 @@ if(typeof module === 'object') (function() {
                     ClientWorkerThread.render(html);
                 });
             }
+
+            // Send an event with all active results
+            ClientWorkerThread.processResponse("EVENT CHANNEL.SEARCH.RESULTS\n" + activeSuggestions.join("\n"));
+
             // Response was handled
             return true;
         }
