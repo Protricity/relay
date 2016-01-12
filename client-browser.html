@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Relay Client Demo (HTML5/js/node)</title>
+        <title>Relay Messenger Demo (HTML5/js/node)</title>
         <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
         <link rel="shortcut icon" href="favicon.ico?v=6" />
         <script src="client/client.js"></script>
         <script>
             // Render Navigation Menu and about box
             setTimeout(function() {
-                ClientMainThread.execute("render {nav}");
+                ClientMainThread.execute("UI.MENU");
                 ClientMainThread.execute("UI.LOGIN");
                 ClientMainThread.execute("UI.CONTACTS");
                 ClientMainThread.execute("SETTINGS.AUTORUN");

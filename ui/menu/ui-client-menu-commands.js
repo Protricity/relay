@@ -5,35 +5,47 @@ if(typeof module === 'object') (function() {
 
     var activeKeySpaceSuggestions = [];
     var activeChannelSuggestions = [];
-    
-     = getMenu;
-    
+
     module.exports.initClientUIMenuCommands = function (ClientWorkerThread) {
         ClientWorkerThread.addCommand(uiMenuCommand);
         ClientWorkerThread.addResponse(searchResultsListener, true);
 
         function uiMenuCommand(commandString, e) {
-            var match = /^(?:ui\.)?menu\s*(\S*)/i.exec(commandString);
+            var match = /^(?:ui\.)?menu(?:\.(list|render))?\s*(\S*)/i.exec(commandString);
             if (!match)         // If unmatched,
                 return false;   // Pass control to next handler
 
-            var menuCommand = match[1];
+            var subCommand = (match[1] || 'render').toLowerCase();
+            var menuCommand = match[2];
 
             getMenu(menuCommand,
                 function(responseMenu) {
-                    var responseString = "UI.MENU " + menuCommand;
 
-                    for(var menuKey in responseMenu) {
-                        if(responseMenu.hasOwnProperty(menuKey)) {
-                            var menuItem = responseMenu[menuKey];
-                            if(!Array.isArray(menuItem))
-                                menuItem = [menuItem];
-                            responseString += "\n" + menuKey + " " + menuItem[0];
-                        }
+                    switch(subCommand) {
+                        case 'render':
+                            renderNavMenu(responseMenu,
+                                function(html) {
+                                    ClientWorkerThread.render(html);
+                                }
+                            );
+                            break;
+
+                        case 'list':
+                            var responseString = "UI.MENU.LIST " + menuCommand;
+
+                            for(var menuKey in responseMenu) {
+                                if(responseMenu.hasOwnProperty(menuKey)) {
+                                    var menuItem = responseMenu[menuKey];
+                                    if(!Array.isArray(menuItem))
+                                        menuItem = [menuItem];
+                                    responseString += "\n" + menuKey + " " + menuItem[0];
+                                }
+                            }
+
+                            console.log("Menu ", responseString);
+                            ClientWorkerThread.processResponse(responseString);
+                            break;
                     }
-
-                    console.log("Menu ", responseString);
-                    ClientWorkerThread.processResponse(responseString);
                 }
             );
 
@@ -54,6 +66,7 @@ if(typeof module === 'object') (function() {
                 case 'keyspace':
                     activeKeySpaceSuggestions = activeResults;
                     break;
+
                 case 'channel':
                     activeChannelSuggestions = activeResults;
                     break;
@@ -64,6 +77,55 @@ if(typeof module === 'object') (function() {
 
     };
 
+    function renderNavMenu(menu, callback) {
+
+        var html_menu = '';
+
+        console.log(menu);
+
+        for(var menuKey in menu) {
+            if(menu.hasOwnProperty(menuKey)) {
+                var menuItem = menu[menuKey];
+                if(!Array.isArray(menuItem))
+                    menuItem = [menuItem];
+
+                // TODO: Section
+                if(!menuItem[0]) {
+                    html_menu +=
+                        "</ul>" +
+                        "<ul>";
+
+                } else if(!menuItem[1]) {
+                    html_menu +=
+                        "<lh>" + menuItem[0] + "</lh>";
+
+                } else {
+                    html_menu +=
+                        "<li>" +
+                            "<a href='javascript:Client.execute(\"UI.MENU " + menuKey + "\");'>" +
+                                menuItem[0] +
+                            "</a>" +
+                        "</li>"
+                }
+
+            }
+        }
+
+        var TEMPLATE_URL = 'ui/menu/render/ui-menu.html';
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", TEMPLATE_URL, false);
+        xhr.send();
+        if (xhr.status !== 200)
+            throw new Error("Error: " + xhr.responseText);
+
+        callback(
+            xhr.responseText
+                .replace(/{\$html_menu}/gi, html_menu)
+        );
+
+    }
+
+
     function executeMenuCommand(menuCommand, menu, menuCallback) {
         if(!menuCommand) {
             // Return entire menu
@@ -72,6 +134,9 @@ if(typeof module === 'object') (function() {
         }
 
         if(typeof menu[menuCommand] === 'undefined') {
+
+            // TODO find deep menu command
+
             console.error("Invalid Menu Command: ", menuCommand, menu);
             // Return entire menu
             menuCallback(menu);
@@ -79,8 +144,14 @@ if(typeof module === 'object') (function() {
         }
 
         var menuItem = menu[menuCommand];
+        if(!Array.isArray(menuItem))
+            menuItem = [menuItem];
         var menuItemCommand = menuItem[1];
-        if(typeof menuItemCommand === 'function') {
+        if(!menuItemCommand)  {
+            // Return menu
+            menuCallback(menu);
+
+        } else if(typeof menuItemCommand === 'function') {
             // Call Sub-Menu
             console.info("Selected Menu Item Command is a SubMenu: ", menuItemCommand);
             menuItemCommand(menuCommand, menuCallback);
@@ -94,7 +165,7 @@ if(typeof module === 'object') (function() {
                 'k':        ['Contacts', getKeySpaceMenu],
                 'c':        ['Channels', getChannelsMenu],
                 'x':        ['Commands', getCommandsMenu],
-                '00':       '',
+                //'00':       '',
                 '01':       'Command was executed:',
                 '02':       menuItemCommand,
                 '':         ['Done', getMenu]
@@ -106,11 +177,13 @@ if(typeof module === 'object') (function() {
 
     function getMenu(menuCommand, menuCallback) {
         var menu = {
-            'k':        ['Contacts', getKeySpaceMenu],
-            'c':        ['Channels', getChannelsMenu],
-            'x':        ['Commands', getCommandsMenu],
-            '00':        '',
+            '00':       ['Menu Categories'],
+            'k':        ['Contact List', getKeySpaceMenu],
+            'c':        ['Channel Subscriptions', getChannelsMenu],
+            'x':        ['Command Menu', getCommandsMenu],
 
+            '01':        '',
+            '02':       ['Recent Commands'],
             'u.c':      ['Contact List', 'UI.CONTACTS'],
             'k.s':      ['Search for Contacts', 'KEYSPACE.SEARCH'],
             'p.k':      ['Create a new PGP Identity', 'PGP.KEYGEN'],
@@ -138,14 +211,18 @@ if(typeof module === 'object') (function() {
         importScripts('client/subscriptions/client-subscriptions.js');
         var ClientSubscriptions = self.module.exports.ClientSubscriptions;
 
+        // Fetch all Private Key Keyspace Subscriptions (Accounts)
+        var accountList = ClientSubscriptions.getAuthorizedKeySpaces();
+
         // Fetch all Keyspace Subscriptions (Contacts)
-        var idList = [];
+        var idList = accountList.slice();
         ClientSubscriptions.searchKeySpaceSubscriptions(null, null,
             function(pgp_id_public, mode, argString) {
                 if(idList.indexOf(pgp_id_public.toUpperCase()) === -1)
                     idList.push(pgp_id_public.toUpperCase());
             }
         );
+
 
         self.module = {exports: {}};
         importScripts('keyspace/ks-db.js');
@@ -261,9 +338,9 @@ if(typeof module === 'object') (function() {
         var menu = {
             'k':        ['Contacts', getKeySpaceMenu],
             'c':        ['Channels', getChannelsMenu],
-            'x':        'Commands',
-            '0':        [''],
 
+            '0':        [''],
+            'x':        'Commands',
             'u.c':      ['Contact List', 'UI.CONTACTS'],
             'k.s':      ['Search for Contacts', 'KEYSPACE.SEARCH'],
             'p.k':      ['Create a new PGP Identity', 'PGP.KEYGEN'],

@@ -19,7 +19,6 @@ if(typeof module === 'object') (function() {
         }
 
 
-
         // UI Login Commands
         ClientWorkerThread.addCommand(importUILoginCommands);
         function importUILoginCommands(commandString, e) {
@@ -46,14 +45,14 @@ if(typeof module === 'object') (function() {
         }
 
 
-        // UI About Window Commands
+        // UI About Commands
         ClientWorkerThread.addCommand(importAboutCommand);
         function importAboutCommand(commandString, e) {
             if (!/^(ui\.)?about/i.test(commandString))
                 return false;
             ClientWorkerThread.removeCommand(importAboutCommand);
             importScripts('ui/about/about.js');
-            module.exports.initClientUIAboutCommands(Client);
+            module.exports.initClientUIAboutCommands(ClientWorkerThread);
             return false;
         }
     };

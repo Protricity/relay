@@ -265,25 +265,53 @@ if(typeof importScripts !== 'undefined') {
         self.module.exports.initClientCommands(ClientWorkerThread);
 
         // Socket Client
-        ClientWorkerThread.addResponse(consoleResponse);
-        function consoleResponse(commandResponse, e) {
-            var match = /^(server|info|error|assert|warn)/i.exec(commandResponse);
+        ClientWorkerThread.addCommand(consoleCommand);
+        function consoleCommand(commandString, e) {
+            var match = /^(log|info|error|assert|warn)\s*([\s\S]*)$/i.exec(commandString);
             if(!match)
                 return false;
 
             var command = match[1].toLowerCase();
-            switch(command) {
-                case 'server':
-                    var versionSplit = commandResponse.split(' ', 3);
-                    e.target.VERSION = versionSplit[1];
-                    e.target.VERSION_STRING = versionSplit[2];
-                    console.info("Socket Server Version: " + versionSplit[2]); // , e.target);
-                    ClientSockets.refreshSocketsWindow();
-                    break;
-                default:
-                    console[command](commandResponse);
-                    break;
-            }
+            var value = match[2];
+            console[command](commandString);
+            ClientWorkerThread.log(
+                "<span class='direction'>$</span> " +
+                "<span class='command " + command + "'>" + value + "</span>"
+            );
+            return true;
+        }
+
+        ClientWorkerThread.addResponse(consoleResponse);
+        function consoleResponse(responseString, e) {
+            var match = /^(log|info|error|assert|warn)\s*([\s\S]*)$/i.exec(responseString);
+            if(!match)
+                return false;
+
+            var command = match[1].toLowerCase();
+            var value = match[2];
+            console[command](value);
+            ClientWorkerThread.log(
+                "<span class='direction'>I</span> " +
+                "<span class='response " + command + "'>" + value + "</span>"
+            );
+            return true;
+        }
+
+        ClientWorkerThread.addResponse(serverResponse);
+        function serverResponse(responseString, e) {
+            var match = /^server/i.exec(responseString);
+            if(!match)
+                return false;
+
+            var versionSplit = responseString.split(' ', 3);
+            e.target.VERSION = versionSplit[1];
+            e.target.VERSION_STRING = versionSplit[2];
+            console.info("Socket Server Version: " + versionSplit[2]); // , e.target);
+            ClientSockets.refreshSocketsWindow();
+            ClientWorkerThread.log(
+                "<span class='direction'>I</span> " +
+                "<span class='response'>" + responseString + "</span>"
+            );
             return true;
         }
 

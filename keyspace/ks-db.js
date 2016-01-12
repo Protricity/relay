@@ -773,10 +773,10 @@ module.exports.KeySpaceDB =
             if(typeof publicKeyUserIDCache[pgp_id_public] === 'undefined') {
                 idsNeeded.push(pgp_id_public);
             } else {
-                idsNeeded.push([pgp_id_public, publicKeyUserIDCache[pgp_id_public]]);
+                idsFound.push([pgp_id_public, publicKeyUserIDCache[pgp_id_public]]);
             }
         }
-        if(publicKeyIDList.length === 0) {
+        if(idsNeeded.length === 0) {
             callback(idsFound);
             return;
         }
@@ -795,10 +795,13 @@ module.exports.KeySpaceDB =
                 function(err, publicKeyContent) {
                     if(err)
                         throw new Error(err);
-                    if(publicKeyContent)
+                        
+                    if(publicKeyContent) {
                         publicKeyUserIDCache[pgp_id_public] = publicKeyContent.user_id;
-                    else
+                        idsFound.push([pgp_id_public, publicKeyUserIDCache[pgp_id_public]]);
+                    } else {
                         console.error("No public key found for " + pgp_id_public);
+                    }
 
                     fetchNext();
                 }
