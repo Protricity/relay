@@ -6,18 +6,8 @@
         &#8475;elay <span class='hide-on-close'>Commands</span>
         <hr class='hide-on-close'/>
     </header>
-    <ul class='command-list-recent'>
-        <lh>Recent Commands</lh>
-    </ul>
     <ul class='command-list'>
         <lh>Commands</lh>
-        <li><a href='javascript:ClientMainThread.execute("UI.CONTACTS");'  ><span class='command'>Contacts</span> (list)</a></li>
-        <li><a href='javascript:ClientMainThread.execute("KEYSPACE.SEARCH");'  ><span class='command'>Search</span> for people</a></li>
-        <li><a href='javascript:ClientMainThread.execute("PGP.KEYGEN");'   ><span class='command'>KeyGen</span> a new <strong>PGP Identity</strong></a></li>
-        <li><a href='javascript:ClientMainThread.execute("PGP.MANAGE");'   ><span class='command'>Manage</span> your <strong>PGP Identities</strong></a></li>
-        <li><a href='javascript:ClientMainThread.execute("KEYSPACE.FEED");'     >View all user <span class='command'>feed</span>s</a></li>
-        <li><a href='javascript:ClientMainThread.execute("KEYSPACE.FEED ~");'   >View your <span class='command'>feed</span></a></li>
-        <li><a href='javascript:ClientMainThread.execute("PGP.PUT");'      ><span class='command'>Put</span> to your <strong>Key Space</strong></a></li>
-        <li><a href='javascript:ClientMainThread.execute("ABOUT");'        ><span class='command'>About</span> &#8475;elay</a></li>
-    </ul>
+        {$html_menu}
+     </ul>
 </nav>

@@ -24,15 +24,49 @@ if(typeof module === 'object') (function() {
 
     var renderNavMenuTag =
     module.exports.renderNavMenuTag = function (tagHTML, callback) {
-        var TEMPLATE_URL = 'ui/tags/nav/tag-nav-menu.html';
 
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", TEMPLATE_URL, false);
-        xhr.send();
-        if (xhr.status !== 200)
-            throw new Error("Error: " + xhr.responseText);
 
-        callback(xhr.responseText);
+        self.module = {exports: {}};
+        importScripts('ui/menu/ui-client-menu-commands.js');
+        self.module.exports.getMenu(menuCommand, 
+            function(menu) {
+                
+                var html_menu = '';
+                
+                for(var menuKey in menu) {
+                    if(menu.hasOwnProperty(menuKey)) {
+                        var menuItem = menu[menuKey];
+                        if(!Array.isArray(menuItem))
+                            menuItem = [menuItem];
+                            
+                        // TODO: Section
+                            
+                        html_menu += 
+                          "<li>" + 
+                              "<a href='javascript:Client.execute(\"UI.MENU " + menuKey + "\");'>" + 
+                                  menuItem[0] + 
+                              "</a>" +
+                          "</li>"
+                                
+                    }
+                }
+                
+                var TEMPLATE_URL = 'ui/tags/nav/tag-nav-menu.html';
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", TEMPLATE_URL, false);
+                xhr.send();
+                if (xhr.status !== 200)
+                    throw new Error("Error: " + xhr.responseText);
+        
+                var html_menu = '';
+        
+                callback(
+                    xhr.responseText
+                        .replace(/{\$html_menu}/gi, html_menu)
+                );
+            }
+        );
+
         return true;
     };
 
