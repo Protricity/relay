@@ -129,7 +129,6 @@ if(typeof module !== 'object')
         var html_command_options = '';
         var html_channel_entries = '';
 
-        var channels = {};
 
         self.module = {exports: {}};
         importScripts('client/subscriptions/client-subscriptions.js');
@@ -138,6 +137,7 @@ if(typeof module !== 'object')
         var searchMode = 'event'; // Only EVENT subscriptions are listed
 
         // List all subscribed channels
+        var channels = {};
         ClientSubscriptions.searchChannelSubscriptions(null, searchMode,
             function(channelName, mode, argString) {
                 var channelNameLowerCase = channelName.toLowerCase();
