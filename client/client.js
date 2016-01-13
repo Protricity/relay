@@ -551,6 +551,9 @@ if(typeof importScripts !== 'undefined') {
 
                     if(contentElement.classList.contains('scroll-into-view-on-render'))
                         targetElement.scrollIntoView();
+                    if(contentElement.classList.contains('scroll-to-bottom-on-render'))
+                        targetElement.scrollTop = targetElement.scrollHeight;
+
                 }
                 targetElement = targetElements[0];
             }

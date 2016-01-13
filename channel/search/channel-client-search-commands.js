@@ -45,16 +45,17 @@ if(typeof module === 'object') (function() {
                 switch(subCommand.toLowerCase()) {
                     case 'suggest':
                         var suggestedChannel = match[3];
+                        for(var i=0; i<activeSuggestions.length; i++)
+                            if(activeSuggestions[i].toLowerCase() === suggestedChannel.toLowerCase())
+                                return true;
                         activeSuggestions.unshift(suggestedChannel);
                         suggestionStats[2] = activeSuggestions.length;
                         console.info("Added Custom Suggested Channel: ", suggestedChannel);
-                        ClientWorkerThread.processResponse("EVENT CHANNEL.SEARCH.LIST\n"
-                            + activeSuggestions.join("\n"));
+                        sendChannelSearchListEvent();
                         return true;
 
                     case 'list':
-                        ClientWorkerThread.processResponse("EVENT CHANNEL.SEARCH.LIST\n"
-                            + activeSuggestions.join("\n"));
+                        sendChannelSearchListEvent();
                         return true;
                         
                     default:
@@ -93,8 +94,7 @@ if(typeof module === 'object') (function() {
                     }
                     if(addedChannels.length > 0) {
                         console.info("Added Suggested Channels: ", addedChannels);
-                        ClientWorkerThread.processResponse("EVENT CHANNEL.SEARCH.LIST\n"
-                            + activeSuggestions.join("\n"));
+                        sendChannelSearchListEvent();
 
                         self.module = {exports: {}};
                         importScripts('channel/search/render/channel-search-window.js');
@@ -109,6 +109,15 @@ if(typeof module === 'object') (function() {
             return true;
         }
 
+
+        var timeoutSendChannelSearchListEvent = null;
+        function sendChannelSearchListEvent() {
+            clearTimeout(timeoutSendChannelSearchListEvent);
+            timeoutSendChannelSearchListEvent = setTimeout(function () {
+                ClientWorkerThread.processResponse("EVENT CHANNEL.SEARCH.LIST\n"
+                    + activeSuggestions.join("\n"));
+            }, 200);
+        }
 
         /**
          * Handles Response: CHANNEL.SEARCH [To: PGP ID] [From: PGP ID] [search]

@@ -50,10 +50,10 @@
     function renderConsoleEntry(content, callback) {
         // Template
         var SOCKET_TEMPLATE_ACTION_ENTRY =
-            "<main class='console-content: append-children-on-render'>" +
-                "\n\t<div class='console-entry'>" +
-                    "\n\t\t{$content}" +
-                "\n\t</div>" +
+            "<main class='console-content: append-children-on-render scroll-to-bottom-on-render'>" +
+                "<div class='console-entry'>" +
+                    "{$content}" +
+                "</div>" +
             "</main>";
 
         var consoleEntryHTML = SOCKET_TEMPLATE_ACTION_ENTRY

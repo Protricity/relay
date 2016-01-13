@@ -18,38 +18,30 @@ if(typeof module === 'object') (function() {
             var subCommand = (match[1] || "render").toLowerCase();
             var menuCommand = match[2];
 
-            getMenu(menuCommand,
-                function(responseMenu) {
+            switch(subCommand) {
+                case "html":
+                case "render":
+                    renderMenuHTML(commandString,
+                        function(html) {
+                            ClientWorkerThread.render(html);
+                        }
+                    );
+                    return true;
 
-                    switch(subCommand) {
-                        case "render":
-                            renderNavMenu(responseMenu,
-                                function(html) {
-                                    ClientWorkerThread.render(html);
-                                }
-                            );
-                            break;
+                case "text":
+                case "list":
+                    renderMenuTextResponse(commandString,
+                        function(responseString) {
+                            ClientWorkerThread.log(responseString);
+                            ClientWorkerThread.postResponseToClient(responseString);
+                            //ClientWorkerThread.processResponse(responseString);
+                        }
+                    );
+                    return true;
 
-                        case "list":
-                            var responseString = "UI.MENU.LIST " + menuCommand;
-
-                            for(var menuKey in responseMenu) {
-                                if(responseMenu.hasOwnProperty(menuKey)) {
-                                    var menuItem = responseMenu[menuKey];
-                                    if(!Array.isArray(menuItem))
-                                        menuItem = [menuItem];
-                                    responseString += "\n" + menuKey + " " + menuItem[0];
-                                }
-                            }
-
-                            console.log("Menu ", responseString);
-                            ClientWorkerThread.processResponse(responseString);
-                            break;
-                    }
-                }
-            );
-
-            return true;
+                default:
+                    throw new Error("Invalid Sub Command: " + subCommand);
+            }
         }
 
         function searchResultsListener(responseString) {
@@ -57,10 +49,12 @@ if(typeof module === 'object') (function() {
             if (!match)         // If unmatched,
                 return false;   // Pass control to next handler
 
+            var type = match[1].toLowerCase();
+
             var activeResults = responseString.split("\n");
-            for(var i=0; i<activeResults.length; i++)
-                activeResults[i] = activeResults[i].split(" ");
             var stats = activeResults.shift().trim().split(" ");
+            for(var i=0; i<activeResults.length; i++)
+                activeResults[i] = activeResults[i].split(";");
 
             switch(type) {
                 case "keyspace":
@@ -77,152 +71,113 @@ if(typeof module === 'object') (function() {
 
     };
 
-    function renderNavMenu(menu, callback) {
+    function renderMenuTextResponse(commandString, callback) {
+        var match = /^(?:ui\.)?menu(?:\.(?:text|list))?(?:\s+(\S+))?$/i.exec(commandString);
+        if (!match)         // If unmatched,
+            throw new Error("Invalid Command: " + commandString);   // Pass control to next handler
 
-        var html_menu = "";
+        var args = (match[1] ? match[1].split(' ') : []);
 
-//         console.log(menu);
+        var responseString = "UI.MENU.TEXT " + args.join(" ");
+        getMenu(args, Section, Item, Done);
 
-        for(var menuKey in menu) {
-            if(menu.hasOwnProperty(menuKey)) {
-                var menuItem = menu[menuKey];
-                if(!Array.isArray(menuItem))
-                    menuItem = [menuItem];
+        function Section(title) {
+            responseString += "\n\n#;" + title;
+        }
 
-                // TODO: Section
-                if(!menuItem[0]) {
-                    html_menu +=
-                        "</ul>" +
-                        "<ul>";
+        function Item(command, title) {
+            command = command.replace(/^ui\.menu\s/i, "UI.MENU.TEXT ");
+            title = title.replace(/<\/?(span|div|img|p...)\b[^<>]*>/g, "");
+            responseString += "\n" + command + ';' + title;
+        }
 
-                } else if(!menuItem[1]) {
-                    html_menu +=
-                        "<lh>" + menuItem[0] + "</lh>";
+        function Done() {
+            callback(responseString);
+        }
+    }
 
-                } else {
-                    html_menu +=
-                        "<li>" +
-                            "<a href='javascript:Client.execute(\"UI.MENU " + menuKey + "\");'>" +
-                                menuItem[0] +
-                            "</a>" +
-                        "</li>"
-                }
+    function renderMenuHTML(commandString, callback) {
+        var match = /^(?:ui\.)?menu(?:\.(?:render|html))?\s*(\S*)/i.exec(commandString);
+        if (!match)         // If unmatched,
+            throw new Error("Invalid Command: " + commandString);   // Pass control to next handler
 
+        var args = (match[1] ? match[1].split(' ') : []);
+
+        var html = "";
+        getMenu(args, Section, Item, Done);
+
+        var sectionCount = 0;
+        function Section(title) {
+            if(sectionCount > 0)
+                html += "</ul><ul>";
+            html += "<lh>" + title + "</lh>";
+            sectionCount++;
+        }
+
+        function Item(command, title) {
+            title = title || command;
+            html +=
+                "<li>" +
+                    "<a href='javascript:Client.execute(\"" + command + "\");'>" +
+                        title +
+                    "</a>" +
+                "</li>"
+        }
+
+        function Done() {
+            var TEMPLATE_URL = "ui/menu/render/ui-menu.html";
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", TEMPLATE_URL, false);
+            xhr.send();
+            if (xhr.status !== 200)
+                throw new Error("Error: " + xhr.responseText);
+
+            callback(
+                xhr.responseText
+                    .replace(/{\$html_menu}/gi, html)
+            );
+
+        }
+    }
+
+
+    function getMenu(args, Section, Item, Done) {
+        Section("Menu Categories");
+        Item("UI.MENU channel", "Channel Subscriptions");
+        Item("UI.MENU keyspace", "Contact List");
+        Item("UI.MENU command", "Commands Menu");
+
+        if(args.length > 0) {
+            var arg = args.shift().toLowerCase();
+            switch (arg) {
+                case 'channel':
+                    return getChannelsMenu(args, Section, Item, Done);
+                case 'keyspace':
+                    return getKeySpacesMenu(args, Section, Item, Done);
+                case 'command':
+                    return getCommandsMenu(args, Section, Item, Done);
+                default:
+                    throw new Error("Unknown Menu arg: " + arg);
             }
         }
 
-        var TEMPLATE_URL = "ui/menu/render/ui-menu.html";
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", TEMPLATE_URL, false);
-        xhr.send();
-        if (xhr.status !== 200)
-            throw new Error("Error: " + xhr.responseText);
+        Section("Recent Commands");
+        Item("UI.CONTACTS", "Show <span class='command'>Contact</span> List");
+        Item("CHANNEL.SEARCH", "<span class='command'>Subscribe</span> to Channels");
+        Item("KEYSPACE.SEARCH", "<span class='command'>Search</span> for new Contacts");
+        Item("PGP.KEYGEN", "<span class='command'>KeyGen</span> a new PGP Identity");
+        Item("PGP.MANAGE", "<span class='command'>Manage</span> your PGP Identities");
+        Item("KEYSPACE.FEED", "View your <span class='command'>Feed</span>");
+        Item("KEYSPACE.PUT", "<span class='command'>Create</span> KeySpace Content");
+        Item("ABOUT", "<span class='command'>About</span> &#8475;elay");
 
-        callback(
-            xhr.responseText
-                .replace(/{\$html_menu}/gi, html_menu)
-        );
-
+        Done();
     }
 
-    var lastPrefixMenuCallback = null;
-    function executeMenuCommand(menuCommand, menu, menuCallback) {
-        if(!menuCommand) {
-            // Return entire menu
-            menuCallback(menu);
-            return true;
+    function getKeySpacesMenu(args, Section, Item, Done) {
+        if(args.length > 0) {
+            return getKeySpaceMenu(args, Section, Item, Done);
         }
-
-        if(typeof menu[menuCommand] === "undefined") {
-
-            // Find deep menu command, if any
-            for(var i=1; i<menuCommand.length; i++) {
-                var prefixCommand = menuCommand.substr(0, menuCommand.length - i);
-                if(typeof menu[prefixCommand] !== "undefined") {
-                    // Menu Prefix command found, so use that menu
-                    var prefixMenuItem = menu[prefixCommand];
-                    if(typeof prefixMenuItem[1] === "function") {
-                        var prefixMenuCallback = prefixMenuItem[1];
-                        if(lastPrefixMenuCallback
-                            && lastPrefixMenuCallback === prefixMenuCallback) {
-                            console.warn("Cyclic Deep Menu or missing Menu Key", menuCommand, prefixMenuCallback);
-                            // Return entire menu
-                            menuCallback(menu);
-                            return true;
-
-                        } else {
-                            lastPrefixMenuCallback = prefixMenuCallback;
-                            // console.info("Forwarding to submenu:", menuCommand, menuCallback);
-                            prefixMenuCallback(menuCommand, menuCallback);
-                            return true;
-                        }
-                    }
-                    console.warn("Skipping non-submenu:", menuCommand, menuCallback);
-                }
-            }
-
-            console.error("Invalid Menu Command: ", menuCommand, menu);
-            // Return entire menu
-            menuCallback(menu);
-            return false;
-        }
-
-        var menuItem = menu[menuCommand];
-        if(!Array.isArray(menuItem))
-            menuItem = [menuItem];
-        var menuItemCommand = menuItem[1];
-        if(!menuItemCommand)  {
-            // Return menu
-            menuCallback(menu);
-
-        } else if(typeof menuItemCommand === "function") {
-            // Call Sub-Menu
-            // console.info("Selected Menu Item Command is a SubMenu: ", menuItemCommand);
-            menuItemCommand(menuCommand, menuCallback);
-
-        } else {
-            // console.info("Selected Menu Item Command is a Command: ", menuItemCommand);
-            Client.execute(menuItemCommand);
-
-            // Build and return Success Menu
-            var successMenu = {
-                "k":        ["Contacts", getKeySpaceMenu],
-                "c":        ["Channels", getChannelsMenu],
-                "x":        ["Commands", getCommandsMenu],
-                //"00":       "",
-                "01":       "Command was executed:",
-                "02":       menuItemCommand,
-                "":         ["Done", getMenu]
-            };
-            menuCallback(successMenu);
-        }
-        return true;
-    }
-
-    function getMenu(menuCommand, menuCallback) {
-        var menu = {
-            "00":       ["Menu Categories"],
-            "k":        ["Contact List", getKeySpaceMenu],
-            "c":        ["Channel Subscriptions", getChannelsMenu],
-            "x":        ["Command Menu", getCommandsMenu],
-
-            "01":        "",
-            "02":       ["Recent Commands"],
-            "u.c":      ["Show <span class='command'>Contact</span> List", "UI.CONTACTS"],
-            "c.s":      ["<span class='command'>Subscribe</span> to Channels", "CHANNEL.SEARCH"],
-            "k.s":      ["<span class='command'>Search</span> for new Contacts", "KEYSPACE.SEARCH"],
-            "p.k":      ["<span class='command'>KeyGen</span> a new PGP Identity", "PGP.KEYGEN"],
-            "p.m":      ["<span class='command'>Manage</span> your PGP Identities", "PGP.MANAGE"],
-            "k.f":      ["View your <span class='command'>Feed</span>", "KEYSPACE.FEED"],
-            "k.p":      ["<span class='command'>Create</span> KeySpace Content", "KEYSPACE.PUT"],
-            "u.a":      ["<span class='command'>About</span> &#8475;elay", "ABOUT"]
-
-        };
-
-        executeMenuCommand(menuCommand, menu, menuCallback);
-    }
-
-    function getKeySpaceMenu(menuCommand, menuCallback) {
 
         self.module = {exports: {}};
         importScripts("client/subscriptions/client-subscriptions.js");
@@ -240,7 +195,6 @@ if(typeof module === 'object') (function() {
             }
         );
 
-
         self.module = {exports: {}};
         importScripts("keyspace/ks-db.js");
         var KeySpaceDB = self.module.exports.KeySpaceDB;
@@ -249,84 +203,62 @@ if(typeof module === 'object') (function() {
         KeySpaceDB.fetchAllPublicKeyUserIDs(idList,
             function(userIDList) {
 
-                var menu = {
-                    "k":       ["Active Contacts"]
-                };
+                Section("Active Contacts");
 
                 // Add each to the active menu
                 for (var i = 0; i < userIDList.length; i++) {
                     (function (pgp_id_public, user_id) {
-                        var menuKey = "k.a." + pgp_id_public.toLowerCase();
-                        menu[menuKey] = [user_id,
-                            function (menuCommand, menuCallback) {
-                                var subMenu = {
-                                };
-
-                                subMenu[menuKey] =        ["Menu: " + user_id];
-                                //subMenu[menuKey] =        [user_id + " [" + pgp_id_public + "]", this];
-                                subMenu[menuKey + ".m"] = ["Message " + user_id, "KEYSPACE.MESSAGE " + pgp_id_public];
-                                subMenu[menuKey + ".i"] = ["KeySpace Information", "KEYSPACE.INFO " + pgp_id_public];
-                                subMenu[menuKey + ".d"] = ["Delete (remove from client)", "KEYSPACE.DELETE " + pgp_id_public];
-                                subMenu[menuKey + ".pk"] =  ["Public Key ID: " + pgp_id_public];
-
-                                subMenu["00"] =    [""];
-                                subMenu["01"] =    ["Menu Categories"];
-                                subMenu["c"] =     ["Channels", getChannelsMenu];
-                                subMenu["x"] =     ["Commands", getCommandsMenu];
-                                subMenu[""] =      ["Go Back", getKeySpaceMenu];
-
-                                executeMenuCommand(menuCommand, subMenu, menuCallback);
-                            }
-                        ];
+                        Item("UI.MENU keyspace " + pgp_id_public + " " + user_id + " existing", user_id);
                     })(userIDList[i][0], userIDList[i][1]);
                 }
 
+                Item("UI.MENU keyspace", "(" + userIDList.length + ") Contacts");
 
                 // Set up suggested Keyspace menu
-                menu["01"] = "";
-                menu["02"] = "Suggested Contacts";
+                Section("Suggested Contacts");
                 for (var j = 0; j < activeKeySpaceSuggestions.length; j++) {
                     (function (pgp_id_public, user_id) {
-                        var menuKey = "k.a." + pgp_id_public.toLowerCase();
-                        menu[menuKey] = [user_id,
-                            function (menuCommand, menuCallback) {
-                                var subMenu = {
-                                };
-
-                                subMenu[menuKey] =        ["Menu: " + user_id];
-                                subMenu[menuKey + ".i"] = ["KeySpace Information", "KEYSPACE.INFO " + pgp_id_public];
-                                subMenu[menuKey + ".m"] = ["Private Message", "KEYSPACE.MESSAGE " + pgp_id_public];
-                                subMenu[menuKey + ".a"] = ["Add (Request Public key)", "GET http://" + pgp_id_public + ".ks/public/id "];
-                                subMenu[menuKey + ".b"] = ["Browse KeySpace", "GET http://" + pgp_id_public + ".ks/"];
-                                subMenu[menuKey + ".pk"] =  ["Public Key ID: " + pgp_id_public];
-
-                                subMenu["00"] =    [""];
-                                subMenu["01"] =    ["Menu Categories"];
-                                subMenu["c"] =     ["Channels", getChannelsMenu];
-                                subMenu["x"] =     ["Commands", getCommandsMenu];
-                                subMenu[""] =      ["Go Back", getKeySpaceMenu];
-
-                                executeMenuCommand(menuCommand, subMenu, menuCallback);
-                            }
-                        ];
-                    })(activeChannelSuggestions[j][0], activeChannelSuggestions[j][1]);
+                        Item("UI.MENU keyspace " + pgp_id_public + " " + user_id + " new", user_id);
+                    })(activeKeySpaceSuggestions[j][0], activeKeySpaceSuggestions[j][1]);
                 }
 
+                Item("UI.MENU keyspace", "(" + userIDList.length + ") Suggestions");
 
-
-                menu["03"] =    [""];
-                menu["04"] =    ["Menu Categories"];
-                menu["c1"] =     ["Channels", getChannelsMenu];
-                menu["x1"] =     ["Commands", getCommandsMenu];
-                menu[""] =      ["Go Back", getKeySpaceMenu];
-
-                executeMenuCommand(menuCommand, menu, menuCallback);
+                Done();
             }
         );
     }
 
-    function getChannelsMenu(menuCommand, menuCallback) {
+    function getKeySpaceMenu(args, Section, Item, Done) {
+        if(args.length === 0)
+            throw new Error("Invalid Args");
 
+        var pgp_id_public = args[0];
+        var user_id = (args[1] || 'unsubscribed').toLowerCase();
+        var existing = (args[2] || 'new').toLowerCase();
+
+        Section("Contact: " + user_id);
+        Item("UI.MENU keyspace " + pgp_id_public, "Public Key ID: " + pgp_id_public);
+        Item("KEYSPACE.INFO " + pgp_id_public, "KeySpace Information");
+        Item("KEYSPACE.MESSAGE " + pgp_id_public, "Private Message");
+        Item("GET http://" + pgp_id_public + ".ks/", "Browse KeySpace");
+
+        if(existing === 'existing')
+            Item("KEYSPACE.DELETE " + pgp_id_public, "Delete (remove from client)");
+        else
+            Item("GET http://" + pgp_id_public + ".ks/public/id", "Add (Request Public key)");
+
+        Done();
+    }
+
+    function getChannelsMenu(args, Section, Item, Done) {
+        if(args.length > 0) {
+            return getChannelMenu(args, Section, Item, Done);
+        }
+
+        self.module = {exports: {}};
+        importScripts("client/subscriptions/client-subscriptions.js");
+        var ClientSubscriptions = self.module.exports.ClientSubscriptions;
 
         // List all subscribed channels
         var channelList = [];
@@ -336,67 +268,67 @@ if(typeof module === 'object') (function() {
                     channelList.push(channelName);
             });
 
-        var menu = {
-            "c":       ["Active Subscriptions"]
-        };
+        Section("Active Subscriptions");
 
         // Add each to the active menu
         for (var i = 0; i < channelList.length; i++) {
             (function (channelName) {
-                var menuKey = "k.a." + channelName.toLowerCase();
-                menu[menuKey] = [channelName,
-                    function (menuCommand, menuCallback) {
-                        var subMenu = {
-                            "c": ["Channels", getChannelsMenu],
-                            "x": ["Commands", getCommandsMenu],
-                            "k": ["Go Back", getKeySpaceMenu],
-                            "00": "",
-                            "01": channelName
-                        };
-                        subMenu[menuKey + ".c"] = ["Chat", "CHANNEL.CHAT " + channelName];
-                        subMenu[menuKey + ".a"] = "Audio";
-                        subMenu[menuKey + ".v"] = "Video";
-                        subMenu[menuKey + ".u"] = ["Unsubscribe", "CHANNEL.UNSUBSCRIBE.EVENT " + channelName];
-
-                        executeMenuCommand(menuCommand, subMenu, menuCallback);
-                    }
-                ];
+                Item("UI.MENU channel " + channelName + " subscribed", channelName);
             })(channelList[i]);
         }
 
-        // Set up suggested Keyspace menu
-        menu["01"] = "";
-        menu["02"] = "Suggested Channels";
+        Item("UI.MENU channel", "(" + channelList.length + ") Subscriptions");
 
-        menu["03"] =    [""];
-        menu["04"] =    ["Menu Categories"];
-        menu["c1"] =     ["Channels", getChannelsMenu];
-        menu["x1"] =     ["Commands", getCommandsMenu];
-        menu[""] =      ["Go Back", getKeySpaceMenu];
+        // Set up suggested Channel menu
+        Section("Suggested Channels");
 
-        executeMenuCommand(menuCommand, menu, menuCallback);
+        for (var j = 0; j < activeChannelSuggestions.length; j++) {
+            (function (channelName) {
+                Item("UI.MENU channel " + channelName, channelName);
+            })(activeChannelSuggestions[j][0]);
+        }
+
+        Item("UI.MENU channel", "(" + channelList.length + ") Suggestions");
+
+        Done();
     }
 
-    function getCommandsMenu(menuCommand, menuCallback) {
-        var menu = {
-            "x":        ["Commands"],
-            "u.c":      ["Contact List", "UI.CONTACTS"],
-            "k.s":      ["Search for Contacts", "KEYSPACE.SEARCH"],
-            "p.k":      ["Create a new PGP Identity", "PGP.KEYGEN"],
-            "p.m":      ["Manage your PGP Identities", "PGP.MANAGE"],
-            "k.f":      ["View your Feed", "KEYSPACE.FEED"],
-            "k.p":      ["Create KeySpace Content", "KEYSPACE.PUT"],
-            "u.a":      ["About &#8475;elay", "ABOUT"]
-        };
+    function getChannelMenu(args, Section, Item, Done) {
+        if(args.length === 0)
+            throw new Error("Invalid Args");
+
+        var channelName = args[0];
+        var status = (args[1] || 'unsubscribed').toLowerCase();
+
+        Section("Channel Menu: " + channelName);
+        if(status && status.toLowerCase() === 'subscribed') {
+            Item("CHANNEL.UNSUBSCRIBE.EVENT " + channelName, "Unsubscribe");
+
+        } else {
+            Item("CHANNEL.SUBSCRIBE.EVENT " + channelName, "Subscribe");
+        }
+        Item("CHANNEL.CHAT " + channelName, "Join Chat");
+        Item("CHANNEL.AUDIO " + channelName, "Audio Feed");
+        Item("CHANNEL.VIDEO " + channelName, "Video Feed");
+        Item("CHANNEL.INFO " + channelName, "Channel Information");
+        Done();
+    }
 
 
-        menu["03"] =    [""];
-        menu["04"] =    ["Menu Categories"];
-        menu["c1"] =     ["Channels", getChannelsMenu];
-        menu["x1"] =     ["Commands", getCommandsMenu];
-        menu[""] =      ["Go Back", getKeySpaceMenu];
+    function getCommandsMenu(args, Section, Item, Done) {
+        Section("Recent Commands");
 
-        executeMenuCommand(menuCommand, menu, menuCallback);
+        Section("Suggested Commands");
+        Item("UI.CONTACTS", "Show <span class='command'>Contact</span> List");
+        Item("CHANNEL.SEARCH", "<span class='command'>Subscribe</span> to Channels");
+        Item("KEYSPACE.SEARCH", "<span class='command'>Search</span> for new Contacts");
+        Item("PGP.KEYGEN", "<span class='command'>KeyGen</span> a new PGP Identity");
+        Item("PGP.MANAGE", "<span class='command'>Manage</span> your PGP Identities");
+        Item("KEYSPACE.FEED", "View your <span class='command'>Feed</span>");
+        Item("KEYSPACE.PUT", "<span class='command'>Create</span> KeySpace Content");
+        Item("ABOUT", "<span class='command'>About</span> &#8475;elay");
+
+        Done();
     }
 
 })();
