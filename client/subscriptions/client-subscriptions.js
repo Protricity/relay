@@ -260,13 +260,13 @@ module.exports.ClientSubscriptions =
                 
                 if(typeof channelUserLists[mode] === 'undefined')
                     channelUserLists[mode] = {};
-                var modeChannels = channelUserLists[mode];
-                var oldUserList = modeChannels[channel] || null;
-                var opos = oldUserList.indexOf(existingSubscriptionString.split(' ')[0]);
-                if(opos >= 0) 
-                    oldUserList[opos] = argString.split(' ')[0];
+                var modeChannels2 = channelUserLists[mode];
+                var oldUserList2 = modeChannels2[channel] || null;
+                var opos2 = oldUserList2.indexOf(existingSubscriptionString.split(' ')[0]);
+                if(opos2 >= 0)
+                    oldUserList2[opos2] = argString.split(' ')[0];
                 else
-                    console.warn("Username not found in userlist", existingSubscriptionString, oldUserList);
+                    console.warn("Username not found in userlist", existingSubscriptionString, oldUserList2);
 
             }
         }
