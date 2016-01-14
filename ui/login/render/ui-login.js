@@ -23,7 +23,7 @@ if(typeof module !== 'object')
         var path = '.private/id';
         KeySpaceDB.queryAll(path, function(err, privateKeyContentEntry) {
             if (err)
-                throw new Error(err);
+                throw new Error(err.message || err);
 
             if (privateKeyContentEntry) {
                 var pgp_id_public = privateKeyContentEntry.pgp_id_public;

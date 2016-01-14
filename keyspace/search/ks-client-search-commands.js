@@ -28,6 +28,7 @@ if(typeof module === 'object') (function() {
          * @param {string} commandString The command string to process 
          * @param {object} e The command Event
          * @return {boolean} true if handled otherwise false
+         * TODO: needs cleanup
          **/
         function ksSearchCommand(commandString, e) {
             var match = /^(keyspace\.)?search(?:\.(\w+))?\s*(.*)$/im.exec(commandString);
@@ -40,6 +41,7 @@ if(typeof module === 'object') (function() {
             // Remember search value
             lastSearch = match[3];
 
+            var renderSearchWindow = true;
             var subCommand = match[2];
             if(subCommand) {
                 switch(subCommand.toLowerCase()) {
@@ -52,10 +54,12 @@ if(typeof module === 'object') (function() {
                             + activeSuggestions.join("\n"));
                         return true;
 
+                    case 'text':
                     case 'list':
                         ClientWorkerThread.processResponse("EVENT KEYSPACE.SEARCH.LIST\n"
                             + activeSuggestions.join("\n"));
-                        return true;
+                        renderSearchWindow = false;
+                        break;
 
                     default:
                         throw new Error("Invalid subCommand: " + subCommand);
@@ -65,18 +69,19 @@ if(typeof module === 'object') (function() {
             // Forward command to socket server
             ClientWorkerThread.sendWithSocket(commandString);
 
+            if(renderSearchWindow) {
+                if (searchWindowActive === false) {
+                    searchWindowActive = true;
+                    self.module = {exports: {}};
+                    importScripts('keyspace/search/render/ks-search-window.js');
+                    self.module.exports.renderKeySpaceSearchWindow(activeSuggestions, suggestionStats, lastSearch, function (html) {
+                        ClientWorkerThread.render(html);
+                        //ClientWorkerThread.postResponseToClient("OPEN ks-search-window:");
+                    });
 
-            if(searchWindowActive === false) {
-                searchWindowActive = true;
-                self.module = {exports: {}};
-                importScripts('keyspace/search/render/ks-search-window.js');
-                self.module.exports.renderKeySpaceSearchWindow(activeSuggestions, suggestionStats, lastSearch, function(html) {
-                    ClientWorkerThread.render(html);
-                    //ClientWorkerThread.postResponseToClient("OPEN ks-search-window:");
-                });
-
-            } else {
-                ClientWorkerThread.postResponseToClient("OPEN ks-search-window:");
+                } else {
+                    ClientWorkerThread.postResponseToClient("OPEN ks-search-window:");
+                }
             }
 
             // Command was handled
@@ -113,15 +118,16 @@ if(typeof module === 'object') (function() {
             self.module = {exports: {}};
             importScripts('keyspace/search/render/ks-search-window.js');
 
-            if(searchWindowActive === false) {
-                searchWindowActive = true;
-                self.module.exports.renderKeySpaceSearchWindow(activeSuggestions, suggestionStats, lastSearch, function(html) {
-                    ClientWorkerThread.render(html);
-                });
-            } else {
+            if(searchWindowActive === true) {
                 self.module.exports.renderKeySpaceSearchWindowResults(activeSuggestions, suggestionStats, lastSearch, function(html) {
                     ClientWorkerThread.render(html);
                 });
+
+            } else {
+                // searchWindowActive = true;
+                // self.module.exports.renderKeySpaceSearchWindow(activeSuggestions, suggestionStats, lastSearch, function(html) {
+                //    ClientWorkerThread.render(html);
+                // });
             }
 
             // Send an event with all active results

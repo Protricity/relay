@@ -68,6 +68,7 @@ if(typeof importScripts !== 'undefined') {
         var handlerCounter = 0;
         var responseHandlers = [];
         var commandHandlers = [];
+        var commandHistory = [];
 
         var consoleExports = false;
         Client.log =
@@ -137,14 +138,15 @@ if(typeof importScripts !== 'undefined') {
             for(var i=0; i<commandHandlers.length; i++)
                 if(commandHandlers[i](commandString, e))
                     return (function() {
+                        var parts = commandString.split(' ');
+                        var part1 = parts.shift();
+                        var part2 = parts.join(' ');
+                        Client.log(
+                            '<span class="direction">$</span> ' +
+                            '<span class="command">' + part1 + "</span>" + (part2 ? ' ' + part2 : '')
+                        );
 
-                        //var parts = commandString.split(' ');
-                        //var part1 = parts.shift();
-                        //var part2 = parts.join(' ');
-                        //Client.log(
-                        //    '<span class="direction">$</span> ' +
-                        //    '<span class="response">' + part1 + "</span>" + (part2 ? ' ' + part2 : '')
-                        //);
+                        // TODO: add to history based on event
 
                         return true;
                     })();
@@ -175,7 +177,7 @@ if(typeof importScripts !== 'undefined') {
                     var part1 = parts.shift();
                     var part2 = parts.join(' ');
                     Client.log(
-                        '<span class="direction">I</span> ' +
+                        '<span class="direction">I</span> ' + // TODO: direction based on remote or local
                         '<span class="response">' + part1 + "</span>" + (part2 ? ' ' + part2 : '')
                     );
 
@@ -203,6 +205,14 @@ if(typeof importScripts !== 'undefined') {
                 (callback || function(){})();
             });
         };
+
+        ClientWorkerThread.getCommandHistory = function() {
+            return commandHistory.slice();
+        };
+
+        ClientWorkerThread.addCommandToHistory = function(commandString) {
+            commandHistory.push(commandString);
+        }
 
         //ClientWorker.appendChild = function(targetClass, childContent) {
         //    //parseClientTags(childContent, function(parsedContent) {

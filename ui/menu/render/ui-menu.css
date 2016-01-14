@@ -9,7 +9,7 @@
     margin: 0 0.5em 0.5em 0em;
     border: 1px outset;
     border-radius: 4px;
-    overflow: hidden;
+    /* overflow: hidden; */
     white-space: nowrap;
     max-width: 5.5em;
     max-height: 1.6em;
@@ -22,7 +22,7 @@
 .navigation-commands:not(.closed),
 .navigation-commands:hover {
     max-height: 50em;
-    max-width: 16em;
+    max-width: 20em;
     transition-delay: 0s;
     transition: max-height 0.5s ease-in-out;
 }

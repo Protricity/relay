@@ -28,6 +28,7 @@ if(typeof module === 'object') (function() {
          * @param {string} commandString The command string to process 
          * @param {object} e The command Event
          * @return {boolean} true if handled otherwise false
+         * TODO: needs cleanup
          **/
         function channelSearchCommand(commandString, e) {
             var match = /^(channel\.)?search(?:\.(\w+))?\s*(.*)$/im.exec(commandString);
@@ -40,11 +41,13 @@ if(typeof module === 'object') (function() {
             // Remember search value
             lastSearch = match[3];
 
+            var renderSearchWindow = true;
             var subCommand = match[2];
             if(subCommand) {
                 switch(subCommand.toLowerCase()) {
                     case 'suggest':
-                        var suggestedChannel = match[3];
+                        var suggestSplit = match[3].split(' ');
+                        var suggestedChannel = suggestSplit[0];
                         for(var i=0; i<activeSuggestions.length; i++)
                             if(activeSuggestions[i].toLowerCase() === suggestedChannel.toLowerCase())
                                 return true;
@@ -56,7 +59,9 @@ if(typeof module === 'object') (function() {
 
                     case 'list':
                         sendChannelSearchListEvent();
-                        return true;
+                        renderSearchWindow = false;
+                        // TODO: send request to server?
+                        break;
                         
                     default:
                         throw new Error("Invalid subCommand: " + subCommand);
@@ -67,27 +72,30 @@ if(typeof module === 'object') (function() {
             // Forward command to socket server
             ClientWorkerThread.sendWithSocket(commandString);
 
-            if(searchWindowActive === false) {
-                searchWindowActive = true;
-                self.module = {exports: {}};
-                importScripts('channel/search/render/channel-search-window.js');
-                self.module.exports.renderChannelSearchWindow(activeSuggestions, suggestionStats, lastSearch, function(html) {
-                    ClientWorkerThread.render(html);
-                    //ClientWorkerThread.postResponseToClient("OPEN channel-search-window:");
-                });
+            if(renderSearchWindow) {
+                if (searchWindowActive === false) {
+                    searchWindowActive = true;
+                    self.module = {exports: {}};
+                    importScripts('channel/search/render/channel-search-window.js');
+                    self.module.exports.renderChannelSearchWindow(activeSuggestions, suggestionStats, lastSearch, function (html) {
+                        ClientWorkerThread.render(html);
+                        //ClientWorkerThread.postResponseToClient("OPEN channel-search-window:");
+                    });
 
-            } else {
-                ClientWorkerThread.postResponseToClient("OPEN channel-search-window:");
+                } else {
+                    ClientWorkerThread.postResponseToClient("OPEN channel-search-window:");
+                }
             }
-
 
             // local suggestions
             suggestLocalChannels(
                 function(channelList) {
                     var addedChannels = [];
+                    var activeSuggestionsLC = activeSuggestions.join(';').toLowerCase().split(';');
                     for(var i=0; i<channelList.length; i++) {
-                        if(activeSuggestions.indexOf(channelList[i]) === -1) {
+                        if(activeSuggestionsLC.indexOf(channelList[i].toLowerCase()) === -1) {
                             activeSuggestions.unshift(channelList[i]);
+                            activeSuggestionsLC.unshift(channelList[i].toLowerCase());
                             addedChannels.push(channelList[i]);
                             suggestionStats[2] = activeSuggestions.length;
                         }
@@ -96,11 +104,13 @@ if(typeof module === 'object') (function() {
                         console.info("Added Suggested Channels: ", addedChannels);
                         sendChannelSearchListEvent();
 
-                        self.module = {exports: {}};
-                        importScripts('channel/search/render/channel-search-window.js');
-                        self.module.exports.renderChannelSearchWindowResults(activeSuggestions, suggestionStats, lastSearch, function(html) {
-                            ClientWorkerThread.render(html);
-                        });
+                        if(renderSearchWindow) {
+                            self.module = {exports: {}};
+                            importScripts('channel/search/render/channel-search-window.js');
+                            self.module.exports.renderChannelSearchWindowResults(activeSuggestions, suggestionStats, lastSearch, function(html) {
+                                ClientWorkerThread.render(html);
+                            });
+                        }
                     }
                 }
             );
@@ -148,15 +158,15 @@ if(typeof module === 'object') (function() {
             self.module = {exports: {}};
             importScripts('channel/search/render/channel-search-window.js');
 
-            if(searchWindowActive === false) {
-                searchWindowActive = true;
-                self.module.exports.renderChannelSearchWindow(activeSuggestions, suggestionStats, lastSearch, function(html) {
-                    ClientWorkerThread.render(html);
-                });
-            } else {
+            if(searchWindowActive === true) {
                 self.module.exports.renderChannelSearchWindowResults(activeSuggestions, suggestionStats, lastSearch, function(html) {
                     ClientWorkerThread.render(html);
                 });
+            } else {
+                // searchWindowActive = true;
+                // self.module.exports.renderKeySpaceSearchWindow(activeSuggestions, suggestionStats, lastSearch, function(html) {
+                //    ClientWorkerThread.render(html);
+                // });
             }
 
             // Send an event with all active results

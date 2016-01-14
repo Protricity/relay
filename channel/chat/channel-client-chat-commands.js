@@ -78,13 +78,18 @@ if(typeof module === 'object') (function() {
         }
 
         function channelChatCommand(commandString) {
-            var match = /^(channel\.)?chat\s*([\s\S]*)$/im.exec(commandString);
+            var match = /^(channel\.)?chat\s*(\S*)/im.exec(commandString);
             if (!match)         // If unmatched,
                 return false;   // Pass control to next handler
 
             if(!match[1])
                 commandString = "CHANNEL." + commandString;
+
+            var channel = match[2];
+
             ClientWorkerThread.sendWithSocket(commandString);
+
+            ClientWorkerThread.postResponseToClient("FOCUS chat:" + channel);
             return true;
         }
 

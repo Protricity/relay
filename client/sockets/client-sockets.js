@@ -57,7 +57,7 @@ function ClientSockets(socketURL) {
             );
 
             // TODO: rename onconnect?
-            ClientWorkerThread.execute("SETTINGS.ONCONNECT " + socketURL);
+            ClientWorkerThread.execute("SETTINGS.ONCONNECT " + socketURL, e);
 
             //setTimeout(function () {
             //    newSocket.send("NICK relay" + Date.now().toString().substr(6));
