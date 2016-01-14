@@ -3,7 +3,7 @@
     <link rel='stylesheet' href='channel/chat/render/chat-window.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {header:buttons chat:{$channel_lowercase}}
-        <a href='javascript:ClientMainThread.execute("TOGGLE chat:{$channel_lowercase}");'>
+        <a onclick='ClientMainThread.execute("TOGGLE chat:{$channel_lowercase}");'>
             <span class="command">Chat</span> {$channel}
         </a>
     </header>

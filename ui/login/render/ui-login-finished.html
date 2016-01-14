@@ -3,7 +3,7 @@
     <link rel='stylesheet' href='ui/login/render/ui-login.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {header:buttons ui-login:}
-        <a href='javascript:ClientMainThread.execute("TOGGLE ui-login:");'>
+        <a onclick='ClientMainThread.execute("TOGGLE ui-login:");'>
             Introduction to Relay.
         </a>
     </header>
@@ -18,19 +18,19 @@
                 <li><span class="command">Message</span> someone on your Contact list</li>
             </ol>
         </div>
-        <a class="ui-login-button" href='javascript:
+        <a class="ui-login-button" onclick='
             Client.execute("CHANNEL.SEARCH");
             Client.execute("CLOSE ui-login:");'>
             1. <span class="command">Subscribe</span> to <em>Channels</em> you might be interested in.
             <br /><span class="info">[this is also how you find others and others find you]</span>
         </a>
-        <a class="ui-login-button" href='javascript:
+        <a class="ui-login-button" onclick='
             Client.execute("KEYSPACE.SEARCH");
             Client.execute("CLOSE ui-login:");'>
             2. <span class="command">Search</span> for <em>Contacts</em> on the network
             <br /><span class="warn">[only works if you're subscribed to channels with people in it]</span>
         </a>
-        <a class="ui-login-button" href='javascript:
+        <a class="ui-login-button" onclick='
             Client.execute("UI.CONTACTS");
             Client.execute("CLOSE ui-login:");'>
             3. Send a <i>PGP Encrypted</i> <span class="command">Message</span> to someone on your contact list!
@@ -38,7 +38,7 @@
         </a>
     </main>
     <footer>
-        <a href='javascript:ClientMainThread.execute("ABOUT");'>
+        <a onclick='ClientMainThread.execute("ABOUT");'>
             <span class="command">About</span> Relay
         </a>
     </footer>

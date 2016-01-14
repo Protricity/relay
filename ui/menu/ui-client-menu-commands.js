@@ -77,8 +77,19 @@ if(typeof module === 'object') (function() {
                     break;
 
                 case "channel":
+
+                    // List all subscribed channels
+                    var channelList = [];
+                    ClientSubscriptions.searchChannelSubscriptions(null, null,
+                        function(channelName, mode, argString) {
+                            if(channelList.indexOf(channelName) === -1)
+                                channelList.push(channelName.toLowerCase());
+                        });
+
                     for(var i2=0; i2<activeResults.length; i2++) {
                         activeResults[i2] = activeResults[i2].split(";");
+                        if(channelList.indexOf(activeResults[i2][0].toLowerCase()))
+                            activeResults.splice(i2--, 1);
                     }
                     activeChannelSuggestions = activeResults;
                     break;
@@ -136,7 +147,7 @@ if(typeof module === 'object') (function() {
             title = title || command;
             html +=
                 "<li>" +
-                    "<a href='javascript:Client.execute(\"" + command + "\");'>" +
+                    "<a onclick='Client.execute(\"" + command + "\");'>" +
                         title +
                     "</a>" +
                 "</li>"

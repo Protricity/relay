@@ -59,7 +59,7 @@
             "\n\t<td>" +
                 "\n\t\t<a class='search-entry-command' onclick='Client.execute(\"GET http://{$pgp_id_public}.ks/public/id\");this.classList.add(\"subscribed\");'>Add</a>" +
                 "\n\t\t<a class='search-entry-command' onclick='Client.execute(\"MESSAGE {$pgp_id_public}\")'>Message</a>" +
-                // "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"KEYSPACE.INFO {$pgp_id_public}\")'>Profile</a>" +
+                // "\n\t\t<a class='search-entry-command' onclick='Client.execute(\"KEYSPACE.INFO {$pgp_id_public}\")'>Profile</a>" +
             "\n\t</td>" +
         "\n</tr>";
 

@@ -13,6 +13,9 @@ body.theme-minimal header{
     /* padding: 1em 0; */
 }
 
+a[onclick] {
+    cursor: pointer;
+}
 
 /** Font **/
 

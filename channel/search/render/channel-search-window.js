@@ -28,8 +28,8 @@
             "\n\t<td>" +
             "\n\t\t<a class='search-entry-command' onclick='Client.execute(\"CHANNEL.SUBSCRIBE.EVENT {$channel}\"); this.classList.add(\"subscribed\");'>Subscribe</a>" +
             "\n\t\t<a class='search-entry-command' onclick='Client.execute(\"CHANNEL.CHAT {$channel}\");  this.classList.add(\"subscribed\");'>Chat</a>" +
-                // "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"GET http://{$channel}.ks/public/id\")'>JOIN</a>" +
-                // "\n\t\t<a class='search-entry-command' href='javascript:Client.execute(\"CHANNEL.INFO {$channel}\")'>Profile</a>" +
+                // "\n\t\t<a class='search-entry-command' onclick='Client.execute(\"GET http://{$channel}.ks/public/id\")'>JOIN</a>" +
+                // "\n\t\t<a class='search-entry-command' onclick='Client.execute(\"CHANNEL.INFO {$channel}\")'>Profile</a>" +
             "\n\t</td>" +
         "\n</tr>";
 

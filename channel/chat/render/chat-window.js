@@ -156,7 +156,7 @@ if(typeof module === 'object') (function() {
         var MESSAGE_TEMPLATE =
             '<div class="channel-log:' + channelPath.toLowerCase() + ' append-children-on-render">' +
                 '<div class="channel-log-entry: ' + classList.join(' ') + '">' +
-                    '<a href="javascript:Client.execute(\'MESSAGE {$username}\');" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
+                    '<a onclick="Client.execute(\'MESSAGE {$username}\');" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
                     ': <span class="message">{$content}</span>' +
                 '</div>' +
             '</div>';
@@ -185,9 +185,9 @@ if(typeof module === 'object') (function() {
         var ACTION_TEMPLATE =
             '<div class="channel-log:' + channelPath.toLowerCase() + ' append-children-on-render">' +
                 '<div class="channel-log-entry:">' +
-                    '<a href="javascript:Client.execute(\'MESSAGE {$username}\');" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
+                    '<a onclick="Client.execute(\'MESSAGE {$username}\');" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
                     ' has <span class="action">{$action}</span>' +
-                    ' <a href="javascript:Client.execute(\'CHAT {$channel}\');" class="path">{$channel}</a>' +
+                    ' <a onclick="Client.execute(\'CHAT {$channel}\');" class="path">{$channel}</a>' +
                 '</div>' +
             '</div>';
 
@@ -208,7 +208,7 @@ if(typeof module === 'object') (function() {
                 '<div class="channel-log-entry">' +
                     'Username <span class="username">{$old_username}</span>' +
                     ' has been <span class="action">renamed</span> to' +
-                    ' <a href="javascript:Client.execute(\'MESSAGE {$username}\');" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
+                    ' <a onclick="Client.execute(\'MESSAGE {$username}\');" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
                 '</div>' +
             '</div>';
 

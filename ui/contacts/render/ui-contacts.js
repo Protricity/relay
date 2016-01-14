@@ -251,7 +251,7 @@ if(typeof module !== 'object')
     function getCommandHTML(commandString, commandTitle, commandClasses) {
         commandTitle = commandTitle || commandString;
         return "" +
-            "<a href='javascript:Client.execute(\"" + commandString + "\");'" + (commandClasses ? " class='" + commandClasses + "'" : '') + ">" +
+            "<a onclick='Client.execute(\"" + commandString + "\");'" + (commandClasses ? " class='" + commandClasses + "'" : '') + ">" +
                 "<span>" + commandTitle + "</span>" +
             "</a>";
     }

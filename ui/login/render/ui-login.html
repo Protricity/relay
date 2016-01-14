@@ -3,7 +3,7 @@
     <link rel='stylesheet' href='ui/login/render/ui-login.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {header:buttons ui-login:}
-        <a href='javascript:ClientMainThread.execute("TOGGLE ui-login:");'>
+        <a onclick='ClientMainThread.execute("TOGGLE ui-login:");'>
             <span class="command">Login</span> to Relay
         </a>
     </header>
@@ -19,25 +19,25 @@
                 <li style="color: lightgrey">Log In to another device [coming soon]</li>
             </ol>
         </div>
-        <a class="ui-login-button" href='javascript:ClientMainThread.execute("UI.LOGIN.CREATE")'>
+        <a class="ui-login-button" onclick='ClientMainThread.execute("UI.LOGIN.CREATE")'>
             <span class="command">KeyGen</span> (Create) a new Identity
             <br /><span class="info">[create a pgp identity to use on the network]</span>
         </a>
-        <a class="ui-login-button" href='javascript:ClientMainThread.execute("UI.LOGIN.IMPORT")'>
+        <a class="ui-login-button" onclick='ClientMainThread.execute("UI.LOGIN.IMPORT")'>
             <span class="command">Import</span> an <em>existing</em> Identity
             <br /><span class="info">[import a pgp private key block to use on the network]</span>
         </a>
-        <a class="ui-login-button" href='javascript:ClientMainThread.execute("UI.LOGIN.GUEST")'>
+        <a class="ui-login-button" onclick='ClientMainThread.execute("UI.LOGIN.GUEST")'>
             [Use Relay as a Guest]
             <br /><span class="info">[browse the relay network anonymously]</span>
         </a>
-        <a class="ui-login-button disabled" href='javascript:ClientMainThread.execute("UI.LOGIN.REMOTE")'>
+        <a class="ui-login-button disabled" onclick='ClientMainThread.execute("UI.LOGIN.REMOTE")'>
             <span class="command">Remote Login</span> (Coming soon)
             <br /><span class="info">[safely log in with a pin or password from anywhere]</span>
         </a>
     </main>
     <footer>
-        <a href='javascript:ClientMainThread.execute("ABOUT");'>
+        <a onclick='ClientMainThread.execute("ABOUT");'>
             <span class="command">About</span> Relay
         </a>
     </footer>

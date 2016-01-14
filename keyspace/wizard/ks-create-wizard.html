@@ -31,7 +31,7 @@
     </style>
     <header class='header-bar show-on-minimized'>
         {header:buttons ks-create-wizard:}
-        <a href='javascript:ClientMainThread.execute("TOGGLE ks-create-wizard:");'>
+        <a onclick='ClientMainThread.execute("TOGGLE ks-create-wizard:");'>
             KeySpace Article Wizard
         </a>
     </header>
@@ -136,7 +136,7 @@
     <section class="ks-create-wizard-source-output:"></section>
 
     <footer>
-        <a href='javascript:ClientMainThread.execute("PUT.SCRIPT")'>
+        <a onclick='ClientMainThread.execute("PUT.SCRIPT")'>
             use a different content script
         </a>...
     </footer>
