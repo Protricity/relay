@@ -67,6 +67,7 @@ function channelSubscribeSocketCommand(commandString, client) {
         // Userlist. TODO: Refactor?
         var channelClientUserList = [firstArgString + (argString ? ' ' + argString : '')];
         var clients = ServerSubscriptions.getChannelSubscriptions(channel, mode);
+        var activeCount = 0;
         for (var i = 0; i < clients.length; i++) {
             var channelClient = clients[i][0];
             var channelClientArgString = clients[i][1];
@@ -74,6 +75,7 @@ function channelSubscribeSocketCommand(commandString, client) {
             if (channelClient && channelClient.readyState === channelClient.OPEN) {
                 // Relay to other subscribers
                 send(channelClient, relayCommandString);
+                activeCount++;
                 // Add to user list
                 if (channelClientUserList.indexOf(channelClientArgString) === -1)
                     channelClientUserList.push(channelClientArgString);
@@ -85,7 +87,7 @@ function channelSubscribeSocketCommand(commandString, client) {
         if(mode.toLowerCase() === 'chat') {
             send(client, "CHANNEL.USERLIST." + mode.toUpperCase() + " " + channel + "\n" + channelClientUserList.join("\n"));
         }
-        send(client, "CHANNEL.USERCOUNT." + mode.toUpperCase() + " " + channel + " " + clients.length);
+        send(client, "CHANNEL.USERCOUNT." + mode.toUpperCase() + " " + channel + " " + activeCount);
 
 
     } catch (e) {
