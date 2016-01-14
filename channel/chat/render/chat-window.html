@@ -16,6 +16,7 @@
                         <td style='vertical-align: top; width:1px;'>
                             <select multiple='multiple' name='users' size='7' class='channel-users:{$channel_lowercase}'>
                             </select>
+
                             <select name="user_commands">
                                 <option value="">Select a Command</option>
                                 <optgroup label="Channel Commands">
@@ -27,6 +28,8 @@
                                     <option value="NICK [prompt:Enter a new Nickname]">Change nickname</option>
                                 </optgroup>
                             </select>
+
+                            <!--<input type="text" name="nick" value="{$nick}" disabled />-->
                         </td>
                         <td style='vertical-align: top;'>
                             <fieldset class='channel-log: channel-log:{$channel_lowercase}'>Joining {$channel}...</fieldset>

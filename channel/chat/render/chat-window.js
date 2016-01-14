@@ -128,7 +128,11 @@ if(typeof module === 'object') (function() {
         if(xhr.status !== 200)
             throw new Error("Error: " + xhr.responseText);
 
+        // TODO: get nick
+        var nick = '';
+
         callback(xhr.responseText
+            .replace(/{\$nick}/gi, nick)
             .replace(/{\$channel}/gi, channelPath)
             .replace(/{\$channel_lowercase}/gi, channelPath.toLowerCase())
         );

@@ -50,7 +50,7 @@ if(typeof module === 'object') (function() {
                 return false;   // Pass control to next handler
 
             // Output to console
-            console.info('I ', responseString.length < 128 ? responseString : [responseString]);
+            console.info('I', responseString.length < 128 ? responseString : [responseString]);
             
             // Import ClientSubscription instance
             self.module = {exports: {}};

@@ -43,7 +43,7 @@ function channelSubscribeSocketCommand(commandString, client) {
         return false;   // Pass control to next handler
 
     // Output to console
-    console.info('I ', commandString);
+    console.info('I', commandString);
 
     var mode = match[1] || DEFAULT_MODE;
     var channel = match[2];

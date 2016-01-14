@@ -5,8 +5,8 @@
 ClientSockets.NEXT_SOCKET_INTERVAL = 5000;
 ClientSockets.SOCKET_RECONNECT_INTERVAL = 5000;
 
-ClientSockets.VERSION = 1;
-ClientSockets.VERSION_STRING = '0.1a';
+ClientSockets.VERSION = 2;
+ClientSockets.VERSION_STRING = '0.2a';
 
 function ClientSockets(socketURL) {
     return ClientSockets.get(socketURL);

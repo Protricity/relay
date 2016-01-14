@@ -39,7 +39,7 @@ function ksAuthSocketCommand(commandString, client) {
         return false;   // Pass control to next handler
     
     // Output to console
-    console.info('I ', commandString);
+    console.info('I', commandString);
     
     ServerSubscriptions.handleKeySpaceAuthenticationCommand(commandString, client);
     return true;
@@ -58,7 +58,7 @@ function ksSubscribeSocketCommand(commandString, client) {
         return false;   // Pass control to next handler
     
     // Output to console
-    console.info('I ', commandString);
+    console.info('I', commandString);
     
     try {
         // Handle Subscription
@@ -87,7 +87,7 @@ function ksUnsubscribeSocketCommand(commandString, client) {
         return false;   // Pass control to next handler
     
     // Output to console
-    console.info('I ', commandString);
+    console.info('I', commandString);
 
     var mode = match[1] || DEFAULT_MODE;
     var channel = match[2];

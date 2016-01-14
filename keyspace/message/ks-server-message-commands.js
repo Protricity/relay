@@ -30,7 +30,7 @@ function ksMessageCommandSocket(commandString, client) {
         return false;   // Pass control to next handler
     
     // Output to console
-    console.info('I ', commandString);
+    console.info('I', commandString);
 
     // Recipient PGP Public Key ID
     var pgp_id_to = match[1].toUpperCase();
