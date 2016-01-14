@@ -161,12 +161,12 @@ if(typeof module === 'object') (function() {
     function getMenu(args, Section, Item, Done) {
 
         Section("Menu Categories");
-        Item("UI.MENU channel", "<span class='command'>Channel</span> Subscriptions");
-        Item("UI.MENU keyspace", "<span class='command'>Contact</span> List");
-        Item("UI.MENU command", "<span class='command'>Command</span> Menu");
+        Item("UI.MENU channel", "<span class='command'>Channels</span> Menu");
+        Item("UI.MENU keyspace", "<span class='command'>Contacts</span> Menu");
+        Item("UI.MENU command", "<span class='command'>Commands</span> Menu");
 
         if(args.length > 0) {
-            Item("UI.MENU", "Go back to main <span class='command'>menu</span>");
+            Item("UI.MENU", "Go back to Main <span class='command'>Menu</span>");
             var arg = args.shift().toLowerCase();
             switch (arg) {
                 case 'channel':
