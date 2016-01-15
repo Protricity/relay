@@ -371,7 +371,27 @@ if(typeof importScripts !== 'undefined') {
         var NO_CLASS = '_you_got_no_class';
 
         document.addEventListener('command', onCommandEvent, false);
+        document.addEventListener('click', onClickHandler);
         window.addEventListener('hashchange', onHashChange, false);
+
+        function onClickHandler(e) {
+            var aElm = e.target;
+            while(aElm && aElm.nodeName.toLowerCase() !== 'a')
+                aElm = aElm.parentNode && aElm.parentNode !== document.body ? aElm.parentNode : null;
+            if(!aElm)
+                return;
+            var href = aElm.getAttribute('href');
+            if(!href || href[0] !== '#')
+                return;
+
+            var hashCommand = decodeURIComponent(href.replace(/^#/, '').trim());
+            if(!hashCommand)
+                return false;
+
+            e.preventDefault();
+            console.info("Hash Command: ", hashCommand);
+            ClientMainThread.execute(hashCommand);
+        }
 
         var socketWorker = null;
         ClientMainThread.get = function() {
@@ -382,6 +402,25 @@ if(typeof importScripts !== 'undefined') {
                 }, true);
             }
             return socketWorker;
+        };
+
+        ClientMainThread.setSocketWorkerProxy = function(socketWorkerProxy) {
+            if(socketWorker)
+                throw new Error("Unable to set socket worker proxy. WebWorker already created");
+            if(!socketWorkerProxy.postMessage)
+                throw new Error("Invalid Socket worker proxy method: postMessage");
+            if(!socketWorkerProxy.addEventListener)
+                throw new Error("Invalid Socket worker proxy method: addEventListener");
+
+            socketWorker = socketWorkerProxy;
+            socketWorker.addEventListener('message', function(e) {
+                ClientMainThread.processResponse(e.data || e.detail || e);
+            }, true);
+        };
+
+        var responseHandlers = [];
+        ClientMainThread.addResponseHandler = function(responseHandler) {
+            responseHandlers.push(responseHandler);
         };
 
         Client.execute =
@@ -396,6 +435,12 @@ if(typeof importScripts !== 'undefined') {
             var args = /^\w+/.exec(responseString);
             if(!args)
                 throw new Error("Invalid Command: " + responseString);
+
+            for(var i=0; i<responseHandlers.length; i++) {
+                var ret = responseHandlers[i](responseString);
+                if(ret)
+                    return ret;
+            }
 
             var command = args[0].toLowerCase();
 
@@ -434,7 +479,7 @@ if(typeof importScripts !== 'undefined') {
             }));
 
 
-            // If host thread exists,
+            // If host thread exists, // TODO: move to response handler
             if(typeof Host === 'object')
             // Send response to host thread
                 Host.processResponse(responseString);

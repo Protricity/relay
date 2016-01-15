@@ -91,7 +91,7 @@ if(typeof module === 'object') (function() {
                 // Minimize other search windows
                 ClientWorkerThread.postResponseToClient("MINIMIZE channel-search-window:");
             }
-            
+
             // Command was handled
             return true;
         }
