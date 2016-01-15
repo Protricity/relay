@@ -374,47 +374,71 @@ if(typeof importScripts !== 'undefined') {
             ClientMainThread.execute(hashCommand);
         }
 
+
+
         var socketWorker = null;
         ClientMainThread.get = function() {
             if(!socketWorker) {
                 socketWorker = new Worker('client.js');
                 socketWorker.addEventListener('message', function(e) {
-                    ClientMainThread.processResponse(e.data || e.detail);
+                    var responseString = e.data || e.detail || e;
+                    ClientMainThread.processResponse(responseString);
                 }, true);
             }
             return socketWorker;
         };
 
-        var activePorts = [];
+        ClientMainThread.tryConnectToPortListener = function(name) {
+            if(socketWorker)
+                throw new Error("Socket Worker already initiated");
+
+            if(!chrome.runtime.connect)
+                return false;
+
+            console.info("Found chrome runtime");
+            socketWorker = chrome.runtime.connect({name: "relay-render-proxy"});
+            socketWorker.onMessage.addListener(function(responseString) {
+                ClientMainThread.processResponse(responseString);
+            });
+            return true;
+        }
+
+        var activeClientPorts = [];
         ClientMainThread.addPortListener = function(name) { // 'relay-render-proxy'
             function addListener(port) {
                 if(port.name !== name)
                     throw new Error("Unrecognized Port Name: " + port.name);
 
-                activePorts.push(port);
+                activeClientPorts.push(port);
                 port.onMessage.addListener(
                     function (message) {
                         console.log("Executing Proxy Message: ", message, port);
-                        ClientMainThread.execute(message);
+                        ClientMainThread.execute(message, port);
                     }
                 );
             }
             chrome.runtime.onConnect.addListener(addListener);
+            console.log("Port Listener loaded: " + name);
         };
 
-        ClientMainThread.setSocketWorkerProxy = function(socketWorkerProxy) {
-            if(socketWorker)
-                throw new Error("Unable to set socket worker proxy. WebWorker already created");
-            if(!socketWorkerProxy.postMessage)
-                throw new Error("Invalid Socket worker proxy method: postMessage");
-            if(!socketWorkerProxy.addEventListener)
-                throw new Error("Invalid Socket worker proxy method: addEventListener");
-
-            socketWorker = socketWorkerProxy;
-            socketWorker.addEventListener('message', function(e) {
-                ClientMainThread.processResponse(e.data || e.detail || e);
-            }, true);
+        var isRenderEnabled = true;
+        ClientMainThread.setRenderEnabled = function(enabled) {
+            isRenderEnabled = enabled ? true : false;
         };
+
+        //ClientMainThread.setSocketWorkerProxy = function(socketWorkerProxy) {
+        //    if(socketWorker)
+        //        throw new Error("Unable to set socket worker proxy. WebWorker already created");
+        //    if(!socketWorkerProxy.postMessage)
+        //        throw new Error("Invalid Socket worker proxy method: postMessage");
+        //    if(!socketWorkerProxy.addEventListener)
+        //        throw new Error("Invalid Socket worker proxy method: addEventListener");
+        //
+        //    socketWorker = socketWorkerProxy;
+        //    socketWorker.addEventListener('message', function(e) {
+        //        ClientMainThread.processResponse(e.data || e.detail || e);
+        //    }, true);
+        //};
 
         var responseHandlers = [];
         ClientMainThread.addResponseHandler = function(responseHandler) {
@@ -422,7 +446,7 @@ if(typeof importScripts !== 'undefined') {
         };
 
         Client.execute =
-        ClientMainThread.execute = function (commandString, e) {
+        ClientMainThread.execute = function (commandString) {
             ClientMainThread.get()
                 .postMessage(commandString);
         };
@@ -440,41 +464,54 @@ if(typeof importScripts !== 'undefined') {
                     return ret;
             }
 
-            var command = args[0].toLowerCase();
-
-            switch(command) {
-                case 'render':
-                    ClientMainThread.render(responseString);
-                    break;
-
-                //case 'replace':
-                //case 'append':
-                //case 'prepend':
-                //    renderClass(responseString);
-                //    break;
-
-                case 'minimize':
-                case 'maximize':
-                case 'close':
-                case 'open':
-                case 'toggle':
-                    renderWindowCommand(responseString);
-                    break;
-
-                case 'focus':
-                    focusWindowCommand(responseString);
-                    break;
-
-                case 'event':
-                default:
-                    // some responses aren't used by the client, but should be passed through the client anyway
-                    //console.error("Unrecognized client-side command: " + responseString);
-                    break;
+            // Handle port hosting
+            for(i=0; i<activeClientPorts.length; i++) {
+                var port = activeClientPorts[i];
+                try {
+                    port.postMessage(responseString);
+                } catch (e) {
+                    activeClientPorts.splice(i--, 1);
+                    console.info("Removed disconnected Port");
+                }
             }
 
-            document.dispatchEvent(new CustomEvent('response:' + command, {
-                detail: responseString
-            }));
+            var command = args[0].toLowerCase();
+
+            if(isRenderEnabled) {
+                switch (command) {
+                    case 'render':
+                        ClientMainThread.render(responseString);
+                        break;
+
+                    //case 'replace':
+                    //case 'append':
+                    //case 'prepend':
+                    //    renderClass(responseString);
+                    //    break;
+
+                    case 'minimize':
+                    case 'maximize':
+                    case 'close':
+                    case 'open':
+                    case 'toggle':
+                        renderWindowCommand(responseString);
+                        break;
+
+                    case 'focus':
+                        focusWindowCommand(responseString);
+                        break;
+
+                    case 'event':
+                    default:
+                        // some responses aren't used by the client, but should be passed through the client anyway
+                        //console.error("Unrecognized client-side command: " + responseString);
+                        break;
+                }
+
+                document.dispatchEvent(new CustomEvent('response:' + command, {
+                    detail: responseString
+                }));
+            }
 
 
             // If host thread exists, // TODO: move to response handler
