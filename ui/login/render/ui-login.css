@@ -41,17 +41,17 @@ form[name=ui-login-form] .status-box:empty {
     background-color: #FFF;
 /*     text-align: center; */
     /*     display: block; */
-    ease-out;
+    /*ease-out;*/
     box-shadow: 0.1em 0.1em 0.32em #999;
 }
 
 .ui-login-button {
     padding: 2em;
     display: block;
-    border: outset;
+    border: 1px outset lightgray;
     margin: 1em 1em;
     background: #DDD;
-/*     text-align: center; */
+    /*     text-align: center; */
     cursor: pointer;
     /*font-size: 3vw;*/
     transition: box-shadow 0.5s ease-out;

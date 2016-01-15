@@ -341,7 +341,7 @@ if(typeof document === 'object')
                     idCount > 0 ? '' :
                     "<span class='error'>No PGP Identities were found on this client.</span>" +
                     "<br/>" +
-                    "<a onclick='Client.execute(\"PGP.KEYGEN\");'>Generate</a> a new <strong>PGP Identity</strong> in order to post on the <span class='command'>feed</span>";
+                    "<a onclick='Client.execute(\"PGP.KEYGEN\">Generate</a> a new <strong>PGP Identity</strong> in order to post on the <span class='command'>feed</span>";
 
                 formElm.pgp_id_public.innerHTML =
                     "<option value=''>Select a PGP Identity</option>"

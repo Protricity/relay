@@ -27,7 +27,7 @@
                 "<thead>" +
                     "<tr>" +
                         "<th>Identity Name</th>" +
-                        "<th>Key ID</th>" +
+                        "<th style='width:1px'>Key ID</th>" +
                         "<th>Options</th>" +
                     "</tr>" +
                 "</thead>" +
@@ -57,8 +57,8 @@
                 "\n\t\t<a class='search-entry-command' onclick='Client.execute(\"KEYSPACE.INFO {$pgp_id_public}\")'>{$pgp_id_public}</a>" +
             "\n\t</td>" +
             "\n\t<td>" +
-                "\n\t\t<a class='search-entry-command' onclick='Client.execute(\"GET http://{$pgp_id_public}.ks/public/id\");this.classList.add(\"subscribed\");'>Add</a>" +
-                "\n\t\t<a class='search-entry-command' onclick='Client.execute(\"MESSAGE {$pgp_id_public}\")'>Message</a>" +
+                "\n\t\t<a class='search-entry-command' href='#GET http://{$pgp_id_public}.ks/public/id\")' onclick='this.classList.add(\"subscribed\"'>Add</a>" +
+                "\n\t\t<a class='search-entry-command' href='#MESSAGE {$pgp_id_public}'>Message</a>" +
                 // "\n\t\t<a class='search-entry-command' onclick='Client.execute(\"KEYSPACE.INFO {$pgp_id_public}\")'>Profile</a>" +
             "\n\t</td>" +
         "\n</tr>";

@@ -49,18 +49,10 @@ if(typeof module !== 'object')
                     if(subCommand) {
                         switch(subCommand.toLowerCase()) {
                             case 'create':
-                                TEMPLATE_URL = "ui/login/render/ui-login-finished.html";
-                                break;
-
                             case 'import':
-                                TEMPLATE_URL = "ui/login/render/ui-login-finished.html";
-                                break;
-
                             case 'guest':
-                                TEMPLATE_URL = "ui/login/render/ui-login-finished.html";
-                                break;
-
                             case 'remote':
+                            default:
                                 TEMPLATE_URL = "ui/login/render/ui-login-finished.html";
                         }
                     }

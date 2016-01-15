@@ -204,7 +204,7 @@ if(typeof module === 'object') (function() {
                 callback(channelList);
             };
 
-            importScripts("https://freegeoip.net/json/?callback=_geoipcallback");
+            importScripts("http://freegeoip.net/json/?callback=_geoipcallback");
 
         }
 

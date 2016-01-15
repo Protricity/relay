@@ -6,7 +6,7 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addCommand(uiLoginCommand);
 
         function uiLoginCommand(commandString, e) {
-            var match = /^(?:ui\.)?login(?:\.(\w+))?/i.exec(commandString);
+            var match = /^(?:ui\.)?login(?:\.(\S+))?/i.exec(commandString);
             if (!match)         // If unmatched,
                 return false;   // Pass control to next handler
 
@@ -31,6 +31,22 @@ if(typeof module === 'object') (function() {
                         
                     case 'remote':
                         throw new Error("remote login unavailable yet");
+
+                    case 'keyspaces':
+                        ClientWorkerThread.execute("KEYSPACE.SEARCH");
+                        ClientWorkerThread.execute("CLOSE ui-login:");
+                        break;
+
+                    case 'channels':
+                        ClientWorkerThread.execute("CHANNEL.SEARCH");
+                        ClientWorkerThread.execute("CLOSE ui-login:");
+                        break;
+
+                    case 'message':
+                        ClientWorkerThread.execute("UI.CONTACTS");
+                        ClientWorkerThread.execute("CLOSE ui-login:");
+                        break;
+
                 }
                 
             }

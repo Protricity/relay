@@ -184,7 +184,7 @@ if(typeof module === 'object') (function() {
             } else {
                 if(count === 0)
                     status_box = (status_box ? status_box + "<br/>" : '') + "<strong>No PGP Identities found</strong><br/>" +
-                        "<span class='info'>You may <a onclick='Client.execute(\"KEYGEN\");'>Generate</a>  a new PGP Key Pair Identity</span>";
+                        "<span class='info'>You may <a href='#KEYGEN'>Generate</a>  a new PGP Key Pair Identity</span>";
 
                 var TEMPLATE_URL = "pgp/manage/render/pgp-manage-form.html";
 

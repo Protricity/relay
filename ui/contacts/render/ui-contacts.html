@@ -3,7 +3,7 @@
     <link rel='stylesheet' href='ui/contacts/render/ui-contacts.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {header:buttons keyspace-contact:}
-        <a onclick='ClientMainThread.execute("TOGGLE keyspace-contact:");'>
+        <a href="#TOGGLE keyspace-contact:">
             Contact List
         </a>
     </header>
@@ -22,9 +22,9 @@
         <ul class="keyspace-contact-section:">
             {$html_keyspace_entries}
             <li class='keyspace-contact-default-info:'>
-                <a onclick='ClientMainThread.execute("PGP.KEYGEN")'>Create</a> -
-                <a onclick='ClientMainThread.execute("KEYSPACE.SEARCH")'>Search</a> -
-                <a onclick='ClientMainThread.execute("PGP.IMPORT")'>Import</a>
+                <a href="#PGP.KEYGEN">Create</a> -
+                <a href="#KEYSPACE.SEARCH">Search</a> -
+                <a href="#PGP.IMPORT">Import</a>
             </li>
         </ul>
 
@@ -34,7 +34,7 @@
         <ul class="keyspace-contact-section:">
             {$html_channel_entries}
             <li class='keyspace-contact-default-info:'>
-                <a onclick='ClientMainThread.execute("CHANNEL.SEARCH")'>Search</a> for channels...
+                <a href="#CHANNEL.SEARCH">Search</a> for channels...
             </li>
         </ul>
 

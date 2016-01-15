@@ -212,7 +212,7 @@ if(typeof importScripts !== 'undefined') {
 
         ClientWorkerThread.addCommandToHistory = function(commandString) {
             commandHistory.push(commandString);
-        }
+        };
 
         //ClientWorker.appendChild = function(targetClass, childContent) {
         //    //parseClientTags(childContent, function(parsedContent) {
@@ -368,9 +368,10 @@ if(typeof importScripts !== 'undefined') {
     }
 
     (function() {
-        var NO_CLASS = '_you_got_no-class';
+        var NO_CLASS = '_you_got_no_class';
 
         document.addEventListener('command', onCommandEvent, false);
+        window.addEventListener('hashchange', onHashChange, false);
 
         var socketWorker = null;
         ClientMainThread.get = function() {
@@ -384,9 +385,9 @@ if(typeof importScripts !== 'undefined') {
         };
 
         Client.execute =
-        ClientMainThread.execute = function (commandString, transferList) {
+        ClientMainThread.execute = function (commandString, e) {
             ClientMainThread.get()
-                .postMessage(commandString, transferList);
+                .postMessage(commandString);
         };
 
         Client.postResponseToClient =
@@ -440,10 +441,23 @@ if(typeof importScripts !== 'undefined') {
         };
 
 
+        function onHashChange(e, hash) {
+            console.log(arguments);
+            e.preventDefault();
+            hash = hash || document.location.hash;
+            document.location.hash = '';
+            var hashCommand = decodeURIComponent(hash.replace(/^#/, '').trim());
+            if(!hashCommand)
+                return false;
+            console.info("Hash Command: ", hashCommand);
+            ClientMainThread.execute(hashCommand, e);
+        }
+
+
         function onCommandEvent(e) {
             e.preventDefault();
             var commandString = e.detail || e.data;
-            ClientMainThread.execute(commandString);
+            ClientMainThread.execute(commandString, e);
         }
 
         function focusWindowCommand(responseString) {

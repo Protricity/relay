@@ -147,7 +147,7 @@ if(typeof module === 'object') (function() {
             title = title || command;
             html +=
                 "<li>" +
-                    "<a onclick='Client.execute(\"" + command + "\");'>" +
+                    "<a onclick='Client.execute(\"" + command + "\">" +
                         title +
                     "</a>" +
                 "</li>"

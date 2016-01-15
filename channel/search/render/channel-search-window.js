@@ -38,7 +38,7 @@
             "<table style='width: 100%'>" +
                 "<thead>" +
                     "<tr>" +
-                        "<th>Channels Found ({$stat_channel_count})</th>" +
+                        "<th style='width:50%'>Channels Found ({$stat_channel_count})</th>" +
                         "<th>Options</th>" +
                     "</tr>" +
                 "</thead>" +
