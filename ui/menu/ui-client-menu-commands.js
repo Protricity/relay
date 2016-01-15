@@ -147,7 +147,7 @@ if(typeof module === 'object') (function() {
             title = title || command;
             html +=
                 "<li>" +
-                    "<a onclick='Client.execute(\"" + command + "\">" +
+                    "<a href='#" + command + "'>" +
                         title +
                     "</a>" +
                 "</li>"
@@ -211,11 +211,13 @@ if(typeof module === 'object') (function() {
             return getKeySpaceMenu(args, Section, Item, Done);
         }
 
-        if(!lastKeySpaceSearch || lastKeySpaceSearch < Date.now() - SEARCH_TIMEOUT) {
-            lastKeySpaceSearch = Date.now();
-            console.info("Requesting KeySpace Search...");
-            Client.execute("KEYSPACE.SEARCH.LIST");
-        }
+        setTimeout(function() {
+            if(!lastKeySpaceSearch || lastKeySpaceSearch < Date.now() - SEARCH_TIMEOUT) {
+                lastKeySpaceSearch = Date.now();
+                console.info("Requesting KeySpace Search...");
+                Client.execute("KEYSPACE.SEARCH.LIST");
+            }
+        }, 10);
 
         self.module = {exports: {}};
         importScripts("client/subscriptions/client-subscriptions.js");
@@ -303,9 +305,11 @@ if(typeof module === 'object') (function() {
         }
 
         if(!lastChannelSearch || lastChannelSearch < Date.now() - SEARCH_TIMEOUT) {
-            lastChannelSearch = Date.now();
-            console.info("Requesting Channel Search...");
-            Client.execute("CHANNEL.SEARCH.LIST");
+            setTimeout(function() {
+                lastChannelSearch = Date.now();
+                console.info("Requesting Channel Search...");
+                Client.execute("CHANNEL.SEARCH.LIST");
+            }, 10);
         }
 
         self.module = {exports: {}};
