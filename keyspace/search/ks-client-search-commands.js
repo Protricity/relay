@@ -84,12 +84,14 @@ if(typeof module === 'object') (function() {
                 }
             }
 
-            // Maximize Search
-            ClientWorkerThread.postResponseToClient("MAXIMIZE ks-search-window:");
+            if(renderSearchWindow) {
+                // Maximize Search
+                ClientWorkerThread.postResponseToClient("MAXIMIZE ks-search-window:");
 
-            // Minimize other search windows
-            ClientWorkerThread.postResponseToClient("MINIMIZE channel-search-window:");
-
+                // Minimize other search windows
+                ClientWorkerThread.postResponseToClient("MINIMIZE channel-search-window:");
+            }
+            
             // Command was handled
             return true;
         }
