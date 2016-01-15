@@ -214,25 +214,6 @@ if(typeof importScripts !== 'undefined') {
             commandHistory.push(commandString);
         };
 
-        //ClientWorker.appendChild = function(targetClass, childContent) {
-        //    //parseClientTags(childContent, function(parsedContent) {
-        //        ClientWorker.postResponseToClient("APPEND " + targetClass + " " + childContent);
-        //    //});
-        //};
-
-        //ClientWorker.prependChild = function(targetClass, childContent) {
-        //    //parseClientTags(childContent, function(parsedContent) {
-        //        ClientWorker.postResponseToClient("PREPEND " + targetClass + " " + childContent);
-        //    //});
-        //};
-
-        //ClientWorker.replace = function(targetClass, replaceContent) {
-        //    //parseClientTags(replaceContent, function(parsedContent) {
-        //        ClientWorker.postResponseToClient("REPLACE " + targetClass + " " + replaceContent);
-        //    //});
-        //};
-
-
         function parseClientTags(tagHTML, callback) {
             var match = /\{([a-z][^}]+)}/.exec(tagHTML);
             if (!match) {
@@ -402,6 +383,23 @@ if(typeof importScripts !== 'undefined') {
                 }, true);
             }
             return socketWorker;
+        };
+
+        var activePorts = [];
+        ClientMainThread.addPortListener = function(name) { // 'relay-render-proxy'
+            function addListener(port) {
+                if(port.name !== name)
+                    throw new Error("Unrecognized Port Name: " + port.name);
+
+                activePorts.push(port);
+                port.onMessage.addListener(
+                    function (message) {
+                        console.log("Executing Proxy Message: ", message, port);
+                        ClientMainThread.execute(message);
+                    }
+                );
+            }
+            chrome.runtime.onConnect.addListener(addListener);
         };
 
         ClientMainThread.setSocketWorkerProxy = function(socketWorkerProxy) {
