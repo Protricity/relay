@@ -562,6 +562,7 @@ module.exports.KeySpaceDB =
             console.error(err);
             return;
         }
+        console.info("I", requestString);
         
         // Request Type HEAD or GET?
         var requestType = match[1].toLowerCase();

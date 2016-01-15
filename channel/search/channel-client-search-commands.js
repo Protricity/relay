@@ -181,7 +181,8 @@ if(typeof module === 'object') (function() {
 
             //newScript.setAttribute('src', self.location.protocol + '//www.telize.com/geoip?callback=_geoipcallback');
 
-            self._geoipcallback = function(result) {
+            self._geoipcallback = geoipcallback;
+            function geoipcallback(result) {
 
                 if (result.country_name)
                     result.country = result.country_name;
@@ -202,9 +203,23 @@ if(typeof module === 'object') (function() {
                 ];
 
                 callback(channelList);
-            };
+            }
 
-            importScripts("http://freegeoip.net/json/?callback=_geoipcallback");
+            var GEOIP_URL = "http://freegeoip.net/json/";
+            try {
+                importScripts(GEOIP_URL + "?callback=_geoipcallback");
+
+            } catch (e) {
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", GEOIP_URL, false);
+                xhr.send();
+                if(xhr.status !== 200)
+                    throw new Error("Error: " + xhr.responseText);
+
+                var json = JSON.parse(xhr.responseText);
+                geoipcallback(json);
+            }
 
         }
 

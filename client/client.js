@@ -442,7 +442,6 @@ if(typeof importScripts !== 'undefined') {
 
 
         function onHashChange(e, hash) {
-            console.log(arguments);
             e.preventDefault();
             hash = hash || document.location.hash;
             document.location.hash = '';
