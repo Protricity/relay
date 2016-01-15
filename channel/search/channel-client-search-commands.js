@@ -115,6 +115,12 @@ if(typeof module === 'object') (function() {
                 }
             );
 
+            // Maximize Search
+            ClientWorkerThread.postResponseToClient("MAXIMIZE channel-search-window:");
+
+            // Minimize other search windows
+            ClientWorkerThread.postResponseToClient("MINIMIZE ks-search-window:");
+
             // Command was handled
             return true;
         }
