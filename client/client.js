@@ -388,20 +388,20 @@ if(typeof importScripts !== 'undefined') {
             return socketWorker;
         };
 
-        ClientMainThread.tryConnectToPortListener = function(name) {
+        ClientMainThread.tryConnectToPortListener = function(extensionID, name) {
             if(socketWorker)
                 throw new Error("Socket Worker already initiated");
 
             if(!chrome.runtime.connect)
                 return false;
 
-            console.info("Found chrome runtime");
-            socketWorker = chrome.runtime.connect({name: "relay-render-proxy"});
+            socketWorker = chrome.runtime.connect(extensionID, {name: name}); // 'relay-render-proxy'
             socketWorker.onMessage.addListener(function(responseString) {
                 ClientMainThread.processResponse(responseString);
             });
+            console.info("Found chrome runtime", socketWorker);
             return true;
-        }
+        };
 
         var activeClientPorts = [];
         ClientMainThread.addPortListener = function(name) { // 'relay-render-proxy'
