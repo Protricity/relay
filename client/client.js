@@ -388,13 +388,15 @@ if(typeof importScripts !== 'undefined') {
             return socketWorker;
         };
 
-        ClientMainThread.tryConnectToPortListener = function(extensionID, name) {
+        ClientMainThread.tryConnectToPortListener = function(name) {
             if(socketWorker)
                 throw new Error("Socket Worker already initiated");
 
             if(!chrome.runtime.connect)
                 return false;
 
+            var extensionID = chrome.runtime.id;
+            console.info("Attempting connection to ", extensionID, name)
             socketWorker = chrome.runtime.connect(extensionID, {name: name}); // 'relay-render-proxy'
             socketWorker.onMessage.addListener(function(responseString) {
                 ClientMainThread.processResponse(responseString);
@@ -410,6 +412,7 @@ if(typeof importScripts !== 'undefined') {
                     throw new Error("Unrecognized Port Name: " + port.name);
 
                 activeClientPorts.push(port);
+                console.log("New Port Client: " + name, port);
                 port.onMessage.addListener(
                     function (message) {
                         console.log("Executing Proxy Message: ", message, port);
