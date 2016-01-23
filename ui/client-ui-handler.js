@@ -4,6 +4,7 @@ if(typeof document === 'undefined')
 
 
 (function() {
+    var ALLOWED_ROOT_ELEMENTS = ['article', 'nav'];
 
 // Define outside closure
     if(typeof self.Client === 'undefined')
@@ -12,7 +13,7 @@ if(typeof document === 'undefined')
     document.addEventListener('command', onCommandEvent, false);
     document.addEventListener('click', onClickHandler);
     window.addEventListener('hashchange', onHashChange, false);
-
+    
     var previousProcessResponseHandler = Client.processResponse;
     Client.processResponse = function(responseString) {
         var args = /^\w+/.exec(responseString);
@@ -164,6 +165,7 @@ if(typeof document === 'undefined')
             focusInput.focus();
     }
 
+
     Client.render = function(commandString) {
         var args = /^render\s+([\s\S]+)$/mi.exec(commandString);
         if (!args)
@@ -178,7 +180,7 @@ if(typeof document === 'undefined')
         htmlContainer.innerHTML = content;
         var contentElements = htmlContainer.children;
         if(contentElements.length === 0) {
-            htmlContainer.innerHTML = '<article class="' + NO_CLASS + '">' + content + '</article>';
+            htmlContainer.innerHTML = '<article class="__no-class">' + content + '</article>';
             contentElements = htmlContainer.children;
             if(contentElements.length === 0)
                 throw new Error("First child missing", console.log(content, htmlContainer));
@@ -192,6 +194,12 @@ if(typeof document === 'undefined')
         var targetElements = document.getElementsByClassName(targetClass);
         var targetElement;
         if(targetElements.length === 0) {
+
+            // Ignore if not a root element
+            if(ALLOWED_ROOT_ELEMENTS.indexOf(contentElement.nodeName.toLowerCase()) === -1) {
+                console.warn("Ignoring non-root element: ", contentElement);
+                return;
+            }
 
             // First Render
             var bodyElm = document.getElementsByTagName('body')[0];
@@ -454,5 +462,5 @@ if(typeof document === 'undefined')
         return false;
     };
 
-
+    console.log("Configured Response processor as UI Handler");
 })();
