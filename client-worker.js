@@ -11,11 +11,8 @@ if(typeof document !== 'undefined') {
         Client.processResponse(responseString);
     }, true);
 
-    if(typeof Client === 'undefined') {
-        function Client() {
-
-        }
-    }
+    if(typeof self.Client === 'undefined')
+        self.Client = {};
 
     Client.execute = function (commandString) {
         socketWorker.postMessage(commandString);
