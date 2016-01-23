@@ -24,7 +24,7 @@ if(typeof module === 'object') (function() {
             var renderExports = self.module.exports;
 
             renderExports.renderAboutWindow(commandString, function (html) {
-                Client.render(html);
+                ClientWorkerThread.render(html);
             });
 
             return true;

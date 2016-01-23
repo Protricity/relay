@@ -50,7 +50,7 @@ function ClientSockets(socketURL) {
                 if(eventListeners[i][0] === 'open')
                     eventListeners[i][1](newSocket);
 
-            Client.log(
+            ClientWorkerThread.log(
                 "<span class='direction'>I</span> " +
                 "<span class='action'>SOCKET OPEN</span>: " +
                 newSocket.url
@@ -92,7 +92,7 @@ function ClientSockets(socketURL) {
                 ClientSockets.get(socketURL);
             }, ClientSockets.SOCKET_RECONNECT_INTERVAL);
 
-            Client.log(
+            ClientWorkerThread.log(
                 "<span class='direction'>I</span> " +
                 "<span class='action'>SOCKET CLOSED</span>: " +
                 newSocket.url
@@ -210,7 +210,7 @@ function ClientSockets(socketURL) {
             var parts = commandString.split(' ');
             var part1 = parts.shift();
             var part2 = parts.join(' ');
-            Client.log(
+            ClientWorkerThread.log(
                 "<span class='direction'>O</span> " +
                 "<span class='command'>" + part1 + "</span>" + (part2 ? ' ' + part2 : '')
             );
@@ -243,7 +243,7 @@ function ClientSockets(socketURL) {
 
         // Render sockets window
         self.module.exports.renderClientSocketsWindow(socketURLList, activeSockets, function(html) {
-            Client.render(html);
+            ClientWorkerThread.render(html);
         });
     };
 

@@ -3,11 +3,12 @@ if(typeof document === 'undefined')
     throw new Error("Invalid Environment");
 
 
-function Client() {
-
-}
-
 (function() {
+
+// Define outside closure
+    if(typeof self.Client === 'undefined')
+        self.Client = {};
+
     document.addEventListener('command', onCommandEvent, false);
     document.addEventListener('click', onClickHandler);
     window.addEventListener('hashchange', onHashChange, false);

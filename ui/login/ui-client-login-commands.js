@@ -57,7 +57,7 @@ if(typeof module === 'object') (function() {
 
             var forceRender = false;
             templateExports.renderUILoginWindow(subCommand, forceRender, function (html) {
-                Client.render(html);
+                ClientWorkerThread.render(html);
             });
             // Command was handled
             return true;

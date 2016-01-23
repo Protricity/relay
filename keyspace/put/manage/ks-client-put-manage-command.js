@@ -15,7 +15,7 @@ if(typeof module === 'object') (function() {
             self.module = {exports: {}};
             importScripts('keyspace/put/manage/render/ks-put-manage-form.js');
             self.module.exports.renderPutManageForm(contentURL, '', function (html) {
-                Client.render(html);
+                ClientWorkerThread.render(html);
             });
 
             return true;

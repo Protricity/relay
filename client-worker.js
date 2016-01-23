@@ -17,13 +17,13 @@ if(typeof document !== 'undefined') {
         }
     }
 
-    Client.execute = Client.execute || function (commandString) {
+    Client.execute = function (commandString) {
         socketWorker.postMessage(commandString);
     };
 
-    Client.processResponse = Client.processResponse || function (responseString) {
-        throw new Error("Client must define Client.processResponse = function(responseString)...")
-    };
+    //Client.processResponse = Client.processResponse || function (responseString) {
+    //    throw new Error("Client must define Client.processResponse = function(responseString)...")
+    //};
 
 
 } else if(typeof importScripts !== 'undefined') {

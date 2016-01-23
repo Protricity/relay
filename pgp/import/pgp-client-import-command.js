@@ -108,7 +108,7 @@ console.log(status_box);
                                 self.module = {exports: {}};
                                 importScripts('pgp/manage/render/pgp-manage-form.js');
                                 self.module.exports.renderPGPManageForm(status_box, function (html) {
-                                    Client.render(html);
+                                    ClientWorkerThread.render(html);
                                 });
 
                                 ClientWorkerThread.postResponseToClient("CLOSE pgp-import:");
@@ -153,7 +153,7 @@ console.log(status_box);
                             self.module = {exports: {}};
                             importScripts('pgp/manage/render/pgp-manage-form.js');
                             self.module.exports.renderPGPManageForm(status_box, function (html) {
-                                Client.render(html);
+                                ClientWorkerThread.render(html);
                             });
 
                             ClientWorkerThread.postResponseToClient("CLOSE pgp-import:");

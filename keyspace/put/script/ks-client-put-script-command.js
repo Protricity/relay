@@ -47,7 +47,7 @@ if(typeof module === 'object') (function() {
                     self.module = {exports: {}};
                     importScripts(scriptFound[0]);
                     self.module.exports.renderContentScript(commandString, function (html) {
-                        Client.render(html
+                        ClientWorkerThread.render(html
                             .replace(/{\$command_string}/ig, commandString)
                         );
                     });
@@ -62,7 +62,7 @@ if(typeof module === 'object') (function() {
             self.module = {exports: {}};
             importScripts('keyspace/put/script/render/ks-put-script-form.js');
             self.module.exports.renderPutScriptForm(commandString, function (html) {
-                Client.render(html);
+                ClientWorkerThread.render(html);
             });
 
             return true;

@@ -36,11 +36,11 @@ module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefine
 
             // Render log window
             consoleExports.renderConsoleWindow(function(html) {
-                Client.render(html);
+                ClientWorkerThread.render(html);
             });
         }
         consoleExports.renderConsoleEntry(message, function(html) {
-            Client.render(html);
+            ClientWorkerThread.render(html);
         });
 //         console.log(message);
     };
@@ -95,7 +95,7 @@ module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefine
                     var parts = commandString.split(' ');
                     var part1 = parts.shift();
                     var part2 = parts.join(' ');
-                    Client.log(
+                    ClientWorkerThread.log(
                         '<span class="direction">$</span> ' +
                         '<span class="command">' + part1 + "</span>" + (part2 ? ' ' + part2 : '')
                     );
@@ -110,7 +110,7 @@ module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefine
             return ClientWorkerThread.execute(commandString, e);
 
         var err = "Client Command Handlers (" + commandHandlers.length + ") could not handle: " + commandString;
-        Client.log('<span class="error">' + err + '</span>');
+        ClientWorkerThread.log('<span class="error">' + err + '</span>');
         console.error(err, commandHandlers);
 
         //Client.postResponseToClient("ERROR " + err);
@@ -129,7 +129,7 @@ module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefine
                 var parts = responseString.split(' ');
                 var part1 = parts.shift();
                 var part2 = parts.join(' ');
-                Client.log(
+                ClientWorkerThread.log(
                     '<span class="direction">I</span> ' + // TODO: direction based on remote or local
                     '<span class="response">' + part1 + "</span>" + (part2 ? ' ' + part2 : '')
                 );
@@ -144,7 +144,7 @@ module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefine
             return ClientWorkerThread.processResponse(responseString, e);
 
         var err = "Client Response Handlers could not handle: " + responseString;
-        Client.log('<span class="error">' + err + '</span>');
+        ClientWorkerThread.log('<span class="error">' + err + '</span>');
         console.error(err, responseHandlers);
 
         //Client.postResponseToClient("ERROR " + err);
