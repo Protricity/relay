@@ -1,31 +1,63 @@
-/**
- * Created by ari on 6/19/2015.
- */
 
-
-
-if (typeof document === 'undefined')
-    throw new Error("Missing Global: document");
+if(typeof document === 'undefined')
+    throw new Error("Invalid Environment");
 
 
 function Client() {
-    //return Client.get();
+
 }
 
 (function() {
-    //var NO_CLASS = '_you_got_no_class';
-
     document.addEventListener('command', onCommandEvent, false);
     document.addEventListener('click', onClickHandler);
     window.addEventListener('hashchange', onHashChange, false);
 
-    Client.execute = function(commandString) {
-        throw new Error("Client must define Client.execute = function(commandString)...")
+    var previousProcessResponseHandler = Client.processResponse;
+    Client.processResponse = function(responseString) {
+        var args = /^\w+/.exec(responseString);
+        if(!args)
+            throw new Error("Invalid Command: " + responseString);
+
+        var command = args[0].toLowerCase();
+
+        switch (command) {
+            case 'render':
+                Client.render(responseString);
+                break;
+
+            //case 'replace':
+            //case 'append':
+            //case 'prepend':
+            //    renderClass(responseString);
+            //    break;
+
+            case 'minimize':
+            case 'maximize':
+            case 'close':
+            case 'open':
+            case 'toggle':
+                renderWindowCommand(responseString);
+                break;
+
+            case 'focus':
+                focusWindowCommand(responseString);
+                break;
+
+            case 'event':
+            default:
+                // some responses aren't used by the client, but should be passed through the client anyway
+                //console.error("Unrecognized client-side command: " + responseString);
+                break;
+        }
+
+        document.dispatchEvent(new CustomEvent('response:' + command, {
+            detail: responseString
+        }));
+
+        if(previousProcessResponseHandler)
+            previousProcessResponseHandler(responseString);
     };
 
-    Client.processResponse = function(responseString) {
-        throw new Error("Client must define Client.processResponse = function(responseString)...")
-    };
 
     Client.parseStyleSheets = function(content, includeScripts) {
         var match;
@@ -48,7 +80,7 @@ function Client() {
         var match;
         while(match = /<script([^>]*)><\/script>/gi.exec(content)) {
             var scriptContent = match[0];
-    //             console.log(scriptContent);
+            //             console.log(scriptContent);
             content = content.replace(scriptContent, '');
             var match2 = /\s*src=['"]([^'"]*)['"]/gi.exec(match[1]);
             if(match2) {
@@ -81,151 +113,6 @@ function Client() {
         Client.execute(hashCommand);
     }
 
-
-
-    var socketWorker = null;
-    Client.get = function() {
-        if(!socketWorker) {
-            socketWorker = new Worker('worker.js');
-            socketWorker.addEventListener('message', function(e) {
-                var responseString = e.data || e.detail || e;
-                Client.processResponse(responseString);
-            }, true);
-        }
-        return socketWorker;
-    };
-
-    Client.tryConnectToPortListener = function(name) {
-        if(socketWorker)
-            throw new Error("Socket Worker already initiated");
-
-        if(!chrome.runtime.connect)
-            return false;
-
-        var extensionID = chrome.runtime.id;
-        console.info("Attempting connection to ", extensionID, name)
-        socketWorker = chrome.runtime.connect(extensionID, {name: name}); // 'relay-render-proxy'
-        socketWorker.onMessage.addListener(function(responseString) {
-            Client.processResponse(responseString);
-        });
-        console.info("Found chrome runtime", socketWorker);
-        return true;
-    };
-
-    var activeClientPorts = [];
-    Client.addPortListener = function(name) { // 'relay-render-proxy'
-        function addListener(port) {
-            if(port.name !== name)
-                throw new Error("Unrecognized Port Name: " + port.name);
-
-            activeClientPorts.push(port);
-            console.log("New Port Client: " + name, port);
-            port.onMessage.addListener(
-                function (message) {
-                    console.log("Executing Proxy Message: ", message, port);
-                    Client.execute(message, port);
-                }
-            );
-        }
-        chrome.runtime.onConnect.addListener(addListener);
-        console.log("Port Listener loaded: " + name);
-    };
-
-    var isRenderEnabled = true;
-    Client.setRenderEnabled = function(enabled) {
-        isRenderEnabled = enabled ? true : false;
-    };
-
-    //ClientMainThread.setSocketWorkerProxy = function(socketWorkerProxy) {
-    //    if(socketWorker)
-    //        throw new Error("Unable to set socket worker proxy. WebWorker already created");
-    //    if(!socketWorkerProxy.postMessage)
-    //        throw new Error("Invalid Socket worker proxy method: postMessage");
-    //    if(!socketWorkerProxy.addEventListener)
-    //        throw new Error("Invalid Socket worker proxy method: addEventListener");
-    //
-    //    socketWorker = socketWorkerProxy;
-    //    socketWorker.addEventListener('message', function(e) {
-    //        ClientMainThread.processResponse(e.data || e.detail || e);
-    //    }, true);
-    //};
-
-    //var responseHandlers = [];
-    Client.addResponseHandler = function(responseHandler) {
-        responseHandlers.push(responseHandler);
-    };
-
-    Client.execute = function (commandString) {
-        Client.get()
-            .postMessage(commandString);
-    };
-
-    Client.processResponse = function(responseString) {
-        var args = /^\w+/.exec(responseString);
-        if(!args)
-            throw new Error("Invalid Command: " + responseString);
-
-        for(var i=0; i<responseHandlers.length; i++) {
-            var ret = responseHandlers[i](responseString);
-            if(ret)
-                return ret;
-        }
-
-        // Handle port hosting
-        for(i=0; i<activeClientPorts.length; i++) {
-            var port = activeClientPorts[i];
-            try {
-                port.postMessage(responseString);
-            } catch (e) {
-                activeClientPorts.splice(i--, 1);
-                console.info("Removed disconnected Port");
-            }
-        }
-
-        var command = args[0].toLowerCase();
-
-        if(isRenderEnabled) {
-            switch (command) {
-                case 'render':
-                    Client.render(responseString);
-                    break;
-
-                //case 'replace':
-                //case 'append':
-                //case 'prepend':
-                //    renderClass(responseString);
-                //    break;
-
-                case 'minimize':
-                case 'maximize':
-                case 'close':
-                case 'open':
-                case 'toggle':
-                    renderWindowCommand(responseString);
-                    break;
-
-                case 'focus':
-                    focusWindowCommand(responseString);
-                    break;
-
-                case 'event':
-                default:
-                    // some responses aren't used by the client, but should be passed through the client anyway
-                    //console.error("Unrecognized client-side command: " + responseString);
-                    break;
-            }
-
-            document.dispatchEvent(new CustomEvent('response:' + command, {
-                detail: responseString
-            }));
-        }
-
-
-        // If host thread exists, // TODO: move to response handler
-        if(typeof Host === 'object')
-        // Send response to host thread
-            Host.processResponse(responseString);
-    };
 
 
     function onHashChange(e, hash) {
@@ -276,7 +163,6 @@ function Client() {
             focusInput.focus();
     }
 
-    Client.render =
     Client.render = function(commandString) {
         var args = /^render\s+([\s\S]+)$/mi.exec(commandString);
         if (!args)
@@ -501,71 +387,71 @@ function Client() {
 
     }
 
-})();
 
+    Client.includeScriptsAsync = function(targetElement, scripts, callback) {
+        if(scripts.length > 0) {
+            var script = scripts.shift();
+            Client.includeScript(script, function() {
+                Client.includeScriptsAsync(targetElement, scripts, callback);
+            });
 
-Client.includeScriptsAsync = function(targetElement, scripts, callback) {
-    if(scripts.length > 0) {
-        var script = scripts.shift();
-        Client.includeScript(script, function() {
-            Client.includeScriptsAsync(targetElement, scripts, callback);
-        });
+        } else {
+            if(callback)
+                callback();
+        }
+    };
 
-    } else {
+    Client.includeScript = function(fileURL, callback) {
+        var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(fileURL);
+        if(!match)
+            throw new Error("Invalid URL: " + fileURL);
+
+        var host = match[4],
+            scriptPath = match[5].toLowerCase() || '';
+        if(host)
+            throw new Error("Only local scripts may be included: " + scriptPath);
+
+        var headElm = document.getElementsByTagName('head')[0];
+
+        var ext = scriptPath.split('.').pop();
+        switch(ext.toLowerCase()) {
+            case 'js':
+                var scriptQuery = headElm.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']');
+                if (scriptQuery.length === 0) {
+                    var newScript = document.createElement('script');
+                    newScript.setAttribute('src', scriptPath);
+                    newScript.onload = callback;
+                    headElm.appendChild(newScript);
+                    // console.log("Including Script: ", newScript);
+
+                    return true;
+                }
+                break;
+
+            case 'css':
+                var linkQuery = headElm.querySelectorAll('link[href=' + scriptPath.replace(/[/.]/g, '\\$&') + ']');
+                if (linkQuery.length === 0) {
+                    var newLink = document.createElement('link');
+                    newLink.setAttribute('href', scriptPath);
+                    newLink.setAttribute('rel', 'stylesheet');
+                    newLink.setAttribute('type', 'text/css');
+                    newLink.onload = callback;
+                    headElm.appendChild(newLink);
+                    // console.log("Including StyleSheet: ", newScript);
+
+                    return true;
+                }
+                break;
+
+            default:
+                throw new Error("Invalid extension: " + ext);
+        }
+
         if(callback)
             callback();
-    }
-};
 
-Client.includeScript =
-Client.includeScript = function(fileURL, callback) {
-    var match = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?/.exec(fileURL);
-    if(!match)
-        throw new Error("Invalid URL: " + fileURL);
+        return false;
+    };
 
-    var host = match[4],
-        scriptPath = match[5].toLowerCase() || '';
-    if(host)
-        throw new Error("Only local scripts may be included: " + scriptPath);
 
-    var headElm = document.getElementsByTagName('head')[0];
-
-    var ext = scriptPath.split('.').pop();
-    switch(ext.toLowerCase()) {
-        case 'js':
-            var scriptQuery = headElm.querySelectorAll('script[src=' + scriptPath.replace(/[/.]/g, '\\$&') + ']');
-            if (scriptQuery.length === 0) {
-                var newScript = document.createElement('script');
-                newScript.setAttribute('src', scriptPath);
-                newScript.onload = callback;
-                headElm.appendChild(newScript);
-                // console.log("Including Script: ", newScript);
-
-                return true;
-            }
-            break;
-
-        case 'css':
-            var linkQuery = headElm.querySelectorAll('link[href=' + scriptPath.replace(/[/.]/g, '\\$&') + ']');
-            if (linkQuery.length === 0) {
-                var newLink = document.createElement('link');
-                newLink.setAttribute('href', scriptPath);
-                newLink.setAttribute('rel', 'stylesheet');
-                newLink.setAttribute('type', 'text/css');
-                newLink.onload = callback;
-                headElm.appendChild(newLink);
-                // console.log("Including StyleSheet: ", newScript);
-
-                return true;
-            }
-            break;
-
-        default:
-            throw new Error("Invalid extension: " + ext);
-    }
-
-    if(callback)
-        callback();
-
-    return false;
-};
+})();

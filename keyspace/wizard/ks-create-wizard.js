@@ -33,7 +33,7 @@ if(typeof document === 'object')
 
     function handleSubmitEvent(e, formElm) {
         var template_html = parseTemplateHTML(e, formElm);
-        ClientMainThread.execute('PUT.FORM ' + template_html
+        Client.execute('PUT.FORM ' + template_html
             .replace(/</g, '&lt;')
             .replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '')     // Remove empty html tags
         );

@@ -6,7 +6,8 @@
         <meta name="application-name" CONTENT="relay">
         <meta name="keywords" CONTENT="relay, client, phone">
 
-        <script src="client/client.js"></script>
+        <script src="client-worker.js"></script>
+        <script src="ui/client-ui-handler.js"></script>
         <link rel="stylesheet" href="ui/themes/minimal/minimal.css" type="text/css" />
 
         <script>
@@ -15,9 +16,9 @@
             // Render Navigation Menu and about box
             setTimeout(function() {
                 // ClientMainThread.execute("UI.MENU");
-                ClientMainThread.execute("UI.LOGIN");
+                Client.execute("UI.LOGIN");
 //                ClientMainThread.execute("UI.CONTACTS");
-                ClientMainThread.execute("SETTINGS.AUTORUN");
+                Client.execute("SETTINGS.AUTORUN");
 
 //                ClientMainThread.execute("CHAT /debug"); // Connect to socket server
             }, 10);

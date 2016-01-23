@@ -238,7 +238,7 @@ if(typeof document === 'object')
                 // TODO: appear animation?
 
                 for(var si=0; si<includeScripts.length; si++)
-                    ClientMainThread.includeScript(includeScripts[si]);
+                    Client.includeScript(includeScripts[si]);
 
             });
         }
