@@ -67,7 +67,7 @@ if(typeof module === 'object') (function() {
             var templateExports = self.module.exports;
 
             templateExports.renderUIContactList(function (html) {
-                ClientWorkerThread.render(html);
+                ClientWorkerThread.render(html); // TODO: render contact list seperately
             });
 
             self.module = {exports: {}};
