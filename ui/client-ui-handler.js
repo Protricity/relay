@@ -7,7 +7,7 @@ if(typeof document === 'undefined')
     var ALLOWED_ROOT_ELEMENTS = ['article', 'nav'];
 
 // Define outside closure
-    var Client = self.Client !== 'undefined' ? self.Client : self.Client = function(){};
+    var Client = typeof self.Client !== 'undefined' ? self.Client : self.Client = function(){};
 
     document.addEventListener('command', onCommandEvent, false);
     document.addEventListener('click', onClickHandler);

@@ -323,7 +323,7 @@ if(typeof module === 'object') (function() {
             setTimeout(function() {
                 lastChannelSearch = Date.now();
                 console.info("Requesting Channel Search...");
-                Client.execute("CHANNEL.SEARCH.LIST");
+                ClientWorkerThread.execute("CHANNEL.SEARCH.LIST");
             }, 10);
         }
 

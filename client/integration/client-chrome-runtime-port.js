@@ -2,16 +2,12 @@
  * Created by ari on 6/19/2015.
  */
 
-//if(typeof document === 'undefined')
-//    throw new Error("Invalid Environment");
-
-if(typeof self.Client === 'undefined')
-    self.Client = {};
-
 if(!chrome || !chrome.runtime)
     throw new Error("Missing: chrome.runtime");
 
 (function() {
+
+    var Client = typeof self.Client !== 'undefined' ? self.Client : self.Client = function(){};
 
     var extensionID = chrome.runtime.id;
     socketWorker = chrome.runtime.connect(extensionID, {name: name}); // 'relay-render-proxy'

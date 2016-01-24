@@ -2,25 +2,20 @@
  * Created by ari on 6/19/2015.
  */
 
-
-//if(typeof document === 'undefined')
-//    throw new Error("Invalid Environment");
-
-if(typeof self.Client === 'undefined')
-    self.Client = {};
-
 if(!chrome || !chrome.runtime)
     throw new Error("Missing: chrome.runtime");
 
 (function() {
 
+    var Client = typeof self.Client !== 'undefined' ? self.Client : self.Client = function(){};
+
     var activeClientPorts = [];
     function addListener(port) {
-        if(port.name !== name)
-            throw new Error("Unrecognized Port Name: " + port.name);
+        //if(port.name !== name)
+        //    throw new Error("Unrecognized Port Name: " + port.name);
 
         activeClientPorts.push(port);
-        console.log("New Port Client: " + name, port);
+        console.log("New Port Client: " + port.name, port);
         port.onMessage.addListener(
             function (message) {
                 console.log("Executing Proxy Message: ", message, port);
@@ -30,7 +25,7 @@ if(!chrome || !chrome.runtime)
     }
 
     chrome.runtime.onConnect.addListener(addListener);
-    console.log("Port Listener loaded: " + name);
+    console.log("Port Listener loaded");
 
     Client.processResponse = function(responseString) {
         var args = /^\w+/.exec(responseString);
