@@ -7,8 +7,8 @@ if(typeof document === 'undefined')
     var ALLOWED_ROOT_ELEMENTS = ['article', 'nav'];
 
 // Define outside closure
-    if(typeof self.Client === 'undefined')
-        self.Client = {};
+    if(typeof self.Client === 'undefined') 
+        self.Client = function Client(){};
 
     document.addEventListener('command', onCommandEvent, false);
     document.addEventListener('click', onClickHandler);
@@ -177,55 +177,65 @@ if(typeof document === 'undefined')
         if (!args)
             throw new Error("Invalid Command: " + commandString);
 
-        var content = args[1];
+        var htmlContent = args[1];
         var includeScripts = [];
-        content = Client.parseScripts(content, includeScripts);
-        content = Client.parseStyleSheets(content, includeScripts);
+        htmlContent = Client.parseScripts(htmlContent, includeScripts);
+        htmlContent = Client.parseStyleSheets(htmlContent, includeScripts);
 
-        var htmlContainer = document.createElement('div');
-        htmlContainer.innerHTML = content;
-        var contentElements = htmlContainer.children;
-        if(contentElements.length === 0) {
-            htmlContainer.innerHTML = '<article class="__no-class">' + content + '</article>';
-            contentElements = htmlContainer.children;
+
+        // Include scripts before render:
+        Client.includeScriptsAsync(includeScripts, function() {
+
+            var htmlContainer = document.createElement('div');
+            htmlContainer.innerHTML = htmlContent;
+            var contentElements = htmlContainer.children;
             if(contentElements.length === 0)
-                throw new Error("First child missing", console.log(content, htmlContainer));
-        }
+                throw new Error("First child missing", console.log(htmlContent, htmlContainer));
 
-        var contentElement = contentElements[0];     // First Child
-        if(contentElement.classList.length === 0)
-            contentElement.classList.add('__no-class');
-        var targetClass = contentElement.classList.item(0);
+            var contentElement = contentElements[0];     // First Child
+            if(contentElement.classList.length === 0)
+                throw new Error("Rendered content must have at least one class attribute set");
 
-        var targetElements = document.getElementsByClassName(targetClass);
-        var targetElement;
-        if(targetElements.length === 0) {
+            var targetClass = contentElement.classList.item(0);
 
-            // Ignore if not a root element
-            if(ALLOWED_ROOT_ELEMENTS.indexOf(contentElement.nodeName.toLowerCase()) === -1) {
-                console.warn("Ignoring non-root element: ", contentElement);
-                return;
-            }
+            var targetElements = document.getElementsByClassName(targetClass);
+            var targetElement;
+            if(targetElements.length === 0) {
 
-            // First Render
-            var bodyElm = document.getElementsByTagName('body')[0];
-
-            var insertBefore;
-            for(var i=0; i<bodyElm.children.length; i++)
-                if(bodyElm.children[i].nodeName.toLowerCase() === 'article') {
-                    insertBefore = bodyElm.children[i];
-                    break;
+                // Ignore if not a root element
+                if(ALLOWED_ROOT_ELEMENTS.indexOf(contentElement.nodeName.toLowerCase()) === -1) {
+                    console.warn("Ignoring non-root element: ", contentElement);
+                    return;
                 }
 
-            if(insertBefore && contentElement.classList.contains('prepend-on-render'))
-                bodyElm.insertBefore(contentElement, insertBefore);
-            else
-                bodyElm.appendChild(contentElement);
+                // First Render
+                var bodyElm = document.getElementsByTagName('body')[0];
+
+                var insertBefore;
+                for(var i=0; i<bodyElm.children.length; i++)
+                    if(bodyElm.children[i].nodeName.toLowerCase() === 'article') {
+                        insertBefore = bodyElm.children[i];
+                        break;
+                    }
+
+                if(insertBefore) //  && contentElement.classList.contains('prepend-on-render')
+                    bodyElm.insertBefore(contentElement, insertBefore);
+                else
+                    bodyElm.appendChild(contentElement);
 
 
-            if(targetElements.length === 0)
-                throw new Error("Re-render class mismatch: '" + targetClass + "'\n" + content);
-            targetElement = targetElements[0];
+                if(targetElements.length === 0)
+                    throw new Error("Re-render class mismatch: '" + targetClass + "'\n" + htmlContent);
+                targetElement = targetElements[0];
+
+            } else {
+                // Existing element(s) with same first class name
+                for(var ti=0; ti<targetElements.length; ti++) {
+                    targetElement = targetElements[ti];
+                    targetElement.innerHTML = contentElement.innerHTML;
+                }
+                targetElement = targetElements[0];
+            }
 
             if(contentElement.classList.contains('maximized')) {
                 // Remove all other maximized
@@ -241,46 +251,6 @@ if(typeof document === 'undefined')
                 targetElement.scrollIntoView();
             }
 
-        } else {
-            // Existing element(s) with same first class name
-            for(var ti=0; ti<targetElements.length; ti++) {
-
-                targetElement = targetElements[ti];
-                //if(targetElement.classList.contains('closed'))
-                //    targetElement.classList.remove('closed');
-                //if(targetElement.classList.contains('minimized'))
-                //    targetElement.classList.remove('minimized');
-                if(contentElement.classList.contains('append-children-on-render')
-                    || targetElement.classList.contains('append-children-on-render')) {
-                    var contentElementClone = contentElement.cloneNode(true);
-                    for(var j=0; j<contentElementClone.children.length; j++)
-                        targetElement.appendChild(contentElementClone.children[j]);
-                    // targetElement.children[targetElement.children.length-1].scrollIntoView();
-                } else {
-                    targetElement.innerHTML = contentElement.innerHTML;
-                }
-
-                if(contentElement.classList.contains('scroll-into-view-on-render'))
-                    targetElement.scrollIntoView();
-                if(contentElement.classList.contains('scroll-to-bottom-on-render'))
-                    targetElement.scrollTop = targetElement.scrollHeight;
-
-            }
-            targetElement = targetElements[0];
-        }
-
-        if(targetElement.classList.contains('focus-on-render')) {
-            var focusInput = targetElement.querySelector('.focus-input')
-                || targetElement.querySelector('input[type=text]')
-                || targetElement.querySelector('textarea')
-                || targetElement.querySelector('input[type=password]')
-                || targetElement.querySelector('select');
-            if(focusInput)
-                focusInput.focus(); // TODO: set last text position/selection
-        }
-
-        // Include scripts after insert:
-        Client.includeScriptsAsync(targetElement, includeScripts, function() {
             var contentEvent = new CustomEvent('render', {
                 bubbles: true
             });
@@ -297,8 +267,10 @@ if(typeof document === 'undefined')
         var targetClass = args[2];
         var htmlContent = args[3];
 
-        var htmlContainer = document.createElement('div');
+        var htmlContainer = document.createElement('span');
         htmlContainer.innerHTML = htmlContent;
+        if(htmlContainer.children.length > 0)
+            htmlContainer = htmlContainer.children[0];
 
         var targetElements = document.getElementsByClassName(targetClass);
         if(targetElements.length === 0) {
@@ -309,15 +281,19 @@ if(typeof document === 'undefined')
                        targetElement.innerHTML = htmlContent;
                        break;
 
-                   case 'prepend':
-                       targetElement.prependChild()
-                       if(htmlContainer.children) {
+                   case 'append':
+                       targetElement.appendChild(htmlContainer);
+                       targetElement.scrollTop = targetElement.scrollHeight; // TODO: always?
+                       break;
 
-                       }
+                   case 'prepend':
+                       targetElement.prependChild(htmlContainer);
+                       break;
                }
            }
-        } else {
 
+        } else {
+            console.info("No target classes found for: " + targetClass, responseString)
         }
     };
 
@@ -437,11 +413,11 @@ if(typeof document === 'undefined')
     }
 
 
-    Client.includeScriptsAsync = function(targetElement, scripts, callback) {
+    Client.includeScriptsAsync = function(scripts, callback) {
         if(scripts.length > 0) {
             var script = scripts.shift();
             Client.includeScript(script, function() {
-                Client.includeScriptsAsync(targetElement, scripts, callback);
+                Client.includeScriptsAsync(scripts, callback);
             });
 
         } else {

@@ -39,8 +39,8 @@ module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefine
                 ClientWorkerThread.render(html);
             });
         }
-        consoleExports.renderConsoleEntry(message, function(html) {
-            ClientWorkerThread.render(html);
+        consoleExports.renderConsoleEntry(message, function(targetClass, html) {
+            ClientWorkerThread.append(targetClass, html);
         });
 //         console.log(message);
     };
@@ -151,11 +151,23 @@ module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefine
         return false;
     };
 
-    ClientWorkerThread.render = function(content, callback) {
-        parseClientTags(content, function(parsedContent) {
+    ClientWorkerThread.render = function(htmlContent, callback) {
+        parseClientTags(htmlContent, function(parsedContent) {
             ClientWorkerThread.postResponseToClient("RENDER " + parsedContent);
             (callback || function(){})();
         });
+    };
+
+    ClientWorkerThread.prepend = function(targetClass, htmlContent) {
+        ClientWorkerThread.postResponseToClient("PREPEND " + targetClass + " " + htmlContent);
+    };
+
+    ClientWorkerThread.append = function(targetClass, htmlContent) {
+        ClientWorkerThread.postResponseToClient("APPEND " + targetClass + " " + htmlContent);
+    };
+
+    ClientWorkerThread.replace = function(targetClass, htmlContent) {
+        ClientWorkerThread.postResponseToClient("REPLACE " + targetClass + " " + htmlContent);
     };
 
     ClientWorkerThread.getCommandHistory = function() {
@@ -258,11 +270,12 @@ module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefine
     }
 
 
-    // Window Client
+    // Window/Pass-thru Commands
     ClientWorkerThread.addCommand(channelButtonCommand);
     function channelButtonCommand(commandString, e) {
-        if(!/^(minimize|maximize|close|open|toggle)/i.test(commandString))
+        if(!/^(replace|append|prepend|minimize|maximize|close|open|toggle)/i.test(commandString))
             return false;
+
         ClientWorkerThread.postResponseToClient(commandString);
         return true;
     }
@@ -271,8 +284,9 @@ module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefine
     // Client Render
     ClientWorkerThread.addCommand(clientRenderCommand);
     function clientRenderCommand(commandString, e) {
-        if(!/^(render|replace|append|prepend)/i.test(commandString))
+        if(!/^(render)/i.test(commandString))
             return false;
+
         parseClientTags(commandString, function(parsedCommandString) {
             ClientWorkerThread.postResponseToClient(parsedCommandString);
         });
@@ -280,11 +294,12 @@ module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefine
     }
 
 
-    // Client Events
+    // Client Event Responses
     ClientWorkerThread.addResponse(passToClientCommand);
     function passToClientCommand(commandString, e) {
         if(!/^(event)/i.test(commandString))
             return false;
+
         ClientWorkerThread.postResponseToClient(commandString);
         return true; // TODO: return false?;
     }

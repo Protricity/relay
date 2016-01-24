@@ -379,7 +379,7 @@ function Client() {
         }
 
         // Include scripts after insert:
-        Client.includeScriptsAsync(targetElement, includeScripts, function() {
+        Client.includeScriptsAsync(includeScripts, function() {
             var contentEvent = new CustomEvent('render', {
                 bubbles: true
             });
@@ -504,11 +504,11 @@ function Client() {
 })();
 
 
-Client.includeScriptsAsync = function(targetElement, scripts, callback) {
+Client.includeScriptsAsync = function(scripts, callback) {
     if(scripts.length > 0) {
         var script = scripts.shift();
         Client.includeScript(script, function() {
-            Client.includeScriptsAsync(targetElement, scripts, callback);
+            Client.includeScriptsAsync(scripts, callback);
         });
 
     } else {

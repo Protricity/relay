@@ -50,18 +50,19 @@
     function renderConsoleEntry(content, callback) {
         // Template
         var SOCKET_TEMPLATE_ACTION_ENTRY =
-            "<main class='console-content: append-children-on-render scroll-to-bottom-on-render'>" +
-                "<div class='console-entry'>" +
-                    "{$content}" +
-                "</div>" +
-            "</main>";
+            "<div class='console-entry'>" +
+                "{$content}" +
+            "</div>";
 
         var consoleEntryHTML = SOCKET_TEMPLATE_ACTION_ENTRY
             .replace(/{\$content}/g, content)
             .replace(/{/g, '&#123;');
 
         // Callback
-        return callback(consoleEntryHTML, callback)
+        return callback(
+            "console-content:",
+            consoleEntryHTML
+        );
     }
 
     function onFormEvent(e, formElm) {
@@ -141,18 +142,4 @@
         return false;
     }
 
-    function onCommandEvent(e) {
-        e.preventDefault();
-        var commandString = e.detail || e.data;
-        renderConsoleEntry(
-            "<span class='prompt'>$</span>" + commandString + "<span class='command'>",
-            function(html) {
-                var consoleLogs = document.getElementsByClassName('console-content:');
-                for(var i=0; i<consoleLogs.length; i++) {
-                    var elm = document.createElement('div');
-                    elm.innerHTML = html;
-                    consoleLogs[i].appendChild(elm.children[0]);
-                }
-            });
-    }
 })();

@@ -154,14 +154,14 @@ if(typeof module === 'object') (function() {
             classList.push('empty-log-entry');
 
         var MESSAGE_TEMPLATE =
-            '<div class="channel-log:' + channelPath.toLowerCase() + ' append-children-on-render">' +
-                '<div class="channel-log-entry: ' + classList.join(' ') + '">' +
-                    '<a href="#MESSAGE {$username}" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
-                    ': <span class="message">{$content}</span>' +
-                '</div>' +
+            '<div class="channel-log-entry: ' + classList.join(' ') + '">' +
+                '<a href="#MESSAGE {$username}" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
+                ': <span class="message">{$content}</span>' +
             '</div>';
 
-        callback(MESSAGE_TEMPLATE
+        callback(
+            'channel-log:' + channelPath.toLowerCase(),
+            MESSAGE_TEMPLATE
             .replace(/{\$timestamp}/gi, timestamp+'')
             .replace(/{\$channel}/gi, channelPath)
             .replace(/{\$username}/gi, username)
@@ -183,15 +183,15 @@ if(typeof module === 'object') (function() {
         }
 
         var ACTION_TEMPLATE =
-            '<div class="channel-log:' + channelPath.toLowerCase() + ' append-children-on-render">' +
-                '<div class="channel-log-entry:">' +
-                    '<a href="#MESSAGE {$username}" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
-                    ' has <span class="action">{$action}</span>' +
-                    ' <a href="#CHAT {$channel}" class="path">{$channel}</a>' +
-                '</div>' +
+            '<div class="channel-log-entry:">' +
+                '<a href="#MESSAGE {$username}" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
+                ' has <span class="action">{$action}</span>' +
+                ' <a href="#CHAT {$channel}" class="path">{$channel}</a>' +
             '</div>';
 
-        callback(ACTION_TEMPLATE
+        callback(
+            'channel-log:' + channelPath.toLowerCase(),
+            ACTION_TEMPLATE
             .replace(/{\$action}/gi, actionText)
             .replace(/{\$channel}/gi, channelPath)
             .replace(/{\$username}/gi, username)
@@ -204,15 +204,15 @@ if(typeof module === 'object') (function() {
         var new_username = args[2];
 
         var NICK_TEMPLATE =
-            '<div class="channel-log:' + channelPath.toLowerCase() + ' append-children-on-render">' +
-                '<div class="channel-log-entry">' +
-                    'Username <span class="username">{$old_username}</span>' +
-                    ' has been <span class="action">renamed</span> to' +
-                    ' <a href="#MESSAGE {$username}" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
-                '</div>' +
+            '<div class="channel-log-entry">' +
+                'Username <span class="username">{$old_username}</span>' +
+                ' has been <span class="action">renamed</span> to' +
+                ' <a href="#MESSAGE {$username}" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
             '</div>';
 
-        callback(NICK_TEMPLATE
+        callback(
+            'channel-log:' + channelPath.toLowerCase(),
+            NICK_TEMPLATE
             .replace(/{\$old_username}/gi, old_username)
             .replace(/{\$username}/gi, new_username)
         );
@@ -220,25 +220,28 @@ if(typeof module === 'object') (function() {
 
 
     module.exports.renderChatUserList = function(channelPath, userList, callback) {
-        var size = 5;
-        if(size < userList.length / 2)
-            size = parseInt(userList.length);
-        if(size > 20)
-            size = 20;
+        //var size = 5;
+        //if(size < userList.length / 2)
+        //    size = parseInt(userList.length);
+        //if(size > 20)
+        //    size = 20;
 
-        var optionHTML = "<select" +
-            " multiple='multiple'" +
-            " name='users'" +
-            " size='" + size + "'" +
-            " class='channel-users:" + channelPath.toLowerCase() + "'" +
-            ">\n";
+        //var optionHTML = "<select" +
+        //    " multiple='multiple'" +
+        //    " name='users'" +
+        //    " size='" + size + "'" +
+        //    " class='channel-users:" + channelPath.toLowerCase() + "'" +
+        //    ">\n";
 
-        optionHTML += "\n\t<option disabled='disabled' value=''>(" + userList.length + ") Users</option>";
+        var optionHTML = "\n\t<option disabled='disabled' value=''>(" + userList.length + ") Users</option>";
 
         for (var i = 0; i < userList.length; i++)
             optionHTML += "\n\t<option>" + userList[i] + "</option>";
 
-        optionHTML += "\n</select>";
-        callback(optionHTML);
+        //optionHTML += "\n</select>";
+        callback(
+            "channel-users:" + channelPath.toLowerCase(),
+            optionHTML
+        );
     };
 })();

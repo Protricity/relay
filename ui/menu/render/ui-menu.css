@@ -1,7 +1,7 @@
 
 /* Navigation */
 
-.navigation-commands {
+.navigation-commands\3A  {
     /* float: left; */
     display: inline-block;
     background-color: lightgrey;
@@ -19,33 +19,33 @@
     transition-delay: 0.2s;
 }
 
-.navigation-commands:not(.closed),
-.navigation-commands:hover {
+.navigation-commands\3A:not(.minimized),
+.navigation-commands\3A:hover {
     max-height: 50em;
     max-width: 20em;
     transition-delay: 0s;
     transition: max-height 0.5s ease-in-out;
 }
-.navigation-commands:hover {
+.navigation-commands\3A:hover {
     z-index: 99999;
     position:relative;
 }
 
-.navigation-commands:hover {
+.navigation-commands\3A:hover {
     box-shadow: 1px 2px 6px #333;
 }
 
-.navigation-commands.closed {
+.navigation-commands\3A.minimized {
     border-radius: 0.5em;
     border-style: inherit;
 }
 
-.navigation-commands .hide-on-close {
+.navigation-commands\3A  .hide-on-close {
     opacity: 1;
     transition: opacity 1s;
 }
 
-.navigation-commands.closed:not(:hover) .hide-on-close {
+.navigation-commands\3A.minimized:not(:hover) .hide-on-close {
     opacity: 0;
     transition: opacity 0.5s;
     /*transition-delay: 0.6s;*/
@@ -53,26 +53,25 @@
 
 /** Open/Close Button **/
 
-.navigation-commands header button {
+.navigation-commands\3A  .button-toggle,
+.navigation-commands\3A  header button {
     border: 1px inset;
-    /*padding: 0.3em 0.8em;*/
-    width: 2em;
-    height: 1.6em;
-    padding: 0;
-    margin: 0;
+    padding: 0.2em 1em 0.4em 0.6em;
     background-color: #DDD;
     vertical-align: top;
     font-size: inherit;
+    display: inline-block;
 }
-.navigation-commands.closed header button {
+.navigation-commands\3A.minimized .button-toggle,
+.navigation-commands\3A.minimized header button {
     border-style: outset;
 }
 
-.navigation-commands header {
+.navigation-commands\3A  header {
     font-weight: bold;
     text-shadow: 1px 1px 1px #AAA;
 }
-.navigation-commands ul {
+.navigation-commands\3A  ul {
     list-style: none;
     padding: 0 0 0.5em 0;
     /* border: 1px outset; */
@@ -80,17 +79,17 @@
     background-color: #EAEAEA;
     /* display: inline-block; */
 }
-.navigation-commands ul lh,
-.navigation-commands ul li.header,
-.navigation-commands ul li {
+.navigation-commands\3A  ul lh,
+.navigation-commands\3A  ul li.header,
+.navigation-commands\3A  ul li {
     margin: 0 0.5em;
     display: list-item;
     /* white-space: nowrap; */
     overflow: hidden;
 }
 
-.navigation-commands ul lh,
-.navigation-commands ul li.header {
+.navigation-commands\3A  ul lh,
+.navigation-commands\3A  ul li.header {
     background-color: #BFBFBF;
     font-weight: bold;
     /* text-shadow: 1px 1px 1px #AAA; */
@@ -99,6 +98,6 @@
     border: 1px outset;
     padding: 0 0.5em;
 }
-.navigation-commands ul li:hover {
+.navigation-commands\3A  ul li:hover {
     background-color: #EEEEAA;
 }

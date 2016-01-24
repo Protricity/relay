@@ -38,8 +38,8 @@ if(typeof module === 'object') (function() {
             refreshTimeout = setTimeout(function() {
                 // console.info("Refreshing Chat List: " + responseString, subscriptionList);
                 renderChatWindow(channel, function () {
-                    chatExports.renderChatUserList(channel, subscriptionList, function (html) {
-                        ClientWorkerThread.render(html);
+                    chatExports.renderChatUserList(channel, subscriptionList, function (targetClass, html) {
+                        ClientWorkerThread.replace(targetClass, html);
                     });
                 });
             }, 500);
@@ -102,8 +102,8 @@ if(typeof module === 'object') (function() {
             renderChatWindow(channel);
             //console.info("Channel has Activity: " + channelPath);
 
-            chatExports.renderChatMessage(responseString, function (html) {
-                ClientWorkerThread.render(html);
+            chatExports.renderChatMessage(responseString, function (targetClass, html) {
+                ClientWorkerThread.append(targetClass, html);
             });
             return true;
         }
@@ -115,6 +115,7 @@ if(typeof module === 'object') (function() {
             if (activeChannels.indexOf(channelPathLowerCase) === -1) {
                 chatExports.renderChatWindow(channelPath, function (html) {
                     ClientWorkerThread.render(html);
+
                     activeChannels.push(channelPathLowerCase);
                     if(callback)
                         callback();
@@ -127,8 +128,8 @@ if(typeof module === 'object') (function() {
 
                     var userList = ClientSubscriptions.getChannelUserList(channelPath, 'chat');
 
-                    chatExports.renderChatUserList(channelPath, userList, function(html) {
-                        ClientWorkerThread.render(html);
+                    chatExports.renderChatUserList(channelPath, userList, function(targetClass, html) {
+                        ClientWorkerThread.replace(targetClass, html);
                     });
                 });
 

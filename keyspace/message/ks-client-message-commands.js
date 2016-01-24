@@ -70,9 +70,11 @@ if(typeof module === 'object') (function() {
                                     " " + encryptedContentString;
                                 ClientWorkerThread.sendWithSocket(formattedCommandString);
 
-                                getMessageExports().renderMessage(formattedCommandString, false, function (html) {
-                                    ClientWorkerThread.render(html);
-                                });
+                                getMessageExports().renderMessage(formattedCommandString, false,
+                                    function (targetClass, html) {
+                                        ClientWorkerThread.append(targetClass, html);
+                                    }
+                                );
 
                                 //ServerSubscriptions.notifyAllAuthenticatedKeySpaceClients(pgp_id_public, "EVENT KEYSPACE.HOST.CHALLENGE " + encryptedMessage);
 
@@ -88,9 +90,11 @@ if(typeof module === 'object') (function() {
                         " " + contentString;
                     ClientWorkerThread.sendWithSocket(formattedCommandString);
 
-                    getMessageExports().renderMessage(formattedCommandString, false, function (html) {
-                        ClientWorkerThread.render(html);
-                    });
+                    getMessageExports().renderMessage(formattedCommandString, false,
+                        function (targetClass, html) {
+                            ClientWorkerThread.append(targetClass, html);
+                        }
+                    );
                 }
             }
             return true;
@@ -119,9 +123,11 @@ if(typeof module === 'object') (function() {
 
                 responseString = "KEYSPACE.MESSAGE " + pgp_id_to + " " + pgp_id_from + " " + messageContent;
 
-                getMessageExports().renderMessage(responseString, true, function (html) {
-                    ClientWorkerThread.render(html);
-                });
+                getMessageExports().renderMessage(responseString, true,
+                    function (targetClass, html) {
+                        ClientWorkerThread.append(targetClass, html);
+                    }
+                );
             });
 
             return true;
