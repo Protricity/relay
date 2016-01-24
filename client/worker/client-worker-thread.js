@@ -34,7 +34,7 @@ module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefine
             importScripts('client/console/render/console-window.js');
             consoleExports = self.module.exports;
         }
-
+        
         // Render log window
         if(renderConsoleWindow) {
             consoleExports.renderConsoleWindow(function (html) {
@@ -45,7 +45,6 @@ module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefine
         consoleExports.renderConsoleEntry(message, function(targetClass, html) {
             ClientWorkerThread.append(targetClass, html);
         });
-//         console.log(message);
     };
 
     ClientWorkerThread.postResponseToClient = function(responseString) {
@@ -154,10 +153,10 @@ module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefine
         return false;
     };
 
-    ClientWorkerThread.render = function(htmlContent, callback) {
+    ClientWorkerThread.render = function(htmlContent, onRenderComplete) {
         parseClientTags(htmlContent, function(parsedContent) {
             ClientWorkerThread.postResponseToClient("RENDER " + parsedContent);
-            (callback || function(){})();
+            (onRenderComplete || function(){})();
         });
     };
 

@@ -320,12 +320,10 @@ if(typeof module === 'object') (function() {
                                     decryptedMessageString = parseActionMessage(pgp_id_to, pgp_id_from, decryptedMessageString);
 
                                 var replaceHTML =
-                                    "<span class='" + classUID + " pgp-message: decrypted'>" +
-                                    "<span class='decrypted-content'>" + decryptedMessageString + "</span>" +
+                                    "<span class='decrypted-content'>" + decryptedMessageString + "</span>";
                                     //"<i>[Encrypted with <span class='pgp-id-public'>" + pgp_id_public + "</span>]</i>" +
-                                    "</span>";
 
-                                ClientWorkerThread.render(replaceHTML);
+                                ClientWorkerThread.replace(classUID, replaceHTML);
                             }).catch(function(err) {
 
                                 console.error(err);

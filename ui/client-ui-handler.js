@@ -12,7 +12,7 @@ if(typeof document === 'undefined')
     document.addEventListener('command', onCommandEvent, false);
     document.addEventListener('click', onClickHandler);
     window.addEventListener('hashchange', onHashChange, false);
-    
+
     var previousProcessResponseHandler = Client.processResponse;
     Client.processResponse = function(responseString) {
         var args = /^\w+/.exec(responseString);
@@ -126,44 +126,42 @@ if(typeof document === 'undefined')
             return;
         }
 
-        // Include scripts before render:
-        Client.includeScriptsAsync(includeScripts, function() {
+        var bodyElm = document.getElementsByTagName('body')[0];
 
-            // First Render
-            var bodyElm = document.getElementsByTagName('body')[0];
-
-            var insertBefore;
-            for(var i=0; i<bodyElm.children.length; i++)
-                if(bodyElm.children[i].nodeName.toLowerCase() === 'article') {
-                    insertBefore = bodyElm.children[i];
-                    break;
-                }
-
-            if(insertBefore) //  && contentElement.classList.contains('prepend-on-render')
-                bodyElm.insertBefore(contentElement, insertBefore);
-            else
-                bodyElm.appendChild(contentElement);
-
-
-            if(targetElements.length === 0)
-                throw new Error("Re-render class mismatch: '" + targetClass + "'\n" + htmlContent);
-            var targetElement = targetElements[0];
-
-
-            if(contentElement.classList.contains('maximized')) {
-                // Remove all other maximized
-                var maximizedElms = document.getElementsByClassName('maximized');
-                while(maximizedElms.length > 0)
-                    maximizedElms[0].classList.remove('maximized');
-                targetElement.classList.add('maximized');
-
-                // Move to top of the list
-                while(targetElement.previousSibling
-                && targetElement.previousSibling.nodeName === targetElement.nodeName)
-                    targetElement.parentNode.insertBefore(targetElement, targetElement.previousSibling);
-                targetElement.scrollIntoView();
+        var insertBefore;
+        for(var i=0; i<bodyElm.children.length; i++)
+            if(bodyElm.children[i].nodeName.toLowerCase() === 'article') {
+                insertBefore = bodyElm.children[i];
+                break;
             }
 
+        if(insertBefore) //  && contentElement.classList.contains('prepend-on-render')
+            bodyElm.insertBefore(contentElement, insertBefore);
+        else
+            bodyElm.appendChild(contentElement);
+
+
+        if(targetElements.length === 0)
+            throw new Error("Re-render class mismatch: '" + targetClass + "'\n" + htmlContent);
+        var targetElement = targetElements[0];
+
+
+        if(contentElement.classList.contains('maximized')) {
+            // Remove all other maximized
+            var maximizedElms = document.getElementsByClassName('maximized');
+            while(maximizedElms.length > 0)
+                maximizedElms[0].classList.remove('maximized');
+            targetElement.classList.add('maximized');
+
+            // Move to top of the list
+            while(targetElement.previousSibling
+            && targetElement.previousSibling.nodeName === targetElement.nodeName)
+                targetElement.parentNode.insertBefore(targetElement, targetElement.previousSibling);
+            targetElement.scrollIntoView();
+        }
+
+        // Include scripts after render
+        Client.includeScriptsAsync(includeScripts, function() {
             var contentEvent = new CustomEvent('render', {
                 bubbles: true
             });
