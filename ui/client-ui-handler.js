@@ -26,14 +26,11 @@ if(typeof document === 'undefined')
             case 'render':
                 Client.render(responseString);
                 break;
+
             case 'replace':
-                Client.replace(responseString);
-                break;
             case 'append':
-                Client.append(responseString);
-                break;
             case 'prepend':
-                Client.prepend(responseString);
+                Client.renderChildren(responseString);
                 break;
 
             //case 'replace':
@@ -291,26 +288,39 @@ if(typeof document === 'undefined')
         });
     };
 
-    Client.replace = function(responseString) {
-        var args = /^replace\s+(\S+)\s+(\S+)$/mi.exec(responseString);
+    Client.renderChildren = function(responseString) {
+        var args = /^(replace|append|prepend)\s+(\S+)\s+([\s\S]+)$/mi.exec(responseString);
         if(!args)
             throw new Error("Invalid Command: " + responseString);
 
+        var renderCommand = args[1].toLowerCase();
+        var targetClass = args[2];
+        var htmlContent = args[3];
+
+        var htmlContainer = document.createElement('div');
+        htmlContainer.innerHTML = htmlContent;
+
+        var targetElements = document.getElementsByClassName(targetClass);
+        if(targetElements.length === 0) {
+           for(var i=0; i<targetElements.length; i++) {
+               var targetElement = targetElements[i];
+               switch(renderCommand) {
+                   case 'replace':
+                       targetElement.innerHTML = htmlContent;
+                       break;
+
+                   case 'prepend':
+                       targetElement.prependChild()
+                       if(htmlContainer.children) {
+
+                       }
+               }
+           }
+        } else {
+
+        }
     };
 
-    Client.append = function(responseString) {
-        var args = /^append\s+(\S+)\s+(\S+)$/mi.exec(responseString);
-        if(!args)
-            throw new Error("Invalid Command: " + responseString);
-
-    };
-
-    Client.prepend = function(responseString) {
-        var args = /^prepend\s+(\S+)\s+(\S+)$/mi.exec(responseString);
-        if(!args)
-            throw new Error("Invalid Command: " + responseString);
-
-    };
 
     function renderWindowCommand(responseString) {
         var args = /^(minimize|maximize|close|open|toggle)\s+(\S+)$/mi.exec(responseString);
