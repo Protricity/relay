@@ -29,14 +29,8 @@
     }
 
     var TEMPLATE_URL = 'client/console/render/console-window.html';
-    var CONTAINER_ID = 'console-window';
-    var activeContainers = [];
 
     function renderConsoleWindow(callback) {
-        if(activeContainers.indexOf(CONTAINER_ID) >= 0)
-            return false;
-        activeContainers.push(CONTAINER_ID);
-
         var xhr = new XMLHttpRequest();
         xhr.open("GET", TEMPLATE_URL, false);
         xhr.send();

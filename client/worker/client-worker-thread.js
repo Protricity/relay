@@ -28,17 +28,20 @@ module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefine
     var commandHistory = [];
 
     var consoleExports = false;
-    ClientWorkerThread.log = function(message) {
+    ClientWorkerThread.log = function(message, renderConsoleWindow) {
         if(!consoleExports) {
             self.module = {exports: {}};
             importScripts('client/console/render/console-window.js');
             consoleExports = self.module.exports;
+        }
 
-            // Render log window
-            consoleExports.renderConsoleWindow(function(html) {
+        // Render log window
+        if(renderConsoleWindow) {
+            consoleExports.renderConsoleWindow(function (html) {
                 ClientWorkerThread.render(html);
             });
         }
+
         consoleExports.renderConsoleEntry(message, function(targetClass, html) {
             ClientWorkerThread.append(targetClass, html);
         });
@@ -230,7 +233,8 @@ module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefine
         console[command](commandString);
         ClientWorkerThread.log(
             "<span class='direction'>$</span> " +
-            "<span class='command " + command + "'>" + value + "</span>"
+            "<span class='command " + command + "'>" + value + "</span>",
+            true
         );
         return true;
     }

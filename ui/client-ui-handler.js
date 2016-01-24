@@ -7,8 +7,7 @@ if(typeof document === 'undefined')
     var ALLOWED_ROOT_ELEMENTS = ['article', 'nav'];
 
 // Define outside closure
-    if(typeof self.Client === 'undefined') 
-        self.Client = function Client(){};
+    var Client = self.Client !== 'undefined' ? self.Client : self.Client = function(){};
 
     document.addEventListener('command', onCommandEvent, false);
     document.addEventListener('click', onClickHandler);
@@ -33,22 +32,16 @@ if(typeof document === 'undefined')
                 Client.renderChildren(responseString);
                 break;
 
-            //case 'replace':
-            //case 'append':
-            //case 'prepend':
-            //    renderClass(responseString);
-            //    break;
-
             case 'minimize':
             case 'maximize':
             case 'close':
             case 'open':
             case 'toggle':
-                renderWindowCommand(responseString);
+                Client.handleWindowResponse(responseString);
                 break;
 
             case 'focus':
-                focusWindowCommand(responseString);
+                Client.handleFocusResponse(responseString);
                 break;
 
             case 'event':
@@ -67,81 +60,9 @@ if(typeof document === 'undefined')
     };
 
 
-    Client.parseStyleSheets = function(content, includeScripts) {
-        var match;
-        while(match = /<link([^>]*)\/?>(<\/link>)?/gi.exec(content)) {
-            var linkContent = match[0];
-            content = content.replace(linkContent, '');
-            var match3 = /\s*href=['"]([^'"]*)['"]/gi.exec(match[1]);
-            if(match3) {
-                var hrefValue = match3[1];
-                includeScripts.push(hrefValue);
-
-            } else {
-                throw new Error("Invalid Script: " + linkContent);
-            }
-        }
-        return content;
-    };
-
-    Client.parseScripts = function(content, includeScripts) {
-        var match;
-        while(match = /<script([^>]*)><\/script>/gi.exec(content)) {
-            var scriptContent = match[0];
-            //             console.log(scriptContent);
-            content = content.replace(scriptContent, '');
-            var match2 = /\s*src=['"]([^'"]*)['"]/gi.exec(match[1]);
-            if(match2) {
-                var srcValue = match2[1];
-                includeScripts.push(srcValue);
-
-            } else {
-                throw new Error("Invalid Script: " + scriptContent);
-            }
-        }
-        return content;
-    };
-
-    function onClickHandler(e) {
-        var aElm = e.target;
-        while(aElm && aElm.nodeName.toLowerCase() !== 'a')
-            aElm = aElm.parentNode && aElm.parentNode !== document.body ? aElm.parentNode : null;
-        if(!aElm)
-            return;
-        var href = aElm.getAttribute('href');
-        if(!href || href[0] !== '#')
-            return;
-
-        var hashCommand = decodeURIComponent(href.replace(/^#/, '').trim());
-        if(!hashCommand)
-            return false;
-
-        e.preventDefault();
-        console.info("Hash Command: ", hashCommand);
-        Client.execute(hashCommand);
-    }
 
 
-
-    function onHashChange(e, hash) {
-        e.preventDefault();
-        hash = hash || document.location.hash;
-        document.location.hash = '';
-        var hashCommand = decodeURIComponent(hash.replace(/^#/, '').trim());
-        if(!hashCommand)
-            return false;
-        console.info("Hash Command: ", hashCommand);
-        Client.execute(hashCommand, e);
-    }
-
-
-    function onCommandEvent(e) {
-        e.preventDefault();
-        var commandString = e.detail || e.data;
-        Client.execute(commandString, e);
-    }
-
-    function focusWindowCommand(responseString) {
+    Client.handleFocusResponse = function(responseString) {
         var args = /^(focus)\s+(\S+)$/mi.exec(responseString);
         if(!args)
             throw new Error("Invalid Command: " + responseString);
@@ -169,8 +90,7 @@ if(typeof document === 'undefined')
             || targetElement.querySelector('select');
         if(focusInput)
             focusInput.focus();
-    }
-
+    };
 
     Client.render = function(commandString) {
         var args = /^render\s+([\s\S]+)$/mi.exec(commandString);
@@ -182,60 +102,53 @@ if(typeof document === 'undefined')
         htmlContent = Client.parseScripts(htmlContent, includeScripts);
         htmlContent = Client.parseStyleSheets(htmlContent, includeScripts);
 
+        var htmlContainer = document.createElement('div');
+        htmlContainer.innerHTML = htmlContent;
+        var contentElements = htmlContainer.children;
+        if(contentElements.length === 0)
+            throw new Error("First child missing", console.log(htmlContent, htmlContainer));
+
+        var contentElement = contentElements[0];     // First Child
+        if(contentElement.classList.length === 0)
+            throw new Error("Rendered content must have at least one class attribute set");
+
+        var targetClass = contentElement.classList.item(0);
+
+        var targetElements = document.getElementsByClassName(targetClass);
+        if(targetElements.length > 0) {
+            console.warn("Ignoring already-rendered content: ", targetClass, contentElement);
+            return;
+        }
+
+        // Ignore if not a root element
+        if(ALLOWED_ROOT_ELEMENTS.indexOf(contentElement.nodeName.toLowerCase()) === -1) {
+            console.warn("Ignoring non-root element: ", contentElement);
+            return;
+        }
 
         // Include scripts before render:
         Client.includeScriptsAsync(includeScripts, function() {
 
-            var htmlContainer = document.createElement('div');
-            htmlContainer.innerHTML = htmlContent;
-            var contentElements = htmlContainer.children;
-            if(contentElements.length === 0)
-                throw new Error("First child missing", console.log(htmlContent, htmlContainer));
+            // First Render
+            var bodyElm = document.getElementsByTagName('body')[0];
 
-            var contentElement = contentElements[0];     // First Child
-            if(contentElement.classList.length === 0)
-                throw new Error("Rendered content must have at least one class attribute set");
-
-            var targetClass = contentElement.classList.item(0);
-
-            var targetElements = document.getElementsByClassName(targetClass);
-            var targetElement;
-            if(targetElements.length === 0) {
-
-                // Ignore if not a root element
-                if(ALLOWED_ROOT_ELEMENTS.indexOf(contentElement.nodeName.toLowerCase()) === -1) {
-                    console.warn("Ignoring non-root element: ", contentElement);
-                    return;
+            var insertBefore;
+            for(var i=0; i<bodyElm.children.length; i++)
+                if(bodyElm.children[i].nodeName.toLowerCase() === 'article') {
+                    insertBefore = bodyElm.children[i];
+                    break;
                 }
 
-                // First Render
-                var bodyElm = document.getElementsByTagName('body')[0];
-
-                var insertBefore;
-                for(var i=0; i<bodyElm.children.length; i++)
-                    if(bodyElm.children[i].nodeName.toLowerCase() === 'article') {
-                        insertBefore = bodyElm.children[i];
-                        break;
-                    }
-
-                if(insertBefore) //  && contentElement.classList.contains('prepend-on-render')
-                    bodyElm.insertBefore(contentElement, insertBefore);
-                else
-                    bodyElm.appendChild(contentElement);
+            if(insertBefore) //  && contentElement.classList.contains('prepend-on-render')
+                bodyElm.insertBefore(contentElement, insertBefore);
+            else
+                bodyElm.appendChild(contentElement);
 
 
-                if(targetElements.length === 0)
-                    throw new Error("Re-render class mismatch: '" + targetClass + "'\n" + htmlContent);
-                targetElement = targetElements[0];
+            if(targetElements.length === 0)
+                throw new Error("Re-render class mismatch: '" + targetClass + "'\n" + htmlContent);
+            var targetElement = targetElements[0];
 
-            } else {
-                // Existing element(s) with same first class name
-                for(var ti=0; ti<targetElements.length; ti++) {
-                    targetElement = targetElements[ti];
-                    targetElement.innerHTML = contentElement.innerHTML;
-                }
-                targetElement = targetElements[0];
-            }
 
             if(contentElement.classList.contains('maximized')) {
                 // Remove all other maximized
@@ -273,7 +186,7 @@ if(typeof document === 'undefined')
             htmlContainer = htmlContainer.children[0];
 
         var targetElements = document.getElementsByClassName(targetClass);
-        if(targetElements.length === 0) {
+        if(targetElements.length > 0) {
            for(var i=0; i<targetElements.length; i++) {
                var targetElement = targetElements[i];
                switch(renderCommand) {
@@ -298,7 +211,7 @@ if(typeof document === 'undefined')
     };
 
 
-    function renderWindowCommand(responseString) {
+    Client.handleWindowResponse = function (responseString) {
         var args = /^(minimize|maximize|close|open|toggle)\s+(\S+)$/mi.exec(responseString);
         if(!args)
             throw new Error("Invalid Command: " + responseString);
@@ -407,11 +320,82 @@ if(typeof document === 'undefined')
                 }
                 break;
         }
+    };
 
 
+    Client.parseStyleSheets = function(content, includeScripts) {
+        var match;
+        while(match = /<link([^>]*)\/?>(<\/link>)?/gi.exec(content)) {
+            var linkContent = match[0];
+            content = content.replace(linkContent, '');
+            var match3 = /\s*href=['"]([^'"]*)['"]/gi.exec(match[1]);
+            if(match3) {
+                var hrefValue = match3[1];
+                includeScripts.push(hrefValue);
 
+            } else {
+                throw new Error("Invalid Script: " + linkContent);
+            }
+        }
+        return content;
+    };
+
+    Client.parseScripts = function(content, includeScripts) {
+        var match;
+        while(match = /<script([^>]*)><\/script>/gi.exec(content)) {
+            var scriptContent = match[0];
+            //             console.log(scriptContent);
+            content = content.replace(scriptContent, '');
+            var match2 = /\s*src=['"]([^'"]*)['"]/gi.exec(match[1]);
+            if(match2) {
+                var srcValue = match2[1];
+                includeScripts.push(srcValue);
+
+            } else {
+                throw new Error("Invalid Script: " + scriptContent);
+            }
+        }
+        return content;
+    };
+
+    function onClickHandler(e) {
+        var aElm = e.target;
+        while(aElm && aElm.nodeName.toLowerCase() !== 'a')
+            aElm = aElm.parentNode && aElm.parentNode !== document.body ? aElm.parentNode : null;
+        if(!aElm)
+            return;
+        var href = aElm.getAttribute('href');
+        if(!href || href[0] !== '#')
+            return;
+
+        var hashCommand = decodeURIComponent(href.replace(/^#/, '').trim());
+        if(!hashCommand)
+            return false;
+
+        e.preventDefault();
+        console.info("Hash Command: ", hashCommand);
+        Client.execute(hashCommand);
     }
 
+
+
+    function onHashChange(e, hash) {
+        e.preventDefault();
+        hash = hash || document.location.hash;
+        document.location.hash = '';
+        var hashCommand = decodeURIComponent(hash.replace(/^#/, '').trim());
+        if(!hashCommand)
+            return false;
+        console.info("Hash Command: ", hashCommand);
+        Client.execute(hashCommand, e);
+    }
+
+
+    function onCommandEvent(e) {
+        e.preventDefault();
+        var commandString = e.detail || e.data;
+        Client.execute(commandString, e);
+    }
 
     Client.includeScriptsAsync = function(scripts, callback) {
         if(scripts.length > 0) {
