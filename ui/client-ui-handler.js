@@ -26,6 +26,15 @@ if(typeof document === 'undefined')
             case 'render':
                 Client.render(responseString);
                 break;
+            case 'replace':
+                Client.replace(responseString);
+                break;
+            case 'append':
+                Client.append(responseString);
+                break;
+            case 'prepend':
+                Client.prepend(responseString);
+                break;
 
             //case 'replace':
             //case 'append':
@@ -280,6 +289,27 @@ if(typeof document === 'undefined')
             });
             targetElement.dispatchEvent(contentEvent);
         });
+    };
+
+    Client.replace = function(responseString) {
+        var args = /^replace\s+(\S+)\s+(\S+)$/mi.exec(responseString);
+        if(!args)
+            throw new Error("Invalid Command: " + responseString);
+
+    };
+
+    Client.append = function(responseString) {
+        var args = /^append\s+(\S+)\s+(\S+)$/mi.exec(responseString);
+        if(!args)
+            throw new Error("Invalid Command: " + responseString);
+
+    };
+
+    Client.prepend = function(responseString) {
+        var args = /^prepend\s+(\S+)\s+(\S+)$/mi.exec(responseString);
+        if(!args)
+            throw new Error("Invalid Command: " + responseString);
+
     };
 
     function renderWindowCommand(responseString) {
