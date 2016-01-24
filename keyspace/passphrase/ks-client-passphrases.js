@@ -52,7 +52,7 @@ module.exports.ClientPassPhrases =
 
             if(privateKey.primaryKey.isDecrypted) {
                 // Already decrypted or doesn't require a passphrase
-                Client.execute("KEYSPACE.PASSPHRASE.FAIL " + pgp_id_public);
+                ClientWorkerThread.execute("KEYSPACE.PASSPHRASE.FAIL " + pgp_id_public);
                 return callback ? callback(null, privateKey, passphrase) : null;
             }
 
@@ -70,7 +70,7 @@ module.exports.ClientPassPhrases =
                     delete passphraseRequests[pgp_id_public];
                     passphraseMemory[pgp_id_public] = passphrase;
 
-                    Client.execute("KEYSPACE.PASSPHRASE.SUCCESS " + pgp_id_public);
+                    ClientWorkerThread.execute("KEYSPACE.PASSPHRASE.SUCCESS " + pgp_id_public);
 
                     return callback ? callback(null, privateKey, passphrase) : null;
                 }
@@ -79,7 +79,7 @@ module.exports.ClientPassPhrases =
                 passphraseRequests[pgp_id_public].push(callback);
                 // console.log("Adding Private Key Callback: ", pgp_id_public, passphraseRequests);
             }
-            Client.execute("KEYSPACE.PASSPHRASE " + pgp_id_public);
+            ClientWorkerThread.execute("KEYSPACE.PASSPHRASE " + pgp_id_public);
         });
 
     };

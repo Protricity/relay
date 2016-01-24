@@ -69,8 +69,10 @@ if(typeof document === 'undefined')
 
         var targetClass = args[2];
         var targetElements = document.getElementsByClassName(targetClass);
-        if(targetElements.length === 0)
-            throw new Error("Class not found: " + targetClass + " - " + responseString);
+        if(targetElements.length === 0) {
+            console.error("Class not found: " + targetClass + " - " + responseString);
+            return false;
+        }
 
         var focusedElms = document.getElementsByClassName('focused');
         while(focusedElms.length > 0)
@@ -90,6 +92,8 @@ if(typeof document === 'undefined')
             || targetElement.querySelector('select');
         if(focusInput)
             focusInput.focus();
+
+        return true;
     };
 
     Client.render = function(commandString) {
@@ -217,8 +221,10 @@ if(typeof document === 'undefined')
         var command = args[1].toLowerCase();
         var targetClass = args[2];
         var targetElements = document.getElementsByClassName(targetClass);
-        if(targetElements.length === 0)
-            throw new Error("Class not found: " + targetClass + " - " + responseString);
+        if(targetElements.length === 0) {
+            console.error("Class not found: " + targetClass + " - " + responseString);
+            return false;
+        }
 
         // var targetElement = targetElements[0];
         // for(var i=0; i<targetElements.length; i++) {

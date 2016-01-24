@@ -21,11 +21,12 @@ if(typeof module === 'object') (function() {
             switch(subCommand) {
                 case "html":
                 case "render":
-                    renderMenuHTML(commandString,
-                        function(html) {
-                            ClientWorkerThread.render(html);
-                        }
-                    );
+                    renderMenu(commandString, function(html) {
+                        ClientWorkerThread.render(html);
+                    });
+                    renderMenuListHTML(commandString, function(targetClass, html) {
+                        ClientWorkerThread.replace(targetClass, html);
+                    });
                     return true;
 
                 case "text":
@@ -125,7 +126,21 @@ if(typeof module === 'object') (function() {
         }
     }
 
-    function renderMenuHTML(commandString, callback) {
+    function renderMenu(commandString, callback) {
+        var TEMPLATE_URL = "ui/menu/render/ui-menu.html";
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", TEMPLATE_URL, false);
+        xhr.send();
+        if (xhr.status !== 200)
+            throw new Error("Error: " + xhr.responseText);
+
+        callback(
+            xhr.responseText
+        );
+
+    }
+
+    function renderMenuListHTML(commandString, callback) {
         var match = /^(?:ui\.)?menu(?:\.(?:render|html))?\s*([\s\S]*)$/i.exec(commandString);
         if (!match)         // If unmatched,
             throw new Error("Invalid Command: " + commandString);   // Pass control to next handler
@@ -162,8 +177,8 @@ if(typeof module === 'object') (function() {
                 throw new Error("Error: " + xhr.responseText);
 
             callback(
-                xhr.responseText
-                    .replace(/{\$html_menu}/gi, html)
+                'navigation-commands-list:',
+                html
             );
 
         }
@@ -215,7 +230,7 @@ if(typeof module === 'object') (function() {
             if(!lastKeySpaceSearch || lastKeySpaceSearch < Date.now() - SEARCH_TIMEOUT) {
                 lastKeySpaceSearch = Date.now();
                 console.info("Requesting KeySpace Search...");
-                Client.execute("KEYSPACE.SEARCH.LIST");
+                ClientWorkerThread.execute("KEYSPACE.SEARCH.LIST");
             }
         }, 10);
 
