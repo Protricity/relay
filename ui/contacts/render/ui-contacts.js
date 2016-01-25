@@ -244,14 +244,14 @@ if(typeof module !== 'object')
                 .replace(/{\$status}/gi, status)
                 .replace(/{\$user_icon_path}/gi, user_icon_path)
                 .replace(/{\$html_commands}/gi, html_commands)
-                .replace(/{\$i}/gi, i++)
+                .replace(/{\$i}/gi, i+++'')
         );
     }
 
     function getCommandHTML(commandString, commandTitle, commandClasses) {
         commandTitle = commandTitle || commandString;
         return "" +
-            "<a onclick='Client.execute(\"" + commandString + "\");'" + (commandClasses ? " class='" + commandClasses + "'" : '') + ">" +
+            "<a href='" + commandString + "'" + (commandClasses ? " class='" + commandClasses + "'" : '') + ">" +
                 "<span>" + commandTitle + "</span>" +
             "</a>";
     }
