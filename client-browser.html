@@ -9,14 +9,14 @@
         <script>
             // Render Navigation Menu and about box
             document.addEventListener('DOMContentLoaded', function () {
-                // ClientMainThread.tryConnectToPortListener('oajoebolmmcpcfpmlehbcaahkdnpfhge', 'relay-render-proxy');
+                // Client.tryConnectToPortListener('oajoebolmmcpcfpmlehbcaahkdnpfhge', 'relay-render-proxy');
                 // TODO: fix for browsers
                 
                 Client.execute("UI.MENU");
                 Client.execute("UI.LOGIN");
                 Client.execute("UI.CONTACTS");
                 Client.execute("SETTINGS.AUTORUN");
-//                ClientMainThread.execute("SETTINGS.ONCONNECT");
+//                Client.execute("SETTINGS.ONCONNECT");
                 Client.execute("CHAT /debug"); // Connect to socket server
             
             });

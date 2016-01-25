@@ -22,6 +22,7 @@ if(typeof document !== 'undefined') {
     //    throw new Error("Client must define Client.processResponse = function(responseString)...")
     //};
 
+    console.log("Started Client WebWorker", socketWorker);
 
 } else if(typeof importScripts !== 'undefined') {
     importScripts('client/worker/client-worker-thread.js');

@@ -136,7 +136,7 @@ function Client() {
         isRenderEnabled = enabled ? true : false;
     };
 
-    //ClientMainThread.setSocketWorkerProxy = function(socketWorkerProxy) {
+    //Client.setSocketWorkerProxy = function(socketWorkerProxy) {
     //    if(socketWorker)
     //        throw new Error("Unable to set socket worker proxy. WebWorker already created");
     //    if(!socketWorkerProxy.postMessage)
@@ -146,7 +146,7 @@ function Client() {
     //
     //    socketWorker = socketWorkerProxy;
     //    socketWorker.addEventListener('message', function(e) {
-    //        ClientMainThread.processResponse(e.data || e.detail || e);
+    //        Client.processResponse(e.data || e.detail || e);
     //    }, true);
     //};
 
