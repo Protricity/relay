@@ -208,7 +208,7 @@ if(typeof document === 'undefined')
            }
 
         } else {
-            console.info("No target classes found for: " + targetClass, responseString)
+            // console.info("No target classes found for: " + targetClass, responseString)
         }
     };
 
