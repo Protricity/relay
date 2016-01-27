@@ -34,9 +34,9 @@ Feel free to reply to this thread with any questions or comments
 # FAQ - The Relay Project
   
 ### WHAT IS RELAY?
-  Relay is the project name for the free, socket-based, Social Content Network known as The Relay Network, which is meant to be accessed by a Client, like a modern browser. The Relay Messenger is written in pure JavaScript and requires no download or installation to use.
+  Relay is the project name for the free, WebRTC, Social Content Network known as The Relay Network, which is meant to be accessed by a Client, like a modern browser. The Relay Messenger is written in pure JavaScript and requires no download or installation to use.
   
-### WHAT DOES ‘SOCKET-BASED’ MEAN?
+### WHAT DOES ‘WebRTC’ MEAN?
   The Relay Network and Client are built on ‘WebSocket technology’ which is a recent protocol meant for modern browsers. While other websites and social networks load content via slow HTTP requests, which requires the browser to refresh the entire page, the Relay Messenger maintains an always-on, two-way socket connection providing near-instant browsing and a faster, more reliable user experience.
   
 ### WHAT IS A SOCIAL CONTENT NETWORK?

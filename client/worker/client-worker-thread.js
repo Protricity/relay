@@ -5,12 +5,10 @@
 if(typeof importScripts === 'undefined')
     throw new Error("Invalid Environment");
 
-if (!module) var module = {exports:{}};
-module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefined' ? self.ClientWorkerThread : self.ClientWorkerThread =
-(function() {
+function ClientWorkerThread() {
+}
 
-    function ClientWorkerThread() {
-    }
+(function() {
 
     self.addEventListener('message', function (e) {
         ClientWorkerThread.execute(e.data, e);
@@ -20,7 +18,6 @@ module.exports.ClientWorkerThread = typeof self.ClientWorkerThread !== 'undefine
         importScripts('pgp/lib/support/nfcrypto.js');
         Crypto = self.nfCrypto;
     }
-
 
     var handlerCounter = 0;
     var responseHandlers = [];

@@ -109,46 +109,54 @@ if(typeof document === 'undefined')
         var htmlContainer = document.createElement('div');
         htmlContainer.innerHTML = htmlContent;
         var contentElements = htmlContainer.children;
-        if(contentElements.length === 0)
+        if (contentElements.length === 0)
             throw new Error("First child missing", console.log(htmlContent, htmlContainer));
 
         var contentElement = contentElements[0];     // First Child
-        if(contentElement.classList.length === 0)
+        if (contentElement.classList.length === 0)
             throw new Error("Rendered content must have at least one class attribute set");
 
         var targetClass = contentElement.classList.item(0);
 
         var targetElements = document.getElementsByClassName(targetClass);
-        if(targetElements.length > 0) {
-            console.warn("Ignoring already-rendered content: ", targetClass, contentElement);
-            return;
-        }
+        if (targetElements.length > 0) {
+            if (contentElement.classList.contains('ignore-on-render')) {
+                console.warn("Ignoring already-rendered content: ", targetClass, contentElement);
+                return;
 
-        // Ignore if not a root element
-        if(ALLOWED_ROOT_ELEMENTS.indexOf(contentElement.nodeName.toLowerCase()) === -1) {
-            console.warn("Ignoring non-root element: ", contentElement);
-            return;
-        }
+            } else {
+                targetElement = targetElements[0];
+                targetElement.innerHTML = contentElement.innerHTML;
+                targetElement.classList.remove('closed');
+            }
+        } else {
 
-        var bodyElm = document.getElementsByTagName('body')[0];
-
-        var insertBefore;
-        for(var i=0; i<bodyElm.children.length; i++)
-            if(bodyElm.children[i].nodeName.toLowerCase() === 'article') {
-                insertBefore = bodyElm.children[i];
-                break;
+            // Ignore if not a root element
+            if (ALLOWED_ROOT_ELEMENTS.indexOf(contentElement.nodeName.toLowerCase()) === -1) {
+                console.warn("Ignoring non-root element: ", contentElement);
+                return;
             }
 
-        if(insertBefore) //  && contentElement.classList.contains('prepend-on-render')
-            bodyElm.insertBefore(contentElement, insertBefore);
-        else
-            bodyElm.appendChild(contentElement);
+            var bodyElm = document.getElementsByTagName('body')[0];
+
+            var insertBefore;
+            for (var i = 0; i < bodyElm.children.length; i++)
+                if (bodyElm.children[i].nodeName.toLowerCase() === 'article') {
+                    insertBefore = bodyElm.children[i];
+                    break;
+                }
+
+            if (insertBefore) //  && contentElement.classList.contains('prepend-on-render')
+                bodyElm.insertBefore(contentElement, insertBefore);
+            else
+                bodyElm.appendChild(contentElement);
 
 
-        if(targetElements.length === 0)
-            throw new Error("Re-render class mismatch: '" + targetClass + "'\n" + htmlContent);
-        var targetElement = targetElements[0];
+            if (targetElements.length === 0)
+                throw new Error("Re-render class mismatch: '" + targetClass + "'\n" + htmlContent);
+            var targetElement = targetElements[0];
 
+        }
 
         if(contentElement.classList.contains('maximized')) {
             // Remove all other maximized

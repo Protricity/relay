@@ -102,7 +102,7 @@ if(typeof module === 'object') (function() {
     };
 
     function renderMenuTextResponse(commandString, callback) {
-        var match = /^(?:ui\.)?menu(?:\.(?:text|list))?(?:\s+(\S+))?$/i.exec(commandString);
+        var match = /^(?:ui\.)?menu(?:\.(?:text|list))?(?:\s+([\s\S]+))?$/i.exec(commandString);
         if (!match)         // If unmatched,
             throw new Error("Invalid Command: " + commandString);   // Pass control to next handler
 

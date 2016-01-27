@@ -73,7 +73,7 @@ if(typeof module === 'object') (function() {
                                 Public Key ID: <strong>" + publicKeyID + "</strong><br/>\n\
                                 Passphrase: <strong>" + (privateKey.primaryKey.isDecrypted ? 'No' : 'Yes') + "</strong><br/>";
 
-                        templateExports.renderPGPImportForm(pgpKeyBlock, status_box, function (html) {
+                        templateExports.renderPGPImportForm(privateKey.armor(), status_box, function (html) {
                             ClientWorkerThread.render(html);
                         });
                         return true;
@@ -131,7 +131,7 @@ console.log(status_box);
                                 User ID: <strong>" + publicKeyUserIDString.replace(/</g, '&lt;') + "</strong><br/>\n\
                                 Public Key ID: <strong>" + publicKeyID + "</strong><br/>";
 
-                        templateExports.renderPGPImportForm(pgpKeyBlock, status_box, function (html) {
+                        templateExports.renderPGPImportForm(publicKey.armor(), status_box, function (html) {
                             ClientWorkerThread.render(html);
                         });
                         return true;
