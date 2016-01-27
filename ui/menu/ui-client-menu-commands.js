@@ -215,6 +215,7 @@ if(typeof module === 'object') (function() {
         Item("KEYSPACE.FEED", "View your <span class='command'>Feed</span>");
         Item("KEYSPACE.PUT", "<span class='command'>Create</span> KeySpace Content");
         Item("ABOUT", "<span class='command'>About</span> Relay");
+        Item("CONSOLE", "<span class='command'>Console</span> Window");
 
         Done();
 

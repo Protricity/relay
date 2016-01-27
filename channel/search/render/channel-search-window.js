@@ -22,12 +22,12 @@
     var TEMPLATE_SEARCH_ENTRY =
         "\n<tr>" +
             "\n\t<td>" +
-                "\n\t\t<a class='search-entry-command' href1='javascript:Client.execute(\"CHANNEL.INFO {$channel}\")'>{$channel}</a>" +
+                "\n\t\t<a class='search-entry-command' href1='#CHANNEL.INFO {$channel}'>{$channel}</a>" +
             "\n\t</td>" +
             //"\n\t<td>{$channel_info}</td>" +
             "\n\t<td>" +
-            "\n\t\t<a class='search-entry-command' href='CHANNEL.SUBSCRIBE.EVENT {$channel}' onclick='this.classList.add(\"subscribed\");'>Subscribe</a>" +
-            "\n\t\t<a class='search-entry-command' href='CHANNEL.CHAT {$channel}' onclick='this.classList.add(\"subscribed\");'>Chat</a>" +
+            "\n\t\t<a class='search-entry-command' href='#CHANNEL.SUBSCRIBE.EVENT {$channel}' onclick='this.classList.add(\"subscribed\");'>Subscribe</a>" +
+            "\n\t\t<a class='search-entry-command' href='#CHANNEL.CHAT {$channel}' onclick='this.classList.add(\"subscribed\");'>Chat</a>" +
                 // "\n\t\t<a class='search-entry-command' onclick='Client.execute(\"GET http://{$channel}.ks/public/id\")'>JOIN</a>" +
                 // "\n\t\t<a class='search-entry-command' onclick='Client.execute(\"CHANNEL.INFO {$channel}\")'>Profile</a>" +
             "\n\t</td>" +

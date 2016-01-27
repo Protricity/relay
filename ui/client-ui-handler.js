@@ -128,6 +128,12 @@ if(typeof document === 'undefined')
                 targetElement = targetElements[0];
                 targetElement.innerHTML = contentElement.innerHTML;
                 targetElement.classList.remove('closed');
+
+//                // Move to top of the list
+//                while(targetElement.previousSibling
+//                && targetElement.previousSibling.nodeName === targetElement.nodeName)
+//                    targetElement.parentNode.insertBefore(targetElement, targetElement.previousSibling);
+//                targetElement.scrollIntoView();
             }
         } else {
 

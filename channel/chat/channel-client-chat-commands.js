@@ -108,35 +108,35 @@ if(typeof module === 'object') (function() {
             return true;
         }
 
-        var activeChannels = [];
+        // var activeChannels = [];
         function renderChatWindow(channelPath, callback) {
             var channelPathLowerCase = channelPath.toLowerCase();
 
-            if (activeChannels.indexOf(channelPathLowerCase) === -1) {
-                chatExports.renderChatWindow(channelPath, function (html) {
-                    ClientWorkerThread.render(html);
+            // if (activeChannels.indexOf(channelPathLowerCase) === -1) {
+            chatExports.renderChatWindow(channelPath, function (html) {
+                ClientWorkerThread.render(html);
 
-                    activeChannels.push(channelPathLowerCase);
-                    if(callback)
-                        callback();
-
-                    var ClientSubscriptions = self.ClientSubscriptions || (function() {
-                        self.module = {exports: {}};
-                        importScripts('client/subscriptions/client-subscriptions.js');
-                        return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
-                    })();
-
-                    var userList = ClientSubscriptions.getChannelUserList(channelPath, 'chat');
-
-                    chatExports.renderChatUserList(channelPath, userList, function(targetClass, html) {
-                        ClientWorkerThread.replace(targetClass, html);
-                    });
-                });
-
-            } else {
+                // activeChannels.push(channelPathLowerCase);
                 if(callback)
                     callback();
-            }
+
+                var ClientSubscriptions = self.ClientSubscriptions || (function() {
+                    self.module = {exports: {}};
+                    importScripts('client/subscriptions/client-subscriptions.js');
+                    return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
+                })();
+
+                var userList = ClientSubscriptions.getChannelUserList(channelPath, 'chat');
+
+                chatExports.renderChatUserList(channelPath, userList, function(targetClass, html) {
+                    ClientWorkerThread.replace(targetClass, html);
+                });
+            });
+
+//            } else {
+//                if(callback)
+//                    callback();
+//            }
         }
 
     };

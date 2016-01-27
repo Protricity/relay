@@ -54,7 +54,7 @@
         "\n<tr>" +
             "\n\t<td>{$user_id}</td>" +
             "\n\t<td>" +
-                "\n\t\t<a class='search-entry-command' href='KEYSPACE.INFO {$pgp_id_public}'>{$pgp_id_public}</a>" +
+                "\n\t\t<a class='search-entry-command' href='#KEYSPACE.INFO {$pgp_id_public}'>{$pgp_id_public}</a>" +
             "\n\t</td>" +
             "\n\t<td>" +
                 "\n\t\t<a class='search-entry-command' href='#GET http://{$pgp_id_public}.ks/public/id' onclick='this.classList.add(\"subscribed\"'>Add</a>" +

@@ -236,20 +236,35 @@ function ClientWorkerThread() {
     }
 
     ClientWorkerThread.addResponse(consoleResponse);
+    ClientWorkerThread.addCommand(consoleResponse);
     function consoleResponse(responseString, e) {
-        var match = /^(log|info|error|assert|warn)\s*([\s\S]*)$/i.exec(responseString);
+        var match = /^(console|log|info|error|assert|warn)\s*([\s\S]*)$/i.exec(responseString);
         if(!match)
             return false;
 
         var command = match[1].toLowerCase();
         var value = match[2];
-        console[command](value);
+
+        var renderWindow = false;
+
+        switch(command) {
+            case 'console':
+                renderWindow = true;
+                value = command;
+                break;
+
+            default:
+                console[command](value);
+                break;
+        }
         ClientWorkerThread.log(
             "<span class='direction'>I</span> " +
-            "<span class='response " + command + "'>" + value + "</span>"
+            "<span class='response " + command + "'>" + value + "</span>",
+            renderWindow
         );
         return true;
     }
+
 
     ClientWorkerThread.addResponse(serverResponse);
     function serverResponse(responseString, e) {
