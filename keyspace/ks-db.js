@@ -381,12 +381,12 @@ module.exports.KeySpaceDB =
 
                 callback(err, insertData, arg);
 
-                if(typeof Client !== 'undefined') {
+                if(typeof ClientWorkerThread !== 'undefined') {
                     var responseString = "EVENT KEYSPACE.INSERT" +
                         ' ' + insertData.pgp_id_public +
                         ' ' + insertData.timestamp +
                         (path ? ' ' + path : '');
-                    Client.processResponse(responseString);
+                    ClientWorkerThread.processResponse(responseString);
                 }
                 console.info("Added content to database: http://" + pgp_id_public + '.ks/' + path, insertData, arg);
             }
@@ -415,12 +415,12 @@ module.exports.KeySpaceDB =
                         deleteRequest.onsuccess = function (e) {
                             callback(null, deleteRequest);
 
-                            if (typeof Client !== 'undefined') {
+                            if (typeof ClientWorkerThread !== 'undefined') {
                                 var responseString = "EVENT KEYSPACE.DELETE" +
                                     ' ' + pgp_id_public +
                                     ' ' + timestamp +
                                     ' ' + contentToDelete.path;
-                                Client.processResponse(responseString);
+                                ClientWorkerThread.processResponse(responseString);
                             }
                         };
                         deleteRequest.onerror = function (e) {
