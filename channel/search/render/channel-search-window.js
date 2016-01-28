@@ -120,7 +120,7 @@
 
             // Search Filter
             if(lastSearch
-                && channelName.toLowerCase().indexOf(lastSearch) === -1)
+                && channelName && channelName.toLowerCase().indexOf(lastSearch) === -1)
                 continue;
 
             //var html_options = '';

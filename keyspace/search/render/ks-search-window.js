@@ -18,7 +18,7 @@
     }
 
 
-    var MAX_RESULTS = 30; // TODO: next page
+    var MAX_RESULTS = 20; // TODO: next page
     var TEMPLATE_URL = 'keyspace/search/render/ks-search-window.html';
 
     var TEMPLATE_SEARCH_RESULTS =

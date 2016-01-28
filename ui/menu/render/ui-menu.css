@@ -58,10 +58,11 @@
     border: 1px inset;
     padding: 0.2em 1em 0.4em 0.6em;
     background-color: #DDD;
-    vertical-align: top;
-    font-size: inherit;
-    display: inline-block;
+    /* vertical-align: top; */
+    font-size: 13px;
+    /* display: inline-block; */
 }
+
 .navigation-commands\3A.minimized .button-toggle,
 .navigation-commands\3A.minimized header button {
     border-style: outset;

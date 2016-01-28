@@ -43,7 +43,7 @@ article.channel-search-window\3A > section {
 }
 .channel-search-results\3A  table tr:hover {
     background-color: #CFE;
-    cursor: pointer;
+/*     cursor: pointer; */
 }
 
 .channel-search-results\3A  a.search-entry-command a:visited,
