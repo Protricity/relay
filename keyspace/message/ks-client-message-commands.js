@@ -133,31 +133,31 @@ if(typeof module === 'object') (function() {
             return true;
         }
 
-        var activeMessages = [];
+        // var activeMessages = [];
         function renderMessageWindow(pgp_id_to, pgp_id_from, switchOnResponse, callback) {
             var uid = pgp_id_to + ':' + pgp_id_from;
             if(switchOnResponse)
                 uid = pgp_id_from + ':' + pgp_id_to;
 
-            if (activeMessages.indexOf(uid) === -1) {
-                getMessageExports().renderMessageWindow(pgp_id_to, pgp_id_from, switchOnResponse,
-                    function (html) {
-                        ClientWorkerThread.render(html);
-                        activeMessages.push(uid);
-                        if(callback)
-                            callback();
-                    }
-                );
+            // if (activeMessages.indexOf(uid) === -1) {
+            getMessageExports().renderMessageWindow(pgp_id_to, pgp_id_from, switchOnResponse,
+                function (html) {
+                    ClientWorkerThread.render(html);
+                    //activeMessages.push(uid);
+                    if(callback)
+                        callback();
+                }
+            );
 
-                // Check for missing public keys
-                requestPublicKeyContent(pgp_id_to);
-                requestPublicKeyContent(pgp_id_from);
+            // Check for missing public keys
+            requestPublicKeyContent(pgp_id_to);
+            requestPublicKeyContent(pgp_id_from);
 
-            } else {
-                ClientWorkerThread.postResponseToClient("FOCUS ks-message:" + uid);
-                if(callback)
-                    callback();
-            }
+            // } else {
+            //     ClientWorkerThread.postResponseToClient("FOCUS ks-message:" + uid);
+            //     if(callback)
+            //         callback();
+            // }
         }
 
         function requestPublicKeyContent(pgp_id_public, callback) {

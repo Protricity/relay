@@ -397,3 +397,20 @@ body.theme-minimal.layout-vertical > article > header{
         /*box-shadow: inherit;*/
     }
 }
+
+
+
+
+/** Window Limits **/
+
+
+
+.article-limit-2 > article:not(:first-of-type) .hide-on-minimize {
+    max-height: 0;
+    max-width: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    overflow: hidden;
+}
+

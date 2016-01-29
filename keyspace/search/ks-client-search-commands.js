@@ -70,8 +70,8 @@ if(typeof module === 'object') (function() {
             ClientWorkerThread.sendWithSocket(commandString);
 
             if(renderSearchWindow) {
-                if (searchWindowActive === false) {
-                    searchWindowActive = true;
+                // if (searchWindowActive === false) {
+                    // searchWindowActive = true;
                     self.module = {exports: {}};
                     importScripts('keyspace/search/render/ks-search-window.js');
                     self.module.exports.renderKeySpaceSearchWindow(activeSuggestions, suggestionStats, lastSearch, function (html) {
@@ -79,9 +79,9 @@ if(typeof module === 'object') (function() {
                         //ClientWorkerThread.postResponseToClient("OPEN ks-search-window:");
                     });
 
-                } else {
-                    ClientWorkerThread.postResponseToClient("OPEN ks-search-window:");
-                }
+                // } else {
+                //    ClientWorkerThread.postResponseToClient("OPEN ks-search-window:");
+                //}
             }
 
             if(renderSearchWindow) {
@@ -126,17 +126,17 @@ if(typeof module === 'object') (function() {
             self.module = {exports: {}};
             importScripts('keyspace/search/render/ks-search-window.js');
 
-            if(searchWindowActive === true) {
+            // if(searchWindowActive === true) {
                 self.module.exports.renderKeySpaceSearchWindowResults(activeSuggestions, suggestionStats, lastSearch, function(html) {
                     ClientWorkerThread.render(html);
                 });
 
-            } else {
+            // } else {
                 // searchWindowActive = true;
                 // self.module.exports.renderKeySpaceSearchWindow(activeSuggestions, suggestionStats, lastSearch, function(html) {
                 //    ClientWorkerThread.render(html);
                 // });
-            }
+            // }
 
             // Send an event with all active results
             ClientWorkerThread.processResponse("EVENT KEYSPACE.SEARCH.RESULTS\n" + activeSuggestions.join("\n"));

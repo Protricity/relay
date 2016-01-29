@@ -73,7 +73,7 @@ if(typeof module === 'object') (function() {
             ClientWorkerThread.sendWithSocket(commandString);
 
             if(renderSearchWindow) {
-                if (searchWindowActive === false) {
+                if (true ||  searchWindowActive === false) {
                     searchWindowActive = true;
                     self.module = {exports: {}};
                     importScripts('channel/search/render/channel-search-window.js');
@@ -214,10 +214,10 @@ if(typeof module === 'object') (function() {
             }
 
             var GEOIP_URL = "http://freegeoip.net/json/";
-            try {
-                importScripts(GEOIP_URL + "?callback=_geoipcallback");
+            // try {
+            //     importScripts(GEOIP_URL + "?callback=_geoipcallback");
 
-            } catch (e) {
+            // } catch (e) {
 
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", GEOIP_URL, false);
@@ -227,7 +227,7 @@ if(typeof module === 'object') (function() {
 
                 var json = JSON.parse(xhr.responseText);
                 geoipcallback(json);
-            }
+            // }
 
         }
 
