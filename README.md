@@ -1,5 +1,86 @@
-#The Relay Project
 
+[ks-software-comparison]: https://raw.githubusercontent.com/clevertree/relay/fef9c21dd81821f05a31a0d6308b55dc17d25c55/documentation/promotion/assets/ks-software-comparison.png "Software Comparison Chart"
+
+[ks-unified-channels]: https://raw.githubusercontent.com/clevertree/relay/fef9c21dd81821f05a31a0d6308b55dc17d25c55/documentation/promotion/assets/ks-unified-channels.png "Relay Unified Channels"
+
+[ks-proximity-channels]: https://raw.githubusercontent.com/clevertree/relay/fef9c21dd81821f05a31a0d6308b55dc17d25c55/documentation/promotion/assets/ks-proximity-channels.png "Relay Proximity Channels"
+
+[ks-blockchain]: https://raw.githubusercontent.com/clevertree/relay/fef9c21dd81821f05a31a0d6308b55dc17d25c55/documentation/promotion/assets/ks-blockchain.png "Software Comparison Chart"
+
+[ks-plan]: https://raw.githubusercontent.com/clevertree/relay/fef9c21dd81821f05a31a0d6308b55dc17d25c55/documentation/promotion/assets/ks-plan.png "The Relay Project Plan"
+
+
+
+**The Relay Project** is a first-of-its-kind community-owned **social network** powered by **blockchain** technology. Utilizing PGP Encryption & WebRTC technology, and driven by Community Source principles, Relay offers a **public alternative** to the many emerging social media challenges brought about by a growing lack of private sector accountability and an increasingly singular user-experience. 
+
+Relay goes *a different way*. By encrypting sensitive **personal data** and securing it locally, never on centralized cloud servers, Relay gives the keys directly to the end-user (literally):
+
+* Backup and protect your **Private Key**. It secures all your blockchain data. For your eyes only!
+* With the **Blockchain**, data leaks, 3rd party mining, and unauthorized surveillance become **impossible**. 
+* Build your **Public Key Reputation** and help resolve conflicts between community members.
+* Never have to depend on the private sector to keep your published/sensitive data safe again.
+
+![alt text][ks-software-comparison]
+
+
+
+
+
+##Relay Introduces **Unified Channels**
+
+All you will need to join a Relay Unified Channel is the channel name. Channels are case-insensitive and consist of a string of alphanumeric and special characters. Anyone can subscribe to any channel, and create private channels of their own, but only Registered Members may create public channels.
+
+![alt text][ks-unified-channels]
+
+Once a channel is suggested, you may subscribe at any time enabling such activities as:
+Text/HTML chat with people in the channel (like chat rooms or IRC)
+Relay (!) an audio or video stream to everyone in the channel
+Announce your Public Key Identity to a channel with a business or proximity.
+Share P2P files with everyone in your proximity, including people who have not added you as a contact yet. This is also a good way to make new contacts.
+
+
+
+
+
+
+##Relay introduces: **Proximity Channels**
+A new way to find friends and services near you; a Relay Proximity Channel is automatically suggested by the Relay Client whenever your device enters proximity with a signal beacon like a wifi router or cell tower or another portable device. Proximity Channels may also be suggested based on GPS coordinates, and reverse-geocoding values, and even your Time Zone.  No connection to the proximity beacon is necessary. The Relay Client only needs to be made aware of it to calculate its corresponding channel on The Relay Network. Here are some examples:
+
+
+![alt text][ks-proximity-channels]
+
+Proximity Channels allow for much more than just communication:
+Broadcast your Public Key Identity to everyone around you and make new contacts
+Use your Private Key to authorize payment to a local business via Signature Verification
+Check in to a hotel or reserve a table at a restaurant just by walking inside
+Engage in Real-Time Ballot Voting with people around you
+Redeem promotional offers from local businesses and services when entering their proximity
+
+
+
+##Relay introduces: **The KeySpace**
+
+The Relay KeySpace is a paradigm shift in web content delivery. Your KeySpace Content consists of anything from feed posts, personal web pages, professional & business functionality, and e-Commerce Solutions. Using WebRTC technology, KeySpace content loads instantly via always-on two-way socket communication. Using PGP Encryption, user-contributed Relay content is verified automatically and cannot be faked or manipulated in any way. Only the original author has the power to change their KeySpace Content. 
+
+![alt text][ks-blockchain]
+
+KeySpace  = Your Personal Relay Blockchain 
+All Public User KeySpaces = The Relay Public Blockchain 
+
+Own your social content with the BlockChain
+When you use a Blockchain powered Social Network like Relay, you can seamlessly take all your data with you when you visit other Blockchain powered Social Networks. Sharing is better:
+KeySpace defines all the content a user has published to their BlockChain. All content is verified against the user’s Public Key as it propagates through the network.  
+The Blockchain ensures only you can publish, modify, or delete content under your Public Key Identity, even after it appears on other social network blockchains.
+Import/Export your entire timeline and all your KeySpace data to and from another (blockchain supported) software service!
+Synchronize KeySpace content between devices without needing a central database. At least one synchronized device is required to be online in order to access KeySpace Files.
+P2P Distributable Blockchain technology automatically caches a local copy of your friends’ blockchains as you encounter them, making it very hard for anyone to lose data again.
+Communicate between social networks. Join a chatroom and talk to other people from other social networks.
+Post a comment or debate with other visitors of any website, even the sites that don’t allow comments. It’s your blockchain, your data. 
+View and manage all comments and posts published under your Public Key Identity on a single interface even if they were made on different social networks or websites.
+
+## The Relay Development Plan
+
+![alt text][ks-plan]
 
 ### Anyone can contribute to The Relay Project. 
 
@@ -24,6 +105,8 @@ https://github.com/clevertree/relay/issues/new
  2. Make a pull request
 https://github.com/clevertree/relay/pulls
 
+The Relay Project
+==============
 
 
 Questions?
