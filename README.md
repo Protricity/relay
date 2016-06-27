@@ -1,13 +1,13 @@
 
-[ks-software-comparison]: https://raw.githubusercontent.com/clevertree/relay/fef9c21dd81821f05a31a0d6308b55dc17d25c55/documentation/promotion/assets/ks-software-comparison.png "Software Comparison Chart"
+[ks-software-comparison]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/ks-software-comparison.png "Software Comparison Chart"
 
-[ks-unified-channels]: https://raw.githubusercontent.com/clevertree/relay/fef9c21dd81821f05a31a0d6308b55dc17d25c55/documentation/promotion/assets/ks-unified-channels.png "Relay Unified Channels"
+[ks-unified-channels]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/ks-unified-channels.png "Relay Unified Channels"
 
-[ks-proximity-channels]: https://raw.githubusercontent.com/clevertree/relay/fef9c21dd81821f05a31a0d6308b55dc17d25c55/documentation/promotion/assets/ks-proximity-channels.png "Relay Proximity Channels"
+[ks-proximity-channels]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/ks-proximity-channels.png "Relay Proximity Channels"
 
-[ks-blockchain]: https://raw.githubusercontent.com/clevertree/relay/fef9c21dd81821f05a31a0d6308b55dc17d25c55/documentation/promotion/assets/ks-blockchain.png "Software Comparison Chart"
+[ks-blockchain]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/ks-blockchain.png "Software Comparison Chart"
 
-[ks-plan]: https://raw.githubusercontent.com/clevertree/relay/fef9c21dd81821f05a31a0d6308b55dc17d25c55/documentation/promotion/assets/ks-plan.png "The Relay Project Plan"
+[ks-plan]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/ks-plan.png "The Relay Project Plan"
 
 
 
