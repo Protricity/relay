@@ -1,4 +1,3 @@
-
 [ks-software-comparison]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/ks-software-comparison.png "Software Comparison Chart"
 
 [ks-unified-channels]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/ks-unified-channels.png "Relay Unified Channels"
@@ -24,8 +23,7 @@ Relay goes *a different way*. By encrypting sensitive **personal data** and secu
 
 
 
-
-
+******
 ##Relay Introduces **Unified Channels**
 
 All you will need to join a *Relay Unified Channel* is the **channel name**. Channels are case-insensitive and consist of a **string of alphanumeric and special characters**. Anyone can subscribe to any channel, and create private channels of their own, but only Registered Members may create public channels.
@@ -33,6 +31,7 @@ All you will need to join a *Relay Unified Channel* is the **channel name**. Cha
 ![alt text][ks-unified-channels]
 
 Once a channel is suggested, you may subscribe at any time enabling such activities as:
+
 * **Text/HTML** chat with people in the channel (like chat rooms or IRC)
 * Relay (!) an **audio or video stream** to everyone in the channel
 * Announce your **Public Key Identity** to a channel with a business or proximity.
@@ -43,6 +42,7 @@ Once a channel is suggested, you may subscribe at any time enabling such activit
 
 
 
+******
 ##Relay introduces: **Proximity Channels**
 A new way to find friends and services near you; a Relay Proximity Channel is *automatically suggested* by the Relay Client whenever your device enters **proximity** with a *signal beacon* like a wifi router or cell tower or another portable device. Proximity Channels may also be suggested based on **GPS coordinates**, and reverse-geocoding values, and even your Time Zone.  *No connection to the proximity beacon is necessary*. The Relay Client only needs to be made aware of it to calculate its corresponding channel on The Relay Network. Here are some examples:
 
@@ -50,6 +50,7 @@ A new way to find friends and services near you; a Relay Proximity Channel is *a
 ![alt text][ks-proximity-channels]
 
 Proximity Channels allow for much more than just communication:
+
 * Broadcast your **Public Key Identity** to everyone around you and make new contacts
 * Use your **Private Key** to authorize payment to a local business via Signature Verification
 * **Check in** to a *proximity* (like a hotel) or reserve a table at a restaurant just by walking inside
@@ -57,7 +58,7 @@ Proximity Channels allow for much more than just communication:
 * **Redeem** promotional offers from local businesses and services when entering their proximity
 
 
-
+******
 ##Relay introduces: **The KeySpace**
 
 **The Relay KeySpace** is a paradigm shift in web content delivery. Your *KeySpace Content* consists of anything from feed posts, personal web pages, professional & business functionality, and e-Commerce Solutions. Using **WebRTC** technology, KeySpace content loads instantly via always-on two-way socket communication. Using **PGP Encryption**, user-contributed Relay content is verified automatically and cannot be faked or manipulated in any way. Only the **original author** has the power to change their KeySpace Content. 
@@ -69,6 +70,7 @@ All Public User KeySpaces = The Relay Public Blockchain
 
 Own your social content with the BlockChain
 When you use a Blockchain powered Social Network like Relay, you can seamlessly take all your data with you when you visit other Blockchain powered Social Networks. Sharing is better:
+
 * **KeySpace** defines all the content a user has published to their BlockChain. All content is verified against the user’s **Public Key** as it propagates through the network.  
 * **The Blockchain** ensures only you can publish, modify, or delete content under your **Public Key Identity**, even after it appears on other social network blockchains.
 * **Import/Export** your entire timeline and all your KeySpace data to and from another (blockchain supported) software service!
@@ -78,6 +80,11 @@ When you use a Blockchain powered Social Network like Relay, you can seamlessly 
 Post a comment or debate with other visitors of any website, even the sites that don’t allow comments. It’s your blockchain, your data. 
 * **View and manage** all comments and posts published under your Public Key Identity on a single interface even if they were made on different social networks or websites.
 
+
+
+
+
+******
 ## The Relay Development Plan
 
 ![alt text][ks-plan]
@@ -88,9 +95,11 @@ Post a comment or debate with other visitors of any website, even the sites that
 
 
 
+******
 ### Anyone can contribute to The Relay Project. 
 
 Examples of Contributions include the following:
+
  * Bug Reports and QA (no skills required but debug report really helps)
  * Bug Fixes (skills required: JavaScript)
  * New Features and Scripts (skills required: JavaScript, CSS3, HTML5)
@@ -462,6 +471,4 @@ Vote System
  * Voter fraud is regulated by community audits of vote receipts
  * Financial incentive can be used to promote a public vote by incentivizing users to vote, review and debate on issues, and audit vote receipts 
  * Votes are tallied and protected by vote registrars who are responsible for auditing and tallying all votes under their account. This is all handled automatically. In the event of fraud, a review of voter identities is triggered. Failing to do this may result in all votes in the hierarchy becoming invalidated. Anyone can be a vote registrar, but trust comes down to reputation.
- * Vote receipts are periodically updated with public-facing hashes that do not give away the voter’s identity or vote value, but do allow for duplicate votes to be detected. Fraud that may have gone undetected may be found after the fact when new hash algorithms become available. 
-
-
+ * Vote receipts are periodically updated with public-facing hashes that do not give away the voter’s identity or vote value, but do allow for duplicate votes to be detected. Fraud that may have gone undetected may be found after the fact when new hash algorithms become available.
