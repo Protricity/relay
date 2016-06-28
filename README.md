@@ -8,7 +8,7 @@
 
 [ks-plan]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/ks-plan.png "The Relay Project Plan"
 
-[icon]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/icon.png "The Relay Project Plan"
+[icon]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/icon-small.png "The Relay Project"
 
 <h1>
 <img src="https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/icon-small.png">
