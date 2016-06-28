@@ -8,9 +8,14 @@
 
 [ks-plan]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/ks-plan.png "The Relay Project Plan"
 
+[icon]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/icon.png "The Relay Project Plan"
 
+<h1>
+<img src="https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/icon-small.png">
+The Relay Project
+</h1>
 
-**The Relay Project** is a first-of-its-kind community-owned **social network** powered by **blockchain** technology. Utilizing PGP Encryption & WebRTC technology, and driven by Community Source principles, Relay offers a **public alternative** to the many emerging social media challenges brought about by a growing lack of private sector accountability and an increasingly singular user-experience. 
+**Relay** is a first-of-its-kind community-owned **social network** powered by **blockchain** technology. Utilizing PGP Encryption & WebRTC technology, and driven by Community Source principles, Relay offers a **public alternative** to the many emerging social media challenges brought about by a growing lack of private sector accountability and an increasingly singular user-experience. 
 
 Relay goes *a different way*. By encrypting sensitive **personal data** and securing it locally, never on centralized cloud servers, Relay gives the keys directly to the end-user (literally):
 
