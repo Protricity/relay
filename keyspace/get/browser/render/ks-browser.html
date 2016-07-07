@@ -3,7 +3,7 @@
     <link rel='stylesheet' href='keyspace/get/browser/render/ks-browser.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {header:buttons ks-browser:{$browser_id}}
-        <a href='javascript:ClientMainThread.execute("MINIMIZE ks-browser:{$browser_id}");'>
+        <a href="#TOGGLE ks-browser:{$browser_id}">
             <span class="command">GET</span> <span class='url'>{$request_url}</span>
         </a>
     </header>

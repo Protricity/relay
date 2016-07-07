@@ -1,43 +1,31 @@
-<article class='channel-search-window: maximized focus-on-render' data-sort='z'>
+<article class='channel-search-window: maximized' data-sort='z'>
     <script src='channel/search/render/channel-search-window.js'></script>
     <link rel='stylesheet' href='channel/search/render/channel-search-window.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {header:buttons channel-search-window:}
-        <a href='javascript:ClientMainThread.execute("MINIMIZE channel-search-window:");'>
+        <a href="#TOGGLE channel-search-window:">
             <span class="command">Search</span> for Channels
         </a>
     </header>
     <main class="hide-on-minimize">
         <form name='channel-search-form' class='show-on-minimized'>
-            <table style='width:100%'>
-                <tbody>
-                <tr class='show-on-minimized'>
-                    <td>
-                        <input name='search' type='text' class='reset focus'
-                               placeholder='{$placeholder}' style='width: 99%;'
-                                value='{$search}'/>
-                    </td>
-                    <td style='width:1px'>
-                        <input type='submit' value='Search' name='submit-search' />
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <input name='search' type='text' class='reset focus'
+                   placeholder='{$placeholder}' style='width: 53%;'
+                   value='{$search}'/>
+            <input type='submit' value='Filter' name='submit-search' />
+
         </form>
     </main>
     <section class='channel-search-results: hide-on-minimize'>
-        <table>
-            <thead>
-                <tr>
-                    <th>Channel Name</th>
-                    <!--<th>Channel Info</th>-->
-                    <th>Options</th>
-                </tr>
-            </thead>
-            <tbody>
-                {$html_search_results}
-            </tbody>
-        </table>
+        {$html_search_results}
+    </section>
+    <section class='buttons: hide-on-minimize'>
+        <a class="channel-search-button" href="#CLOSE channel-search-window:" style="float: right;">
+            <span class="command">Close</span> Form
+        </a>
+        <a class="channel-search-button" href="#KEYSPACE.SEARCH">
+            <span class="command">Search</span> for Contacts
+        </a>
     </section>
     <footer></footer>
 </article>

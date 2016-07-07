@@ -6,7 +6,7 @@ if(typeof module === 'object') (function() {
 
         ClientWorkerThread.addCommand(settingsAutoStartCommand);
 
-        function settingsAutoStartCommand(commandString) {
+        function settingsAutoStartCommand(commandString, e) {
             var match = /^(?:settings\.)?(autorun|onconnect|ondisconnect)/im.exec(commandString);
             if (!match)
                 return false;
@@ -26,7 +26,7 @@ if(typeof module === 'object') (function() {
                     var commands = eventSettings.commands;
                     for(var i=0; i<commands.length; i++) {
 //                         console.info(subCommand.toUpperCase() + ": " + commands[i]);
-                        ClientWorkerThread.execute(commands[i]);
+                        ClientWorkerThread.execute(commands[i], e);
                     }
                 }
             });

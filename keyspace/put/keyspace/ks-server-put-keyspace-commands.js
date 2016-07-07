@@ -58,7 +58,7 @@ function handleHTTPSocketResponse(responseString, client) {
  * @returns {boolean}
  */
 function putCommandSocket(commandString, client) {
-    var match = /^put\s+(\w+)\s+([\s\S]+)$/im.exec(commandString);
+    var match = /^(?:keyspace\.)?put\s+(\w+)\s+([\s\S]+)$/im.exec(commandString);
     if(!match)
         return false;
 

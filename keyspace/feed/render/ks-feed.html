@@ -5,7 +5,7 @@
     <link rel='stylesheet' href='keyspace/feed/render/ks-feed.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {header:buttons ks-feed:}
-        <a href='javascript:ClientMainThread.execute("MINIMIZE ks-feed:");'>
+        <a href="#TOGGLE ks-feed:">
             User <span class="command">Feed</span>: {$filter}
         </a>
     </header>
@@ -31,7 +31,7 @@
    HTML tags <em>allowed</em>
 
      <i>Try Pasting a Hyperlink</i>'>{$put_content}</textarea>
-                <br /> or use a <a href="javascript:ClientMainThread.execute('PUT.FORM');">content form</a>...
+                <br /> or use a <a href="#PUT.FORM">content form</a>...
             </label>
 
 

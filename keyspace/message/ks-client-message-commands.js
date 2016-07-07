@@ -70,9 +70,11 @@ if(typeof module === 'object') (function() {
                                     " " + encryptedContentString;
                                 ClientWorkerThread.sendWithSocket(formattedCommandString);
 
-                                getMessageExports().renderMessage(formattedCommandString, false, function (html) {
-                                    ClientWorkerThread.render(html);
-                                });
+                                getMessageExports().renderMessage(formattedCommandString, false,
+                                    function (targetClass, html) {
+                                        ClientWorkerThread.append(targetClass, html);
+                                    }
+                                );
 
                                 //ServerSubscriptions.notifyAllAuthenticatedKeySpaceClients(pgp_id_public, "EVENT KEYSPACE.HOST.CHALLENGE " + encryptedMessage);
 
@@ -88,9 +90,11 @@ if(typeof module === 'object') (function() {
                         " " + contentString;
                     ClientWorkerThread.sendWithSocket(formattedCommandString);
 
-                    getMessageExports().renderMessage(formattedCommandString, false, function (html) {
-                        ClientWorkerThread.render(html);
-                    });
+                    getMessageExports().renderMessage(formattedCommandString, false,
+                        function (targetClass, html) {
+                            ClientWorkerThread.append(targetClass, html);
+                        }
+                    );
                 }
             }
             return true;
@@ -119,39 +123,41 @@ if(typeof module === 'object') (function() {
 
                 responseString = "KEYSPACE.MESSAGE " + pgp_id_to + " " + pgp_id_from + " " + messageContent;
 
-                getMessageExports().renderMessage(responseString, true, function (html) {
-                    ClientWorkerThread.render(html);
-                });
+                getMessageExports().renderMessage(responseString, true,
+                    function (targetClass, html) {
+                        ClientWorkerThread.append(targetClass, html);
+                    }
+                );
             });
 
             return true;
         }
 
-        var activeMessages = [];
+        // var activeMessages = [];
         function renderMessageWindow(pgp_id_to, pgp_id_from, switchOnResponse, callback) {
             var uid = pgp_id_to + ':' + pgp_id_from;
             if(switchOnResponse)
                 uid = pgp_id_from + ':' + pgp_id_to;
 
-            if (activeMessages.indexOf(uid) === -1) {
-                getMessageExports().renderMessageWindow(pgp_id_to, pgp_id_from, switchOnResponse,
-                    function (html) {
-                        ClientWorkerThread.render(html);
-                        activeMessages.push(uid);
-                        if(callback)
-                            callback();
-                    }
-                );
+            // if (activeMessages.indexOf(uid) === -1) {
+            getMessageExports().renderMessageWindow(pgp_id_to, pgp_id_from, switchOnResponse,
+                function (html) {
+                    ClientWorkerThread.render(html);
+                    //activeMessages.push(uid);
+                    if(callback)
+                        callback();
+                }
+            );
 
-                // Check for missing public keys
-                requestPublicKeyContent(pgp_id_to);
-                requestPublicKeyContent(pgp_id_from);
+            // Check for missing public keys
+            requestPublicKeyContent(pgp_id_to);
+            requestPublicKeyContent(pgp_id_from);
 
-            } else {
-                ClientWorkerThread.postResponseToClient("FOCUS ks-message:" + uid);
-                if(callback)
-                    callback();
-            }
+            // } else {
+            //     ClientWorkerThread.postResponseToClient("FOCUS ks-message:" + uid);
+            //     if(callback)
+            //         callback();
+            // }
         }
 
         function requestPublicKeyContent(pgp_id_public, callback) {
@@ -314,12 +320,10 @@ if(typeof module === 'object') (function() {
                                     decryptedMessageString = parseActionMessage(pgp_id_to, pgp_id_from, decryptedMessageString);
 
                                 var replaceHTML =
-                                    "<span class='" + classUID + " pgp-message: decrypted'>" +
-                                    "<span class='decrypted-content'>" + decryptedMessageString + "</span>" +
+                                    "<span class='decrypted-content'>" + decryptedMessageString + "</span>";
                                     //"<i>[Encrypted with <span class='pgp-id-public'>" + pgp_id_public + "</span>]</i>" +
-                                    "</span>";
 
-                                ClientWorkerThread.render(replaceHTML);
+                                ClientWorkerThread.replace(classUID, replaceHTML);
                             }).catch(function(err) {
 
                                 console.error(err);

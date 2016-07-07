@@ -30,8 +30,11 @@ if(typeof module === 'object') (function() {
             importScripts('client/subscriptions/client-subscriptions.js');
             var ClientSubscriptions = self.module.exports.ClientSubscriptions;
 
-            var oldSubscriptionString = ClientSubscriptions.handleSubscriptionResponse(responseString, e);
-
+            try {
+                var oldSubscriptionString = ClientSubscriptions.handleSubscriptionResponse(responseString, e);
+            } catch (e) {
+                ClientWorkerThread.processResponse("ERROR " + (e.message || e));
+            }
             ClientWorkerThread.processResponse("EVENT " + responseString);
 
             // Response was handleded

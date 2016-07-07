@@ -29,14 +29,8 @@
     }
 
     var TEMPLATE_URL = 'client/console/render/console-window.html';
-    var CONTAINER_ID = 'console-window';
-    var activeContainers = [];
 
     function renderConsoleWindow(callback) {
-        if(activeContainers.indexOf(CONTAINER_ID) >= 0)
-            return false;
-        activeContainers.push(CONTAINER_ID);
-
         var xhr = new XMLHttpRequest();
         xhr.open("GET", TEMPLATE_URL, false);
         xhr.send();
@@ -50,18 +44,19 @@
     function renderConsoleEntry(content, callback) {
         // Template
         var SOCKET_TEMPLATE_ACTION_ENTRY =
-            "<main class='console-content: append-children-on-render'>" +
-                "\n\t<div class='console-entry'>" +
-                    "\n\t\t{$content}" +
-                "\n\t</div>" +
-            "</main>";
+            "<div class='console-entry'>" +
+                "{$content}" +
+            "</div>";
 
         var consoleEntryHTML = SOCKET_TEMPLATE_ACTION_ENTRY
             .replace(/{\$content}/g, content)
             .replace(/{/g, '&#123;');
 
         // Callback
-        return callback(consoleEntryHTML, callback)
+        return callback(
+            "console-content:",
+            consoleEntryHTML
+        );
     }
 
     function onFormEvent(e, formElm) {
@@ -135,21 +130,10 @@
             throw new Error("Command event not handled");
         history.push(messageElm.value);
         messageElm.value = '';
+        
+        document.getElementsByClassName("console:")[0].classList.remove("minimized");
+        
         return false;
     }
 
-    function onCommandEvent(e) {
-        e.preventDefault();
-        var commandString = e.detail || e.data;
-        renderConsoleEntry(
-            "<span class='prompt'>$</span>" + commandString + "<span class='command'>",
-            function(html) {
-                var consoleLogs = document.getElementsByClassName('console-content:');
-                for(var i=0; i<consoleLogs.length; i++) {
-                    var elm = document.createElement('div');
-                    elm.innerHTML = html;
-                    consoleLogs[i].appendChild(elm.children[0]);
-                }
-            });
-    }
 })();

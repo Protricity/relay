@@ -379,12 +379,14 @@ module.exports.KeySpaceDB =
                     return;
                 }
 
-                if(typeof Client !== 'undefined') {
+                callback(err, insertData, arg);
+
+                if(typeof ClientWorkerThread !== 'undefined') {
                     var responseString = "EVENT KEYSPACE.INSERT" +
                         ' ' + insertData.pgp_id_public +
                         ' ' + insertData.timestamp +
                         (path ? ' ' + path : '');
-                    Client.processResponse(responseString);
+                    ClientWorkerThread.processResponse(responseString);
                 }
                 console.info("Added content to database: http://" + pgp_id_public + '.ks/' + path, insertData, arg);
             }
@@ -413,12 +415,12 @@ module.exports.KeySpaceDB =
                         deleteRequest.onsuccess = function (e) {
                             callback(null, deleteRequest);
 
-                            if (typeof Client !== 'undefined') {
+                            if (typeof ClientWorkerThread !== 'undefined') {
                                 var responseString = "EVENT KEYSPACE.DELETE" +
                                     ' ' + pgp_id_public +
                                     ' ' + timestamp +
                                     ' ' + contentToDelete.path;
-                                Client.processResponse(responseString);
+                                ClientWorkerThread.processResponse(responseString);
                             }
                         };
                         deleteRequest.onerror = function (e) {
@@ -560,6 +562,7 @@ module.exports.KeySpaceDB =
             console.error(err);
             return;
         }
+        console.info("I", requestString);
         
         // Request Type HEAD or GET?
         var requestType = match[1].toLowerCase();
@@ -760,6 +763,51 @@ module.exports.KeySpaceDB =
                 throw new Error("Invalid Database");
             }
         });
+    };
+
+    var publicKeyUserIDCache = {};
+    KeySpaceDB.fetchAllPublicKeyUserIDs = function(publicKeyIDList, callback) {
+        var idsNeeded = [];
+        var idsFound = [];
+        for(var i=0; i<publicKeyIDList.length; i++) {
+            var pgp_id_public = publicKeyIDList[i].toUpperCase();
+            if(typeof publicKeyUserIDCache[pgp_id_public] === 'undefined') {
+                idsNeeded.push(pgp_id_public);
+            } else {
+                idsFound.push([pgp_id_public, publicKeyUserIDCache[pgp_id_public]]);
+            }
+        }
+        if(idsNeeded.length === 0) {
+            callback(idsFound);
+            return;
+        }
+
+        fetchNext();
+
+        function fetchNext() {
+            if(idsNeeded.length === 0) {
+                callback(idsFound);
+                return;
+            }
+
+            var pgp_id_public = idsNeeded.pop().toUpperCase();
+            var requestURL = "http://" + pgp_id_public + ".ks/public/id";
+            KeySpaceDB.queryOne(requestURL,
+                function(err, publicKeyContent) {
+                    if(err)
+                        throw new Error(err);
+                        
+                    if(publicKeyContent) {
+                        publicKeyUserIDCache[pgp_id_public] = publicKeyContent.user_id;
+                        idsFound.push([pgp_id_public, publicKeyUserIDCache[pgp_id_public]]);
+                    } else {
+                        console.error("No public key found for " + pgp_id_public);
+                    }
+
+                    fetchNext();
+                }
+            );
+        }
     };
 
     KeySpaceDB.insert = function(tableName, insertData, insertOptions, callback) {

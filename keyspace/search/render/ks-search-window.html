@@ -1,10 +1,10 @@
-<article class='ks-search-window: maximized focus-on-render' data-sort='z'>
+<article class='ks-search-window: maximized' data-sort='z'>
     <script src='keyspace/search/render/ks-search-window.js'></script>
     <link rel='stylesheet' href='keyspace/search/render/ks-search-window.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {header:buttons ks-search-window:}
-        <a href='javascript:ClientMainThread.execute("MINIMIZE ks-search-window:");'>
-            <span class="command">Search</span> Contacts
+        <a href="#TOGGLE ks-search-window:">
+            <span class="command">Search</span> for Contacts
         </a>
     </header>
     <main class="hide-on-minimize">
@@ -14,7 +14,7 @@
                 <tr class='show-on-minimized'>
                     <td>
                         <input name='search' type='text' class='reset focus'
-                               placeholder='{$placeholder}' style='width: 99%;'
+                               placeholder='{$placeholder}' style='width: 80%;'
                                 value='{$search}'/>
                     </td>
                     <td style='width:1px'>
@@ -26,18 +26,15 @@
         </form>
     </main>
     <section class='ks-search-results: hide-on-minimize'>
-        <table>
-            <thead>
-                <tr>
-                    <th>Identity Name</th>
-                    <th>Key ID</th>
-                    <th>Options</th>
-                </tr>
-            </thead>
-            <tbody>
-                {$html_search_results}
-            </tbody>
-        </table>
+        {$html_search_results}
+    </section>
+    <section class='ks-search-buttons: hide-on-minimize'>
+        <a class="ks-search-button" href="#CLOSE ks-search-window:" style="float: right;">
+            <span class="command">Close</span> Form
+        </a>
+        <a class="ks-search-button" href="#CHANNEL.SEARCH">
+            <span class="command">Search</span> for Channels
+        </a>
     </section>
     <footer></footer>
 </article>

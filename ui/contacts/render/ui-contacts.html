@@ -1,0 +1,46 @@
+<article class='keyspace-contact: prepend-on-render replace-on-render'>
+    <script src='ui/contacts/render/ui-contacts.js'></script>
+    <link rel='stylesheet' href='ui/contacts/render/ui-contacts.css' type='text/css' property="stylesheet">
+    <header class='header-bar show-on-minimized'>
+        {header:buttons keyspace-contact:}
+        <a href="#TOGGLE keyspace-contact:">
+            Contact List
+        </a>
+    </header>
+    <form name='ui-contacts-form' action='#' class="hide-on-minimize">
+        <code class='status-box'>{$status_box}</code>
+        <select name='command' class="show-on-selected-contacts">
+            <option value=''>Select Contact(s)</option>
+            {$html_command_options}
+        </select>
+        <input type="text" name="search" class="hide-on-selected-contacts" placeholder="Filter Contacts and Channels" />
+        <input type='hidden' placeholder="Change Username" value="{$nick_value}" />
+
+        <button class="keyspace-contact-section-header:"
+                onclick="this.classList.toggle('closed'); this.blur();return false;"
+                >Contacts</button>
+        <ul class="keyspace-contact-section:">
+            {$html_keyspace_entries}
+            <li class='keyspace-contact-default-info:'>
+                <a href="#PGP.KEYGEN">Create</a> -
+                <a href="#KEYSPACE.SEARCH">Search</a> -
+                <a href="#PGP.IMPORT">Import</a>
+            </li>
+        </ul>
+
+        <button class="keyspace-contact-section-header:"
+                onclick="this.classList.toggle('closed'); this.blur();return false;"
+                >Channels</button>
+        <ul class="keyspace-contact-section:">
+            {$html_channel_entries}
+            <li class='keyspace-contact-default-info:'>
+                <a href="#CHANNEL.SEARCH">Search</a> for channels...
+            </li>
+        </ul>
+
+    </form>
+    <main class="hide-on-minimize">
+
+    </main>
+    <footer></footer>
+</article>

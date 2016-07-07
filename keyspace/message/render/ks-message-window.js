@@ -190,14 +190,14 @@ if(typeof module === 'object') (function() {
             }
 
             var MESSAGE_TEMPLATE =
-                '<div class="ks-message-log:{$uid} append-children-on-render">' +
-                    '<div class="message-log-entry">' +
-                        '<span class="username" data-id="{$pgp_id_from}">{$from}</span>' +
-                        ': <span class="message">{$content}</span>' +
-                    '</div>' +
+                '<div class="message-log-entry">' +
+                    '<span class="username" data-id="{$pgp_id_from}">{$from}</span>' +
+                    ': <span class="message">{$content}</span>' +
                 '</div>';
 
-            callback(MESSAGE_TEMPLATE
+            callback(
+                'ks-message-log:{$uid}',
+                MESSAGE_TEMPLATE
                     .replace(/{\$uid}/gi, uid)
                     .replace(/{\$pgp_id_to}/gi, pgp_id_to)
                     .replace(/{\$pgp_id_from}/gi, pgp_id_from)

@@ -1,0 +1,208 @@
+.layout-horizontal .keyspace-contact\3A {
+    min-width: 20em;
+    float: right;
+    clear: right;
+}
+
+/** Contact List**/
+
+.keyspace-contact-section\3A {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.keyspace-contact-section-header\3A {
+/*     display: block; */
+    padding: 0.4em 1em 0.3em 1em;margin: 0.8em 0 0 0;border-radius: 0.5em 0.5em 0 0;
+    width: 100%;
+    border-width: 1px;/* font-size: 1em; */
+    font-weight: bold;}
+
+.keyspace-contact-section-header\3A.closed {
+    cursor: pointer;
+    border: 1px outset;
+    font-weight: bold;
+    padding: 1em 2em;
+    /* background-color: lightgrey; */
+    border-radius: 1em;
+    transition: padding 1s, border-radius 1s, max-height 1s;
+}
+
+.keyspace-contact-section\3A {
+    /* padding: 0; */
+    /* border-radius: 0 0 1.5em 1.5em; */
+    max-height: 100em;
+    transition: padding 1s, max-height 1s;
+    overflow-y: auto;
+}
+
+/** Hide Contact List Section **/
+.keyspace-contact-section-header\3A.closed + .keyspace-contact-section\3A {
+    padding: 0 1em 0.3em 1em;
+    overflow-y: hidden;
+    max-height: 1em;
+    opacity: 0.5;
+}
+
+
+/** Contact Entry **/
+
+.keyspace-contact-entry\3A {
+    /* cursor: pointer; */
+    /* padding: 0.2em 0.5em; */
+    border: 1px outset;
+    overflow: hidden;
+    transition: box-shadow 1s ease-in;
+    background-color: #FFF;
+}
+
+.keyspace-contact-entry\3A.private-key {
+    border-width: 2px;
+    background-color: #EFFFCF;
+}
+
+.keyspace-contact-entry\3A:hover {
+    box-shadow: 0 0 2em #558;
+
+    transition: box-shadow 0.4s ease-out;
+}
+
+.keyspace-contact-entry-name\3A {
+    display: block;
+    font-size: 1.1em;
+    max-width: 16em;
+    overflow-wrap: break-word;
+}
+
+.keyspace-contact-entry\3A:hover .keyspace-contact-entry-name\3A {
+    font-weight: bold;
+}
+
+
+.keyspace-contact-entry-status\3A {
+    /* display: block; */
+    color: #AAA;
+}
+
+.keyspace-contact-entry\3A.private-key 
+.keyspace-contact-entry-status\3A {
+    color: #66F
+}
+
+.keyspace-contact-entry-icon\3A {
+    width: 2em;
+    height: 2em;
+    float: right;
+    clear: right;
+}
+
+/** Form **/
+
+form[name=ui-contacts-form] {
+    padding: 2px;
+    border: 1px inset;
+    position: relative;
+}
+
+
+form[name=ui-contacts-form].selected-contacts .hide-on-selected-contacts,
+form[name=ui-contacts-form]:not(.selected-contacts) .show-on-selected-contacts {
+    display: none;
+}
+
+form[name=ui-contacts-form] .status-box:empty {
+    display: none;
+}
+
+form[name=ui-contacts-form] input,
+form[name=ui-contacts-form] select {
+    padding: 0.2em 0.5em;
+    border-radius: 0.6em;
+    border-width: 1px;
+    width: 90%;
+    margin: 0.5em;
+    display: block;
+    font-size: 1em;
+}
+
+form[name=ui-contacts-form] input[type=checkbox].keyspace-contact-entry-checkbox\3A {
+    display: none;
+}
+
+form[name=ui-contacts-form] .keyspace-contact-entry-label\3A {
+    cursor: pointer;
+    display: block;
+    padding: 0.2em 0.5em;
+    transition: padding 1s, font-size 0.5s, background-color 1s;
+    /* transition-delay: 0.6s; */
+    /* background-color: #FFF; */
+}
+
+form[name=ui-contacts-form] .keyspace-contact-entry-checkbox\3A:checked + .keyspace-contact-entry-label\3A,
+form[name=ui-contacts-form] .keyspace-contact-entry-checkbox\3A:checked + .keyspace-contact-entry-label\3A + .keyspace-contact-entry-commands\3A{
+    background-color: #BDF;
+    padding: 0 0.5em;
+    font-weight: bold;
+    /* padding: 1em 0.5em; */
+}
+
+/** Hide Contact Command Buttons **/
+.keyspace-contact-entry-commands\3A {
+    max-height: 0;
+    opacity: 0;
+    transition: padding 1s, max-height 1s, opacity 1s;
+    /* text-align: center; */
+    /* margin: auto; */
+    /* display: none; */
+}
+
+.layout-horizontal .keyspace-contact-entry-commands\3A {
+    /* max-width: 20em; */
+}
+
+/*.keyspace-contact-entry-label\3A:hover + .keyspace-contact-entry-commands\3A,*/
+form[name=ui-contacts-form] .keyspace-contact-entry-checkbox\3A:checked
++ .keyspace-contact-entry-label\3A + .keyspace-contact-entry-commands\3A {
+    max-height: 100em;
+    opacity: 1;
+    /* display: block; */
+}
+
+
+.keyspace-contact-entry-commands\3A  a:visited,
+.keyspace-contact-entry-commands\3A  a {
+    border: 1px outset #FFF;
+    border-radius: 0.5em;
+    background-color: #DDD;
+    text-decoration: none;
+    /* font: menu; */
+    display: inline-block;
+    padding: 0.3em 0.5em;
+    margin: 0.1em 0.1em;
+    transition: max-width 0.2s, box-shadow 0.3s;
+    /* max-width: 2em; */
+    overflow: hidden;
+    text-align: center;
+}
+
+.keyspace-contact-entry-commands\3A  a:hover {
+    box-shadow: 0 0 2em #00F;;
+    max-width: 10em;
+}
+
+.keyspace-contact-entry-commands\3A  a:not(:hover) > :not(.command) {
+    /* display: none; */
+    /* text-transform: capitalize; */
+}
+.keyspace-contact-entry-commands\3A  a.disabled {
+    cursor: no-drop;
+    opacity: 0.5;
+}
+
+.keyspace-contact-default-info\3A {
+    border-radius: 0 0 0.5em 0.5em;
+    background-color: #DDD;
+    padding: 0.3em 0.5em;
+    text-align: center;
+}

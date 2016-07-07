@@ -3,7 +3,7 @@
     <link rel='stylesheet' href='pgp/manage/render/pgp-manage-form.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {header:buttons pgp-manage:}
-        <a href='javascript:ClientMainThread.execute("MINIMIZE pgp-manage:");'>
+        <a href="#TOGGLE pgp-manage:">
             <span class="command">Manage</span> PGP Identities
         </a>
     </header>
@@ -43,7 +43,7 @@
         </form>
     </main>
     <footer>
-        <a href="javascript:ClientMainThread.execute('PGP.KEYGEN');">
+        <a href="#PGP.KEYGEN">
             or <span class="command">Generate</span> a new Identity...
         </a>
     </footer>

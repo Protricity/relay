@@ -180,7 +180,7 @@ if(typeof document === 'object') (function() {
         e.preventDefault();
         var html_template = createFormElm.getElementsByClassName('vote-template:')[0].content.children[0].outerHTML;
         var template_html = parseTemplateHTML(html_template, createFormElm);
-        ClientMainThread.execute('PUT.FORM ' + template_html
+        Client.execute('PUT.FORM ' + template_html
                 .replace(/</g, '&lt;')
                 .replace(/<[^\/>][^>]*>\s*<\/[^>]+>\n*/gm, '')     // Remove empty html tags
         );
@@ -219,7 +219,7 @@ if(typeof document === 'object') (function() {
                 "</li>";
         }
 
-        ClientMainThread.processResponse("REPLACE ks-create-vote-choices: " +
+        Client.processResponse("REPLACE ks-create-vote-choices: " +
             "<ul class='ks-create-vote-choices:'>" +
                 choice_html +
             "</ul>"
@@ -231,7 +231,7 @@ if(typeof document === 'object') (function() {
         var html_template = createFormElm.getElementsByClassName('vote-template:')[0].content.children[0].outerHTML;
         var template_html = parseTemplateHTML(html_template, createFormElm);
 
-        ClientMainThread.processResponse("REPLACE ks-put-preview-output: " +
+        Client.processResponse("REPLACE ks-put-preview-output: " +
             "<section class='ks-put-preview-output: disable-app-vote-form'>" +
                 template_html +
             "</section>"

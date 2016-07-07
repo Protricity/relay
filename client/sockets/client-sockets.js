@@ -5,8 +5,8 @@
 ClientSockets.NEXT_SOCKET_INTERVAL = 5000;
 ClientSockets.SOCKET_RECONNECT_INTERVAL = 5000;
 
-ClientSockets.VERSION = 1;
-ClientSockets.VERSION_STRING = '0.1a';
+ClientSockets.VERSION = 2;
+ClientSockets.VERSION_STRING = '0.2a';
 
 function ClientSockets(socketURL) {
     return ClientSockets.get(socketURL);
@@ -50,14 +50,14 @@ function ClientSockets(socketURL) {
                 if(eventListeners[i][0] === 'open')
                     eventListeners[i][1](newSocket);
 
-            Client.log(
+            ClientWorkerThread.log(
                 "<span class='direction'>I</span> " +
                 "<span class='action'>SOCKET OPEN</span>: " +
                 newSocket.url
             );
 
             // TODO: rename onconnect?
-            ClientWorkerThread.execute("SETTINGS.ONCONNECT " + socketURL);
+            ClientWorkerThread.execute("SETTINGS.ONCONNECT " + socketURL, e);
 
             //setTimeout(function () {
             //    newSocket.send("NICK relay" + Date.now().toString().substr(6));
@@ -92,7 +92,7 @@ function ClientSockets(socketURL) {
                 ClientSockets.get(socketURL);
             }, ClientSockets.SOCKET_RECONNECT_INTERVAL);
 
-            Client.log(
+            ClientWorkerThread.log(
                 "<span class='direction'>I</span> " +
                 "<span class='action'>SOCKET CLOSED</span>: " +
                 newSocket.url
@@ -210,7 +210,7 @@ function ClientSockets(socketURL) {
             var parts = commandString.split(' ');
             var part1 = parts.shift();
             var part2 = parts.join(' ');
-            Client.log(
+            ClientWorkerThread.log(
                 "<span class='direction'>O</span> " +
                 "<span class='command'>" + part1 + "</span>" + (part2 ? ' ' + part2 : '')
             );
@@ -243,7 +243,7 @@ function ClientSockets(socketURL) {
 
         // Render sockets window
         self.module.exports.renderClientSocketsWindow(socketURLList, activeSockets, function(html) {
-            Client.render(html);
+            ClientWorkerThread.render(html);
         });
     };
 

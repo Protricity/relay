@@ -40,7 +40,40 @@ module.exports.ClientSubscriptions =
     // Channel User List Object
     var channelUserLists = {};
 
+    // Channel User List Object
+    var channelUserCounts = {};
 
+
+    ClientSubscriptions.handleClientUserCount = function(responseString) {
+        var match = /^(?:channel\.)?usercount\.(\w+)\s+(\S+)?\s+(\d+)$/im.exec(responseString);
+        if (!match)
+            throw new Error("Invalid UserCount: " + responseString);
+
+        var mode = match[1].toLowerCase();
+        var channel = match[2].toLowerCase();
+        var subscriptionCount = parseInt(match[3]);
+
+        if(typeof channelUserCounts[mode] === 'undefined')
+            channelUserCounts[mode] = {};
+
+        var modeChannels = channelUserCounts[mode];
+
+        var oldUserCount = modeChannels[channel] || null;
+        modeChannels[channel] = subscriptionCount;
+        return oldUserCount;
+    };
+
+    // TODO: needs comments
+    ClientSubscriptions.getChannelUserCount = function(channel, mode) {
+        mode = mode.toLowerCase();
+        channel = channel.toLowerCase();
+        if(typeof channelUserCounts[mode] === 'undefined')
+            return 0;
+        var channelModes = channelUserCounts[mode];
+        if(typeof channelModes[channel] === 'undefined')
+            return 0;
+        return channelModes[channel];
+    };
 
 
     // TODO: needs comments
@@ -64,7 +97,7 @@ module.exports.ClientSubscriptions =
     };
 
     // TODO: needs comments
-    ClientSubscriptions.getChannelUserList = function(mode, channel) {
+    ClientSubscriptions.getChannelUserList = function(channel, mode) {
         mode = mode.toLowerCase();
         channel = channel.toLowerCase();
         if(typeof channelUserLists[mode] === 'undefined')
@@ -194,7 +227,7 @@ module.exports.ClientSubscriptions =
 
         if(prefix === 'un') {
             if(existingSubscriptionString === null)
-                throw new Error("Old Subscription not found: " + subscriptionString);
+                throw new Error("Old " + type + " Subscription not found: " + subscriptionString);
             delete modeList[mode];
             console.info(type + " subscription removed: ", subscriptionString);
 
@@ -205,6 +238,17 @@ module.exports.ClientSubscriptions =
 
             } else {
                 console.info(type + " subscription replaced: ", subscriptionString);
+
+                if(typeof channelUserLists[mode] === 'undefined')
+                    channelUserLists[mode] = {};
+                var modeChannels = channelUserLists[mode];
+                var oldUserList = modeChannels[channel] || null;
+                var opos = oldUserList.indexOf(existingSubscriptionString.split(' ')[0]);
+                if(opos >= 0) 
+                    oldUserList[opos] = argString.split(' ')[0];
+                else
+                    console.warn("Username not found in userlist", existingSubscriptionString, oldUserList);
+
             }
 
         } else {
@@ -213,6 +257,17 @@ module.exports.ClientSubscriptions =
                 console.info(type + " subscription: ", subscriptionString);
             } else {
                 console.warn(type + " subscription replaced: ", subscriptionString);
+                
+                if(typeof channelUserLists[mode] === 'undefined')
+                    channelUserLists[mode] = {};
+                var modeChannels2 = channelUserLists[mode];
+                var oldUserList2 = modeChannels2[channel] || null;
+                var opos2 = oldUserList2.indexOf(existingSubscriptionString.split(' ')[0]);
+                if(opos2 >= 0)
+                    oldUserList2[opos2] = argString.split(' ')[0];
+                else
+                    console.warn("Username not found in userlist", existingSubscriptionString, oldUserList2);
+
             }
         }
 
@@ -234,7 +289,7 @@ module.exports.ClientSubscriptions =
         var keyspaceList = [];
         for(var pgp_id_public in authorizedKeyspaces) {
             if(authorizedKeyspaces.hasOwnProperty(pgp_id_public)) {
-                keyspaceList.push(pgp_id_public);
+                keyspaceList.push(pgp_id_public.toUpperCase());
             }
         }
         return keyspaceList;

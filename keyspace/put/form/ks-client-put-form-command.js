@@ -10,7 +10,7 @@ if(typeof module === 'object') (function() {
          * @param commandString PUT[.FORM] [path] [content]
          */
         function putFormCommand(commandString) {
-            var match = /^put\s*$|^put\.form(?:\s+([\s\S]+))?$/im.exec(commandString);
+            var match = /^(?:keyspace\.)?(?:put\s*$|^put\.form)(?:\s+([\s\S]+))?$/im.exec(commandString);
             if (!match)
                 return false;
 
@@ -33,7 +33,7 @@ if(typeof module === 'object') (function() {
          * @param commandString PUT.FORM.ADD [path] [content]
          */
         function putFormAddCommand(commandString) {
-            var match = /^put\.form\.add(?:\s+([\s\S]+))?$/im.exec(commandString);
+            var match = /^(?:keyspace\.)?put\.form\.add(?:\s+([\s\S]+))?$/im.exec(commandString);
             if (!match)
                 return false;
 

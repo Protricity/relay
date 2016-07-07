@@ -15,7 +15,6 @@ if(typeof module === 'object') (function() {
 
         var classes = [];
 
-        // Query private key
         self.module = {exports: {}};
         importScripts('keyspace/ks-db.js');
         var KeySpaceDB = self.module.exports.KeySpaceDB;
@@ -53,7 +52,7 @@ if(typeof module === 'object') (function() {
                 if(idCount === 0)
                     status_box = "<span class='error'>No PGP Identities were found on this client.</span>" +
                         "<br/>" +
-                        "<a href='javascript:Client.execute(\"PGP.KEYGEN\")'>Generate</a> a new <strong>PGP Identity</strong> in order to post on the <span class='command'>feed</span>";
+                        "<a href='#PGP.KEYGEN'>Generate</a> a new <strong>PGP Identity</strong> in order to post on the <span class='command'>feed</span>";
 
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", TEMPLATE_URL, false);
@@ -239,7 +238,7 @@ if(typeof document === 'object')
                 // TODO: appear animation?
 
                 for(var si=0; si<includeScripts.length; si++)
-                    ClientMainThread.includeScript(includeScripts[si]);
+                    Client.includeScript(includeScripts[si]);
 
             });
         }
@@ -342,7 +341,7 @@ if(typeof document === 'object')
                     idCount > 0 ? '' :
                     "<span class='error'>No PGP Identities were found on this client.</span>" +
                     "<br/>" +
-                    "<a href='javascript:Client.execute(\"PGP.KEYGEN\");'>Generate</a> a new <strong>PGP Identity</strong> in order to post on the <span class='command'>feed</span>";
+                    "<a href='#PGP.KEYGEN'>Generate</a> a new <strong>PGP Identity</strong> in order to post on the <span class='command'>feed</span>";
 
                 formElm.pgp_id_public.innerHTML =
                     "<option value=''>Select a PGP Identity</option>"

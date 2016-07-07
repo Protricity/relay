@@ -25,7 +25,7 @@ function httpCommandSocket(responseString, client) {
         return false;   // Pass control to next handler
     
     // Output to console
-    console.info('I ', responseString);
+    console.info('I', responseString);
 
     var ret = KeySpaceDB.handleHTTPResponse(responseString, client);
     if(ret === true) {
@@ -47,7 +47,7 @@ function getCommandSocket(requestString, client) {
         return false;   // Pass control to next handler
     
     // Output to console
-    console.info('I ', requestString);
+    console.info('I', requestString);
     
     //var requestURL = match[2];
 
@@ -85,7 +85,7 @@ function getCommandHTTP(request, response) {
         return false;   // Pass control to next handler
     
     // Output to console
-    console.info('I ', requestString);
+    console.info('I', requestString);
 
     var requestURL = match[1];
     KeySpaceDB.executeLocalGETRequest(requestString,

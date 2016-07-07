@@ -1,9 +1,110 @@
-#The Relay Project
+[ks-software-comparison]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/ks-software-comparison.png "Software Comparison Chart"
+
+[ks-unified-channels]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/ks-unified-channels.png "Relay Unified Channels"
+
+[ks-proximity-channels]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/ks-proximity-channels.png "Relay Proximity Channels"
+
+[ks-blockchain]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/ks-blockchain.png "Software Comparison Chart"
+
+[ks-plan]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/ks-plan.png "The Relay Project Plan"
+
+[icon]: https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/icon-small.png "The Relay Project"
+
+<h1>
+<img src="https://raw.githubusercontent.com/clevertree/relay/master/documentation/promotion/assets/icon-small.png">
+The Relay Project
+</h1>
+
+**Relay** is a first-of-its-kind community-owned **social network** powered by **blockchain** technology. Utilizing PGP Encryption & WebRTC technology, and driven by Community Source principles, Relay offers a **public alternative** to the many emerging social media challenges brought about by a growing lack of private sector accountability and an increasingly singular user-experience. 
+
+Relay goes *a different way*. By encrypting sensitive **personal data** and securing it locally, never on centralized cloud servers, Relay gives the keys directly to the end-user (literally):
+
+* Backup and protect your **Private Key**. It secures all your blockchain data. For your eyes only!
+* With the **Blockchain**, data leaks, 3rd party mining, and unauthorized surveillance become **impossible**. 
+* Build your **Public Key Reputation** and help resolve conflicts between community members.
+* Never have to depend on the private sector to keep your published/sensitive data safe again.
+
+![alt text][ks-software-comparison]
 
 
+
+******
+##Relay Introduces **Unified Channels**
+
+All you will need to join a *Relay Unified Channel* is the **channel name**. Channels are case-insensitive and consist of a **string of alphanumeric and special characters**. Anyone can subscribe to any channel, and create private channels of their own, but only Registered Members may create public channels.
+
+![alt text][ks-unified-channels]
+
+Once a channel is suggested, you may subscribe at any time enabling such activities as:
+
+* **Text/HTML** chat with people in the channel (like chat rooms or IRC)
+* Relay (!) an **audio or video stream** to everyone in the channel
+* Announce your **Public Key Identity** to a channel with a business or proximity.
+* **Share P2P files** with everyone in your proximity, including people who have not added you as a contact yet. This is also a good way to make new contacts.
+
+
+
+
+
+
+******
+##Relay introduces: **Proximity Channels**
+A new way to find friends and services near you; a Relay Proximity Channel is *automatically suggested* by the Relay Client whenever your device enters **proximity** with a *signal beacon* like a wifi router or cell tower or another portable device. Proximity Channels may also be suggested based on **GPS coordinates**, and reverse-geocoding values, and even your Time Zone.  *No connection to the proximity beacon is necessary*. The Relay Client only needs to be made aware of it to calculate its corresponding channel on The Relay Network. Here are some examples:
+
+
+![alt text][ks-proximity-channels]
+
+Proximity Channels allow for much more than just communication:
+
+* Broadcast your **Public Key Identity** to everyone around you and make new contacts
+* Use your **Private Key** to authorize payment to a local business via Signature Verification
+* **Check in** to a *proximity* (like a hotel) or reserve a table at a restaurant just by walking inside
+* Engage in **Real-Time Ballot** Voting with people around you
+* **Redeem** promotional offers from local businesses and services when entering their proximity
+
+
+******
+##Relay introduces: **The KeySpace**
+
+**The Relay KeySpace** is a paradigm shift in web content delivery. Your *KeySpace Content* consists of anything from feed posts, personal web pages, professional & business functionality, and e-Commerce Solutions. Using **WebRTC** technology, KeySpace content loads instantly via always-on two-way socket communication. Using **PGP Encryption**, user-contributed Relay content is verified automatically and cannot be faked or manipulated in any way. Only the **original author** has the power to change their KeySpace Content. 
+
+![alt text][ks-blockchain]
+
+KeySpace  = Your Personal Relay Blockchain 
+All Public User KeySpaces = The Relay Public Blockchain 
+
+Own your social content with the BlockChain
+When you use a Blockchain powered Social Network like Relay, you can seamlessly take all your data with you when you visit other Blockchain powered Social Networks. Sharing is better:
+
+* **KeySpace** defines all the content a user has published to their BlockChain. All content is verified against the user’s **Public Key** as it propagates through the network.  
+* **The Blockchain** ensures only you can publish, modify, or delete content under your **Public Key Identity**, even after it appears on other social network blockchains.
+* **Import/Export** your entire timeline and all your KeySpace data to and from another (blockchain supported) software service!
+* **Synchronize** KeySpace content between devices without needing a central database. At least one synchronized device is required to be online in order to access KeySpace Files.
+* **P2P Distributable Blockchain Technology** automatically caches a local copy of your friends’ blockchains as you encounter them, making it very hard for anyone to lose data again.
+* **Communicate between social networks**. Join a chatroom and talk to other people from other social networks.
+Post a comment or debate with other visitors of any website, even the sites that don’t allow comments. It’s your blockchain, your data. 
+* **View and manage** all comments and posts published under your Public Key Identity on a single interface even if they were made on different social networks or websites.
+
+
+
+
+
+******
+## The Relay Development Plan
+
+![alt text][ks-plan]
+
+
+
+
+
+
+
+******
 ### Anyone can contribute to The Relay Project. 
 
 Examples of Contributions include the following:
+
  * Bug Reports and QA (no skills required but debug report really helps)
  * Bug Fixes (skills required: JavaScript)
  * New Features and Scripts (skills required: JavaScript, CSS3, HTML5)
@@ -24,6 +125,8 @@ https://github.com/clevertree/relay/issues/new
  2. Make a pull request
 https://github.com/clevertree/relay/pulls
 
+The Relay Project
+==============
 
 
 Questions?
@@ -34,10 +137,10 @@ Feel free to reply to this thread with any questions or comments
 # FAQ - The Relay Project
   
 ### WHAT IS RELAY?
-  Relay is the project name for the free, socket-based, Social Content Network known as The Relay Network, which is meant to be accessed by a Client, like a modern browser. The Relay Client is written in pure JavaScript and requires no download or installation to use.
+  Relay is the project name for the free, WebRTC, Social Content Network known as The Relay Network, which is meant to be accessed by a Client, like a modern browser. The Relay Messenger is written in pure JavaScript and requires no download or installation to use.
   
-### WHAT DOES ‘SOCKET-BASED’ MEAN?
-  The Relay Network and Client are built on ‘WebSocket technology’ which is a recent protocol meant for modern browsers. While other websites and social networks load content via slow HTTP requests, which requires the browser to refresh the entire page, the Relay Client maintains an always-on, two-way socket connection providing near-instant browsing and a faster, more reliable user experience.
+### WHAT DOES ‘WebRTC’ MEAN?
+  The Relay Network and Client are built on ‘WebSocket technology’ which is a recent protocol meant for modern browsers. While other websites and social networks load content via slow HTTP requests, which requires the browser to refresh the entire page, the Relay Messenger maintains an always-on, two-way socket connection providing near-instant browsing and a faster, more reliable user experience.
   
 ### WHAT IS A SOCIAL CONTENT NETWORK?
   While a Social Network allows members to communicate, a Social Content Network allows members to create and publish original content, build entire websites, run a shop, or maybe even just customize a public profile page. All Social Content is either generated by forms or written from scratch in HTML5 (or both).  With Relay, there are many options available to the user which were only imagined before.  For example, Social Content can also be functional and provide software as a service (SAAS). All of this is accomplished by The Relay Network employing the powers of PGP Encryption.
@@ -61,10 +164,10 @@ Feel free to reply to this thread with any questions or comments
   Social Content is viewed in two ways. Firstly, anyone who’s subscribed to you or the channel you’re publishing on will see your published content on their feed, and visa versa. Secondly, KeySpace Content can be browsed through, similar to how websites operate. KeySpace Content can be organized into a multi-page website of unlimited size. Users may browse KeySpace content in maximized or full-page view for a classic browsing experience. Using WebSocket technology, KeySpace content consumed on the Relay Network is loaded near-instantly for an impressive and responsive browsing experience. No more slow page loads.
   
 ### IS VIEWING CONTENT ON THE RELAY NETWORK SAFE?
-  Relay utilizes the latest in HTML5.  In order to view Social Content on the Relay Network, you must “Enter the KeySpace” of the Host which the content belongs to. This process is accomplished  in the background by adding the Host’s PGP Public Key Identity to the Relay Client’s keyring. PGP Ids are added any time a user subscribes or adds a contact to their contact list. Once a PGP Public Key is obtained, it is used by the Relay Client to verify KeySpace content on the fly as it is consumed.  In other words, we guarantee that the content you’re viewing comes from the user who created it.
+  Relay utilizes the latest in HTML5.  In order to view Social Content on the Relay Network, you must “Enter the KeySpace” of the Host which the content belongs to. This process is accomplished  in the background by adding the Host’s PGP Public Key Identity to the Relay Messenger’s keyring. PGP Ids are added any time a user subscribes or adds a contact to their contact list. Once a PGP Public Key is obtained, it is used by the Relay Messenger to verify KeySpace content on the fly as it is consumed.  In other words, we guarantee that the content you’re viewing comes from the user who created it.
   
 ### HOW DO I KNOW CONTENT CAN’T BE TAMPERED WITH?
-  PGP Signatures provide a way to validate exact content against a PGP Public Key Identity. This happens instantly and automatically on the Relay Client. Any content that isn’t verified will be ignored. Utilizing PGP Signature Verification, The Relay Network automatically ensures nobody can change your published Social Content but you.
+  PGP Signatures provide a way to validate exact content against a PGP Public Key Identity. This happens instantly and automatically on the Relay Messenger. Any content that isn’t verified will be ignored. Utilizing PGP Signature Verification, The Relay Network automatically ensures nobody can change your published Social Content but you.
   
 ### WHERE IS MY INFORMATION STORED?
   As there is no central database in the Relay Network, all KeySpace information is stored on the Client (your browser).  Only published KeySpace content is received and rebroadcasted by Relay servers or anywhere else.  Once published, content is relayed across the network, and cached along the way. Cached content is defined as published KeySpace content that is temporarily (or permanently) stored on each client and server that encounters it. A single client with a cache of KeySpace content can serve, through Relay cache servers, an unlimited amount of visitors without encountering scaling issues or bandwidth limitations.
@@ -97,7 +200,7 @@ Feel free to reply to this thread with any questions or comments
    In order to assure the long-term survival of The Relay Network, efforts should be made to inform potential users of the differences between Relay and corporate-owned software. The Relay Development Team works for free and does not enjoy the security of being defended (legally and otherwise) by a rich, powerful corporation. The project is therefore vulnerable to a range of competitive tactics employed by the private sector and will require a measure of legal counsel to ensure the project can defend itself on the long-term.
  
  * Integrate The Relay Network into existing networks and infrastructure.
-   Given adequate funding, it becomes possible to port the Relay Client to other software platforms like Android, iOS, Facebook, or even fund exciting community endeavours such as a low-cost Relay Phone. Relay is not a walled garden and aims to seek integration with anything and everything.
+   Given adequate funding, it becomes possible to port the Relay Messenger to other software platforms like Android, iOS, Facebook, or even fund exciting community endeavours such as a low-cost Relay Phone. Relay is not a walled garden and aims to seek integration with anything and everything.
   
   
 ### WHAT IS THE RELAY BETA?
@@ -251,7 +354,7 @@ Directory structure:
 
 /client - Client features and UI
 
-/render/themes - Client Themes and theme resources
+/ui/themes - Client Themes and theme resources
 
 /keyspace - KeySpace features and database
 
@@ -373,6 +476,4 @@ Vote System
  * Voter fraud is regulated by community audits of vote receipts
  * Financial incentive can be used to promote a public vote by incentivizing users to vote, review and debate on issues, and audit vote receipts 
  * Votes are tallied and protected by vote registrars who are responsible for auditing and tallying all votes under their account. This is all handled automatically. In the event of fraud, a review of voter identities is triggered. Failing to do this may result in all votes in the hierarchy becoming invalidated. Anyone can be a vote registrar, but trust comes down to reputation.
- * Vote receipts are periodically updated with public-facing hashes that do not give away the voter’s identity or vote value, but do allow for duplicate votes to be detected. Fraud that may have gone undetected may be found after the fact when new hash algorithms become available. 
-
-
+ * Vote receipts are periodically updated with public-facing hashes that do not give away the voter’s identity or vote value, but do allow for duplicate votes to be detected. Fraud that may have gone undetected may be found after the fact when new hash algorithms become available.

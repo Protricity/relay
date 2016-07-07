@@ -139,7 +139,7 @@ function SettingsDB(dbReadyCallback) {
                     callback(null, insertData, putRequest);
 
                 var responseString = "EVENT SETTINGS.UPDATE " + settingsData.name;
-                Client.processResponse(responseString);
+                ClientWorkerThread.processResponse(responseString);
             };
             putRequest.onerror = function(e) {
                 if(callback)

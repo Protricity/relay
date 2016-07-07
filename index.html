@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Relay Client Invite-Only Beta</title>
+        <title>Relay Messenger Invite-Only Beta</title>
         <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
         <meta name="application-name" CONTENT="relay">
         <meta name="description" CONTENT="The Relay Project">
-        <meta name="keywords" CONTENT="relay, project, encryption, security, pgp, keyspace, socket, websocket, irc, chat, free, open-source">
+        <meta name="keywords" CONTENT="relay, project, webrtc, secure, encryption, security, pgp, keyspace, socket, websocket, irc, chat, free, open-source">
 
         <link rel="shortcut icon" href="favicon.ico?v=6" />
-        <script src="client/client.js"></script>
+        <script src="client-worker.js"></script>
+        <script src="ui/client-ui-handler.js"></script>
         <script>
             setTimeout(function() {
-                ClientMainThread.execute("about");
-                ClientMainThread.execute("minimize about:");
-                ClientMainThread.execute("console");
+                Client.execute("about");
+                Client.execute("minimize about:");
+                Client.execute("log welcome");
             }, 500);
             window.onresize = function(evt) {
                 var height = (evt.srcElement || evt.currentTarget).innerHeight;
@@ -24,13 +25,13 @@
         </script>
         <style>
             body {
-                /*background: url('app/tool/about/assets/relay-splash.png') no-repeat;*/
+                /*background: url('ui/about/assets/relay-splash.png') no-repeat;*/
                 background-color: #7DC1ED;
                 background-position-x: center;
             }
         </style>
 
-        <link rel="stylesheet" href="render/themes/minimal/minimal.css" type="text/css" />
+        <link rel="stylesheet" href="ui/themes/minimal/minimal.css" type="text/css" />
     </head>
     <body class='theme-minimal layout-horizontal'></body>
 </html>

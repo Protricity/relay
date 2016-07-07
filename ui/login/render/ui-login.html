@@ -1,0 +1,44 @@
+<article class='ui-login: maximized'>
+    <script src='ui/login/render/ui-login.js'></script>
+    <link rel='stylesheet' href='ui/login/render/ui-login.css' type='text/css' property="stylesheet">
+    <header class='header-bar show-on-minimized'>
+        {header:buttons ui-login:}
+        <a href="#TOGGLE ui-login:">
+            <span class="command">Login</span> to Relay
+        </a>
+    </header>
+    <main class="hide-on-minimize">
+        <div class="ui-login-info">
+            <strong>Welcome to The Relay Network</strong>
+            <br />
+            Please choose a <span class="command">Login</span> method:
+            <ol>
+                <li>Create a new Identity with <span class="command">PGP KeyGen</span></li>
+                <li>Import an existing Identity with <span class="command">PGP Import</span></li>
+                <li>Browse The Relay Network anonymously</li>
+                <li style="color: lightgrey">Log In to another device [coming soon]</li>
+            </ol>
+        </div>
+        <a class="ui-login-button" href="#UI.LOGIN.CREATE">
+            <span class="command">KeyGen</span> (Create) a new Identity
+            <br /><span class="info">[create a pgp identity to use on the network]</span>
+        </a>
+        <a class="ui-login-button" href="#UI.LOGIN.IMPORT">
+            <span class="command">Import</span> an <em>existing</em> Identity
+            <br /><span class="info">[import a pgp private key block to use on the network]</span>
+        </a>
+        <a class="ui-login-button" href="#UI.LOGIN.GUEST">
+            [Use Relay as a Guest]
+            <br /><span class="info">[browse the relay network anonymously]</span>
+        </a>
+        <a class="ui-login-button disabled" href="#UI.LOGIN.REMOTE">
+            <span class="command">Remote Login</span> (Coming soon)
+            <br /><span class="info">[safely log in with a pin or password from anywhere]</span>
+        </a>
+    </main>
+    <footer>
+        <a href="#ABOUT">
+            <span class="command">About</span> Relay
+        </a>
+    </footer>
+</article>

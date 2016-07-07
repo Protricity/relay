@@ -15,37 +15,40 @@ if(typeof module === 'object') (function() {
         ClientWorkerThread.addCommand(channelSubscribeCommand);
         ClientWorkerThread.addResponse(channelSubscribeResponse);
 
-        ClientWorkerThread.addResponse(channelJoinCommand);
-        ClientWorkerThread.addResponse(channelLeaveCommand);
-        ClientWorkerThread.addResponse(channelUserlistResponse);
+        ClientWorkerThread.addCommand(channelJoinCommand);
+        ClientWorkerThread.addCommand(channelLeaveCommand);
+
+        ClientWorkerThread.addResponse(channelUserListResponse);
+        ClientWorkerThread.addResponse(channelUserCountResponse);
 
 
         // Default Subscription Mode
         var DEFAULT_MODE = 'event';
 
         function channelJoinCommand(commandString) {
-            var match = /^(?:channel\.)?join\s+(.*)$/im.exec(commandString);
+            var match = /^(?:channel\.)?join\s+(.+)$/im.exec(commandString);
             if (!match)
                 return false;
 
             var content = match[1];
-            return channelSubscribeCommand("CHANNEL.SUBSCRIBE." + DEFAULT_MODE.toUpperCase() + " " + content);
+            return channelSubscribeCommand("CHANNEL.SUBSCRIBE.CHAT " + content);
         }
 
         function channelLeaveCommand(commandString) {
-            var match = /^(?:channel\.)?leave\s+(.*)$/im.exec(commandString);
+            var match = /^(?:channel\.)?leave\s+(.+)$/im.exec(commandString);
             if (!match)
                 return false;
 
-            var content = match[1];
+            var channel = match[1];
+            ClientWorkerThread.postResponseToClient("CLOSE chat:" + channel.toLowerCase());
 
             // TODO: unsubscribe all?
-            return channelSubscribeCommand("CHANNEL.UNSUBSCRIBE." + DEFAULT_MODE.toUpperCase() + " " + content);
+            return channelSubscribeCommand("CHANNEL.UNSUBSCRIBE.CHAT " + channel);
         }
 
 
         // USERLIST Response
-        function channelUserlistResponse(commandResponse) {
+        function channelUserListResponse(commandResponse) {
             var match = /^(?:channel\.)?userlist\.(\w+)(?:\s(\S+))?\n([\s\S]+)$/im.exec(commandResponse);
             if (!match)
                 return false;
@@ -60,6 +63,29 @@ if(typeof module === 'object') (function() {
             })();
 
             ClientSubscriptions.handleClientUserList(commandResponse);
+
+            // Send event to signal user list refresh
+            ClientWorkerThread.processResponse("EVENT " + commandResponse);
+
+            return true;
+        }
+
+        // USERCOUNT Response
+        function channelUserCountResponse(commandResponse) {
+            var match = /^(?:channel\.)?usercount\.(\w+)\s+(\S+)\s+(\d+)$/im.exec(commandResponse);
+            if (!match)
+                return false;
+            var mode = match[1];
+            var channel = match[2] || null;
+            var subscriptionCount = match[3];
+
+            var ClientSubscriptions = self.ClientSubscriptions || (function() {
+                self.module = {exports: {}};
+                importScripts('client/subscriptions/client-subscriptions.js');
+                return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
+            })();
+
+            ClientSubscriptions.handleClientUserCount(commandResponse);
 
             // Send event to signal user list refresh
             ClientWorkerThread.processResponse("EVENT " + commandResponse);
@@ -96,8 +122,9 @@ if(typeof module === 'object') (function() {
                     subscriptionSettings.commands = [];
                 var commands = subscriptionSettings.commands;
                 var oldSubscriptionPos = -1;
+                var settingsCommandStringLC = settingsCommandString.toLowerCase();
                 for(var i=0; i<commands.length; i++) {
-                    if(commands[i].indexOf(settingsCommandStringPrefix) === 0)
+                    if(commands[i].toLowerCase().indexOf(settingsCommandStringLC) === 0)
                         oldSubscriptionPos = i;
                     //match = /^(?:channel\.)?subscribe(?:\.(\w+))?/i.exec(commands[i]);
                     //if(match && (match[1] || '').toLowerCase() === mode)
@@ -127,6 +154,7 @@ if(typeof module === 'object') (function() {
                 SettingsDB.updateSettings(subscriptionSettings);
             });
 
+
             ClientWorkerThread.sendWithSocket(commandString);
             return true;
         }
@@ -149,7 +177,11 @@ if(typeof module === 'object') (function() {
                 return self.ClientSubscriptions = self.module.exports.ClientSubscriptions;
             })();
 
-            ClientSubscriptions.handleSubscriptionResponse(responseString, e);
+            try {
+                ClientSubscriptions.handleSubscriptionResponse(responseString, e);
+            } catch (e) {
+                ClientWorkerThread.processResponse("ERROR " + (e.message || e));
+            }
             ClientWorkerThread.processResponse("EVENT " + responseString); // CHANNEL.SUBSCRIPTION.UPDATE " + channel + " " + mode + " " + argString);
 
             return true;

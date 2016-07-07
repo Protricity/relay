@@ -23,7 +23,7 @@ if(typeof module === 'object') (function() {
                 return false;   // Pass control to next handler
 
             // Output to console
-            console.info('I ', commandString);
+            console.info('I', commandString);
 
             var channel = match[1];
             var mode = "CHAT";

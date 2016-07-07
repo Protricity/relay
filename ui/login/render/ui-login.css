@@ -1,0 +1,71 @@
+.layout-horizontal .ui-login\3A {
+    min-width: 20em;
+    float: right;
+    clear: right;
+}
+
+.ui-login\3A  main{
+    /*min-height: 20em;*/
+    /* background-color: white; */
+    /* padding: 1em; */
+}
+
+.ui-login\3A.maximized{
+/*     left: 5% !important; */
+    /*     bottom: 5% !important; */
+/*     top: 5% !important; */
+    /* right: 5% !important; */
+}
+
+/** Form **/
+
+form[name=ui-login-form] {
+    padding: 2px;
+    border: 1px inset;
+    position: relative;
+}
+
+
+form[name=ui-login-form] .status-box:empty {
+    display: none;
+}
+
+
+/** Buttons **/
+
+
+.ui-login-info {
+    padding: 1em 2em;
+    margin: 1em 2em;
+    border: outset;
+    background-color: #FFF;
+/*     text-align: center; */
+    /*     display: block; */
+    /*ease-out;*/
+    box-shadow: 0.1em 0.1em 0.32em #999;
+}
+
+.ui-login-button {
+    padding: 2em;
+    display: block;
+    border: 1px outset lightgray;
+    margin: 1em 1em;
+    background: #DDD;
+    /*     text-align: center; */
+    cursor: pointer;
+    /*font-size: 3vw;*/
+    transition: box-shadow 0.5s ease-out;
+    box-shadow: 0.1em 0.1em 0.5em #999;
+}
+
+
+.ui-login-button.disabled {
+    color: grey;
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: 0 0 0 #999;
+}
+
+.ui-login-button:hover {
+    box-shadow: 0 0 1em #09F;
+}

@@ -7,7 +7,7 @@ if(typeof module === 'object') (function() {
         // HTTP PUT Command
         ClientWorkerThread.addCommand(importPutKeySpaceCommand);
         function importPutKeySpaceCommand(commandString, e) {
-            if (!/^put\s+/im.test(commandString))
+            if (!/^(?:keyspace\.)?put\s+/i.test(commandString))
                 return false;
             ClientWorkerThread.removeCommand(importPutKeySpaceCommand);
             self.module = {exports: {}};
@@ -19,7 +19,7 @@ if(typeof module === 'object') (function() {
         // HTTP PUT.PUBLISH Command
         ClientWorkerThread.addCommand(importPutPublishCommand);
         function importPutPublishCommand(commandString, e) {
-            if (!/^put\.publish\s+/im.test(commandString))
+            if (!/^(?:keyspace\.)?put\.publish/i.test(commandString))
                 return false;
             ClientWorkerThread.removeCommand(importPutPublishCommand);
             self.module = {exports: {}};
@@ -32,7 +32,7 @@ if(typeof module === 'object') (function() {
         // HTTP PUT.FORM Command
         ClientWorkerThread.addCommand(importPutFormCommand);
         function importPutFormCommand(commandString, e) {
-            if (!/^put\s*$|^put\.form/i.test(commandString))
+            if (!/^(?:keyspace\.)?(?:put\s*$|^put\.form)/i.test(commandString))
                 return false;
             ClientWorkerThread.removeCommand(importPutFormCommand);
             self.module = {exports: {}};
@@ -45,7 +45,7 @@ if(typeof module === 'object') (function() {
         // HTTP PUT.MANAGE Command
         ClientWorkerThread.addCommand(importPutManageCommand);
         function importPutManageCommand(commandString, e) {
-            if (!/^put\.manage/i.test(commandString))
+            if (!/^(?:keyspace\.)?put\.manage/i.test(commandString))
                 return false;
             ClientWorkerThread.removeCommand(importPutManageCommand);
             self.module = {exports: {}};
@@ -58,7 +58,7 @@ if(typeof module === 'object') (function() {
         // HTTP PUT.SCRIPT Command
         ClientWorkerThread.addCommand(importPutScriptCommand);
         function importPutScriptCommand(commandString, e) {
-            if (!/^put\.script/i.test(commandString))
+            if (!/^(?:keyspace\.)?put\.script/i.test(commandString))
                 return false;
             ClientWorkerThread.removeCommand(importPutScriptCommand);
             self.module = {exports: {}};
@@ -71,7 +71,7 @@ if(typeof module === 'object') (function() {
         // HTTP PUT.SUCCESS Response
         ClientWorkerThread.addResponse(importPutSuccessResponse);
         function importPutSuccessResponse(responseString, e) {
-            if (!/^put\.success/i.test(responseString))
+            if (!/^(?:keyspace\.)?put\.success/i.test(responseString))
                 return false;
             ClientWorkerThread.removeResponse(importPutSuccessResponse);
             self.module = {exports: {}};

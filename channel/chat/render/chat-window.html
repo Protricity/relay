@@ -1,9 +1,9 @@
-<article class='chat:{$channel_lowercase}'>
+<article class='chat:{$channel_lowercase} ignore-on-render'>
     <script src='channel/chat/render/chat-window.js'></script>
     <link rel='stylesheet' href='channel/chat/render/chat-window.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {header:buttons chat:{$channel_lowercase}}
-        <a href='javascript:ClientMainThread.execute("MINIMIZE chat:{$channel_lowercase}");'>
+        <a href="#TOGGLE chat:{$channel_lowercase}">
             <span class="command">Chat</span> {$channel}
         </a>
     </header>
@@ -16,7 +16,9 @@
                         <td style='vertical-align: top; width:1px;'>
                             <select multiple='multiple' name='users' size='7' class='channel-users:{$channel_lowercase}'>
                             </select>
+
                             <select name="user_commands">
+                                <option value="">Select a Command</option>
                                 <optgroup label="Channel Commands">
                                     <option value="LEAVE [$channel]">Leave Channel</option>
                                     <option value="MESSAGE [$username]">Private Message User</option>
@@ -26,6 +28,8 @@
                                     <option value="NICK [prompt:Enter a new Nickname]">Change nickname</option>
                                 </optgroup>
                             </select>
+
+                            <!--<input type="text" name="nick" value="{$nick}" disabled />-->
                         </td>
                         <td style='vertical-align: top;'>
                             <fieldset class='channel-log: channel-log:{$channel_lowercase}'>Joining {$channel}...</fieldset>

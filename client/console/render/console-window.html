@@ -1,9 +1,9 @@
-<article class='console: minimized prepend-on-render' data-sort='z'>
+<article class='console:' data-sort='z'>
     <script src='client/console/render/console-window.js'></script>
     <link rel='stylesheet' href='client/console/render/console-window.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {header:buttons console:}
-        <a href='javascript:ClientMainThread.execute("MINIMIZE console:");'>
+        <a href="#TOGGLE console:">
             <span class="command">Console</span>
         </a>
     </header>
@@ -15,7 +15,7 @@
                 <tr class='show-on-minimized'>
                     <td>
                         <input name='message' type='text' class='reset focus'
-                               placeholder='render &#123;nav&#125;' style='width: 99%;'/>
+                               placeholder='menu' style='width: 99%;'/>
                     </td>
                     <td style='width:1px'>
                         <input type='submit' value='Send' name='submit-send-console' />

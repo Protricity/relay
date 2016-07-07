@@ -25,6 +25,7 @@ article.console\3A > section {
 .console-entry {
     font-family: monospace;
     max-width: 40em;
+    white-space: pre-line;
 }
 
 .console-entry span.message {
@@ -36,4 +37,9 @@ article.console\3A > section {
 
 .console-entry span.direction {
     vertical-align: top;
+}
+
+
+.console-entry > * {
+    white-space: pre-line;
 }

@@ -3,6 +3,9 @@
     clear: right;
     min-width: 20em;
 }
+.layout-vertical .sockets-window\3A {
+    display: none;
+}
 
 .sockets-window\3A > main {
     padding: 0.5em 1em;

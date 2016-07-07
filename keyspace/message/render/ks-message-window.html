@@ -1,9 +1,9 @@
-<article class='ks-message:{$uid} ks-message:'>
+<article class='ks-message:{$uid} ks-message: ignore-on-render'>
     <script src='keyspace/message/render/ks-message-window.js'></script>
     <link rel='stylesheet' href='keyspace/message/render/ks-message-window.css' type='text/css' property="stylesheet">
     <header class='header-bar show-on-minimized'>
         {header:buttons ks-message:{$uid}}
-        <a href='javascript:ClientMainThread.execute("MINIMIZE ks-message:{$uid}");'>
+        <a href="#TOGGLE ks-message:{$uid}">
             <span class="command">Message</span> {$to} [From: {$from}]
         </a>
     </header>
@@ -14,7 +14,7 @@
                     <td colspan="2" style='vertical-align: top;'>
                         <fieldset class='ks-message-log:{$uid} ks-message-log:'>
                             Private Messaging
-                            <a href="javascript:ClientMainThread.execute('INFO {$pgp_id_to}');" class="username">{$to}</a>...
+                            <a href="#INFO {$pgp_id_to}" class="username">{$to}</a>...
                         </fieldset>
                     </td>
                 </tr>

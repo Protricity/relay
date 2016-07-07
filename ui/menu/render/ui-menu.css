@@ -1,0 +1,104 @@
+
+/* Navigation */
+
+.navigation-commands\3A  {
+    /* float: left; */
+    display: inline-block;
+    background-color: lightgrey;
+    padding: 0.5em;
+    margin: 0 0.5em 0.5em 0em;
+    border: 1px outset;
+    border-radius: 4px;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 5.5em;
+    max-height: 1.6em;
+    min-width: 7em;
+    min-height: 2em;
+    transition: max-width 1s, max-height 1.5s;
+    transition-delay: 0.2s;
+}
+
+.navigation-commands\3A:not(.minimized),
+.navigation-commands\3A:hover {
+    max-height: 50em;
+    max-width: 20em;
+    transition-delay: 0s;
+    transition: max-height 0.5s ease-in-out;
+}
+.navigation-commands\3A:hover {
+    z-index: 99999;
+    position:relative;
+}
+
+.navigation-commands\3A:hover {
+    box-shadow: 1px 2px 6px #333;
+}
+
+.navigation-commands\3A.minimized {
+    border-radius: 0.5em;
+    border-style: inherit;
+}
+
+.navigation-commands\3A  .hide-on-close {
+    opacity: 1;
+    transition: opacity 1s;
+}
+
+.navigation-commands\3A.minimized:not(:hover) .hide-on-close {
+    opacity: 0;
+    transition: opacity 0.5s;
+    /*transition-delay: 0.6s;*/
+}
+
+/** Open/Close Button **/
+
+.navigation-commands\3A  .button-toggle,
+.navigation-commands\3A  header button {
+    border: 1px inset;
+    padding: 0.2em 1em 0.4em 0.6em;
+    background-color: #DDD;
+    /* vertical-align: top; */
+    font-size: 13px;
+    /* display: inline-block; */
+}
+
+.navigation-commands\3A.minimized .button-toggle,
+.navigation-commands\3A.minimized header button {
+    border-style: outset;
+}
+
+.navigation-commands\3A  header {
+    font-weight: bold;
+    text-shadow: 1px 1px 1px #AAA;
+}
+.navigation-commands\3A  ul {
+    list-style: none;
+    padding: 0 0 0.5em 0;
+    /* border: 1px outset; */
+    margin: 0;
+    background-color: #EAEAEA;
+    /* display: inline-block; */
+}
+.navigation-commands\3A  ul lh,
+.navigation-commands\3A  ul li.header,
+.navigation-commands\3A  ul li {
+    margin: 0 0.5em;
+    display: list-item;
+    /* white-space: nowrap; */
+    overflow: hidden;
+}
+
+.navigation-commands\3A  ul lh,
+.navigation-commands\3A  ul li.header {
+    background-color: #BFBFBF;
+    font-weight: bold;
+    /* text-shadow: 1px 1px 1px #AAA; */
+    /* text-transform: lowercase; */
+    margin: 0.8em 0 0.3em 0;
+    border: 1px outset;
+    padding: 0 0.5em;
+}
+.navigation-commands\3A  ul li:hover {
+    background-color: #EEEEAA;
+}
