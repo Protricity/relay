@@ -295,6 +295,7 @@ Install Node.JS
 -----------------
 
 https://docs.npmjs.com/getting-started/installing-node
+https://nodejs.org/en/
 
 
 Download and Install MongoDB
@@ -302,21 +303,31 @@ Download and Install MongoDB
 
 https://www.mongodb.org/downloads?_ga=1.56315051.1067887463.1444014081#production
 
+
 Instructions:
 -----------------
 
 http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/
 
 
+TroubleShooting:
+----------------
+
+You may need to install python manually on windows
+https://www.python.org/ftp/python/2.7.12/python-2.7.12.msi
+and add the executable to your PATH environment variable
+PATH=C:\Python27
+
+
 Init node libraries:
 -----------------
 
  * $ cd [your dev folder]
- * $ sh init-node.sh
+ * $ node install.js
 
 
-Browse to the relay directory and execute:
------------------
+Launch Relay Server Node:
+-------------------------
 
  * $ cd [your dev folder, if you’re still there]
  * $ node server.js
