@@ -15,4 +15,4 @@ exec('npm install mongodb');
 // exec('npm install indexeddb-js sqlite3');
 // exec('npm install http-server -g');
 
-console.log("Finished. Try '$ node server.js' to test server");
+console.log("Finished. Try $ node server.js' to test server");

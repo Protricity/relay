@@ -312,7 +312,7 @@ Init node libraries:
 -----------------
 
  * $ cd [your dev folder]
- * $ sh init-node.sh
+ * $ node init.js
 
 
 Browse to the relay directory and execute:
