@@ -15,4 +15,9 @@ exec('npm install mongodb');
 // exec('npm install indexeddb-js sqlite3');
 // exec('npm install http-server -g');
 
+console.log("Testing require..");
+
+require('./server/http/http-server.js');
+require('./server/socket/socket-server.js');
+
 console.log("Finished. Try $ node server.js' to test server");

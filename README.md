@@ -308,15 +308,15 @@ Instructions:
 http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/
 
 
-Init node libraries:
------------------
+Install Relay Server:
+-----------------------------
 
  * $ cd [your dev folder]
- * $ node init.js
+ * $ node install.js
 
 
-Browse to the relay directory and execute:
------------------
+Run Relay Server:
+---------------
 
  * $ cd [your dev folder, if you’re still there]
  * $ node server.js
