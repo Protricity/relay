@@ -5,7 +5,7 @@
 if (!module) var module = {exports:{}};
 module.exports = {
     // HTTP Server Defaults
-    HTTP_SERVER_DEFAULT_PORT: '7315, 80',
+    HTTP_SERVER_DEFAULT_PORT: '7315, 81',
 
     // Socket Server Defaults
     SOCKET_SERVER_DEFAULT_PORT: 7314
