@@ -59,11 +59,11 @@ function betaSubscribeSocket(requestString, client) {
 
         console.log("Writing " + email + (name ? " (" + name + ")" : ""));
         fs.appendFile(dataFile, email + (name ? " " + name : "") + "\n", function (err) {
-            if (err) throw err;
+            if (err)
+                client.send("error " + err);
+            else
+                client.send("log Subscription Successful");
         });
-
-        client.send("log Subscription Successful");
-
     });
 
     return true;
