@@ -31,11 +31,19 @@ function betaSubscribeSocket(requestString, client) {
         return true;
     }
 
-    var dataFile = './beta/.data/emails.txt';
-
     var qs = require('querystring');
     var fs = require('fs');
     var readline = require('readline');
+
+    var dataFile = './beta/.emails.txt';
+
+    var fd = fs.openSync(dataFile, 'w');
+
+
+    fs.writeFile(dataFile, '', { flag: 'wx' }, function (err) {
+        if (err) throw err;
+        console.log("It's saved!");
+    });
 
     var lineReader = readline.createInterface({
         input: fs.createReadStream(dataFile)
@@ -43,6 +51,7 @@ function betaSubscribeSocket(requestString, client) {
 
     var found = false;
     var emailLC = email.toLowerCase();
+
     lineReader.on('line', function (line) {
 
         if(line.toLowerCase().indexOf(emailLC) === 0) {
