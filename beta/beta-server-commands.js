@@ -36,7 +36,7 @@ function betaSubscribeSocket(requestString, client) {
     var fs = require('fs');
     var readline = require('readline');
 
-    var dataFile = './beta/.emails.txt';
+    var dataFile = __dirname + '/.emails.txt';
 
 
     fs.exists(dataFile, function (exists) {
@@ -64,6 +64,7 @@ function betaSubscribeSocket(requestString, client) {
                 }
                 appendEntry(email, name);
             });
+
         }else
         {
             fs.writeFile(dataFile, '', {flag: 'wx'}, function (err, data)
