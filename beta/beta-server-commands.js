@@ -31,63 +31,58 @@ function betaSubscribeSocket(requestString, client) {
         return true;
     }
 
+
     var qs = require('querystring');
     var fs = require('fs');
     var readline = require('readline');
 
     var dataFile = './beta/.emails.txt';
 
-    var fd = fs.openSync(dataFile, 'w');
 
-
-    fs.writeFile(dataFile, '', { flag: 'wx' }, function (err) {
-        if (err) throw err;
-        console.log("It's saved!");
-    });
-
-    var lineReader = readline.createInterface({
-        input: fs.createReadStream(dataFile)
-    });
-
-    var found = false;
-    var emailLC = email.toLowerCase();
-
-    lineReader.on('line', function (line) {
-
-        if(line.toLowerCase().indexOf(emailLC) === 0) {
-            found = true;
-            client.send("info Found duplicate email: " + email);
-        }
-    });
-
-    lineReader.on('close', function() {
-        if(found) {
-            client.send("error Subscription Unsuccessful. Email already subscribed");
-            return true;
-        }
-
-        console.log("Writing " + email + (name ? " (" + name + ")" : ""));
-        try {
-            fs.appendFile(dataFile, email + (name ? " " + name : "") + "\n", function (err) {
-                if (err)
-                    client.send("error " + err);
-                else
-                    client.send("log Subscription Successful");
+    fs.exists(dataFile, function (exists) {
+        if(exists)
+        {
+            var lineReader = readline.createInterface({
+                input: fs.createReadStream(dataFile)
             });
-        } catch (err) {
-            client.send("error " + err);
+
+            var found = false;
+            var emailLC = email.toLowerCase();
+
+            lineReader.on('line', function (line) {
+
+                if(line.toLowerCase().indexOf(emailLC) === 0) {
+                    found = true;
+                    client.send("info Found duplicate email: " + email);
+                }
+            });
+
+            lineReader.on('close', function() {
+                if(found) {
+                    client.send("error Subscription Unsuccessful. Email already subscribed");
+                    return true;
+                }
+                appendEntry(email, name);
+            });
+        }else
+        {
+            fs.writeFile(dataFile, '', {flag: 'wx'}, function (err, data)
+            {
+                console.log("Created " + dataFile);
+                appendEntry(email, name);
+            })
         }
     });
+
+    function appendEntry(email, name) {
+        console.log("Writing " + email + (name ? " (" + name + ")" : ""));
+        fs.appendFile(dataFile, email + (name ? " " + name : "") + "\n", function (err) {
+            if (err)
+                client.send("error " + err);
+            else
+                client.send("log Subscription Successful");
+        });
+    }
 
     return true;
-}
-
-function send(client, message) {
-    if(client.readyState === client.OPEN) {
-        client.send(message);
-        console.info("O " + message);
-
-    } else {
-        console.warn("C " + message);
-    }
 }
