@@ -10,6 +10,7 @@ if(typeof module === 'object') (function() {
      **/
     module.exports.initSocketServerKSSearchCommands = function (SocketServer) {
         SocketServer.addCommand(ksSearchSocketCommand);
+        console.log("Loaded " + __filename);
     };
 })();
 

@@ -725,7 +725,7 @@
 
     /**
      * Sign the cleartext message
-     * @param  {Array<module:key~Key>} privateKeys private keys with decrypted secret key data for signing
+     * @param  {Array<module:key~Key>} privateKeys private keys with decrypted secret key .data for signing
      */
     CleartextMessage.prototype.sign = function(privateKeys) {
         var packetlist = new packet.List();
@@ -1046,17 +1046,17 @@
          * This function encrypts a given with the specified prefixrandom
          * using the specified blockcipher to encrypt a message
          * @param {String} prefixrandom random bytes of block_size length provided
-         *  as a string to be used in prefixing the data
+         *  as a string to be used in prefixing the .data
          * @param {String} cipherfn the algorithm cipher class to encrypt
-         *  data in one block_size encryption, {@link module:crypto/cipher}.
-         * @param {String} plaintext data to be encrypted provided as a string
+         *  .data in one block_size encryption, {@link module:crypto/cipher}.
+         * @param {String} plaintext .data to be encrypted provided as a string
          * @param {String} key binary string representation of key to be used to encrypt the plaintext.
          * This will be passed to the cipherfn
          * @param {Boolean} resync a boolean value specifying if a resync of the
          *  IV should be used or not. The encrypteddatapacket uses the
          *  "old" style with a resync. Encryption within an
          *  encryptedintegrityprotecteddata packet is not resyncing the IV.
-         * @return {String} a string with the encrypted data
+         * @return {String} a string with the encrypted .data
          */
         encrypt: function(prefixrandom, cipherfn, plaintext, key, resync) {
             cipherfn = new cipher[cipherfn](key);
@@ -1078,7 +1078,7 @@
             // 2.  FR is encrypted to produce FRE (FR Encrypted).  This is the
             //     encryption of an all-zero value.
             FRE = cipherfn.encrypt(FR);
-            // 3.  FRE is xored with the first BS octets of random data prefixed to
+            // 3.  FRE is xored with the first BS octets of random .data prefixed to
             //     the plaintext to produce C[1] through C[BS], the first BS octets
             //     of ciphertext.
             for (i = 0; i < block_size; i++) {
@@ -1093,7 +1093,7 @@
             FRE = cipherfn.encrypt(FR);
 
             // 6.  The left two octets of FRE get xored with the next two octets of
-            //     data that were prefixed to the plaintext.  This produces C[BS+1]
+            //     .data that were prefixed to the plaintext.  This produces C[BS+1]
             //     and C[BS+2], the next two octets of ciphertext.
             ciphertext[block_size] = FRE[0] ^ prefixrandom.charCodeAt(block_size);
             ciphertext[block_size + 1] = FRE[1] ^ prefixrandom.charCodeAt(block_size + 1);
@@ -1109,7 +1109,7 @@
 
             // 9.  FRE is xored with the first BS octets of the given plaintext, now
             //     that we have finished encrypting the BS+2 octets of prefixed
-            //     data.  This produces C[BS+3] through C[BS+(BS+2)], the next BS
+            //     .data.  This produces C[BS+3] through C[BS+(BS+2)], the next BS
             //     octets of ciphertext.
             for (i = 0; i < block_size; i++) {
                 ciphertext[block_size + 2 + i] = FRE[i + offset] ^ plaintext.charCodeAt(i);
@@ -1136,12 +1136,12 @@
         },
 
         /**
-         * Decrypts the prefixed data for the Modification Detection Code (MDC) computation
+         * Decrypts the prefixed .data for the Modification Detection Code (MDC) computation
          * @param {String} cipherfn.encrypt Cipher function to use,
          *  @see module:crypto/cipher.
          * @param {String} key binary string representation of key to be used to check the mdc
          * This will be passed to the cipherfn
-         * @param {String} ciphertext The encrypted data
+         * @param {String} ciphertext The encrypted .data
          * @return {String} plaintext Data of D(ciphertext) with blocksize length +2
          */
         mdc: function(cipherfn, key, ciphertext) {
@@ -1174,7 +1174,7 @@
          * This function decrypts a given plaintext using the specified
          * blockcipher to decrypt a message
          * @param {String} cipherfn the algorithm cipher class to decrypt
-         *  data in one block_size encryption, {@link module:crypto/cipher}.
+         *  .data in one block_size encryption, {@link module:crypto/cipher}.
          * @param {String} key binary string representation of key to be used to decrypt the ciphertext.
          * This will be passed to the cipherfn
          * @param {String} ciphertext to be decrypted provided as a string
@@ -1182,7 +1182,7 @@
          *  IV should be used or not. The encrypteddatapacket uses the
          *  "old" style with a resync. Decryption within an
          *  encryptedintegrityprotecteddata packet is not resyncing the IV.
-         * @return {String} a string with the plaintext data
+         * @return {String} a string with the plaintext .data
          */
 
         decrypt: function(cipherfn, key, ciphertext, resync) {
@@ -1216,7 +1216,7 @@
             /*  RFC4880: Tag 18 and Resync:
              *  [...] Unlike the Symmetrically Encrypted Data Packet, no
              *  special CFB resynchronization is done after encrypting this prefix
-             *  data.  See "OpenPGP CFB Mode" below for more details.
+             *  .data.  See "OpenPGP CFB Mode" below for more details.
 
              */
 
@@ -3701,7 +3701,7 @@
 
     module.exports = {
         /**
-         * Encrypts data using the specified public key multiprecision integers
+         * Encrypts .data using the specified public key multiprecision integers
          * and the specified algorithm.
          * @param {module:enums.publicKey} algo Algorithm to be used (See {@link http://tools.ietf.org/html/rfc4880#section-9.1|RFC 4880 9.1})
          * @param {Array<module:type/mpi>} publicMPIs Algorithm dependent multiprecision integers
@@ -3742,15 +3742,15 @@
         },
 
         /**
-         * Decrypts data using the specified public key multiprecision integers of the private key,
+         * Decrypts .data using the specified public key multiprecision integers of the private key,
          * the specified secretMPIs of the private key and the specified algorithm.
          * @param {module:enums.publicKey} algo Algorithm to be used (See {@link http://tools.ietf.org/html/rfc4880#section-9.1|RFC 4880 9.1})
          * @param {Array<module:type/mpi>} publicMPIs Algorithm dependent multiprecision integers
          * of the public key part of the private key
          * @param {Array<module:type/mpi>} secretMPIs Algorithm dependent multiprecision integers
          * of the private key used
-         * @param {module:type/mpi} data Data to be encrypted as MPI
-         * @return {module:type/mpi} returns a big integer containing the decrypted data; otherwise null
+         * @param {module:type/mpi} .data Data to be encrypted as MPI
+         * @return {module:type/mpi} returns a big integer containing the decrypted .data; otherwise null
          */
 
         publicKeyDecrypt: function(algo, keyIntegers, dataIntegers) {
@@ -4256,7 +4256,7 @@
      *          character, or as an ArrayBuffer or Typed Array).
      */
     util.ByteBuffer = function(b) {
-        // the data in this buffer
+        // the .data in this buffer
         this.data = '';
         // the pointer for reading from this buffer
         this.read = 0;
@@ -5052,7 +5052,7 @@
         ripemd: require('./ripe-md.js'),
 
         /**
-         * Create a hash on the specified data using the specified algorithm
+         * Create a hash on the specified .data using the specified algorithm
          * @param {module:enums.hash} algo Hash algorithm type (see {@link http://tools.ietf.org/html/rfc4880#section-9.4|RFC 4880 9.4})
          * @param {String} data Data to be hashed
          * @return {String} hash value
@@ -6849,7 +6849,7 @@
         hash = require('./hash');
 
     /**
-     * Create padding with secure random data
+     * Create padding with secure random .data
      * @private
      * @param  {Integer} length Length of the padding in bytes
      * @return {String}        Padding as string
@@ -9441,7 +9441,7 @@
          * @param {Array<module:type/mpi>} msg_MPIs Signature multiprecision integers
          * @param {Array<module:type/mpi>} publickey_MPIs Public key multiprecision integers
          * @param {String} data Data on where the signature was computed on.
-         * @return {Boolean} true if signature (sig_data was equal to data over hash)
+         * @return {Boolean} true if signature (sig_data was equal to .data over hash)
          */
         verify: function(algo, hash_algo, msg_MPIs, publickey_MPIs, data) {
 
@@ -9481,13 +9481,13 @@
         },
 
         /**
-         * Create a signature on data using the specified algorithm
+         * Create a signature on .data using the specified algorithm
          * @param {module:enums.hash} hash_algo hash Algorithm to use (See {@link http://tools.ietf.org/html/rfc4880#section-9.4|RFC 4880 9.4})
          * @param {module:enums.publicKey} algo Asymmetric cipher algorithm to use (See {@link http://tools.ietf.org/html/rfc4880#section-9.1|RFC 4880 9.1})
          * @param {Array<module:type/mpi>} publicMPIs Public key multiprecision integers
          * of the private key
          * @param {Array<module:type/mpi>} secretMPIs Private key multiprecision
-         * integers which is used to sign the data
+         * integers which is used to sign the .data
          * @param {String} data Data to be signed
          * @return {Array<module:type/mpi>}
          */
@@ -9644,7 +9644,7 @@
 
 
     /**
-     * Calculates a checksum over the given data and returns it base64 encoded
+     * Calculates a checksum over the given .data and returns it base64 encoded
      * @param {String} data Data to create a CRC-24 checksum for
      * @return {String} Base64 encoded checksum
      */
@@ -9657,7 +9657,7 @@
     }
 
     /**
-     * Calculates the checksum over the given data and compares it with the
+     * Calculates the checksum over the given .data and compares it with the
      * given base64 encoded checksum
      * @param {String} data Data to create a CRC-24 checksum for
      * @param {String} checksum Base64 encoded checksum
@@ -9669,8 +9669,8 @@
         return c[0] == d[0] && c[1] == d[1] && c[2] == d[2] && c[3] == d[3];
     }
     /**
-     * Internal function to calculate a CRC-24 checksum over a given string (data)
-     * @param {String} data Data to create a CRC-24 checksum for
+     * Internal function to calculate a CRC-24 checksum over a given string (.data)
+     * @param {String} .data Data to create a CRC-24 checksum for
      * @return {Integer} The CRC-24 checksum as number
      */
     var crc_table = [
@@ -9757,7 +9757,7 @@
             headers = text.slice(0, matchResult.index);
             body = text.slice(matchResult.index + matchResult[0].length);
         } else {
-            throw new Error('Mandatory blank line missing between armor headers and armor data');
+            throw new Error('Mandatory blank line missing between armor headers and armor .data');
         }
 
         headers = headers.split('\n');
@@ -9808,7 +9808,7 @@
      * the encoded bytes
      * @param {String} text OpenPGP armored message
      * @returns {Object} An object with attribute "text" containing the message text,
-     * an attribute "data" containing the bytes and "type" for the ASCII armor type
+     * an attribute ".data" containing the bytes and "type" for the ASCII armor type
      * @static
      */
     function dearmor(text) {
@@ -9823,7 +9823,7 @@
 
         // IE has a bug in split with a re. If the pattern matches the beginning of the
         // string it doesn't create an empty array element 0. So we need to detect this
-        // so we know the index of the data we are interested in.
+        // so we know the index of the .data we are interested in.
         var indexBase = 1;
 
         var result, checksum, msg;
@@ -10155,11 +10155,11 @@
          * @readonly
          */
         literal: {
-            /** Binary data 'b' */
+            /** Binary .data 'b' */
             binary: 'b'.charCodeAt(),
-            /** Text data 't' */
+            /** Text .data 't' */
             text: 't'.charCodeAt(),
-            /** Utf8 data 'u' */
+            /** Utf8 .data 'u' */
             utf8: 'u'.charCodeAt()
         },
 
@@ -10206,7 +10206,7 @@
              * (signature class 0x10 through 0x13) or direct-key signature
              * (0x1F).  It should be issued by the same key that issued the
              * revoked signature or an authorized revocation key.  The signature
-             * is computed over the same data as the certificate that it
+             * is computed over the same .data as the certificate that it
              * revokes, and should have a later creation date than that
              * certificate. */
             cert_revocation: 48,
@@ -10225,7 +10225,7 @@
              * is calculated the same way as a 0x18 signature: directly on the
              * primary key and subkey, and not on any User ID or other packets.<br/>
              * <br/>
-             * When a signature is made over a key, the hash data starts with the
+             * When a signature is made over a key, the hash .data starts with the
              * octet 0x99, followed by a two-octet length of the key, and then body
              * of the key packet.  (Note that this is an old-style packet header for
              * a key packet with two-octet length.)  A subkey binding signature
@@ -10264,7 +10264,7 @@
             timestamp: 64,
             /** 0x50: Third-Party Confirmation signature.<br/>
              * This signature is a signature over some other OpenPGP Signature
-             * packet(s).  It is analogous to a notary seal on the signed data.
+             * packet(s).  It is analogous to a notary seal on the signed .data.
              * A third-party signature SHOULD include Signature Target
              * subpacket(s) to give easy identification.  Note that we really do
              * mean SHOULD.  There are plausible uses for this (such as a blind
@@ -10311,7 +10311,7 @@
         keyFlags: {
             /** 0x01 - This key may be used to certify other keys. */
             certify_keys: 1,
-            /** 0x02 - This key may be used to sign data. */
+            /** 0x02 - This key may be used to sign .data. */
             sign_data: 2,
             /** 0x04 - This key may be used to encrypt communications. */
             encrypt_communication: 4,
@@ -10491,7 +10491,7 @@
         if (!(this instanceof Key)) {
             return new Key(packetlist);
         }
-        // same data as in packetlist but in structured form
+        // same .data as in packetlist but in structured form
         this.primaryKey = null;
         this.revocationSignature = null;
         this.directSignatures = null;
@@ -10504,7 +10504,7 @@
     }
 
     /**
-     * Transforms packetlist to structured key data
+     * Transforms packetlist to structured key .data
      * @param  {module:packet/packetlist} packetlist The packets that form a key
      */
     Key.prototype.packetlist2structure = function(packetlist) {
@@ -10584,7 +10584,7 @@
     };
 
     /**
-     * Transforms structured key data to packetlist
+     * Transforms structured key .data to packetlist
      * @return {module:packet/packetlist} The packets that form a key
      */
     Key.prototype.toPacketlist = function() {
@@ -11069,7 +11069,7 @@
     }
 
     /**
-     * Transforms structured user data to packetlist
+     * Transforms structured user .data to packetlist
      * @return {module:packet/packetlist}
      */
     User.prototype.toPacketlist = function() {
@@ -11205,7 +11205,7 @@
     }
 
     /**
-     * Transforms structured subkey data to packetlist
+     * Transforms structured subkey .data to packetlist
      * @return {module:packet/packetlist}
      */
     SubKey.prototype.toPacketlist = function() {
@@ -11227,7 +11227,7 @@
     };
 
     /**
-     * Returns true if the subkey can be used for signing of data
+     * Returns true if the subkey can be used for signing of .data
      * @param  {module:packet/secret_key|module:packet/public_key}  primaryKey The primary key packet
      * @return {Boolean}
      */
@@ -11917,7 +11917,7 @@
 
     /**
      * Decrypt the message
-     * @param {module:key~Key} privateKey private key with decrypted secret data
+     * @param {module:key~Key} privateKey private key with decrypted secret .data
      * @return {Array<module:message~Message>} new message with decrypted content
      */
     Message.prototype.decrypt = function(privateKey) {
@@ -11951,7 +11951,7 @@
     };
 
     /**
-     * Get literal data that is the body of the message
+     * Get literal .data that is the body of the message
      * @return {(String|null)} literal body of the message as string
      */
     Message.prototype.getLiteralData = function() {
@@ -11960,7 +11960,7 @@
     };
 
     /**
-     * Get literal data as text
+     * Get literal .data as text
      * @return {(String|null)} literal body of the message interpreted as text
      */
     Message.prototype.getText = function() {
@@ -12064,8 +12064,8 @@
     };
 
     /**
-     * Sign the message (the literal data packet of the message)
-     * @param  {Array<module:key~Key>} privateKey private keys with decrypted secret key data for signing
+     * Sign the message (the literal .data packet of the message)
+     * @param  {Array<module:key~Key>} privateKey private keys with decrypted secret key .data for signing
      * @return {module:message~Message}      new message with signed content
      */
     Message.prototype.sign = function(privateKeys) {
@@ -12073,7 +12073,7 @@
         var packetlist = new packet.List();
 
         var literalDataPacket = this.packets.findPacket(enums.packet.literal);
-        if (!literalDataPacket) throw new Error('No literal data packet to sign.');
+        if (!literalDataPacket) throw new Error('No literal .data packet to sign.');
 
         var literalFormat = enums.write(enums.literal, literalDataPacket.format);
         var signatureType = literalFormat == enums.literal.binary ?
@@ -12120,7 +12120,7 @@
         var result = [];
         var msg = this.unwrapCompressed();
         var literalDataList = msg.packets.filterByTag(enums.packet.literal);
-        if (literalDataList.length !== 1) throw new Error('Can only verify message with one literal data packet.');
+        if (literalDataList.length !== 1) throw new Error('Can only verify message with one literal .data packet.');
         var signatureList = msg.packets.filterByTag(enums.packet.signature);
         for (var i = 0; i < signatureList.length; i++) {
             var keyPacket = null;
@@ -12214,7 +12214,7 @@
     }
 
     /**
-     * creates new message object from binary data
+     * creates new message object from binary .data
      * @param {String} bytes
      * @return {module:message~Message} new message object
      * @static
@@ -12340,7 +12340,7 @@
     /**
      * Signs message text and encrypts it
      * @param  {(Array<module:key~Key>|module:key~Key)}  publicKeys array of keys or single key, used to encrypt the message
-     * @param  {module:key~Key}    privateKey private key with decrypted secret key data for signing
+     * @param  {module:key~Key}    privateKey private key with decrypted secret key .data for signing
      * @param  {String} text       message as native JavaScript string
      * @return {Promise<String>}   encrypted ASCII armored message
      * @static
@@ -12367,10 +12367,10 @@
 
     /**
      * Decrypts message
-     * @param  {module:key~Key}                privateKey private key with decrypted secret key data
-     * @param  {module:message~Message} msg    the message object with the encrypted data
+     * @param  {module:key~Key}                privateKey private key with decrypted secret key .data
+     * @param  {module:message~Message} msg    the message object with the encrypted .data
      * @return {Promise<(String|null)>}        decrypted message as as native JavaScript string
-     *                              or null if no literal data found
+     *                              or null if no literal .data found
      * @static
      */
     function decryptMessage(privateKey, msg) {
@@ -12387,12 +12387,12 @@
 
     /**
      * Decrypts message and verifies signatures
-     * @param  {module:key~Key}     privateKey private key with decrypted secret key data
+     * @param  {module:key~Key}     privateKey private key with decrypted secret key .data
      * @param  {(Array<module:key~Key>|module:key~Key)}  publicKeys array of keys or single key, to verify signatures
-     * @param  {module:message~Message} msg    the message object with signed and encrypted data
+     * @param  {module:message~Message} msg    the message object with signed and encrypted .data
      * @return {Promise<{text: String, signatures: Array<{keyid: module:type/keyid, valid: Boolean}>}>}
      *                              decrypted message as as native JavaScript string
-     *                              with verified signatures or null if no literal data found
+     *                              with verified signatures or null if no literal .data found
      * @static
      */
     function decryptAndVerifyMessage(privateKey, publicKeys, msg) {
@@ -12419,7 +12419,7 @@
 
     /**
      * Signs a cleartext message
-     * @param  {(Array<module:key~Key>|module:key~Key)}  privateKeys array of keys or single key with decrypted secret key data to sign cleartext
+     * @param  {(Array<module:key~Key>|module:key~Key)}  privateKeys array of keys or single key with decrypted secret key .data to sign cleartext
      * @param  {String} text        cleartext
      * @return {Promise<String>}    ASCII armored message
      * @static
@@ -12606,9 +12606,9 @@
         },
         /**
          * Allocate a new packet from structured packet clone
-         * See {@link http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#safe-passing-of-structured-data}
+         * See {@link http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#safe-passing-of-structured-.data}
          * @param {Object} packetClone packet clone
-         * @returns {Object} new packet object with data from packet clone
+         * @returns {Object} new packet object with .data from packet clone
          */
         fromStructuredClone: function(packetClone) {
             var tagName = enums.read(enums.packet, packetClone.tag)
@@ -12655,9 +12655,9 @@
     /**
      * Implementation of the Compressed Data Packet (Tag 8)<br/>
      * <br/>
-     * {@link http://tools.ietf.org/html/rfc4880#section-5.6|RFC4880 5.6}: The Compressed Data packet contains compressed data.  Typically,
+     * {@link http://tools.ietf.org/html/rfc4880#section-5.6|RFC4880 5.6}: The Compressed Data packet contains compressed .data.  Typically,
      * this packet is found as the contents of an encrypted packet, or following
-     * a Signature or One-Pass Signature packet, and contains a literal data packet.
+     * a Signature or One-Pass Signature packet, and contains a literal .data packet.
      * @requires compression/zlib
      * @requires compression/rawinflate
      * @requires compression/rawdeflate
@@ -12695,7 +12695,7 @@
         this.algorithm = 'zip';
 
         /**
-         * Compressed packet data
+         * Compressed packet .data
          * @type {String}
          */
         this.compressed = null;
@@ -12709,7 +12709,7 @@
         // One octet that gives the algorithm used to compress the packet.
         this.algorithm = enums.read(enums.compression, bytes.charCodeAt(0));
 
-        // Compressed data, which makes up the remainder of the packet.
+        // Compressed .data, which makes up the remainder of the packet.
         this.compressed = bytes.substr(1);
 
         this.decompress();
@@ -12730,7 +12730,7 @@
 
 
     /**
-     * Decompression method for decompressing the compressed data
+     * Decompression method for decompressing the compressed .data
      * read by read_packet
      */
     Compressed.prototype.decompress = function () {
@@ -12763,7 +12763,7 @@
     };
 
     /**
-     * Compress the packet data (member decompressedData)
+     * Compress the packet .data (member decompressedData)
      */
     Compressed.prototype.compress = function () {
         var uncompressed, deflate;
@@ -12835,7 +12835,7 @@
     /**
      * Implementation of the Literal Data Packet (Tag 11)<br/>
      * <br/>
-     * {@link http://tools.ietf.org/html/rfc4880#section-5.9|RFC4880 5.9}: A Literal Data packet contains the body of a message; data that
+     * {@link http://tools.ietf.org/html/rfc4880#section-5.9|RFC4880 5.9}: A Literal Data packet contains the body of a message; .data that
      * is not to be further interpreted.
      * @requires enums
      * @requires util
@@ -12852,14 +12852,14 @@
      */
     function Literal() {
         this.tag = enums.packet.literal;
-        this.format = 'utf8'; // default format for literal data packets
-        this.data = ''; // literal data representation as native JavaScript string or bytes
+        this.format = 'utf8'; // default format for literal .data packets
+        this.data = ''; // literal .data representation as native JavaScript string or bytes
         this.date = new Date();
         this.filename = 'msg.txt';
     }
 
     /**
-     * Set the packet data to a javascript native string, end of line
+     * Set the packet .data to a javascript native string, end of line
      * will be normalized to \r\n and by default text is converted to UTF8
      * @param {String} text Any native javascript string
      */
@@ -12871,9 +12871,9 @@
     };
 
     /**
-     * Returns literal data packets as native JavaScript string
+     * Returns literal .data packets as native JavaScript string
      * with normalized end of line to \n
-     * @return {String} literal data as text
+     * @return {String} literal .data as text
      */
     Literal.prototype.getText = function () {
         // decode UTF8
@@ -12883,7 +12883,7 @@
     };
 
     /**
-     * Set the packet data to value represented by the provided string of bytes.
+     * Set the packet .data to value represented by the provided string of bytes.
      * @param {String} bytes The string of bytes
      * @param {utf8|binary|text} format The format of the string of bytes
      */
@@ -12894,7 +12894,7 @@
 
 
     /**
-     * Get the byte sequence representing the literal packet data
+     * Get the byte sequence representing the literal packet .data
      * @returns {String} A sequence of bytes
      */
     Literal.prototype.getBytes = function () {
@@ -12903,7 +12903,7 @@
 
 
     /**
-     * Sets the filename of the literal packet data
+     * Sets the filename of the literal packet .data
      * @param {String} filename Any native javascript string
      */
     Literal.prototype.setFilename = function (filename) {
@@ -12912,7 +12912,7 @@
 
 
     /**
-     * Get the filename of the literal packet data
+     * Get the filename of the literal packet .data
      * @returns {String} filename
      */
     Literal.prototype.getFilename = function() {
@@ -12921,7 +12921,7 @@
 
 
     /**
-     * Parsing function for a literal data packet (tag 11).
+     * Parsing function for a literal .data packet (tag 11).
      *
      * @param {String} input Payload of a tag 11 packet
      * @param {Integer} position
@@ -12932,7 +12932,7 @@
      * @return {module:packet/literal} object representation
      */
     Literal.prototype.read = function (bytes) {
-        // - A one-octet field that describes how the data is formatted.
+        // - A one-octet field that describes how the .data is formatted.
 
         var format = enums.read(enums.literal, bytes.charCodeAt(0));
 
@@ -12949,7 +12949,7 @@
     /**
      * Creates a string representation of the packet
      *
-     * @param {String} data The data to be inserted as body
+     * @param {String} .data The .data to be inserted as body
      * @return {String} string-representation of the packet
      */
     Literal.prototype.write = function () {
@@ -13010,7 +13010,7 @@
     }
 
     /**
-     * Parsing function for a literal data packet (tag 10).
+     * Parsing function for a literal .data packet (tag 10).
      *
      * @param {String} input Payload of a tag 10 packet
      * @param {Integer} position
@@ -13050,7 +13050,7 @@
     /**
      * Implementation of the One-Pass Signature Packets (Tag 4)<br/>
      * <br/>
-     * {@link http://tools.ietf.org/html/rfc4880#section-5.4|RFC4880 5.4}: The One-Pass Signature packet precedes the signed data and contains
+     * {@link http://tools.ietf.org/html/rfc4880#section-5.4|RFC4880 5.4}: The One-Pass Signature packet precedes the signed .data and contains
      * enough information to allow the receiver to begin calculating any
      * hashes needed to verify the signature.  It allows the Signature
      * packet to be placed at the end of the message, so that the signer
@@ -13075,7 +13075,7 @@
         this.hashAlgorithm = null; // A one-octet number describing the hash algorithm used. (See {@link http://tools.ietf.org/html/rfc4880#section-9.4|RFC4880 9.4})
         this.publicKeyAlgorithm = null; // A one-octet number describing the public-key algorithm used. (See {@link http://tools.ietf.org/html/rfc4880#section-9.1|RFC4880 9.1})
         this.signingKeyId = null; // An eight-octet number holding the Key ID of the signing key.
-        this.flags = null; //  A one-octet number holding a flag showing whether the signature is nested.  A zero value indicates that the next packet is another One-Pass Signature packet that describes another signature to be applied to the same message data.
+        this.flags = null; //  A one-octet number holding a flag showing whether the signature is nested.  A zero value indicates that the next packet is another One-Pass Signature packet that describes another signature to be applied to the same message .data.
     }
 
     /**
@@ -13106,7 +13106,7 @@
         // A one-octet number holding a flag showing whether the signature
         //   is nested.  A zero value indicates that the next packet is
         //   another One-Pass Signature packet that describes another
-        //   signature to be applied to the same message data.
+        //   signature to be applied to the same message .data.
         this.flags = bytes.charCodeAt(mypos++);
         return this;
     };
@@ -13199,7 +13199,7 @@
                 result += String.fromCharCode(length);
             } else if (length > 191 && length < 8384) {
                 /*
-                 * let a = (total data packet length) - 192 let bc = two octet
+                 * let a = (total .data packet length) - 192 let bc = two octet
                  * representation of a let d = b + 192
                  */
                 result += String.fromCharCode(((length - 192) >> 8) + 192);
@@ -13317,11 +13317,11 @@
                         // the packet is. If the packet is in a file, this means that
                         // the packet extends until the end of the file. In general, 
                         // an implementation SHOULD NOT use indeterminate-length 
-                        // packets except where the end of the data will be clear 
+                        // packets except where the end of the .data will be clear
                         // from the context, and even then it is better to use a 
                         // definite length, or a new format header. The new format 
                         // headers described below have a mechanism for precisely
-                        // encoding data of indeterminate length.
+                        // encoding .data of indeterminate length.
                         packet_length = len;
                         break;
                 }
@@ -13341,7 +13341,7 @@
                 } else if (input.charCodeAt(mypos) > 223 && input.charCodeAt(mypos) < 255) {
                     packet_length = 1 << (input.charCodeAt(mypos++) & 0x1F);
                     util.print_debug("4 byte length:" + packet_length);
-                    // EEEK, we're reading the full data here...
+                    // EEEK, we're reading the full .data here...
                     var mypos2 = mypos + packet_length;
                     bodydata = input.substring(mypos, mypos + packet_length);
                     var tmplen;
@@ -13427,7 +13427,7 @@
         this.length = 0;
     }
     /**
-     * Reads a stream of binary data and interprents it as a list of packets.
+     * Reads a stream of binary .data and interprents it as a list of packets.
      * @param {String} A binary string of bytes.
      */
     Packetlist.prototype.read = function (bytes) {
@@ -13581,9 +13581,9 @@
 
     /**
      * Allocate a new packetlist from structured packetlist clone
-     * See {@link http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#safe-passing-of-structured-data}
+     * See {@link http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#safe-passing-of-structured-.data}
      * @param {Object} packetClone packetlist clone
-     * @returns {Object} new packetlist object with data from packetlist clone
+     * @returns {Object} new packetlist object with .data from packetlist clone
      */
     module.exports.fromStructuredClone = function(packetlistClone) {
         var packetlist = new Packetlist();
@@ -13938,7 +13938,7 @@
      * @param {module:enums.publicKey} pubalgo
      *            The corresponding public key algorithm // See {@link http://tools.ietf.org/html/rfc4880#section-9.1|RFC4880 9.1}
      * @param {module:enums.symmetric} symmalgo
-     *            The symmetric cipher algorithm used to encrypt the data
+     *            The symmetric cipher algorithm used to encrypt the .data
      *            within an encrypteddatapacket or encryptedintegrity-
      *            protecteddatapacket
      *            following this packet //See {@link http://tools.ietf.org/html/rfc4880#section-9.2|RFC4880 9.2}
@@ -14109,9 +14109,9 @@
     function SecretKey() {
         publicKey.call(this);
         this.tag = enums.packet.secretKey;
-        // encrypted secret-key data
+        // encrypted secret-key .data
         this.encrypted = null;
-        // indicator if secret-key data is available in decrypted form
+        // indicator if secret-key .data is available in decrypted form
         this.isDecrypted = false;
     }
 
@@ -14190,7 +14190,7 @@
 
 
         // - One octet indicating string-to-key usage conventions.  Zero
-        //   indicates that the secret-key data is not encrypted.  255 or 254
+        //   indicates that the secret-key .data is not encrypted.  255 or 254
         //   indicates that a string-to-key specifier is being given.  Any
         //   other value is a symmetric-key encryption algorithm identifier.
         var isEncrypted = bytes.charCodeAt(0);
@@ -14200,7 +14200,7 @@
         } else {
 
             // - Plain or encrypted multiprecision integers comprising the secret
-            //   key data.  These algorithm-specific fields are as described
+            //   key .data.  These algorithm-specific fields are as described
             //   below.
             var parsedMPI = parse_cleartext_mpi('mod', bytes.substr(1), this.algorithm);
             if (parsedMPI instanceof Error)
@@ -14306,7 +14306,7 @@
         }
 
 
-        // - [Optional] If secret data is encrypted (string-to-key usage octet
+        // - [Optional] If secret .data is encrypted (string-to-key usage octet
         //   not zero), an Initial Vector (IV) of the same length as the
         //   cipher's block size.
         var iv = this.encrypted.substr(i,
@@ -14416,7 +14416,7 @@
      * <br/>
      * {@link http://tools.ietf.org/html/rfc4880#section-5.2|RFC4480 5.2}:
      * A Signature packet describes a binding between some public key and
-     * some data.  The most common signatures are a signature of a file or a
+     * some .data.  The most common signatures are a signature of a file or a
      * block of text, and a signature that is a certification of a User ID.
      * @requires crypto
      * @requires enums
@@ -14513,7 +14513,7 @@
                 this.created = util.readDate(bytes.substr(i, 4));
                 i += 4;
 
-                // storing data appended to data which gets verified
+                // storing .data appended to .data which gets verified
                 this.signatureData = bytes.substring(sigpos, i);
 
                 // Eight-octet Key ID of signer.
@@ -14532,13 +14532,13 @@
                 this.hashAlgorithm = bytes.charCodeAt(i++);
 
             function subpackets(bytes) {
-                // Two-octet scalar octet count for following subpacket data.
+                // Two-octet scalar octet count for following subpacket .data.
                 var subpacket_length = util.readNumber(
                     bytes.substr(0, 2));
 
                 var i = 2;
 
-                // subpacket data set (zero or more subpackets)
+                // subpacket .data set (zero or more subpackets)
                 var subpacked_read = 0;
                 while (i < 2 + subpacket_length) {
 
@@ -14558,7 +14558,7 @@
 
                 // A V4 signature hashes the packet body
                 // starting from its first field, the version number, through the end
-                // of the hashed subpacket data.  Thus, the fields hashed are the
+                // of the hashed subpacket .data.  Thus, the fields hashed are the
                 // signature version, the signature type, the public-key algorithm, the
                 // hash algorithm, the hashed subpacket length, and the hashed
                 // subpacket body.
@@ -14602,7 +14602,7 @@
     };
 
     /**
-     * Signs provided data. This needs to be done prior to serialization.
+     * Signs provided .data. This needs to be done prior to serialization.
      * @param {module:packet/secret_key} key private key used to sign the message.
      * @param {Object} data Contains packets to be signed.
      */
@@ -14637,8 +14637,8 @@
     };
 
     /**
-     * Creates string of bytes with all subpacket data
-     * @return {String} a string-representation of a all subpacket data
+     * Creates string of bytes with all subpacket .data
+     * @return {String} a string-representation of a all subpacket .data
      */
     Signature.prototype.write_all_sub_packets = function () {
         var sub = enums.signatureSubpacket;
@@ -14750,7 +14750,7 @@
      * creates a string representation of a sub signature packet (See {@link http://tools.ietf.org/html/rfc4880#section-5.2.3.1|RFC 4880 5.2.3.1})
      * @param {Integer} type subpacket signature type. Signature types as described
      * in {@link http://tools.ietf.org/html/rfc4880#section-5.2.3.2|RFC4880 Section 5.2.3.2}
-     * @param {String} data data to be included
+     * @param {String} data .data to be included
      * @return {String} a string-representation of a sub signature packet (See {@link http://tools.ietf.org/html/rfc4880#section-5.2.3.1|RFC 4880 5.2.3.1})
      */
     function write_sub_packet(type, data) {
@@ -14838,7 +14838,7 @@
 
             case 20:
                 // Notation Data
-                // We don't know how to handle anything but a text flagged data.
+                // We don't know how to handle anything but a text flagged .data.
                 if (bytes.charCodeAt(mypos) == 0x80) {
 
                     // We extract key/value tuple from the byte stream.
@@ -14918,7 +14918,7 @@
         }
     };
 
-// Produces data to produce signature on
+// Produces .data to produce signature on
     Signature.prototype.toSign = function (type, data) {
         var t = enums.signature;
 
@@ -14998,7 +14998,7 @@
 
     /**
      * verifys the signature packet. Note: not signature types are implemented
-     * @param {String|Object} data data which on the signature applies
+     * @param {String|Object} data .data which on the signature applies
      * @param {module:packet/public_subkey|module:packet/public_key|
  *         module:packet/secret_subkey|module:packet/secret_key} key the public key to verify the signature
      * @return {boolean} True if message is verified, else false.
@@ -15081,7 +15081,7 @@
      * The Symmetrically Encrypted Integrity Protected Data packet is
      * a variant of the Symmetrically Encrypted Data packet. It is a new feature
      * created for OpenPGP that addresses the problem of detecting a modification to
-     * encrypted data. It is used in combination with a Modification Detection Code
+     * encrypted .data. It is used in combination with a Modification Detection Code
      * packet.
      * @requires crypto
      * @requires util
@@ -15120,7 +15120,7 @@
             throw new Error('Invalid packet version.');
         }
 
-        // - Encrypted data, the output of the selected symmetric-key cipher
+        // - Encrypted .data, the output of the selected symmetric-key cipher
         //   operating in Cipher Feedback mode with shift amount equal to the
         //   block size of the cipher (CFB-n where n is the block size).
         this.encrypted = bytes.substr(1);
@@ -15160,13 +15160,13 @@
     };
 
     /**
-     * Decrypts the encrypted data contained in this object read_packet must
+     * Decrypts the encrypted .data contained in this object read_packet must
      * have been called before
      *
      * @param {module:enums.symmetric} sessionKeyAlgorithm
      *            The selected symmetric encryption algorithm to be used
      * @param {String} key The key of cipher blocksize length to be used
-     * @return {String} The decrypted data of this packet
+     * @return {String} The decrypted .data of this packet
      */
     SymEncryptedIntegrityProtected.prototype.decrypt = function (sessionKeyAlgorithm, key) {
         var decrypted = crypto.cfb.decrypt(
@@ -15364,9 +15364,9 @@
     /**
      * Implementation of the Symmetrically Encrypted Data Packet (Tag 9)<br/>
      * <br/>
-     * {@link http://tools.ietf.org/html/rfc4880#section-5.7|RFC4880 5.7}: The Symmetrically Encrypted Data packet contains data encrypted
+     * {@link http://tools.ietf.org/html/rfc4880#section-5.7|RFC4880 5.7}: The Symmetrically Encrypted Data packet contains .data encrypted
      * with a symmetric-key algorithm. When it has been decrypted, it contains other
-     * packets (usually a literal data packet or compressed data packet, but in
+     * packets (usually a literal .data packet or compressed .data packet, but in
      * theory other Symmetrically Encrypted Data packets or sequences of packets
      * that form whole OpenPGP messages).
      * @requires crypto
@@ -15399,7 +15399,7 @@
     };
 
     /**
-     * Symmetrically decrypt the packet data
+     * Symmetrically decrypt the packet .data
      *
      * @param {module:enums.symmetric} sessionKeyAlgorithm
      *             Symmetric key algorithm to use // See {@link http://tools.ietf.org/html/rfc4880#section-9.2|RFC4880 9.2}
@@ -15469,7 +15469,7 @@
      * Implementation of the User Attribute Packet (Tag 17)<br/>
      * <br/>
      * The User Attribute packet is a variation of the User ID packet.  It
-     * is capable of storing more types of data than the User ID packet,
+     * is capable of storing more types of .data than the User ID packet,
      * which is limited to text.  Like the User ID packet, a User Attribute
      * packet may be certified by the key owner ("self-signed") or any other
      * key owner who cares to certify it.  Except as noted, a User Attribute
@@ -15739,8 +15739,8 @@
 
     /**
      * Parsing function for a mpi ({@link http://tools.ietf.org/html/rfc4880#section3.2|RFC 4880 3.2}).
-     * @param {String} input Payload of mpi data
-     * @return {Integer} Length of data read
+     * @param {String} input Payload of mpi .data
+     * @return {Integer} Length of .data read
      */
     MPI.prototype.read = function (bytes) {
         var bits = (bytes.charCodeAt(0) << 8) | bytes.charCodeAt(1);
@@ -16430,7 +16430,7 @@
     };
 
     /**
-     * Send message to worker with random data
+     * Send message to worker with random .data
      * @param  {Integer} size Number of bytes to send
      */
     AsyncProxy.prototype.seedRandom = function(size) {
@@ -16483,7 +16483,7 @@
     /**
      * Signs message text and encrypts it
      * @param  {(Array<module:key~Key>|module:key~Key)}  publicKeys array of keys or single key, used to encrypt the message
-     * @param  {module:key~Key}    privateKey private key with decrypted secret key data for signing
+     * @param  {module:key~Key}    privateKey private key with decrypted secret key .data for signing
      * @param  {String} text       message as native JavaScript string
      */
     AsyncProxy.prototype.signAndEncryptMessage = function(publicKeys, privateKey, text) {
@@ -16508,8 +16508,8 @@
 
     /**
      * Decrypts message
-     * @param  {module:key~Key}     privateKey private key with decrypted secret key data
-     * @param  {module:message~Message} message    the message object with the encrypted data
+     * @param  {module:key~Key}     privateKey private key with decrypted secret key .data
+     * @param  {module:message~Message} message    the message object with the encrypted .data
      */
     AsyncProxy.prototype.decryptMessage = function(privateKey, message) {
         var self = this;
@@ -16526,9 +16526,9 @@
 
     /**
      * Decrypts message and verifies signatures
-     * @param  {module:key~Key}     privateKey private key with decrypted secret key data
+     * @param  {module:key~Key}     privateKey private key with decrypted secret key .data
      * @param  {(Array<module:key~Key>|module:key~Key)}  publicKeys array of keys or single key to verify signatures
-     * @param  {module:message~Message} message    the message object with signed and encrypted data
+     * @param  {module:message~Message} message    the message object with signed and encrypted .data
      */
     AsyncProxy.prototype.decryptAndVerifyMessage = function(privateKey, publicKeys, message) {
         var self = this;
@@ -16562,7 +16562,7 @@
 
     /**
      * Signs a cleartext message
-     * @param  {(Array<module:key~Key>|module:key~Key)}  privateKeys array of keys or single key, with decrypted secret key data to sign cleartext
+     * @param  {(Array<module:key~Key>|module:key~Key)}  privateKeys array of keys or single key, with decrypted secret key .data to sign cleartext
      * @param  {String} text        cleartext
      */
     AsyncProxy.prototype.signClearMessage = function(privateKeys, text) {
@@ -16646,7 +16646,7 @@
 
     /**
      * Decrypts secret part of all secret key packets of key.
-     * @param  {module:key~Key}     privateKey private key with encrypted secret key data
+     * @param  {module:key~Key}     privateKey private key with encrypted secret key .data
      * @param  {String} password    password to unlock the key
      */
     AsyncProxy.prototype.decryptKey = function(privateKey, password) {
@@ -16672,7 +16672,7 @@
 
     /**
      * Decrypts secret part of key packets matching array of keyids.
-     * @param  {module:key~Key}     privateKey private key with encrypted secret key data
+     * @param  {module:key~Key}     privateKey private key with encrypted secret key .data
      * @param  {Array<module:type/keyid>} keyIds
      * @param  {String} password    password to unlock the key
      */

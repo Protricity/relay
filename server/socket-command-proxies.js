@@ -6,7 +6,7 @@ if (!module.exports) module.exports = {};
 module.exports.initSocketServerCommandProxies = function(SocketServer) {
     // Socket Command Proxies
 
-    // HTTP Commands
+    // Socket HTTP Commands
     //SocketServer.addEventListener('connection', function(client) {
     //    httpCommand("GET", client);
     //});
@@ -14,10 +14,10 @@ module.exports.initSocketServerCommandProxies = function(SocketServer) {
     function importHTTPCommands(commandString, client) {
         if(!/^(keyspaces?|get|post|put|delete|patch|head|http|host|message)/i.test(commandString))
             return false;
+
         SocketServer.removeCommand(importHTTPCommands);
-        require('../../keyspace/ks-server-commands.js')
+        require('../keyspace/ks-server-commands.js')
             .initSocketServerKSCommands(SocketServer);
-        console.log("Loaded keyspace/ks-server-commands.js");
 
         return false;
     }
@@ -27,11 +27,10 @@ module.exports.initSocketServerCommandProxies = function(SocketServer) {
     function importChannelCommands(commandString, client) {
         if(!/^(subscribe|channels?|join|leave|channel|nick|userlist)/i.test(commandString))
             return false;
-        SocketServer.removeCommand(importChannelCommands);
 
-        require('../../channel/channel-server-commands.js')
+        SocketServer.removeCommand(importChannelCommands);
+        require('../channel/channel-server-commands.js')
             .initSocketServerChannelCommands(SocketServer);
-        console.log("Loaded channel/channel-server-commands.js");
 
         return false;
     }
@@ -59,5 +58,19 @@ module.exports.initSocketServerCommandProxies = function(SocketServer) {
     //    console.log("Loaded pgp/pgp-server-commands.js");
     //    return false;
     //}
+
+
+    // Beta Requests
+    SocketServer.addCommand(importBetaCommands);
+    function importBetaCommands(commandString, client) {
+        if(!/^beta/i.test(commandString))
+            return false;
+
+        SocketServer.removeCommand(importBetaCommands);
+        require('../beta/beta-server-commands.js')
+            .initBetaSocketCommands(SocketServer);
+
+        return false;
+    }
 
 };

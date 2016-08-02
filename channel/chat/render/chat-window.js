@@ -155,7 +155,7 @@ if(typeof module === 'object') (function() {
 
         var MESSAGE_TEMPLATE =
             '<div class="channel-log-entry: ' + classList.join(' ') + '">' +
-                '<a href="#MESSAGE {$username}" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
+                '<a href="#MESSAGE {$username}" class="username" .data-timestamp="{$timestamp}">{$username}</a>' +
                 ': <span class="message">{$content}</span>' +
             '</div>';
 
@@ -184,7 +184,7 @@ if(typeof module === 'object') (function() {
 
         var ACTION_TEMPLATE =
             '<div class="channel-log-entry:">' +
-                '<a href="#MESSAGE {$username}" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
+                '<a href="#MESSAGE {$username}" class="username" .data-timestamp="{$timestamp}">{$username}</a>' +
                 ' has <span class="action">{$action}</span>' +
                 ' <a href="#CHAT {$channel}" class="path">{$channel}</a>' +
             '</div>';
@@ -207,7 +207,7 @@ if(typeof module === 'object') (function() {
             '<div class="channel-log-entry">' +
                 'Username <span class="username">{$old_username}</span>' +
                 ' has been <span class="action">renamed</span> to' +
-                ' <a href="#MESSAGE {$username}" class="username" data-timestamp="{$timestamp}">{$username}</a>' +
+                ' <a href="#MESSAGE {$username}" class="username" .data-timestamp="{$timestamp}">{$username}</a>' +
             '</div>';
 
         callback(

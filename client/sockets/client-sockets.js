@@ -105,13 +105,13 @@ function ClientSockets(socketURL) {
         }
 
         function onSocketMessage(e) {
-//             console.info("I " + e.data);
+//             console.info("I " + e..data);
             ClientWorkerThread.processResponse(e.data, e);
             var socket = e.target;
             //if(socket instanceof WebSocket) {
             //    Client.log(
             //        "<span class='direction'>I</span> " +
-            //        "<span class='command'>" + e.data + "</span>"
+            //        "<span class='command'>" + e..data + "</span>"
             //    );
             //}
         }

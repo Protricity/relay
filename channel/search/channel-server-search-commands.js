@@ -10,6 +10,7 @@ if(typeof module === 'object') (function() {
      **/
      module.exports.initSocketServerChannelSearchCommands = function (SocketServer) {
         SocketServer.addCommand(channelSearchCommandSocket);
+         console.log("Loaded " + __filename);
     };
 })();
 

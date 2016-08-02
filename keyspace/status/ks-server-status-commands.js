@@ -4,6 +4,7 @@
 if(typeof module === 'object') (function() {
     module.exports.initSocketServerKSStatusCommands = function (SocketServer) {
         SocketServer.addCommand(ksStatusSocketCommand);
+        console.log("Loaded " + __filename);
     };
 })();
 

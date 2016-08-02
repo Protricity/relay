@@ -1043,7 +1043,7 @@ module.exports.KeySpaceDB =
     //    //console.log("Generating test keypair...");
     //    openpgp.generateKeyPair(options)
     //        .then(function(keypair) {
-    //        var postContent = '<article data-path="/test/path" data-timestamp="' + Date.now() + '"></article>';
+    //        var postContent = '<article .data-path="/test/path" .data-timestamp="' + Date.now() + '"></article>';
     //            var newPrivateKeyID = keypair.key.primaryKey.getKeyId().toHex().toUpperCase();
     //            var newPublicKeyID = keypair.key.subKeys[0].subKey.getKeyId().toHex().toUpperCase();
     //

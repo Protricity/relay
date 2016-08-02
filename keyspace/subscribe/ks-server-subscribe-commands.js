@@ -14,6 +14,7 @@ if(typeof module === 'object') (function() {
 
         SocketServer.addCommand(ksSubscribeSocketCommand);
         SocketServer.addCommand(ksUnsubscribeSocketCommand);
+        console.log("Loaded " + __filename);
 
         //SocketServer.addClientEventListener('close', ksSocketClientCloseListener);
     };

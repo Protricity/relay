@@ -10,6 +10,7 @@ if(typeof module === 'object') (function() {
     **/
     module.exports.initSocketServerChannelChatCommands= function (SocketServer) {
         SocketServer.addCommand(chatChannelSocketCommand);
+        console.log("Loaded " + __filename);
 
         /**
          * Handles Command: CHANNEL.CHAT [channel] [message]

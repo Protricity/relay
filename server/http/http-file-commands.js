@@ -3,12 +3,9 @@
  */
 if (!module) var module = {};
 if (!module.exports) module.exports = {};
-module.exports.initHTTPServerCommands = function(HTTPServer) {
+module.exports.initHTTPFileCommands = function(HTTPServer) {
     HTTPServer.addCommand(getStaticHTTPCommand);
-
-    require('../../keyspace/ks-server-commands.js')
-        .initHTTPServerKSCommands(HTTPServer);
-    console.log("Loaded keyspace/ks-server-commands.js");
+    console.log("Loaded " + __filename);
 };
 
 function getStaticHTTPCommand(request, response) {
@@ -78,6 +75,8 @@ function getContentType(filePath) {
         case 'map':
         case 'ttf':
             return 'application/octet-stream';
+        case 'pdf':
+            return 'application/pdf';
 
         default:
             console.error("Unknown file type: " + filePath);

@@ -191,7 +191,7 @@ if(typeof module === 'object') (function() {
 
             var MESSAGE_TEMPLATE =
                 '<div class="message-log-entry">' +
-                    '<span class="username" data-id="{$pgp_id_from}">{$from}</span>' +
+                    '<span class="username" .data-id="{$pgp_id_from}">{$from}</span>' +
                     ': <span class="message">{$content}</span>' +
                 '</div>';
 

@@ -11,6 +11,7 @@ if(typeof module === 'object') (function() {
      module.exports.initSocketServerChannelSubscribeCommands= function (SocketServer) {
          SocketServer.addCommand(channelSubscribeSocketCommand);
          SocketServer.addCommand(channelUnsubscribeSocketCommand);
+         console.log("Loaded " + __filename);
     };
 })();
 

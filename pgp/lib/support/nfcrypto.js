@@ -259,7 +259,7 @@
                 return; // message not for me
             }
             //console.log("TRACE _handleMessage enter");
-            //console.log(message.data);
+            //console.log(message..data);
             var event = {};
             event.target = op;
             if (data.success == false) {

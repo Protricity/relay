@@ -5,9 +5,11 @@ if(typeof module === 'object') (function() {
     module.exports.initSocketServerKSPutKeySpaceCommands = function (SocketServer) {
         SocketServer.addCommand(putCommandSocket);
         SocketServer.addCommand(handleHTTPSocketResponse);
+        console.log("Loaded " + __filename);
     };
     module.exports.initHTTPServerKSPutKeySpaceCommands = function (SocketServer) {
         SocketServer.addCommand(putCommandHTTP);
+        console.log("Loaded " + __filename);
     };
 })();
 
@@ -73,7 +75,7 @@ function putCommandSocket(commandString, client) {
         var pgpClearSignedMessage = openpgp.cleartext.readArmored(content);
 
         var path = /data-path=["'](\S+)["']/i.exec(pgpClearSignedMessage.text)[1];
-        //var timestamp = parseInt(/data-timestamp=["'](\d+)["']/i.exec(pgpClearSignedMessage.text)[1]);
+        //var timestamp = parseInt(/.data-timestamp=["'](\d+)["']/i.exec(pgpClearSignedMessage.text)[1]);
         var timestamp = pgpClearSignedMessage.packets[0].created.getTime(); // TODO: get signature packet
 
         //client.send("INFO Processing signed content for: " + pgp_id_public);

@@ -82,6 +82,25 @@ module.exports.initClientCommands = function(ClientWorkerThread) {
         return false;
     }
 
+
+
+    // Beta Subscribe Commands
+    ClientWorkerThread.addCommand(initBetaClientCommands);
+    ClientWorkerThread.addResponse(initBetaClientCommands);
+    function initBetaClientCommands(commandString, e) {
+        if (!/^beta/i.test(commandString))
+            return false;
+
+        ClientWorkerThread.removeCommand(initBetaClientCommands);
+        ClientWorkerThread.removeResponse(initBetaClientCommands);
+
+        self.module = {exports: {}};
+        importScripts('beta/beta-client-commands.js');
+        module.exports.initBetaClientCommands(ClientWorkerThread);
+        return false;
+    }
+
+
     // App Commands
 
     self.module = {exports: {}};

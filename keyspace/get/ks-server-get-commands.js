@@ -6,9 +6,11 @@ if(typeof module === 'object') (function() {
     module.exports.initSocketServerKSGetCommands = function (SocketServer) {
         SocketServer.addCommand(getCommandSocket);
         SocketServer.addCommand(httpCommandSocket);
+        console.log("Loaded " + __filename);
     };
-    module.exports.initHTTPServerKSGetCommands = function (SocketServer) {
-        SocketServer.addCommand(getCommandHTTP);
+    module.exports.initHTTPServerKSGetCommands = function (HTTPServer) {
+        HTTPServer.addCommand(getCommandHTTP);
+        console.log("Loaded " + __filename);
     };
 })();
 

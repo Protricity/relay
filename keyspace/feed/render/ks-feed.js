@@ -180,8 +180,8 @@ if(typeof document === 'object')
                     articleDiv = articleDiv.children[0];
 
                 articleDiv.classList.add('ks-verified-content');
-                articleDiv.setAttribute('data-timestamp', entryData.timestamp);
-                articleDiv.setAttribute('data-pgp-id-public', entryData.pgp_id_public);
+                articleDiv.setAttribute('.data-timestamp', entryData.timestamp);
+                articleDiv.setAttribute('.data-pgp-id-public', entryData.pgp_id_public);
                 articleHTMLContent = articleDiv.outerHTML;
 
             } else {            // TODO: if PGP KEY BLOCK
@@ -209,7 +209,7 @@ if(typeof document === 'object')
                 if(!authorAnchorElm) {
                     authorAnchorElm = document.createElement('a');
                     authorAnchorElm.setAttribute('rel', 'author');
-                    authorAnchorElm.setAttribute('data-id', entryData.pgp_id_public);
+                    authorAnchorElm.setAttribute('.data-id', entryData.pgp_id_public);
                     authorAnchorElm.innerHTML = author;
                 }
 
@@ -441,9 +441,9 @@ if(typeof document === 'object')
                     contentDiv.innerHTML = "<article>\n\t" + contentDiv.innerHTML + "\n</article>";
                     articleElm = contentDiv.querySelector('article');
                 }
-                articleElm.setAttribute('data-author', author);
-                articleElm.setAttribute('data-path', contentPath);
-                //articleElm.setAttribute('data-timestamp', timestamp.toString());
+                articleElm.setAttribute('.data-author', author);
+                articleElm.setAttribute('.data-path', contentPath);
+                //articleElm.setAttribute('.data-timestamp', timestamp.toString());
                 postContent = articleElm.outerHTML;
                 postContent = protectHTMLContent(postContent, formElm);
 
@@ -534,8 +534,8 @@ if(typeof document === 'object')
                 contentDiv.innerHTML = "<article>" + contentDiv.innerHTML + "</article>";
                 articleElm = contentDiv.querySelector('article');
             }
-            articleElm.setAttribute('data-path', pathElm.value);
-            //articleElm.setAttribute('data-timestamp', timestamp.toString());
+            articleElm.setAttribute('.data-path', pathElm.value);
+            //articleElm.setAttribute('.data-timestamp', timestamp.toString());
 
             articleElm.classList.add('ks-feed-entry:');
             postContent = articleElm.outerHTML;
@@ -635,7 +635,7 @@ if(typeof document === 'object')
     //
     //module.exports.renderFeedEntry = function(entryData, callback) {
     //    var FEED_TEMPLATE_ENTRY = "\
-    //<article class='feed-entry feed-entry:{$uid} feed-unsorted' data-uid='{$uid}'>\n\
+    //<article class='feed-entry feed-entry:{$uid} feed-unsorted' .data-uid='{$uid}'>\n\
     //    <legend class='title'>Feed Post</legend>\n\
     //    <div class='title-commands'>\n\
     //        <a class='title-command-minimize' href='#MINIMIZE feed-entry:{$uid}'>[-]</a><!--\
@@ -677,7 +677,7 @@ if(typeof document === 'object')
     //
     //    var pgp_id_public_short = entryData.pgp_id_public.substr(entryData.pgp_id_public.length - 8);
     //    var user_home = '/home/' + pgp_id_public_short.toLowerCase() + '/';
-    //    var authorMatch = /data-author=["'](\S+)["']/i.exec(entryData.content_verified);
+    //    var authorMatch = /.data-author=["'](\S+)["']/i.exec(entryData.content_verified);
     //    var author = authorMatch ? authorMatch[1] : pgp_id_public_short;
     //
     //    // Callback
@@ -691,7 +691,7 @@ if(typeof document === 'object')
     //            .replace(/{\$path}/gi, entryData.path)
     //            .replace(/{\$timestamp}/gi, entryData.timestamp)
     //            .replace(/{\$timestamp_formatted}/gi, timeSince(entryData.timestamp) + ' ago')
-    //            //.replace(/{\$content}/gi, data.content)
+    //            //.replace(/{\$content}/gi, .data.content)
     //            .replace(/{\$content}/gi, escapeHTML(entryData.content))
     //        //.replace(/{\$content_verified}/gi, entryData.content_verified)
     //        //.replace(/{\$[^}]+}/gi, '')
@@ -726,7 +726,7 @@ if(typeof document === 'object')
     //
     //    var pgp_id_public_short = entryData.pgp_id_public.substr(entryData.pgp_id_public.length - 8);
     //    var user_home = '/home/' + pgp_id_public_short.toLowerCase() + '/';
-    //    var authorMatch = /data-author=["'](\S+)["']/i.exec(entryData.content_verified);
+    //    var authorMatch = /.data-author=["'](\S+)["']/i.exec(entryData.content_verified);
     //    var author = authorMatch ? authorMatch[1] : pgp_id_public_short;
     //
     //    // Callback
@@ -740,7 +740,7 @@ if(typeof document === 'object')
     //            .replace(/{\$path}/gi, entryData.path)
     //            .replace(/{\$timestamp}/gi, entryData.timestamp)
     //            .replace(/{\$timestamp_formatted}/gi, timeSince(entryData.timestamp) + ' ago')
-    //            //.replace(/{\$content}/gi, data.content)
+    //            //.replace(/{\$content}/gi, .data.content)
     //            .replace(/{\$content}/gi, escapeHTML(entryData.content))
     //        //.replace(/{\$content_verified}/gi, entryData.content_verified)
     //        //.replace(/{\$[^}]+}/gi, '')
@@ -755,8 +755,8 @@ if(typeof document === 'object')
 //        var verifiedContentElm = verifiedContentElms[i];
 //
 //        var feedPostElm = verifiedContentElm.getElementsByClassName('feed-post')[0];
-//        var channel = feedPostElm.getAttribute('data-path');
-//        var timestamp = feedPostElm.getAttribute('data-timestamp');
+//        var channel = feedPostElm.getAttribute('.data-path');
+//        var timestamp = feedPostElm.getAttribute('.data-timestamp');
 //
 //        var chatMessageElm = document.createElement('span');
 //        chatMessageElm.innerHTML =

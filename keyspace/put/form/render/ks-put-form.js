@@ -144,9 +144,9 @@ if(typeof document === 'object')
                 articleElm = contentDiv.querySelector('article');
             }
 
-            //articleElm.setAttribute('data-author', author);
-            //articleElm.setAttribute('data-timestamp', timestamp.toString());
-            articleElm.setAttribute('data-path', contentPath);
+            //articleElm.setAttribute('.data-author', author);
+            //articleElm.setAttribute('.data-timestamp', timestamp.toString());
+            articleElm.setAttribute('.data-path', contentPath);
 
             postContent = articleElm.outerHTML;
             postContent = protectHTMLContent(postContent, formElm);
@@ -228,8 +228,8 @@ if(typeof document === 'object')
             contentDiv.innerHTML = "<article>" + contentDiv.innerHTML + "</article>";
             articleElm = contentDiv.querySelector('article');
         }
-        articleElm.setAttribute('data-path', pathElm);
-        //articleElm.setAttribute('data-timestamp', timestamp.toString());
+        articleElm.setAttribute('.data-path', pathElm);
+        //articleElm.setAttribute('.data-timestamp', timestamp.toString());
 
         postContent = articleElm.outerHTML;
         postContent = protectHTMLContent(postContent, formElm);

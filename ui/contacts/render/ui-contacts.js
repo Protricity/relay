@@ -291,9 +291,9 @@ if(typeof document === 'object')
 
         function updateCommandList(e, formElm) {
             var checkedContactEntries = formElm.querySelectorAll('input:checked.keyspace-contact-entry-checkbox\\:');
-            var channels = formElm.querySelectorAll('input:checked.keyspace-contact-entry-checkbox\\:[data-type=channel');
-            var privateKeys = formElm.querySelectorAll('input:checked.keyspace-contact-entry-checkbox\\:[data-type=private-key');
-            var publicKeys = formElm.querySelectorAll('input:checked.keyspace-contact-entry-checkbox\\:[data-type=public-key');
+            var channels = formElm.querySelectorAll('input:checked.keyspace-contact-entry-checkbox\\:[.data-type=channel');
+            var privateKeys = formElm.querySelectorAll('input:checked.keyspace-contact-entry-checkbox\\:[.data-type=private-key');
+            var publicKeys = formElm.querySelectorAll('input:checked.keyspace-contact-entry-checkbox\\:[.data-type=public-key');
 
             var html_command_options = '';
             html_command_options +=

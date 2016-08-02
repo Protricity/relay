@@ -66,9 +66,9 @@ if(typeof document === 'object')
         var voteContent =
             "<article " +
                 "class='app-vote-entry:' " +
-                "data-re='" + vote_pgp_id_public + ' ' + vote_timestamp + "' " +
-                "data-voter-id='" + user_pgp_id_public + "' " +
-                "data-timestamp='" + Date.now() + "'>" +
+                ".data-re='" + vote_pgp_id_public + ' ' + vote_timestamp + "' " +
+                ".data-voter-id='" + user_pgp_id_public + "' " +
+                ".data-timestamp='" + Date.now() + "'>" +
                 user_choice +
             "</article>";
         console.log(voteContent);
@@ -181,10 +181,10 @@ if(typeof document === 'object')
         if(voteContainerElm.classList.contains('disable-app-vote-form'))
             return;
 
-        var vote_pgp_id_public = voteContainerElm.getAttribute('data-pgp-id-public');
+        var vote_pgp_id_public = voteContainerElm.getAttribute('.data-pgp-id-public');
         if(!vote_pgp_id_public)
             throw new Error("No PGP ID found");
-        var vote_timestamp = voteContainerElm.getAttribute('data-timestamp');
+        var vote_timestamp = voteContainerElm.getAttribute('.data-timestamp');
         if(!vote_timestamp)
             throw new Error("No Timestamp found");
 

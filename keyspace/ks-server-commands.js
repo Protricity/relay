@@ -3,10 +3,48 @@
  */
 
 if(typeof module === 'object') (function() {
+
+    module.exports.initHTTPKeySpaceCommands = function (HTTPServer) {
+
+        // HTTP GET Command
+        HTTPServer.addCommand(importGETCommand);
+        console.log("Loaded " + __filename);
+
+
+        function importGETCommand(commandString, e) {
+            if (!/^(get|http)/i.test(commandString))
+                return false;
+            HTTPServer.removeCommand(importGETCommand);
+            require('./get/ks-server-get-commands.js')
+                .initHTTPServerKSGetCommands(HTTPServer);
+            return false;
+        }
+
+
+        //// HTTP PUT Command
+        //HTTPServer.addCommand(importPUTCommand);
+        //function importPUTCommand(commandString, e) {
+        //    if(!/^put/i.test(commandString))
+        //        return false;
+        //    HTTPServer.removeCommand(importPUTCommand);
+        //    require('keyspace/put/ks-server-put-commands.js')
+        //        .initHTTPServerKSPutCommands(HTTPServer);
+        //    return false;
+        //}
+
+    };
+
     module.exports.initSocketServerKSCommands = function (SocketServer) {
 
         // HTTP GET Command
         SocketServer.addCommand(importGETCommand);
+        SocketServer.addCommand(importPUTCommand);
+        SocketServer.addCommand(importSubscriptionCommand);
+        SocketServer.addCommand(importStatusCommand);
+        SocketServer.addCommand(importSearchCommand);
+        SocketServer.addCommand(importMessageCommand);
+        console.log("Loaded " + __filename);
+
         function importGETCommand(commandString, e) {
             if (!/^(?:keyspace\.)?(get|http)/i.test(commandString))
                 return false;
@@ -18,7 +56,6 @@ if(typeof module === 'object') (function() {
 
 
         // HTTP PUT Command
-        SocketServer.addCommand(importPUTCommand);
         function importPUTCommand(commandString, e) {
             if (!/^(?:keyspace\.)?put/i.test(commandString))
                 return false;
@@ -31,7 +68,6 @@ if(typeof module === 'object') (function() {
 
         // KEYSPACE.SUBSCRIBE Command
         // KEYSPACE.AUTH Command
-        SocketServer.addCommand(importSubscriptionCommand);
         function importSubscriptionCommand(commandString, e) {
             if (!/^(?:keyspaces?\.)?((un|re)?subscribe|auth)/i.test(commandString))
                 return false;
@@ -43,7 +79,6 @@ if(typeof module === 'object') (function() {
 
 
         // KEYSPACE.STATUS Command
-        SocketServer.addCommand(importStatusCommand);
         function importStatusCommand(commandString, e) {
             if (!/^keyspaces?\.status/i.test(commandString))
                 return false;
@@ -54,7 +89,6 @@ if(typeof module === 'object') (function() {
         }
 
         // KEYSPACE.SEARCH Command
-        SocketServer.addCommand(importSearchCommand);
         function importSearchCommand(commandString, e) {
             if (!/^keyspace\.search/i.test(commandString))
                 return false;
@@ -65,7 +99,6 @@ if(typeof module === 'object') (function() {
         }
 
         // KEYSPACE.MESSAGE Command
-        SocketServer.addCommand(importMessageCommand);
         function importMessageCommand(commandString, e) {
             if (!/^keyspace\.message/i.test(commandString))
                 return false;
@@ -90,30 +123,4 @@ if(typeof module === 'object') (function() {
 
     };
 
-    module.exports.initHTTPServerKSCommands = function (HTTPServer) {
-
-        // HTTP GET Command
-        HTTPServer.addCommand(importGETCommand);
-        function importGETCommand(commandString, e) {
-            if (!/^(get|http)/i.test(commandString))
-                return false;
-            HTTPServer.removeCommand(importGETCommand);
-            require('./get/ks-server-get-commands.js')
-                .initHTTPServerKSGetCommands(HTTPServer);
-            return false;
-        }
-
-
-        //// HTTP PUT Command
-        //HTTPServer.addCommand(importPUTCommand);
-        //function importPUTCommand(commandString, e) {
-        //    if(!/^put/i.test(commandString))
-        //        return false;
-        //    HTTPServer.removeCommand(importPUTCommand);
-        //    require('keyspace/put/ks-server-put-commands.js')
-        //        .initHTTPServerKSPutCommands(HTTPServer);
-        //    return false;
-        //}
-
-    };
 })();

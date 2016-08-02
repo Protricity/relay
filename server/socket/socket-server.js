@@ -123,7 +123,7 @@ function SocketServer() {
         handlerCounter++;
     };
 
-    require('./socket-server-command-proxies.js')
+    require('../socket-command-proxies.js')
         .initSocketServerCommandProxies(SocketServer);
 
     SocketServer.execute = function(commandString, client) {

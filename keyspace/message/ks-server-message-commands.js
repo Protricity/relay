@@ -10,6 +10,7 @@ if(typeof module === 'object') (function() {
      **/
      module.exports.initSocketServerKSMessageCommands = function (SocketServer) {
         SocketServer.addCommand(ksMessageCommandSocket);
+         console.log("Loaded " + __filename);
     };
 })();
 

@@ -10,6 +10,7 @@ module.exports.initSocketServerChannelCommands = function(SocketServer) {
     function importChannelChatCommand(commandString, e) {
         if (!/^(?:channel\.)?chat/i.test(commandString))
             return false;
+
         SocketServer.removeCommand(importChannelChatCommand);
         require('./chat/channel-server-chat-commands.js')
             .initSocketServerChannelChatCommands(SocketServer);
@@ -21,6 +22,7 @@ module.exports.initSocketServerChannelCommands = function(SocketServer) {
     function importChannelSearchCommand(commandString, e) {
         if (!/^(?:channel\.)?search/i.test(commandString))
             return false;
+
         SocketServer.removeCommand(importChannelSearchCommand);
         require('./search/channel-server-search-commands.js')
             .initSocketServerChannelSearchCommands(SocketServer);
@@ -33,6 +35,7 @@ module.exports.initSocketServerChannelCommands = function(SocketServer) {
     function importChannelSubscribeCommand(commandString, e) {
         if (!/^(?:channel\.)?subscribe/i.test(commandString))
             return false;
+
         SocketServer.removeCommand(importChannelSubscribeCommand);
         require('./subscribe/channel-server-subscribe-commands.js')
             .initSocketServerChannelSubscribeCommands(SocketServer);
