@@ -44,7 +44,7 @@ function betaSubscribeSocket(requestString, client) {
     var found = false;
     var emailLC = email.toLowerCase();
     lineReader.on('line', function (line) {
-        console.log('Line from file:', line);
+
         if(line.toLowerCase().indexOf(emailLC) === 0) {
             found = true;
             client.send("info Found duplicate email: " + email);
@@ -58,12 +58,16 @@ function betaSubscribeSocket(requestString, client) {
         }
 
         console.log("Writing " + email + (name ? " (" + name + ")" : ""));
-        fs.appendFile(dataFile, email + (name ? " " + name : "") + "\n", function (err) {
-            if (err)
-                client.send("error " + err);
-            else
-                client.send("log Subscription Successful");
-        });
+        try {
+            fs.appendFile(dataFile, email + (name ? " " + name : "") + "\n", function (err) {
+                if (err)
+                    client.send("error " + err);
+                else
+                    client.send("log Subscription Successful");
+            });
+        } catch (err) {
+            client.send("error " + err);
+        }
     });
 
     return true;
