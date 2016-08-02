@@ -45,6 +45,9 @@ if(typeof document === 'undefined')
                 break;
 
             case 'event':
+                Client.triggerEvent(responseString);
+                break;
+
             default:
                 // some responses aren't used by the client, but should be passed through the client anyway
                 //console.error("Unrecognized client-side command: " + responseString);
@@ -60,7 +63,26 @@ if(typeof document === 'undefined')
     };
 
 
+    Client.triggerEvent = function(responseString) {
+        var eventName = responseString.split(' ')[0].toLowerCase();
 
+        var contentEvent = new CustomEvent(eventName, {
+            bubbles: true,
+            detail: responseString,
+            cancelable:true
+        });
+        if(eventName !== 'event')
+            document.dispatchEvent(contentEvent);
+
+        contentEvent = new CustomEvent('event', {
+            bubbles: true,
+            detail: responseString,
+            cancelable:true
+        });
+        document.dispatchEvent(contentEvent);
+
+        //console.info("Event: " + responseString);
+    };
 
     Client.handleFocusResponse = function(responseString) {
         var args = /^(focus)\s+(\S+)$/mi.exec(responseString);

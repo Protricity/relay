@@ -18,11 +18,17 @@
         <h2>Welcome to the <strong>Relay Beta</strong></h2>
         <h4><i style="color: grey;">(Not everything works yet)</i></h4>
 
-        <form name="beta-subscribe-form" action="#">
-            <fieldset name="fields" style="width: 50%;">
+        <script src='beta/form/beta-subscription-form.js'></script>
+        <link href='beta/form/beta-subscription-form.css' type='text/css' rel='stylesheet' property='stylesheet'>
+        <form name="beta-subscription-form" action="#">
+            <fieldset class="show-on-success show-on-error" style="width: 50%;">
+                <legend>Registration Info</legend>
+                <div class="message"></div>
+            </fieldset>
+            <fieldset class="hide-on-success" name="fields" style="width: 50%;">
                 <legend>Sign up for Beta Notifications</legend>
                 Your Name&nbsp; <input type="text" name="name" placeholder="Your Name" > <br />
-                Your Email <input type="text" name="email" placeholder="your@email.com" required> <br />
+                Your Email <input type="email" name="email" placeholder="your@email.com" required> <br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="Register" >
             </fieldset>
         </form>

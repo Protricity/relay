@@ -1,0 +1,23 @@
+form[name=beta-subscription-form] .show-on-success,
+form[name=beta-subscription-form] .show-on-error,
+form[name=beta-subscription-form].success .hide-on-success,
+form[name=beta-subscription-form].error .hide-on-error {
+    display: none;
+}
+
+form[name=beta-subscription-form] fieldset {
+    border: 3px solid black;
+    border-radius: 0.5em;
+}
+form[name=beta-subscription-form] fieldset legend {
+    font-weight: bold;
+}
+
+form[name=beta-subscription-form].success .show-on-success {
+    border-color: cornflowerblue;
+    display: block;
+}
+form[name=beta-subscription-form].error .show-on-error {
+    border-color: indianred;
+    display: block;
+}

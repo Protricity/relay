@@ -27,63 +27,81 @@ function betaSubscribeSocket(requestString, client) {
     var email = match[1];
     var name = match[2];
     if(!email) {
-        client.send("error Subscription Unsuccessful. Email missing");
+        client.send("error Subscription Unsuccessful. Invalid Email Address");
+        client.send("event:beta.subscription.error Invalid Email Address");
         return true;
     }
 
+    var filePath = __dirname + '/.emails.txt';
 
-    var qs = require('querystring');
-    var fs = require('fs');
-    var readline = require('readline');
-
-    var dataFile = __dirname + '/.emails.txt';
-
-
-    fs.exists(dataFile, function (exists) {
-        if(exists)
-        {
-            var lineReader = readline.createInterface({
-                input: fs.createReadStream(dataFile)
-            });
-
-            var found = false;
-            var emailLC = email.toLowerCase();
-
-            lineReader.on('line', function (line) {
-
+    touch(filePath, function() {
+        var found = false;
+        var emailLC = email.toLowerCase();
+        readLines(filePath, function(line) {
+            if(line) {
                 if(line.toLowerCase().indexOf(emailLC) === 0) {
                     found = true;
                     client.send("info Found duplicate email: " + email);
                 }
-            });
 
-            lineReader.on('close', function() {
+            } else {
                 if(found) {
+                    console.info("Already Subscribed " + email + (name ? " (" + name + ")" : ""));
                     client.send("error Subscription Unsuccessful. Email already subscribed");
-                    return true;
-                }
-                appendEntry(email, name);
-            });
+                    client.send("event:beta.subscription.error Email already subscribed");
 
-        }else
-        {
-            fs.writeFile(dataFile, '', {flag: 'wx'}, function (err, data)
+                } else {
+                    console.log("Writing " + email + (name ? " (" + name + ")" : ""));
+                    var fs = require('fs');
+                    fs.appendFile(filePath, email + (name ? " " + name : "") + "\n", function (err) {
+                        if (err) {
+                            client.send("error " + err);
+
+                        } else {
+                            client.send("info Subscription Successful");
+                            client.send("event:beta.subscription.success Email Subscribed Successfully.<br/> You will be notified when the beta launches. <br/> Thanks!");
+                        }
+                    });
+                }
+            }
+        })
+    });
+
+    return true;
+}
+
+
+function touch(filePath, callback) {
+
+    var fs = require('fs');
+    fs.exists(filePath, function (exists) {
+        if(exists) {
+            callback();
+
+        } else {
+            fs.writeFile(filePath, '', {flag: 'wx'}, function (err, data)
             {
-                console.log("Created " + dataFile);
-                appendEntry(email, name);
+                console.log("Created " + filePath);
+                callback();
             })
         }
     });
+}
 
-    function appendEntry(email, name) {
-        console.log("Writing " + email + (name ? " (" + name + ")" : ""));
-        fs.appendFile(dataFile, email + (name ? " " + name : "") + "\n", function (err) {
-            if (err)
-                client.send("error " + err);
-            else
-                client.send("log Subscription Successful");
-        });
-    }
+function readLines(filePath, callback) {
 
-    return true;
+    var fs = require('fs');
+    var readline = require('readline');
+
+    var lineReader = readline.createInterface({
+        input: fs.createReadStream(filePath)
+    });
+
+    lineReader.on('line', function (line) {
+        callback(line);
+    });
+
+    lineReader.on('close', function() {
+        callback();
+    });
 }

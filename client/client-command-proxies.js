@@ -12,6 +12,106 @@
 if (!module) var module = {exports:{}};
 module.exports.initClientCommands = function(ClientWorkerThread) {
 
+
+
+    // Socket Client
+    ClientWorkerThread.addCommand(consoleCommand);
+    function consoleCommand(commandString, e) {
+        var match = /^(log|info|error|assert|warn)\s*([\s\S]*)$/i.exec(commandString);
+        if(!match)
+            return false;
+
+        var command = match[1].toLowerCase();
+        var value = match[2];
+        console[command](commandString);
+        ClientWorkerThread.log(
+            "<span class='direction'>$</span> " +
+            "<span class='command " + command + "'>" + value + "</span>",
+            true
+        );
+        return true;
+    }
+
+    ClientWorkerThread.addResponse(consoleResponse);
+    //ClientWorkerThread.addCommand(consoleResponse);
+    function consoleResponse(responseString, e) {
+        var match = /^(console|log|info|error|assert|warn)\s*([\s\S]*)$/i.exec(responseString);
+        if(!match)
+            return false;
+
+        var command = match[1].toLowerCase();
+        var value = match[2];
+
+        var renderWindow = false;
+
+        switch(command) {
+            case 'console':
+                renderWindow = true;
+                value = command;
+                break;
+
+            default:
+                console[command](value);
+                break;
+        }
+        ClientWorkerThread.log(
+            "<span class='direction'>I</span> " +
+            "<span class='response " + command + "'>" + value + "</span>",
+            renderWindow
+        );
+        return true;
+    }
+
+
+    ClientWorkerThread.addResponse(serverResponse);
+    function serverResponse(responseString, e) {
+        var match = /^server/i.exec(responseString);
+        if(!match)
+            return false;
+
+        var versionSplit = responseString.split(' ', 3);
+        e.target.VERSION = versionSplit[1];
+        e.target.VERSION_STRING = versionSplit[2];
+        console.info("Socket Server Version: " + versionSplit[2]); // , e.target);
+        ClientSockets.refreshSocketsWindow();
+        ClientWorkerThread.log(
+            "<span class='direction'>I</span> " +
+            "<span class='response'>" + responseString + "</span>"
+        );
+        return true;
+    }
+
+
+    // Pass-through Commands
+    ClientWorkerThread.addCommand(passToClientCommand);
+    ClientWorkerThread.addResponse(passToClientCommand);
+    function passToClientCommand(commandString, e) {
+        if(!/^(event|replace|append|prepend|minimize|maximize|close|open|toggle)/i.test(commandString))
+            return false;
+
+        //console.info("Pass-through: " + commandString);
+        ClientWorkerThread.postResponseToClient(commandString);
+        return true;
+    }
+
+
+
+    // Client Render
+    ClientWorkerThread.addCommand(clientRenderCommand);
+    function clientRenderCommand(commandString, e) {
+        if(!/^(render)/i.test(commandString))
+            return false;
+
+        parseClientTags(commandString, function(parsedCommandString) {
+            ClientWorkerThread.postResponseToClient(parsedCommandString);
+        });
+        return true;
+    }
+
+
+    /** Proxies **/
+
+
     // HTTP Commands
     ClientWorkerThread.addCommand(importHTTPCommands);
     ClientWorkerThread.addResponse(importHTTPCommands);
