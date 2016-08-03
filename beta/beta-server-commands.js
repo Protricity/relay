@@ -59,7 +59,9 @@ function betaSubscribeSocket(requestString, client) {
 
                         } else {
                             client.send("info Subscription Successful");
-                            client.send("event:beta.subscription.success Email Subscribed Successfully.<br/> You will be notified when the beta launches. <br/> Thanks!");
+                            client.send("event:beta.subscription.success Email Subscribed Successfully." +
+                                "<br/> You will be notified when the beta launches. " +
+                                "<br/> Thanks!");
                         }
                     });
                 }

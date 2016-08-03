@@ -1,8 +1,7 @@
-form[name=beta-subscription-form] .show-on-success,
-form[name=beta-subscription-form] .show-on-error,
 form[name=beta-subscription-form].success .hide-on-success,
-form[name=beta-subscription-form].error .hide-on-error {
-    display: none;
+form[name=beta-subscription-form].error .hide-on-error,
+form[name=beta-subscription-form] .message:empty {
+    display:none;
 }
 
 form[name=beta-subscription-form] fieldset {
@@ -13,11 +12,18 @@ form[name=beta-subscription-form] fieldset legend {
     font-weight: bold;
 }
 
-form[name=beta-subscription-form].success .show-on-success {
+form[name=beta-subscription-form].success fieldset {
     border-color: cornflowerblue;
     display: block;
 }
-form[name=beta-subscription-form].error .show-on-error {
+form[name=beta-subscription-form].error fieldset {
     border-color: indianred;
     display: block;
+}
+
+
+form[name=beta-subscription-form] input {
+    border-radius: 6px;
+    padding: 0.2em;
+    margin: 0.1em;
 }

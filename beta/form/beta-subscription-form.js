@@ -6,16 +6,12 @@
 // Client Script
 if(typeof document === 'object') (function() {
 
-    //document.addEventListener('submit', onFormEvent, false);
-    //document.addEventListener('keyup', onFormEvent, false);
-    //document.addEventListener('input', onFormEvent, false);
-
     document.addEventListener('submit', onFormEvent, false);
     document.addEventListener('event:beta.subscription.success', onServerEvent, false);
     document.addEventListener('event:beta.subscription.error', onServerEvent, false);
 
-    function onFormEvent(e, formElm) {
-        if (!formElm) formElm = e.target.form ? e.target.form : e.target;
+    function onFormEvent(e) {
+        var formElm = e.target.form ? e.target.form : e.target;
         if (formElm.nodeName.toLowerCase() !== 'form')
             return false;
 
@@ -24,23 +20,17 @@ if(typeof document === 'object') (function() {
                 var email = formElm.email.value;
                 var name = formElm.name.value;
 
-                if (e.type === 'submit') {
-                    e.preventDefault();
-                    //formElm.fields.setAttribute('disabled', 'disabled');
+                e.preventDefault();
 
-                    var formattedCommandString = "BETA.SUBSCRIBE " + email + (name ? " " : "") + name;
-                    var socketEvent = new CustomEvent('command', {
-                        detail: formattedCommandString,
-                        cancelable:true,
-                        bubbles:true
-                    });
-                    formElm.dispatchEvent(socketEvent);
-                    console.log("Beta Command: " + formattedCommandString);
+                var formattedCommandString = "BETA.SUBSCRIBE " + email + (name ? " " : "") + name;
+                var socketEvent = new CustomEvent('command', {
+                    detail: formattedCommandString,
+                    cancelable:true,
+                    bubbles:true
+                });
+                formElm.dispatchEvent(socketEvent);
+                console.log("Beta Command: " + formattedCommandString);
 
-                } else if (e.type === 'change') {
-
-
-                }
                 break;
         }
     }
@@ -49,7 +39,6 @@ if(typeof document === 'object') (function() {
         var message = e.detail.split(' ');
         var eventName = message.shift().toLowerCase();
         message = message.join(' ');
-        console.log(message,  e);
 
         var formElms = document.getElementsByName('beta-subscription-form');
         for(var i=0; i<formElms.length; i++) {
