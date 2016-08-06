@@ -77,10 +77,12 @@ function touch(filePath, callback) {
 
     var fs = require('fs');
     fs.exists(filePath, function (exists) {
+// console.info("File Exists: " + filePath);
         if(exists) {
             callback();
 
         } else {
+		console.log("Creating empty file: " + filePath);
             fs.writeFile(filePath, '', {flag: 'wx'}, function (err, data)
             {
                 console.log("Created " + filePath);
@@ -92,10 +94,12 @@ function touch(filePath, callback) {
 
 function readLines(filePath, callback) {
 
+try {
     var fs = require('fs');
     var readline = require('readline');
 
     var lineReader = readline.createInterface({
+	terminal: false,
         input: fs.createReadStream(filePath)
     });
 
@@ -106,4 +110,7 @@ function readLines(filePath, callback) {
     lineReader.on('close', function() {
         callback();
     });
+} catch (e) {	
+	console.error("Failed to read: " + filePath + e);
+}
 }

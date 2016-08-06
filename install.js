@@ -5,8 +5,9 @@
 
 console.log("Setting up Relay Server Dependencies...");
 
-var exec = require('child_process').execSync;
-
+var exec = require('child_process').exec;
+if(!exec)
+	throw new Error('Could not fork child process ;(');
 
 exec('npm config set registry http://registry.npmjs.org/');
 exec('npm install --save ws');
@@ -20,4 +21,4 @@ console.log("Testing require..");
 require('./server/http/http-server.js');
 require('./server/socket/socket-server.js');
 
-console.log("Finished. Try $ node server.js' to test server");
+console.log("Success. Try $ node server.js' to test server");
