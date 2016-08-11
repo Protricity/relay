@@ -1,14 +1,14 @@
-[ks-software-comparison]: http://clevertree.github.io/relay/docs/assets/ks-software-comparison.png "Software Comparison Chart"
+[ks-software-comparison]: http://relayproject.net/docs/assets/ks-software-comparison.png "Software Comparison Chart"
 
-[ks-unified-channels]: http://clevertree.github.io/relay/docs/assets/ks-unified-channels.png "Relay Unified Channels"
+[ks-unified-channels]: http://relayproject.net/docs/assets/ks-unified-channels.png "Relay Unified Channels"
 
-[ks-proximity-channels]: http://clevertree.github.io/relay/docs/assets/ks-proximity-channels.png "Relay Proximity Channels"
+[ks-proximity-channels]: http://relayproject.net/docs/assets/ks-proximity-channels.png "Relay Proximity Channels"
 
-[ks-blockchain]: http://clevertree.github.io/relay/docs/assets/ks-blockchain.png "Software Comparison Chart"
+[ks-blockchain]: http://relayproject.net/docs/assets/ks-blockchain.png "Software Comparison Chart"
 
-[ks-plan]: http://clevertree.github.io/relay/docs/assets/ks-plan.png "The Relay Project Plan"
+[ks-plan]: http://relayproject.net/docs/assets/ks-plan.png "The Relay Project Plan"
 
-[icon]: http://clevertree.github.io/relay/docs/assets/icon-small.png "The Relay Project"
+[icon]: http://relayproject.net/docs/assets/icon-small.png "The Relay Project"
 
 <h1>
 <img src="https://raw.githubusercontent.com/clevertree/relay/master/docs/assets/icon-small.png">
