@@ -6,7 +6,7 @@
 
 [ks-blockchain]: http://relayproject.net/docs/assets/ks-blockchain.png "Software Comparison Chart"
 
-[ks-plan]: http://relayproject.net/docs/assets/ks-plan.png "The Relay Project Plan"
+[ks-plan]: http://relayproject.net/docs/assets/ks-plan2.png "The Relay Project Plan"
 
 [icon]: http://relayproject.net/docs/assets/icon-small.png "The Relay Project"
 
