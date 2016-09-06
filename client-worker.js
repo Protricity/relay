@@ -7,7 +7,7 @@ if(typeof document !== 'undefined') {
     if(typeof self.Client === 'undefined')
         self.Client = {};
         
-    if(true && typeof SharedWorker == 'function') {
+    if(typeof SharedWorker == 'function') {
 
         
         var sharedSocketWorker = new SharedWorker('client-worker.js');
