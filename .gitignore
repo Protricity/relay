@@ -2,3 +2,4 @@
 *.log
 node_modules
 beta/.emails.txt
+npm*
