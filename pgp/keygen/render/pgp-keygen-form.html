@@ -2,7 +2,7 @@
     <script src='pgp/lib/openpgpjs/openpgp.js'></script>
     <script src='pgp/keygen/render/pgp-keygen-form.js'></script>
     <link rel='stylesheet' href='pgp/keygen/render/pgp-keygen-form.css' type='text/css' property="stylesheet">
-    <header class='header-bar show-on-minimized'>
+    <header class='themed show-on-minimized'>
         {header:buttons pgp-keygen:}
         <a href="#TOGGLE pgp-keygen:">
             <span class="command">KeyGen</span> a New PGP Identity
@@ -45,7 +45,7 @@
             <!--or <a href='#PGP.REGISTER'>Load your own PGP private key</a>-->
         </form>
     </main>
-    <footer>
+    <footer class='themed'>
         <a href="#PGP.IMPORT">
             or <span class="command">Import</span> your own PGP Identity...
         </a>

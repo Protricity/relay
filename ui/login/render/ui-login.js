@@ -73,35 +73,35 @@ if(typeof module !== 'object')
 
 })();
 
-//// Client Script
-//if(typeof document === 'object')
-//    (function() {
-//        // Events
-//        var contactExports = module.exports;
-//
-//        document.addEventListener('submit', onFormEvent, false);
-//        document.addEventListener('change', onFormEvent);
-//        //document.addEventListener('response:settings', onKeySpaceEvent);
-////         document.addEventListener('input', onFormEvent, false);
-//
-//        function onFormEvent(e, formElm) {
-//            if(!formElm) formElm = e.target.form ? e.target.form : e.target;
-//            if(formElm.nodeName.toLowerCase() !== 'form')
-//                return false;
-//
-//            switch(formElm.getAttribute('name')) {
-//                case 'ui-login-form':
-//                    //updateCommandList(e, formElm);
-//                    //contactExports.refreshUIContactList(e, formElm);
-//                    if(e.type === 'submit')
-//                        e.preventDefault();
-//                        //contactExports.submitUIContactList(e, formElm);
-//                    return true;
-//
-//                default:
-//                    return false;
-//            }
-//        }
-//
-//
-//    })();
+// Client Script
+if(typeof document === 'object')
+    (function() {
+        // Events
+        var contactExports = module.exports;
+
+        document.addEventListener('submit', onFormEvent, false);
+        document.addEventListener('keyup', onFormEvent);
+        //document.addEventListener('response:settings', onKeySpaceEvent);
+//         document.addEventListener('input', onFormEvent, false);
+
+        function onFormEvent(e, formElm) {
+            if(!formElm) formElm = e.target.form ? e.target.form : e.target;
+            if(formElm.nodeName.toLowerCase() !== 'form')
+                return false;
+
+            switch(formElm.getAttribute('name')) {
+                case 'ui-login-form':
+                    if(e.type === 'submit')
+                        e.preventDefault();
+                    formElm.username.value.length > 0
+                        ? formElm.classList.remove('empty')
+                        : formElm.classList.add('empty');
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+
+    })();

@@ -1,25 +1,3 @@
 article.about\3A {
     /* min-width: 20em; */
 }
-
-.layout-horizontal article.about\3A {
-    float: right;
-    clear: right;
-    min-width: 20em;
-}
-
-.layout-horizontal article.about\3A.maximized {
-    top: 2%;
-    min-width: 43em;
-}
-
-.about\3A > main,
-.about\3A > section {
-    /* width: 63em; */
-    /* height: 34em; */
-    /* overflow: auto; */
-    padding: 1em;
-    border: 3px inset;
-    background: #EEE;
-    font-size: smaller;
-}

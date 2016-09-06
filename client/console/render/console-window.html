@@ -1,29 +1,10 @@
-<article class='console:' data-sort='z'>
+<article class='console: themed' data-sort='z'>
     <script src='client/console/render/console-window.js'></script>
-    <link rel='stylesheet' href='client/console/render/console-window.css' type='text/css' property="stylesheet">
-    <header class='header-bar show-on-minimized'>
-        {header:buttons console:}
-        <a href="#TOGGLE console:">
-            <span class="command">Console</span>
-        </a>
-    </header>
-    <main class='console-content: hide-on-minimize'></main>
-    <section>
-        <form name='console-form' class='show-on-minimized'>
-            <table style='width:100%'>
-                <tbody>
-                <tr class='show-on-minimized'>
-                    <td>
-                        <input name='message' type='text' class='reset focus'
-                               placeholder='i.e. menu' style='width: 99%;'/>
-                    </td>
-                    <td style='width:1px'>
-                        <input type='submit' value='Send' name='submit-send-console' />
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </form>
-    </section>
-    <footer></footer>
+    <link rel='stylesheet' href='client/console/render/console-window.css' type='text/css' property='stylesheet'>
+    <header class='themed'>Console</header>
+    <main class='console-content: hide-on-minimize themed'></main>
+    <footer class='themed'>
+        <input name='message' type='text' class='reset focus themed' placeholder='i.e. menu'/>
+        <input type='submit' value='Send' name='submit-send-console' class="themed" />
+    </footer>
 </article>

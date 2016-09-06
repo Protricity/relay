@@ -1,28 +1,30 @@
-.layout-horizontal .ui-login\3A {
-    min-width: 20em;
-    float: right;
-    clear: right;
+article.ui-login {
 }
 
-.ui-login\3A  main{
-    /*min-height: 20em;*/
-    /* background-color: white; */
-    /* padding: 1em; */
+.ui-login .empty .hide-on-empty {
+    display: none;
 }
 
-.ui-login\3A.maximized{
-/*     left: 5% !important; */
-    /*     bottom: 5% !important; */
-/*     top: 5% !important; */
-    /* right: 5% !important; */
+.ui-login button.user-login  {
+    /* display: inline-block; */
+    margin: 0.2em 0.0em;
+    padding: 0.5em 0.8em;
+    border-radius: 0.9em;
+    border: 1px outset;
+    cursor: pointer;
+    width: 100%;
+}
+
+.ui-login .user-list button:hover {
+    font-weight: bold;
 }
 
 /** Form **/
 
 form[name=ui-login-form] {
-    padding: 2px;
-    border: 1px inset;
-    position: relative;
+    /* padding: 2px; */
+    /* border: 1px inset; */
+    /* position: relative; */
 }
 
 

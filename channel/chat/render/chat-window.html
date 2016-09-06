@@ -1,8 +1,7 @@
-<article class='chat:{$channel_lowercase} ignore-on-render'>
+<article class='chat:{$channel_lowercase} themed'>
     <script src='channel/chat/render/chat-window.js'></script>
     <link rel='stylesheet' href='channel/chat/render/chat-window.css' type='text/css' property="stylesheet">
-    <header class='header-bar show-on-minimized'>
-        {header:buttons chat:{$channel_lowercase}}
+    <header class='themed show-on-minimized'>
         <a href="#TOGGLE chat:{$channel_lowercase}">
             <span class="command">Chat</span> {$channel}
         </a>
@@ -52,5 +51,5 @@
             </tbody>
         </table>
     </form>
-    <footer></footer>
+    <footer class='themed'></footer>
 </article>
