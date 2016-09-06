@@ -308,17 +308,10 @@ Instructions:
 http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/
 
 
-Install Relay Server:
------------------------------
-
- * $ cd [your dev folder]
- * $ node install.js
-
-
-Run Relay Server:
+Install & Run Relay Server:
 ---------------
 
- * $ cd [your dev folder, if you’re still there]
+ * $ cd [relay develoment root directory]
  * $ node server.js
 
 
@@ -326,6 +319,8 @@ Try to access your localhost server:
 -----------------
 
 http://localhost/
+or
+http://localhost:81/
 
 
 
