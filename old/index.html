@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>The Relay Project - Blockchain Framwork Demo</title>
+        <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+        <meta name="application-name" CONTENT="relay">
+        <meta name="description" CONTENT="The Relay Project">
+        <meta name="keywords" CONTENT="relay, project, webrtc, secure, encryption, security, pgp, keyspace, socket, websocket, irc, chat, free, open-source">
+
+        <link rel="stylesheet" href="ui/themes/minimal/minimal.css" type="text/css" />
+        <link rel="shortcut icon" href="favicon.ico?v=6" />
+        <script src="client-worker.js"></script>
+        <script src="ui/client-ui-handler.js"></script>
+        <script>
+            setTimeout(function() {
+//                Client.execute("log welcome");
+                Client.execute("UI.LOGIN");
+            }, 500);
+            window.onresize = function(evt) {
+                var height = (evt.srcElement || evt.currentTarget).innerHeight;
+                var width = (evt.srcElement || evt.currentTarget).innerWidth;
+                document.body.classList.add(width > height / 2 ? 'layout-horizontal' : 'layout-vertical');
+                document.body.classList.remove(width > height / 2 ? 'layout-vertical' : 'layout-horizontal');
+            };
+        </script>
+    </head>
+    <body class='theme-minimal layout-horizontal'></body>
+</html>

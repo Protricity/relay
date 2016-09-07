@@ -10,7 +10,7 @@ if(!chrome || !chrome.runtime)
     var Client = typeof self.Client !== 'undefined' ? self.Client : self.Client = function(){};
 
     var extensionID = chrome.runtime.id;
-    socketWorker = chrome.runtime.connect(extensionID, {name: name}); // 'relay-render-proxy'
+    webWorker = chrome.runtime.connect(extensionID, {name: name}); // 'relay-render-proxy'
     socketWorker.onMessage.addListener(function (responseString) {
         Client.processResponse(responseString);
     });
