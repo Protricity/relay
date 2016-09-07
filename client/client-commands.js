@@ -1,5 +1,5 @@
 (function() {
-
+  
     // Log Commands
     self.addEventListener('command:log', onLogCommand);
     self.addEventListener('command:info', onLogCommand);

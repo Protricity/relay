@@ -9,6 +9,15 @@ if(typeof importScripts !== 'undefined') {
     // Set up worker command listeners
     importScripts('client/client-commands.js')
 
+
+} else if(typeof require !== 'undefined') {
+    // If we're in a worker thread, set up the worker
+    require('./client/cli/client-cli.js');
+
+    // Set up worker command listeners
+    require('./client/client-commands.js')
+
+
 } else if(typeof document !== 'undefined') {
     // If we're in the document scope, included as a script
     document.addEventListener("DOMContentLoaded", function() {
