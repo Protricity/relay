@@ -11,9 +11,8 @@ if(typeof importScripts !== 'undefined') {
 
 
 } else if(typeof require !== 'undefined') {
-    // If we're in a worker thread, set up the worker
-    require('./client/cli/client-cli.js');
-
+    // If we're in a cli environment, set up CLI
+    // require('./client/cli/cli-events.js').CLIEventListener;
     // Set up worker command listeners
     require('./client/client-commands.js')
 

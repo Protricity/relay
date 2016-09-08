@@ -1,3 +1,9 @@
+if(typeof self == 'undefined')
+  var self = require('./cli/cli-events.js').CLIEventListener;
+
+console.log(self);
+    
+
 (function() {
   
     // Log Commands
