@@ -1,15 +1,20 @@
-<article class='about: themed'>
+<article class='about: maximized'>
     <script src='ui/about/window/about-window.js'></script>
     <link href='ui/about/window/about-window.css' type='text/css' rel='stylesheet' property='stylesheet'>
-    <header class='themed show-on-minimized'>
+    <header class='header-bar show-on-minimized'>
+        {header:buttons about:}
         <a href="#TOGGLE about:">
             <span class="command">About</span>: Demo Information
         </a>
     </header>
 
-    <main class="hide-on-minimize themed" style="height: 40em; overflow-y: scroll;">
+
+
+    <main class="hide-on-minimize" style="height: 40em; overflow-y: scroll;">
         <h2>Welcome to the <strong>Relay Beta</strong></h2>
         <h4><i style="color: grey;">(Not everything works yet)</i></h4>
+
+
 
         <script src='beta/form/beta-subscription-form.js'></script>
         <link href='beta/form/beta-subscription-form.css' type='text/css' rel='stylesheet' property='stylesheet'>
@@ -22,6 +27,7 @@
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="Sign Up" >
             </fieldset>
         </form>
+
 
 
         <h2>Documentation Files (.pdf)</h2>
@@ -67,5 +73,6 @@
         BTC: <a target="_blank" href="https://blockchain.info/address/1AT6o3mmPRZVdzXPh7SbThgAhv9g4o3j92">1AT6o3mmPRZVdzXPh7SbThgAhv9g4o3j92</a>
 
     </main>
-    <footer class="themed"></footer>
+
+    <footer></footer>
 </article>

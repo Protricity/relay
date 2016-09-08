@@ -1,70 +1,416 @@
-/** Body **/
+/** BODY **/
 
+.theme-minimal form select,
+.theme-minimal form input,
 .theme-minimal {
-    background-color: #DDF;
+    font-family: monospace;
+    /* font-size: 1em; */
 }
 
-.theme-minimal .themed a {
-    text-decoration: none;
+body.theme-minimal header{
+    /* font-family: body, monospace; */
+    /* margin: 1em 0; */
+    /* padding: 1em 0; */
 }
-.theme-minimal .themed a[onclick] {
+
+a[onclick] {
     cursor: pointer;
 }
 
-.theme-minimal .themed {
-    font-size: small;
+/** Font **/
+
+@font-face {
+    font-family: body;
+    src: url("fonts/DroidSerif-Regular.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: command ;
+    src: url("fonts/Oswald-Bold.ttf") format("truetype");
+}
+
+/** General **/
+
+li {
+    /* font-family: monospace; */
+    color: #333;
+}
+
+.theme-minimal a {
+    text-decoration: none;
+    color: darkblue;
+}
+
+
+
+/** Headers and Footers **/
+
+.theme-minimal > article {
+    border-radius: 0.4em;
+    background: #FEFEFE linear-gradient(to top left, #DDF, #F4FCFF, #DDF);
+}
+
+.theme-minimal > article > header > a:first-of-type {
+    display: block;
+}
+
+.theme-minimal > article > footer,
+.theme-minimal > article > form > footer,
+.theme-minimal > article > header {
+    text-indent: 0.3em;
+    padding: 0 0 0.3em 0;
+    border-bottom: 2px double threedface;
+}
+
+
+.theme-minimal > article > form > footer,
+.theme-minimal > article > footer {
+    border-top: 2px double threedface;
+}
+
+.theme-minimal > article > footer:last-of-type,
+.theme-minimal > article > form > footer:last-of-type {
+    /* padding: 0 0 0.1em 0; */
+    /* border-top: 2px double threedface; */
+    /* min-height: 0.1em; */
+}
+
+.theme-minimal > article:hover > header:first-of-type {
+    font-weight: bold;
+/*     text-decoration: underline; */
+}
+
+.theme-minimal > article > header > .header-bar-buttons {
+    float: right;
+    margin-right: 0.2em;
+}
+
+.theme-minimal > article > header > .header-bar-buttons a {
+    text-decoration: none;
+    color: #888;
+    /* font-family: command, monospace; */
+    margin: 1em 0.1em;
+}
+
+.theme-minimal > article > header > .header-bar-buttons a:hover {
+    color: black;
+}
+
+
+
+/** Span Formats **/
+
+.theme-minimal span.username {
+    color: darkblue;
+    text-overflow: ellipsis;
+}
+
+
+.theme-minimal span.message {
+/*     color: black; */
+}
+
+.theme-minimal span.response,
+.theme-minimal span.command {
+    text-transform: uppercase;
+    font-weight: bold;
+    /* font-size: smaller; */
+    /* font-family: command, monospace; */
+}
+
+.theme-minimal span.offline {
+    color: red;
+    font-weight: bold;
+}
+
+.theme-minimal span.online {
+    color: green;
+    font-weight: bold;
+}
+
+.theme-minimal span.command {
+    color: green;
+}
+
+.theme-minimal span.status {
+    color: blue;
+    font-weight: bold;
+}
+
+.theme-minimal span.response {
+    color: #2f69c0;
+}
+
+.theme-minimal span.action {
+    color: purple;
+/*     font-size: smaller; */
+    font-style: italic;
+}
+
+.theme-minimal span.response {}
+
+.theme-minimal .console-entry {
+    /* color: blue; */
+    /* text-transform: uppercase; */
+    /* font-size: smaller; */
+    /* font-style: italic; */
     font-family: monospace;
 }
 
+.theme-minimal span.error {
+    color: red;
+    font-style: italic;
+}
+
+.theme-minimal span.warn {
+    color: darkred;
+    font-style: italic;
+}
+
+.theme-minimal span.passphrase {
+    color: darkgreen;
+    font-weight: bold;
+}
+
+.theme-minimal span.info {
+    color: #666;
+}
+
+.theme-minimal span.success {
+    color: darkblue;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px #AAA;
+}
+
+.theme-minimal span.path {
+    color: darkblue;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+
+
+/** Status Box **/
+
+.theme-minimal .status-box {
+    background-color: lightgrey;
+}
+
+.theme-minimal code.status-box,
+.theme-minimal div.status-box {
+    display: block;
+    padding: 0.5em 1em;
+    margin: 0 0 1em 0;
+    background-color: lightgrey;
+    max-width: 34em;
+    animation: fadein 0.5s;
+    overflow: auto;
+    white-space: normal;
+}
+
+
+/** Don't do this here **/
+/*.theme-minimal .status-box:empty {*/
+    /*display: none;*/
+/*}*/
+
+.theme-minimal code.status-box > * {
+    animation: article-fade-in 0.5s;
+}
+
+/** Inputs **/
+
+.theme-minimal input[name=passphrase] {
+    border-color: lightgreen;
+    color: darkgreen;
+    /* border-radius: 0.4em; */
+}
+
+
 /** Articles **/
 
-.theme-minimal article.themed {
-    background-color: #FFF;
-    border-radius: 1em;
-    margin: 1em 0.3em;
-    box-shadow: inset 0 0 8px #CCF;
-    display: inline-block;
-    vertical-align: top;
+.default-article-theme {
+    background-color: #EEE;
+    text-indent: 1em;
 }
 
-/** Sub Articles **/
-
-.theme-minimal main.themed,
-.theme-minimal section.themed {
-    padding: 1.5em;
-    /* background: #FFF; */
-    /* border-left: 2px solid #DDF; */
-    /* border: 1px inset #DDF; */
-}
-
-.theme-minimal header.themed {
+.default-article-theme header {
     font-weight: bold;
-    padding: 0.4em 1em 0.2em 1em;
-    border-bottom: 1px solid #DDF;
-}
-.theme-minimal footer.themed {
-    padding: 0.6em 0.7em;
-    /* border-top: 1px solid #EEF; */
+    font-style: italic;
+    padding-bottom: 0.2em;
+/*     font-size: large; */
 }
 
-/** Forms **/
-
-.theme-minimal form.themed {
-
-}
-.theme-minimal input.themed,
-.theme-minimal button.themed,
-.theme-minimal select.themed,
-.theme-minimal textarea.themed{
-    border-radius: 0.5em;
-    border: 1px inset;
-    padding: 0.3em 0.8em;
-    font-size: larger;
+.default-article-theme > header {
+/*     font-size: x-large; */
 }
 
-.theme-minimal button.themed,
-.theme-minimal input[type=button].themed,
-.theme-minimal input[type=submit].themed {
-    border: 1px outset;
-    cursor: pointer;
+.default-article-theme main {
+    text-indent: 0.5em;
+    padding-bottom: 1em;
 }
+
+
+.theme-minimal > article.focused {
+    font-size: 1.1em;
+}
+
+
+/** Layout - Browser **/
+
+/** Articles **/
+
+.theme-minimal.layout-horizontal > article {
+    position: relative;
+    display: inline-block;
+    margin: 0.5em;
+    vertical-align: top;
+    box-shadow: 0.1em 0.2em 0.5em #333;
+    animation: article-fade-in 1s ease-out;
+    transition: font-size 1s, opacity 1s, box-shadow 1s ease-out;
+    opacity: 1;
+}
+
+
+
+/** Articles Windows **/
+
+.theme-minimal.layout-horizontal > article.closed {
+    display: none;
+}
+
+.hide-on-minimize {
+    max-height: 100em;
+    max-width: 100em;
+    transition: max-height 1s ease-out, max-width 2s ease-out, padding 1s ease-in;
+}
+
+.theme-minimal.layout-horizontal > article.minimized .hide-on-minimize {
+    max-height: 0;
+    max-width: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    overflow: hidden;
+}
+
+.theme-minimal.layout-horizontal > article.minimized {
+    /* min-width: 16em; */
+    /*max-height: 20px;*/
+    /*max-width: 24em;*/
+    /*overflow: hidden;*/
+    /*     transition: opacity 3s ease-in; */
+    opacity: 0.6;
+}
+
+.theme-minimal.layout-horizontal > article.maximized input,
+.theme-minimal.layout-horizontal > article.maximized select {font-size: 1em;}
+.theme-minimal.layout-horizontal > article.maximized {
+    position: absolute;
+    top: 2%;
+    left: 2%;
+    z-index: 2;
+    font-size: 1.5em;
+}
+
+.theme-minimal.layout-horizontal > article:hover {
+    box-shadow: 0.1em 0.2em 2em #000;
+    opacity: 1;
+}
+
+
+
+/** Layout - Phone Layout **/
+
+body.theme-minimal.layout-vertical {
+    margin: 2px;
+    font-size: 3vw;
+}
+
+/** Header Bar - Phone Layout **/
+
+body.theme-minimal.layout-vertical > article > header a,
+body.theme-minimal.layout-vertical > article > header{
+    padding: 0.2em 0;
+}
+
+/** Articles - Phone Layout **/
+
+.theme-minimal.layout-vertical > article {
+    margin: 0 0px 1.5em 0;
+    box-shadow: 0.1em 0.2em 0.8em #999;
+    width: 100%;
+    /* transition: box-shadow 0.5s ease-out; */
+}
+
+
+.theme-minimal.layout-vertical > article:hover {
+    box-shadow: 0 0 3em #558;
+    opacity: 1 !important;
+}
+
+/** Articles Windows - Phone Layout **/
+
+.theme-minimal.layout-vertical > article.closed {
+    display: none;
+}
+
+
+.theme-minimal.layout-vertical > article .hide-on-minimize {
+    max-height: 100em;
+}
+
+.theme-minimal.layout-vertical > article.minimized .hide-on-minimize {
+    max-height: 0;
+    max-width: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    overflow: hidden;
+}
+
+.theme-minimal.layout-vertical > article.minimized {
+    transition: opacity 1s ease-in;
+    opacity: 0.6;
+}
+
+
+/** Hide Maximized Button **/
+.theme-minimal.layout-vertical > article:first-of-type > header > .header-bar-buttons > a.header-bar-button-maximize {
+    display: none;
+    /*font-size: 2vw;*/
+}
+
+
+
+/** Animations **/
+
+@keyframes article-fade-in {
+    from {
+        /*box-shadow: 0;*/
+        opacity: 0;
+        margin: 2em;
+    }
+    to   {
+        opacity: 1;
+        margin: inherit;
+        /*box-shadow: inherit;*/
+    }
+}
+
+
+
+
+/** Window Limits **/
+
+
+
+.article-limit-2 > article:not(:first-of-type) .hide-on-minimize {
+    max-height: 0;
+    max-width: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    overflow: hidden;
+}
+

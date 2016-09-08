@@ -1,7 +1,8 @@
-<article class='keyspace-contact: prepend-on-render themed'>
+<article class='keyspace-contact: prepend-on-render replace-on-render'>
     <script src='ui/contacts/render/ui-contacts.js'></script>
     <link rel='stylesheet' href='ui/contacts/render/ui-contacts.css' type='text/css' property="stylesheet">
-    <header class='themed show-on-minimized'>
+    <header class='header-bar show-on-minimized'>
+        {header:buttons keyspace-contact:}
         <a href="#TOGGLE keyspace-contact:">
             Contact List
         </a>
@@ -41,5 +42,5 @@
     <main class="hide-on-minimize">
 
     </main>
-    <footer class='themed'></footer>
+    <footer></footer>
 </article>

@@ -1,7 +1,7 @@
 .layout-horizontal .keyspace-contact\3A {
-    /* min-width: 20em; */
-    /* float: right; */
-    /* clear: right; */
+    min-width: 20em;
+    float: right;
+    clear: right;
 }
 
 /** Contact List**/

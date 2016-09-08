@@ -13,8 +13,9 @@
         <script src="ui/client-ui-handler.js"></script>
         <script>
             setTimeout(function() {
-//                Client.execute("log welcome");
-                Client.execute("UI.LOGIN");
+                Client.execute("about");
+//                Client.execute("minimize about:");
+                Client.execute("log welcome");
             }, 500);
             window.onresize = function(evt) {
                 var height = (evt.srcElement || evt.currentTarget).innerHeight;
@@ -23,6 +24,15 @@
                 document.body.classList.remove(width > height / 2 ? 'layout-vertical' : 'layout-horizontal');
             };
         </script>
+        <style>
+            body {
+                background: url('docs/assets/coming-soon-small.png') no-repeat center;
+                /*background-color: #7DC1ED;*/
+                /*background-position-x: center;*/
+                min-height: 50em;
+            }
+        </style>
+
     </head>
     <body class='theme-minimal layout-horizontal'></body>
 </html>

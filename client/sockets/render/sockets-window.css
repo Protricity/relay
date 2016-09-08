@@ -1,7 +1,7 @@
 .layout-horizontal .sockets-window\3A {
-    /* float: right; */
-    /* clear: right; */
-    /* min-width: 20em; */
+    float: right;
+    clear: right;
+    min-width: 20em;
 }
 .layout-vertical .sockets-window\3A {
     display: none;

@@ -1,7 +1,8 @@
-<article class='sockets-window: themed replace-on-render'>
+<article class='sockets-window: minimized replace-on-render'>
     <script src='client/sockets/render/sockets-window.js'></script>
     <link rel='stylesheet' href='client/sockets/render/sockets-window.css' type='text/css' property="stylesheet">
-    <header class='themed show-on-minimized'>
+    <header class='header-bar show-on-minimized'>
+        {header:buttons sockets-window:}
         <a href="#TOGGLE sockets-window:">
             Sockets
         </a>
@@ -9,5 +10,5 @@
     <main class='sockets-window-content: hide-on-minimize'>
         {$html_content}
     </main>
-    <footer class='themed'></footer>
+    <footer></footer>
 </article>
