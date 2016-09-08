@@ -1,5 +1,5 @@
 .idea
 *.log
 node_modules
-beta/.emails.txt
+old/beta/.emails.txt
 npm*

@@ -2,6 +2,8 @@
 if(typeof self.addEventListener !== 'undefined')
     throw new Error("self.addEventListener already defined");
 
+// TODO: session key
+
 var events = {};
 // This doesn't work
 self.addEventListener = function(eventName, callback) {
