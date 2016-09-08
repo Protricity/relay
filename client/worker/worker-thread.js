@@ -22,17 +22,15 @@ if(typeof importScripts === 'undefined')
 
 
     function onMessageCommand(e) {
-        var commandDetail = typeof e.data == 'string' ? {commandString: e.data} : e.data;
-        if(!commandDetail.commandString)
-            throw new Error("Invalid Command String");
-        console.log("Command: ", commandDetail);
+        var commandString = e.data;
+        if(!commandString)
+            throw new Error("Ignoring empty message");
+        var Command = new WorkerCommand(commandString, this);
 
-        commandDetail.type = commandDetail.commandString.split(/[^\w]+/)[0].toLowerCase();
-        commandDetail.source = this;
-        commandDetail.event = e;
+        var type = Command.getType();
 
-        var messageEvent = new CustomEvent('command:'+commandDetail.type, {
-            detail: commandDetail,
+        var messageEvent = new CustomEvent('command:'+type, {
+            detail: Command,
             cancelable: true
         });
         self.dispatchEvent(messageEvent);
@@ -40,14 +38,14 @@ if(typeof importScripts === 'undefined')
             return;
 
         messageEvent = new CustomEvent('command', {
-            detail: commandDetail,
+            detail: Command,
             cancelable: true
         });
         self.dispatchEvent(messageEvent);
         if(messageEvent.defaultPrevented)
             return;
 
-        console.error("Unhandled command (type=" + commandDetail.type + "): " + commandDetail.commandString);
+        console.error("Unhandled command (type=" + type + "): " + commandString);
     }
 
     // For Shared Workers
@@ -67,13 +65,18 @@ if(typeof importScripts === 'undefined')
 
     function onPortClose(e) {
         var messageEvent = new CustomEvent('close', {
-            detail: e.data || e.detail,
-            source: this,
-            event: e,
+            detail: e.detail,
             cancelable: true
         });
         self.dispatchEvent(messageEvent);
         console.log("Does this ever happen?");
+    }
+
+    function WorkerCommand(commandString, source) {
+        var type = commandString.split(/[^\w]+/)[0].toLowerCase();
+        this.toString = function() { return commandString; };
+        this.getSource = function() { return source; };
+        this.getType = function() { return type; };
     }
 
 })();

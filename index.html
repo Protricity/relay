@@ -8,14 +8,15 @@
         <meta name="keywords" CONTENT="relay, project, blockchain, webrtc, secure, encryption, security, pgp, keyspace, socket, websocket, irc, chat, free, open-source">
 
         <link rel="stylesheet" href="theme/minimal/minimal.css" type="text/css" />
-        <script src="client.js"></script>
+        <script src="relay.js"></script>
         <script>
             document.FORCE_WEB_WORKER = true;
             document.addEventListener('render', function(e) {
                 // todo: specify how data gets rendered
             });
             setTimeout(function() {
-                exec("RENDER TEST");
+                exec("RENDER TEST"); // render does not go to worker
+                exec("UI Login"); // send commands to worker and get render back
             }, 500);
             function exec(commandString) {
                 var commandEvent = new CustomEvent('command', {
