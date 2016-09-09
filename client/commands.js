@@ -9,11 +9,11 @@
         events = require('./cli/cli-events.js').CLIEventListener;
 
     // Log Commands
-    events.addEventListener('command:log', onLogCommand);
-    events.addEventListener('command:info', onLogCommand);
-    events.addEventListener('command:error', onLogCommand);
-    events.addEventListener('command:assert', onLogCommand);
-    events.addEventListener('command:warn', onLogCommand);
+    events.addEventListener('message:log', onLogCommand);
+    events.addEventListener('message:info', onLogCommand);
+    events.addEventListener('message:error', onLogCommand);
+    events.addEventListener('message:assert', onLogCommand);
+    events.addEventListener('message:warn', onLogCommand);
     function onLogCommand(e) {
         var Command = e.detail;
         var match = /^(log|info|error|assert|warn)\s*([\s\S]*)$/i.exec(Command);
@@ -28,7 +28,7 @@
     }
 
     // Server Commands
-    events.addEventListener('command:server', onServerResponse);
+    events.addEventListener('message:server', onServerResponse);
     function onServerResponse(e) {
         var Command = e.detail;
         var match = /^server\s+(\w+)\s+(\w+)/i.exec(Command);
@@ -45,7 +45,7 @@
     }
 
     // Render Commands
-    events.addEventListener('command:render', onRenderProxyCommand);
+    events.addEventListener('message:render', onRenderProxyCommand);
     function onRenderProxyCommand(e) {
         var Command = e.detail;
         var args = /^render\s*([\s\S]*)$/mi.exec(Command);
@@ -71,37 +71,37 @@
 
 
     // HTTP Commands
-    events.addEventListener('command:http', onHTTPProxy);
+    events.addEventListener('message:http', onHTTPProxy);
     function onHTTPProxy(e) {
-        events.removeEventListener('command:http', onHTTPProxy);
+        events.removeEventListener('message:http', onHTTPProxy);
         importScripts('keyspace/client-keyspace-commands.js');
     }
 
     // PGP Commands
-    events.addEventListener('command:pgp', onPGPProxyCommand);
+    events.addEventListener('message:pgp', onPGPProxyCommand);
     function onPGPProxyCommand(e) {
-        events.removeEventListener('command:pgp', onPGPProxyCommand);
+        events.removeEventListener('message:pgp', onPGPProxyCommand);
         importScripts('pgp/client-pgp-commands.js');
     }
 
     // Chat/Channel Commands
-    events.addEventListener('command:channel', onChannelProxy);
+    events.addEventListener('message:channel', onChannelProxy);
     function onChannelProxy(e) {
-        events.removeEventListener('command:channel', onChannelProxy);
+        events.removeEventListener('message:channel', onChannelProxy);
         importScripts('channel/client-channel-commands.js');
     }
 
     // Beta Subscribe Commands
-    events.addEventListener('command:beta', onBetaProxy);
+    events.addEventListener('message:beta', onBetaProxy);
     function onBetaProxy(e) {
-        events.removeEventListener('command:beta', onBetaProxy);
+        events.removeEventListener('message:beta', onBetaProxy);
         importScripts('beta/client-beta-commands.js');
     }
 
     // App Commands
-    events.addEventListener('command:app', onAppProxy);
+    events.addEventListener('message:app', onAppProxy);
     function onAppProxy(e) {
-        events.removeEventListener('command:app', onAppProxy);
+        events.removeEventListener('message:app', onAppProxy);
         importScripts('app/client-app-commands.js');
     }
 })();
