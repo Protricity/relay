@@ -17,7 +17,9 @@ if(typeof importScripts !== 'undefined') {
     require('./client/commands.js');
 
     var events = require('./client/cli/cli-events.js').CLIEventListener;
-    console.error("TODO: prompt", events);
+    var CLIPrompt = require('./client/cli/cli-prompt.js').CLIPrompt;
+    CLIPrompt.start();
+
 
 
 } else if(typeof document !== 'undefined') {

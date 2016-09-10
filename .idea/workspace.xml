@@ -5,15 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f1a3609b-05f2-4e93-b5c1-0f477f2ec236" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/render/dom-render.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/relay.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/cli/cli-events.js" afterPath="$PROJECT_DIR$/client/cli/cli-events.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/worker/worker-thread.js" afterPath="$PROJECT_DIR$/client/worker/worker-thread.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/client/cli/cli-prompt.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/relay.js" afterPath="$PROJECT_DIR$/relay.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MOVED" beforePath="D:\Dev\projects\relay\client.js" afterPath="$PROJECT_DIR$/client/worker/worker-listener.js" />
-      <change type="MOVED" beforePath="D:\Dev\projects\relay\client\client-commands.js" afterPath="$PROJECT_DIR$/client/commands.js" />
-      <change type="MOVED" beforePath="D:\Dev\projects\relay\server.js" afterPath="$PROJECT_DIR$/client/server/server.js" />
     </list>
     <ignored path="relay.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -41,61 +35,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="commands.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/commands.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="65" column="34" selection-start-line="65" selection-start-column="34" selection-end-line="65" selection-end-column="34" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="client-ui-handler.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/old/ui/client-ui-handler.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="121" column="19" selection-start-line="121" selection-start-column="19" selection-end-line="121" selection-end-column="19" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="worker-listener.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/client/worker/worker-listener.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.103370786">
-              <caret line="24" column="12" selection-start-line="24" selection-start-column="12" selection-end-line="24" selection-end-column="12" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="worker-thread.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/worker/worker-thread.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="47" selection-end-column="81" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="cli-events.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/cli/cli-events.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="45" column="38" selection-start-line="45" selection-start-column="38" selection-end-line="45" selection-end-column="38" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="relay.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/relay.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="32" column="42" selection-start-line="32" selection-start-column="42" selection-end-line="32" selection-end-column="42" />
+              <caret line="19" column="52" selection-start-line="19" selection-start-column="52" selection-end-line="19" selection-end-column="52" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -103,11 +47,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="dom-render.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client/render/dom-render.js">
+      <file leaf-file-name="cli-prompt.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/client/cli/cli-prompt.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="11" column="45" selection-start-line="11" selection-start-column="45" selection-end-line="11" selection-end-column="45" />
+            <state vertical-scroll-proportion="0.48095757">
+              <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -134,7 +78,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/client/client-command-proxies.js" />
         <option value="$PROJECT_DIR$/beta/beta-subscription-form.js" />
         <option value="$PROJECT_DIR$/channel/chat/render/beta-subscription-form.css" />
         <option value="$PROJECT_DIR$/beta/beta-server-commands.js" />
@@ -180,11 +123,12 @@
         <option value="$PROJECT_DIR$/client/cli/cli-events.js" />
         <option value="$PROJECT_DIR$/client/client-commands.js" />
         <option value="$PROJECT_DIR$/index.html" />
-        <option value="$PROJECT_DIR$/relay.js" />
         <option value="$PROJECT_DIR$/client/commands.js" />
         <option value="$PROJECT_DIR$/client/render/dom-render.js" />
         <option value="$PROJECT_DIR$/client/worker/worker-thread.js" />
         <option value="$PROJECT_DIR$/client/worker/worker-listener.js" />
+        <option value="$PROJECT_DIR$/relay.js" />
+        <option value="$PROJECT_DIR$/client/cli/cli-prompt.js" />
       </list>
     </option>
   </component>
@@ -468,11 +412,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Dev\projects\relay\client\cli" />
       <recent name="D:\Dev\projects\relay\client\render" />
       <recent name="D:\Dev\projects\relay\client\worker" />
       <recent name="D:\Dev\projects\relay\client" />
       <recent name="D:\Dev\projects\relay\old" />
-      <recent name="D:\Dev\projects\relay\ui\login\render" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\Dev\projects\relay\client\server" />
@@ -482,13 +426,13 @@
       <recent name="D:\Dev\projects\relay\old" />
     </key>
   </component>
-  <component name="RunManager" selected="PHP Built-in Web Server.Localhost">
-    <configuration default="false" name="server.js" type="BashConfigurationType" factoryName="Bash" temporary="true">
+  <component name="RunManager" selected="Bash.relay.js">
+    <configuration default="false" name="relay.js" type="BashConfigurationType" factoryName="Bash" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="INTERPRETER_PATH" value="C:\Program Files\nodejs\node.exe" />
       <option name="WORKING_DIRECTORY" value="D:\Dev\projects\relay\" />
       <option name="PARENT_ENVS" value="true" />
-      <option name="SCRIPT_NAME" value="D:\Dev\projects\relay\server.js" />
+      <option name="SCRIPT_NAME" value="D:\Dev\projects\relay\relay.js" />
       <option name="PARAMETERS" value="" />
       <module name="relay" />
       <envs />
@@ -543,13 +487,13 @@
       <method />
     </configuration>
     <list size="3">
-      <item index="0" class="java.lang.String" itemvalue="PHP Built-in Web Server.Localhost" />
-      <item index="1" class="java.lang.String" itemvalue="Bash.server.js" />
-      <item index="2" class="java.lang.String" itemvalue="JavaScript Debug.test-nav.html" />
+      <item index="0" class="java.lang.String" itemvalue="Bash.relay.js" />
+      <item index="1" class="java.lang.String" itemvalue="JavaScript Debug.test-nav.html" />
+      <item index="2" class="java.lang.String" itemvalue="PHP Built-in Web Server.Localhost" />
     </list>
     <recent_temporary>
       <list size="2">
-        <item index="0" class="java.lang.String" itemvalue="Bash.server.js" />
+        <item index="0" class="java.lang.String" itemvalue="Bash.relay.js" />
         <item index="1" class="java.lang.String" itemvalue="JavaScript Debug.test-nav.html" />
       </list>
     </recent_temporary>
@@ -589,14 +533,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="555" width="1936" height="1056" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.159375" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32988626" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33919063" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="true" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.271875" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.271875" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32953367" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3234375" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24973376" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -639,13 +583,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/old/ui/tags/header/tag-header-buttons.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/old/ui/about/window/about-window.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-30.423077">
@@ -849,7 +786,7 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="n#!!doc" expanded="true" />
+            <element signature="n#!!doc" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -858,6 +795,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -962,7 +900,7 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="20" column="8" selection-start-line="20" selection-start-column="8" selection-end-line="20" selection-end-column="22" />
           <folding>
-            <element signature="n#!!doc" expanded="true" />
+            <element signature="n#!!doc" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -972,16 +910,6 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="121" column="19" selection-start-line="121" selection-start-column="19" selection-end-line="121" selection-end-column="19" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/relay.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="32" column="42" selection-start-line="32" selection-start-column="42" selection-end-line="32" selection-end-column="42" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1005,7 +933,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="11" column="45" selection-start-line="11" selection-start-column="45" selection-end-line="11" selection-end-column="45" />
-          <folding />
+          <folding>
+            <marker date="1473307838029" expanded="true" signature="-1:-1" placeholder="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1019,8 +949,26 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/client/worker/worker-listener.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.103370786">
-          <caret line="24" column="12" selection-start-line="24" selection-start-column="12" selection-end-line="24" selection-end-column="12" />
+        <state vertical-scroll-proportion="-13.655172">
+          <caret line="29" column="51" selection-start-line="29" selection-start-column="51" selection-end-line="29" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/relay.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="19" column="52" selection-start-line="19" selection-start-column="52" selection-end-line="19" selection-end-column="52" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client/cli/cli-prompt.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.48095757">
+          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
           <folding />
         </state>
       </provider>
