@@ -11,7 +11,7 @@ function CLIPrompt() {
 }
 
 CLIPrompt.prototype.start = function() {
-    process.stdout.write("$ ");
+    process.stdout.write("> ");
     process.stdin.resume();
     process.stdin.setEncoding('utf8');
     var util = require('util');
@@ -19,7 +19,7 @@ CLIPrompt.prototype.start = function() {
     process.stdin.on('data', function (text) {
         // util.inspect()
         process.stdout.write(text.trim());
-        process.stdout.write("\n$ ");
+        process.stdout.write("\n\n> ");
         if (text === 'quit\n') {
             done();
         }
