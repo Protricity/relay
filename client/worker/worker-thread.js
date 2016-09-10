@@ -29,7 +29,7 @@ if(typeof importScripts === 'undefined')
 
         var type = Command.getType();
 
-        var messageEvent = new CustomEvent('command:'+type, {
+        var messageEvent = new CustomEvent('message:'+type, {
             detail: Command,
             cancelable: true
         });
@@ -37,15 +37,15 @@ if(typeof importScripts === 'undefined')
         if(messageEvent.defaultPrevented)
             return;
 
-        messageEvent = new CustomEvent('command', {
-            detail: Command,
-            cancelable: true
-        });
-        self.dispatchEvent(messageEvent);
-        if(messageEvent.defaultPrevented)
-            return;
+        // messageEvent = new CustomEvent('command', {
+        //     detail: Command,
+        //     cancelable: true
+        // });
+        // self.dispatchEvent(messageEvent);
+        // if(messageEvent.defaultPrevented)
+        //     return;
 
-        console.error("Unhandled command (type=" + type + "): " + commandString);
+        throw new Error("Unhandled command (type=" + type + "): " + commandString);
     }
 
     // For Shared Workers

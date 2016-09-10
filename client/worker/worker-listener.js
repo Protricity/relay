@@ -34,7 +34,7 @@ if(typeof document === 'undefined')
         var Command = new WorkerResponse(commandString, port);
         console.log("Response: ", commandString);
         // command vs message
-        var responseEvent = new CustomEvent('command:' + Command.getType(), {
+        var responseEvent = new CustomEvent('message:' + Command.getType(), {
             detail: Command,
             cancelable: true
         });
@@ -58,7 +58,7 @@ if(typeof document === 'undefined')
         if(responseEvent.defaultPrevented)
             return;
         e.preventDefault();
-
+        // Don't pass commands to worker. 
         console.error("Unhandled worker response (type=" + type + "): " + commandString);
     });
 

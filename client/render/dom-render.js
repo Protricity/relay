@@ -8,13 +8,26 @@ if(typeof document === 'undefined')
 
 (function() {
 
-    // Set up execution handling
-    document.addEventListener('command:render', function(e) {
+    // Handle Worker message render events
+    document.addEventListener('message:render', onRenderMessage);
+    
+    // Set up command execution handling
+    document.addEventListener('command:render', onRenderCommand);
+    
+    
+    function onRenderMessage(e) {
         var commandString = e.detail;
-        console.log("Handle DOM Render: ", commandString);
+        console.log("TODO: Handle DOM Render: ", commandString);
         //port.postMessage(commandString);
         e.preventDefault();
-    });
+    }
+
+    function onRenderCommand(e) {
+        var commandString = e.detail;
+        console.log("Worker Command: ", commandString);
+        e.preventDefault();
+        port.postMessage(commandString);
+    }
 
     // Send ready message to worker
     // port.postMessage("INFO READY");
